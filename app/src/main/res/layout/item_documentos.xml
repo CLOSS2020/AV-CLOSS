@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/ti_nrodoc"
+        android:layout_width="119dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="15dp"
+        android:background="#222222"
+        android:text="Nº DOC"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lb_estatus"
+        android:layout_width="155dp"
+        android:layout_height="19dp"
+        android:background="#FFFFFF"
+        android:text="estado"
+        android:textAlignment="viewEnd"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ti_estatus"
+        app:layout_constraintTop_toBottomOf="@+id/lb_nrodoc" />
+
+    <TextView
+        android:id="@+id/ti_femision"
+        android:layout_width="119dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="88dp"
+        android:background="#DCDCDC"
+        android:text="Emisión:"
+        android:textAlignment="center"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ti_mtototal" />
+
+    <TextView
+        android:id="@+id/lb_emision"
+        android:layout_width="155dp"
+        android:layout_height="19dp"
+        android:background="#FFFFFF"
+        android:text="-"
+        android:textAlignment="viewEnd"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ti_femision"
+        app:layout_constraintTop_toBottomOf="@+id/lb_montototal" />
+
+    <TextView
+        android:id="@+id/lb_nrodoc"
+        android:layout_width="155dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="15dp"
+        android:background="#222222"
+        android:text="00000"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ti_nrodoc"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lb_montototal"
+        android:layout_width="155dp"
+        android:layout_height="19dp"
+        android:background="#FFFFFF"
+        android:text="-"
+        android:textAlignment="viewEnd"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ti_mtototal"
+        app:layout_constraintTop_toBottomOf="@+id/lb_estatus" />
+
+    <TextView
+        android:id="@+id/ti_mtototal"
+        android:layout_width="119dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="88dp"
+        android:background="#DCDCDC"
+        android:text="Monto Total:"
+        android:textAlignment="center"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ti_estatus" />
+
+    <TextView
+        android:id="@+id/lb_recepcion"
+        android:layout_width="155dp"
+        android:layout_height="19dp"
+        android:layout_marginBottom="12dp"
+        android:background="#FFFFFF"
+        android:text="-"
+        android:textAlignment="viewEnd"
+        android:textColor="#1B1B1B"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ti_fentrega"
+        app:layout_constraintTop_toBottomOf="@+id/lb_emision" />
+
+    <TextView
+        android:id="@+id/ti_fentrega"
+        android:layout_width="119dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginBottom="12dp"
+        android:background="#DCDCDC"
+        android:text="Entrega:"
+        android:textAlignment="center"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ti_femision" />
+
+    <TextView
+        android:id="@+id/ti_estatus"
+        android:layout_width="119dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="88dp"
+        android:background="#DCDCDC"
+        android:text="Estado:"
+        android:textAlignment="center"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ti_nrodoc" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="53dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintEnd_toStartOf="@+id/ti_femision"
+        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_article_24" />
+
+    <TextView
+        android:id="@+id/lb_tipodocv"
+        android:layout_width="60dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:background="#FFFFFF"
+        android:text="FAC"
+        android:textAlignment="center"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <TextView
+        android:id="@+id/lb_aceptadev"
+        android:layout_width="60dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="20dp"
+        android:background="#FFFFFF"
+        android:enabled="false"
+        android:textAlignment="center"
+        android:textColor="#1B1B1B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lb_tipodocv" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

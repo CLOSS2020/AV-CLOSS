@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/icclientes"
+            android:enabled="true"
+            android:icon="@drawable/ic_clientes"
+            android:title="Clientes" />
+        <item
+            android:id="@+id/iccatalogo"
+            android:enabled="true"
+            android:icon="@drawable/iccatalogo"
+            android:title="Catálogo" />
+
+        <item
+            android:id="@+id/ickardex"
+            android:enabled="true"
+            android:icon="@drawable/ic_kardex"
+            android:title="Act/Nuevos artículos" />
+
+
+        <item
+            android:id="@+id/icpedidos"
+            android:enabled="true"
+            android:icon="@drawable/ic_pedidos"
+            android:title="Pedidos"
+            android:visible="false" />
+
+
+        <!--  <item
+              android:id="@+id/icplanificador"
+              android:enabled="true"
+              android:icon="@drawable/ic_planificador"
+              android:title="PLanificador de CXC"
+              android:visible="false" /> -->
+
+        <item
+            android:id="@+id/icestadistica"
+            android:enabled="true"
+            android:icon="@drawable/ic_estadisticas"
+            android:title="Estadísticas"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/icreclamos"
+            android:enabled="true"
+            android:icon="@drawable/ic_reclamos"
+            android:title="Reclamos"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/iccobranzas"
+            android:enabled="true"
+            android:icon="@drawable/ic_cobranza"
+            android:title="Cobranzas"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/icCXC"
+            android:enabled="true"
+            android:icon="@drawable/ic_cobranza"
+            android:title="CXC"
+            android:visible="false"/>
+
+        <item
+            android:id="@+id/moduloCXC"
+            android:enabled="true"
+            android:icon="@drawable/ic_cobranza"
+            android:title="Modulo CXC"
+            android:visible="false"/>
+
+        <item
+            android:id="@+id/moduloReten"
+            android:enabled="true"
+            android:icon="@drawable/ic_cobranza"
+            android:title="Retenciones"
+            android:visible="false"/>
+
+
+        <item
+            android:id="@+id/icsync"
+            android:enabled="true"
+            android:icon="@drawable/ic_sync"
+            android:title="Sincronizar Datos" />
+
+
+    </group>
+
+    <!-- <item android:title="Promociones">
+         <group>
+             <menu>
+                 <item
+                     android:id="@+id/icpromociones"
+                     android:enabled="true"
+                     android:icon="@drawable/ic_listapromo"
+                     android:title="Promociones Activas"/>
+
+                 <item
+                     android:id="@+id/icpedidosprom"
+                     android:enabled="true"
+                     android:icon="@drawable/ic_pedidospromo"
+                     android:title="Pedidos con promo."/>
+             </menu>
+         </group>
+     </item>-->
+
+
+    <group android:id="@+id/gruop_menu2">
+        <item
+            android:id="@+id/Inventario"
+            android:title="Modulo CXC">
+            <menu>
+
+
+
+                <!--   <item
+                       android:id="@+id/moduloCXC"
+                       android:enabled="true"
+                       android:icon="@drawable/ic_cobranza"
+                       android:title="Modulo CXC" /> -->
+
+            </menu>
+        </item>
+    </group>
+
+
+    <group android:id="@+id/gruop_menu3">
+        <item android:title="Opciones">
+            <menu>
+                <item
+                    android:id="@+id/iccerrarsesion"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_cerrar"
+                    android:title="Cerrar Sesión" />
+
+            </menu>
+        </item>
+    </group>
+
+
+</menu>

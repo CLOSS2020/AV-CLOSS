@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SincronizacionActivity">
+
+        <Button
+            android:id="@+id/bt_sync"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="54dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="54dp"
+            android:layout_marginBottom="45dp"
+            android:background="@drawable/bordes_redondos"
+            android:text="@string/sincronizar"
+            android:textColor="@color/blanco"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_aviso"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <TextView
+            android:id="@+id/tv_aviso"
+            android:layout_width="0dp"
+            android:layout_height="33dp"
+            android:layout_marginStart="42dp"
+            android:layout_marginTop="92dp"
+            android:layout_marginEnd="42dp"
+            android:layout_marginBottom="88dp"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_grupos"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_vendedor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="136dp"
+            android:text="Vendedor:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_cliente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Clientes:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_vendedor"
+            app:layout_constraintTop_toBottomOf="@+id/tv_vendedor" />
+
+        <TextView
+            android:id="@+id/tv_grupos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Grupos:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_cliente"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cliente" />
+
+        <TextView
+            android:id="@+id/tv_sector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:text="Zona:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_grupos"
+            app:layout_constraintTop_toBottomOf="@+id/tv_grupos" />
+
+        <TextView
+            android:id="@+id/tv_subsector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:text="Ruta:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_sector"
+            app:layout_constraintTop_toBottomOf="@+id/tv_sector" />
+
+        <TextView
+            android:id="@+id/tv_articulos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Articulos:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_subsector"
+            app:layout_constraintTop_toBottomOf="@+id/tv_subsector" />
+
+        <TextView
+            android:id="@+id/tv_subgrupos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Información Adicional:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_articulos"
+            app:layout_constraintTop_toBottomOf="@+id/tv_articulos" />
+
+        <TextView
+            android:id="@+id/tv_pedidosact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Pedidos actualizados:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_subgrupos"
+            app:layout_constraintTop_toBottomOf="@+id/tv_subgrupos" />
+
+        <TextView
+            android:id="@+id/tvDocumentos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Documentos:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_subgrupos"
+            app:layout_constraintTop_toBottomOf="@+id/tv_pedidosact" />
+
+        <Button
+            android:id="@+id/bt_subir"
+            android:layout_width="0dp"
+            android:layout_height="47dp"
+            android:layout_marginStart="57dp"
+            android:layout_marginTop="180dp"
+            android:layout_marginEnd="57dp"
+            android:layout_marginBottom="172dp"
+            android:background="@drawable/bordes_redondos"
+            android:text="@string/subir"
+            android:textColor="@color/blanco"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_grupos"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <TextView
+            android:id="@+id/tv_subidospedidos"
+            android:layout_width="wrap_content"
+            android:layout_height="19dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginTop="8dp"
+            android:text="Pedidos Subidos:"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_subir" />
+
+        <Button
+            android:id="@+id/bt_subirprecob"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="60dp"
+            android:background="@drawable/bordes_redondos"
+            android:text="SUBIR PRECOBRANZAS"
+            android:textColor="#FFFFFF"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_subidospedidos" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

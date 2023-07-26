@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"><![CDATA[>
+
+
+    ]]>
+    <item
+        android:id="@+id/validarSubidas"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_sync"
+        android:title="Validar Subidas" />
+
+    <item
+        android:id="@+id/archivados"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_archivados"
+        android:title="Pedidos archivados" />
+
+
+
+</menu>

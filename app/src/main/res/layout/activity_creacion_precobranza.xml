@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".CreacionPrecobranzaActivity">
+
+        <CheckBox
+            android:id="@+id/cb_pagintercm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="Pago interbancario"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup2"
+            app:layout_constraintTop_toBottomOf="@+id/txt_referenciacom" />
+
+        <EditText
+            android:id="@+id/txt_referenciacom"
+            android:layout_width="0dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:ems="10"
+            android:hint="INTRODUZCA LA REFERENCIA BANCARIA"
+            android:inputType="textPersonName"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_montorecibocom" />
+
+        <TextView
+            android:id="@+id/tv_elegirmetodocom"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_marginStart="22dp"
+            android:text="Recepción del  Monto:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/sp_selecbancocom"
+            app:layout_constraintEnd_toStartOf="@+id/rg_monedacom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_complemento" />
+
+        <RadioGroup
+            android:id="@+id/rg_monedacom"
+            android:layout_width="221dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_elegirmetodocom"
+            app:layout_constraintTop_toBottomOf="@+id/lb_complemento">
+
+            <RadioButton
+                android:id="@+id/rb_efectivocom"
+                android:layout_width="67dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Efectivo"
+                android:visibility="invisible" />
+
+            <RadioButton
+                android:id="@+id/rb_transfcom"
+                android:layout_width="96dp"
+                android:layout_height="24dp"
+                android:layout_weight="1"
+                android:text="Transferencia"
+                android:visibility="invisible" />
+
+        </RadioGroup>
+
+        <Spinner
+            android:id="@+id/sp_selecbancoim"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_impuestosbss" />
+
+        <Spinner
+            android:id="@+id/sp_selecbancocom"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_elegirmetodocom" />
+
+        <EditText
+            android:id="@+id/txt_referenciaimbs"
+            android:layout_width="0dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:ems="10"
+            android:hint="INTRODUZCA LA REFERENCIA BANCARIA"
+            android:inputType="textPersonName"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_montoreciboimp" />
+
+        <EditText
+            android:id="@+id/txt_montoreciboimp"
+            android:layout_width="0dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:ems="10"
+            android:hint="INTRODUZCA EL MONTO PAGADO"
+            android:inputType="numberDecimal"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_selecbancoim" />
+
+        <EditText
+            android:id="@+id/txt_montorecibocom"
+            android:layout_width="0dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:ems="10"
+            android:hint="INTRODUZCA EL MONTO PAGADO"
+            android:inputType="numberDecimal"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_selecbancocom" />
+
+        <TextView
+            android:id="@+id/txt_reten"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondoamarillo"
+            android:text="0.00"
+            android:textAlignment="textEnd"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lb_retencion"
+            app:layout_constraintTop_toBottomOf="@+id/txt_flete" />
+
+        <TextView
+            android:id="@+id/txt_total"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondoamarillo"
+            android:text="0.00"
+            android:textAlignment="textEnd"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/lb_total"
+            app:layout_constraintTop_toBottomOf="@+id/txt_reten" />
+
+        <TextView
+            android:id="@+id/lb_retencion"
+            android:layout_width="84dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="20dp"
+            android:text="Reten.:"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_flete" />
+
+        <TextView
+            android:id="@+id/lb_total"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="1dp"
+            android:text="Total:"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_retencion" />
+
+        <TextView
+            android:id="@+id/lb_neto2"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Neto:"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_montos" />
+
+        <TextView
+            android:id="@+id/txt_iva"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondoamarillo"
+            android:text="0.00"
+            android:textAlignment="textEnd"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lb_iva"
+            app:layout_constraintTop_toBottomOf="@+id/txt_neto" />
+
+        <TextView
+            android:id="@+id/txt_flete"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondoamarillo"
+            android:text="0.00"
+            android:textAlignment="textEnd"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lb_flete"
+            app:layout_constraintTop_toBottomOf="@+id/txt_iva" />
+
+        <TextView
+            android:id="@+id/txt_neto"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondoamarillo"
+            android:text="0.00"
+            android:textAlignment="textEnd"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lb_neto2"
+            app:layout_constraintTop_toBottomOf="@+id/lb_montos" />
+
+        <RadioGroup
+            android:id="@+id/rg_tpago"
+            android:layout_width="164dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/rg_monedapago"
+            app:layout_constraintTop_toBottomOf="@+id/lb_selecmoneda2">
+
+            <RadioButton
+                android:id="@+id/rb_completo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pago completo" />
+
+            <RadioButton
+                android:id="@+id/rb_abono"
+                android:layout_width="161dp"
+                android:layout_height="wrap_content"
+                android:text="Abono" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/lb_fechatransf"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondogris"
+            android:text="Seleccionar Fecha de Pago:"
+            android:textAlignment="center"
+            android:textColor="#272727"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.016"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_fechrec" />
+
+        <TextView
+            android:id="@+id/lb_selecmoneda"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:text="Moneda de pago:"
+            android:textColor="#272727"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_fechatransf" />
+
+        <TextView
+            android:id="@+id/lb_selecmoneda2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="159dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="56dp"
+            android:text="Tipo de pago:"
+            android:textColor="#272727"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lb_selecmoneda"
+            app:layout_constraintTop_toBottomOf="@+id/et_fechatransf" />
+
+        <TextView
+            android:id="@+id/lb_fechrec"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/fondogris"
+            android:text="Fecha del Rec:"
+            android:textAlignment="center"
+            android:textColor="#151515"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/tv_fechareci"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_fechareci"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/fondoamarillo"
+            android:editable="false"
+            android:text="00/00/0000"
+            android:textAlignment="center"
+            android:textColor="#151515"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/lb_fechrec"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/rg_monedapago"
+            android:layout_width="164dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_selecmoneda">
+
+            <RadioButton
+                android:id="@+id/rb_divisascompleto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="En Divisas" />
+
+            <RadioButton
+                android:id="@+id/rb_bsscompleto"
+                android:layout_width="161dp"
+                android:layout_height="wrap_content"
+                android:text="En BsD." />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tv_elegirmetodo"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="22dp"
+            android:text="Recepción del  Monto:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/sp_selecbanco"
+            app:layout_constraintEnd_toStartOf="@+id/rg_monedaimpuesto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_mtopago4" />
+
+        <RadioGroup
+            android:id="@+id/rg_monedaimpuesto"
+            android:layout_width="221dp"
+            android:layout_height="22dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_elegirmetodo"
+            app:layout_constraintTop_toBottomOf="@+id/lb_mtopago4">
+
+            <RadioButton
+                android:id="@+id/rb_efectivorec"
+                android:layout_width="99dp"
+                android:layout_height="match_parent"
+                android:text="Efectivo" />
+
+            <RadioButton
+                android:id="@+id/rb_transfrec"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Transferencia" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/lb_mtopago2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondogris"
+            android:text="Opciones adicionales:"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rg_tpago" />
+
+        <TextView
+            android:id="@+id/lb_montos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondogris"
+            android:text="Montos:"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_impbss" />
+
+        <TextView
+            android:id="@+id/lb_mtopago4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondogris"
+            android:text="Datos de Pago:"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_descuentos" />
+
+        <TextView
+            android:id="@+id/lb_complemento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondogris"
+            android:text="Complemento:"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_referenciaimbs" />
+
+        <TextView
+            android:id="@+id/lb_impuestosbss"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondogris"
+            android:text="Impuestos/flete en Bss."
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_pagintercomp"
+            android:visibility="invisible" />
+
+        <EditText
+            android:id="@+id/txt_montorecibo"
+            android:layout_width="0dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:ems="10"
+            android:hint="INTRODUZCA EL MONTO PAGADO"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_selecbanco" />
+
+        <Spinner
+            android:id="@+id/sp_selecbanco"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_elegirmetodo" />
+
+        <EditText
+            android:id="@+id/txt_referencia"
+            android:layout_width="0dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/fondo_listas"
+            android:ems="10"
+            android:hint="INTRODUZCA LA REFERENCIA BANCARIA"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_montorecibo" />
+
+        <Button
+            android:id="@+id/bt_retenciones"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/holo_orange_light"
+            android:text="AGREGAR RETENCIONES"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_pagintercm" />
+
+        <Button
+            android:id="@+id/bt_procesarrecibo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/colorprocesar"
+            android:text="PROCESAR RECIBO"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_retenciones" />
+
+        <TextView
+            android:id="@+id/lb_avisoconcepto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
+            android:text="Antes de presionar en procesar,revise los datos introducidos que serán cargados al sistema"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_procesarrecibo" />
+
+        <EditText
+            android:id="@+id/et_fechatransf"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bordes_redondos"
+            android:clickable="false"
+            android:ems="10"
+            android:focusable="false"
+            android:hint="Presione Aquí"
+            android:inputType="textPersonName"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_fechatransf" />
+
+        <TextView
+            android:id="@+id/lb_iva"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="IVA:"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_neto2" />
+
+        <TextView
+            android:id="@+id/lb_flete"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Flete:"
+            android:textColor="#1C1C1C"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_iva" />
+
+        <CheckBox
+            android:id="@+id/cb_impbss"
+            android:layout_width="151dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="20dp"
+            android:text="Impuestos/flete en BsD."
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_mtopago2" />
+
+        <CheckBox
+            android:id="@+id/cb_complemento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="Recibo Complemento"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_mtopago2" />
+
+        <CheckBox
+            android:id="@+id/cb_descuentos"
+            android:layout_width="132dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="20dp"
+            android:text="Dar descuentos"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lb_total" />
+
+        <CheckBox
+            android:id="@+id/cb_notretiva"
+            android:layout_width="120dp"
+            android:layout_height="26dp"
+            android:text="No Ret. IVA"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@+id/cb_descuentos"
+            app:layout_constraintTop_toBottomOf="@+id/txt_total" />
+
+        <CheckBox
+            android:id="@+id/cb_pagintercomp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="Pago interbancario"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_referencia" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="186dp"
+            android:layout_height="27dp"
+            android:layout_marginStart="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_referenciacom">
+
+            <RadioButton
+                android:id="@+id/rb_bsscomplemento"
+                android:layout_width="81dp"
+                android:layout_height="wrap_content"
+                android:text="BsD."
+                android:visibility="invisible" />
+
+            <RadioButton
+                android:id="@+id/rb_divisascomplemento"
+                android:layout_width="99dp"
+                android:layout_height="wrap_content"
+                android:text="Divisas"
+                android:visibility="invisible" />
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/cb_noretflete"
+            android:layout_width="120dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="20dp"
+            android:text="No Ret. Flete"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_total" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

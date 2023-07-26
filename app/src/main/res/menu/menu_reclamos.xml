@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/iclinearec"
+        android:enabled="true"
+        android:icon="@drawable/ic_addcirculo"
+        android:title="Agregar"/>
+
+    <item
+        android:id="@+id/icclasif"
+        android:enabled="true"
+        android:icon="@drawable/ic_clasif"
+        android:title="Clasificar"/>
+
+    <item
+        android:id="@+id/icnota"
+        android:enabled="true"
+        android:icon="@drawable/ic_nota"
+        android:title="Nota"/>
+
+
+    <item
+        android:id="@+id/icfotos"
+        android:enabled="true"
+        android:icon="@drawable/ic_addfoto"
+        android:title="A. Imagenes"/>
+
+
+    <item
+        android:id="@+id/icprocesar"
+        android:enabled="true"
+        android:icon="@drawable/ic_procesar"
+        android:title="Procesar"/>
+
+
+</menu>

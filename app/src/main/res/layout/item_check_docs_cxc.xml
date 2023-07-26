@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/AppTheme">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bordes_redondos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_montototal"
+            android:layout_width="209dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="#FBFBFB"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nrodoc"
+            tools:text="Monto Total:" />
+
+        <TextView
+            android:id="@+id/tv_montodebe"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/bordes_redondos_blanco"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_montototal"
+            tools:text="Monto Deuda:" />
+
+        <CheckBox
+            android:id="@+id/cb_sel_doc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#FBFBFB"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:enabled="false"/>
+
+        <TextView
+            android:id="@+id/tv_tipodocC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#FBFBFB"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Tipo de Documento" />
+
+        <TextView
+            android:id="@+id/tv_nrodoc"
+            android:layout_width="209dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="#FBFBFB"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nº:" />
+
+        <TextView
+            android:id="@+id/tv_fecharecepcion"
+            android:layout_width="wrap_content"
+            android:layout_height="21dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="1dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="#FFFFFF"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_montodebe"
+            tools:text="F. Recep:" />
+
+        <TextView
+            android:id="@+id/tv_fechavencimiento"
+            android:layout_width="wrap_content"
+            android:layout_height="21dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="1dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="#FFFFFF"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fecharecepcion"
+            tools:text="F. Venc:" />
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="209dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fechavencimiento"
+            tools:text="Status:" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

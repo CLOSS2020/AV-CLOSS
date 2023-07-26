@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetalleVendedorActivity">
+
+    <TableLayout
+        android:layout_width="305dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#0E6AB3"
+            android:textAlignment="inherit">
+
+            <TextView
+                android:id="@+id/tv_clientes_titulo"
+                android:layout_width="209dp"
+                android:layout_height="match_parent"
+                android:text=" ESTADISTICAS DE CLIENTES:"
+                android:textAlignment="viewStart"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_cantclientes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Cantidad de clientes:"
+                android:textColor="#222222"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_cantclientes"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#393838"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_clientesvisitados"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Clientes visitados:"
+                android:textColor="#222222"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_visitados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#393838"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="14dp">
+
+            <TextView
+                android:id="@+id/tv_porcentajevisitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="% de visitas:"
+                android:textColor="#2C2C2C"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_prcvisitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#393838"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_puestoRvisistas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="P.R.  en visitas:"
+                android:textColor="#333333"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_prvisitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#393838"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_puestoNvisitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="P.N. en visitas:"
+                android:textColor="#333333"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_pnvisitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#393838"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#0E6AB3">
+
+            <TextView
+                android:id="@+id/tv_ventas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text=" ESTADÍSTICAS DE VENTAS:"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_pedidoscant"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Cantidad de Pedidos:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_cantpedidos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Monto Pedidos:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_mtopedidos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Cantidad de Facturas:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_cantfacturas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Monto Facturas:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_mtofacturas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Monto Notas de Credito PP:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_ppgdol_totneto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Monto en Devolución:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_devdol_totneto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Devolución Mala Facturación:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_defdol_totneto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Monto Facturas Neto:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_mtofacturas_neto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Meta"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="% cumplido de meta:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_prcmeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="Monto total cobrado en el período:"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_totdolcob"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="P.R. (por monto de venta):"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_prmtoventa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="P.N. (por monto de venta):"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_pnmtoventa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="P.R. (por % de venta):"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_prprcventa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:text="P.N. (por %  de venta):"
+                android:textColor="#292929"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/lb_pnprcventa"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#C6C6C6"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#303030"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+    </TableLayout>
+</RelativeLayout>

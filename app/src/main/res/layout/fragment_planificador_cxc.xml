@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tlPrincipalModulCXC"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1,2,3,4,5,6"
+    tools:context=".moduloCXC.fragments.PlanificadorCXCFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPlanModulCXC"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/boton_agregar" />
+
+</TableLayout>

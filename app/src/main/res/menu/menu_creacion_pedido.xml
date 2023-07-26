@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/ic_agregarart"
+        android:enabled="true"
+        android:icon="@drawable/ic_addcirculo"
+        android:title="Agregar artículo" />
+
+    <item
+        android:id="@+id/ic_procesarpedido"
+        android:enabled="true"
+        android:icon="@drawable/ic_procesar"
+        android:title="Procesar pedido"
+        />
+</menu>

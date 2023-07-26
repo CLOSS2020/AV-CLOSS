@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="0,1,2">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/numeroDoc"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="0002000" />
+
+        <TextView
+            android:id="@+id/retIVA"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="retIVA" />
+
+        <TextView
+            android:id="@+id/retFlete"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="retFlete" />
+    </TableRow>
+
+</TableLayout>
+
+

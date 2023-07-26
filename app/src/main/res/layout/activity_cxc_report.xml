@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:theme="@style/AppTheme.Angel.Light"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".cxcReportActivity">
+
+        <!--
+                <TextView
+                    android:id="@+id/textView64"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/fondoamarillo"
+                    android:text="TextView"
+                    android:textColor="#555555"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/textView54"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_cxc_iva" />
+        -->
+
+
+        <TextView
+            android:id="@+id/textView51"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            android:background="#014C83"
+            android:text="Montos por cancelar:"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_ver_det_descuento" />
+
+        <TextView
+            android:id="@+id/textView66"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            android:background="#014C83"
+            android:text="Datos de Pago:"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView58" />
+
+        <TextView
+            android:id="@+id/tv_cxc_complemento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="#014C83"
+            android:text="Recibo Complemento:"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_cxc_ref_main" />
+
+        <TextView
+            android:id="@+id/textView43"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            android:background="#014C83"
+            android:text="Opciones del recibo"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout2"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:clickable="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_today_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dp_fecharec"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:hint="Fecha de Pago"
+                android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RadioGroup
+            android:id="@+id/radioGroup4"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView45">
+
+            <RadioButton
+                android:id="@+id/rb_cxc_divisas_main"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:buttonTint="#646464"
+                android:text="Divisas" />
+
+            <RadioButton
+                android:id="@+id/rb_cxc_bss_main"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:buttonTint="#646464"
+                android:text="Bss." />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView45"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="Moneda:"
+            android:textColor="#0B0B0B"
+            android:textSize="16sp"
+            android:textStyle="bold"
+
+            app:layout_constraintStart_toStartOf="@+id/radioGroup4"
+            app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+        <TextView
+            android:id="@+id/textView47"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adicionales:"
+            android:textColor="#0B0B0B"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/cb_cxc_complemento"
+            app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+        <TextView
+            android:id="@+id/textView48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo pago:"
+            android:textColor="#0B0B0B"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup5"
+            app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup5"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup4"
+            app:layout_constraintTop_toBottomOf="@+id/textView48">
+
+            <RadioButton
+                android:id="@+id/rb_cxc_comp_main"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:buttonTint="#646464"
+                android:text="Completo" />
+
+            <RadioButton
+                android:id="@+id/rb_cxc_abono_main"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:buttonTint="#646464"
+                android:text="Abono" />
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/cb_cxc_complemento"
+            android:layout_width="130dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:buttonTint="#646464"
+            android:text="R. Complemento"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup5"
+            app:layout_constraintTop_toBottomOf="@+id/textView47" />
+
+        <TextView
+            android:id="@+id/textView54"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:background="#E7EDF8"
+            android:gravity="center"
+            android:text="Neto:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView51" />
+
+        <TextView
+            android:id="@+id/textView55"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:background="#E7EDF8"
+            android:gravity="center"
+            android:text="I.V.A.:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView54" />
+
+        <TextView
+            android:id="@+id/textView56"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:background="#E7EDF8"
+            android:gravity="center"
+            android:text="Flete:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView55" />
+
+        <TextView
+            android:id="@+id/textView57"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:background="#E7EDF8"
+            android:gravity="center"
+            android:text="Retenciones(-):"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView56" />
+
+        <TextView
+            android:id="@+id/textView41"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:background="#E7EDF8"
+            android:gravity="center"
+            android:text="Descuentos:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView57" />
+
+        <TextView
+            android:id="@+id/textView58"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="3dp"
+            android:background="#CAC9C9"
+            android:gravity="center"
+            android:text="Total:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView41" />
+
+        <TextView
+            android:id="@+id/tv_cxc_neto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/fondoamarillo"
+            android:gravity="right"
+            android:paddingEnd="5dp"
+            android:text="0.00"
+            android:textAlignment="gravity"
+            android:textColor="#171717"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView54"
+            app:layout_constraintTop_toBottomOf="@+id/textView51" />
+
+        <TextView
+            android:id="@+id/tv_cxc_iva"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/fondoamarillo"
+            android:gravity="right"
+            android:paddingEnd="5dp"
+            android:text="0.00"
+            android:textAlignment="gravity"
+            android:textColor="#171717"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/textView54"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_neto" />
+
+        <TextView
+            android:id="@+id/tv_cxc_flete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/fondoamarillo"
+            android:gravity="right"
+            android:paddingEnd="5dp"
+            android:text="0.00"
+            android:textAlignment="gravity"
+            android:textColor="#171717"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/textView54"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_iva" />
+
+        <TextView
+            android:id="@+id/tv_cxc_reten"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/fondoamarillo"
+            android:gravity="right"
+            android:paddingEnd="5dp"
+            android:text="0.00"
+            android:textAlignment="gravity"
+            android:textColor="#171717"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/textView54"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_flete" />
+
+        <TextView
+            android:id="@+id/tv_cxc_dctos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/fondoamarillo"
+            android:gravity="right"
+            android:paddingEnd="5dp"
+            android:text="0.00"
+            android:textAlignment="gravity"
+            android:textColor="#171717"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView54"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_reten" />
+
+        <TextView
+            android:id="@+id/tv_cxc_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/fondototal"
+            android:gravity="right"
+            android:paddingEnd="5dp"
+            android:text="0.00"
+            android:textAlignment="gravity"
+            android:textColor="#FFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView54"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_dctos" />
+
+        <CheckBox
+            android:id="@+id/cb_cxc_descuentos"
+            android:layout_width="130dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:buttonTint="#646464"
+            android:text="Dar Descuentos"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup5"
+            app:layout_constraintTop_toBottomOf="@+id/cb_cxc_complemento" />
+
+        <Button
+            android:id="@+id/bt_cxc_procesar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="PROCESAR RECIBO"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bt_cxc_retenciones"
+            app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_cxc_monto_main"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_cxc_spbanco"
+            app:startIconDrawable="@drawable/cash_stack">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_cxc_monto_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Monto de Pago"
+                android:inputType="numberDecimal"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_cxc_ref_main"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_cxc_monto_main"
+            app:startIconDrawable="@drawable/ic_listapromo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_cxc_ref_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Referencia Bancaria"
+                android:inputType="text"
+                android:maxLength="20"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_cxc_spbanco"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mainAdd"
+            app:startIconDrawable="@drawable/ic_baseline_bank_24">
+
+            <AutoCompleteTextView
+                android:id="@+id/sp_cxc_banco_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Banco:"
+                android:inputType="none"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RadioGroup
+            android:id="@+id/radioGroup6"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView66">
+
+            <RadioButton
+                android:id="@+id/rb_cxc_transf_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Pago en Transferencia" />
+
+            <RadioButton
+                android:id="@+id/rb_cxc_efectivo_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Pago en Efectivo" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/bt_cxc_retenciones"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Retenciones"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_ref_com"
+            app:strokeColor="@color/colorPrimary" />
+
+        <RadioGroup
+            android:id="@+id/rg3"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_complemento">
+
+            <RadioButton
+                android:id="@+id/rb_cxc_transf_com"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Pago en Transf."
+                android:visibility="invisible" />
+
+            <RadioButton
+                android:id="@+id/rb_cxc_efectivo_com"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Pago en Efectivo"
+                android:visibility="invisible" />
+        </RadioGroup>
+
+
+        <RadioGroup
+            android:id="@+id/radioGroup8"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rg3">
+
+            <RadioButton
+                android:id="@+id/rb_cxc_divisas_com"
+                android:layout_width="172dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Divisas"
+                android:visibility="invisible" />
+
+            <RadioButton
+                android:id="@+id/rb_cxc_bss_com"
+                android:layout_width="172dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Bss"
+                android:visibility="invisible" />
+
+
+        </RadioGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_banco_com"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup8"
+            app:startIconDrawable="@drawable/ic_baseline_bank_24">
+
+            <AutoCompleteTextView
+                android:id="@+id/sp_cxc_banco_com"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_monto_com"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_banco_com"
+            app:startIconDrawable="@drawable/cash_stack">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_cxc_monto_com"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvPrecioMostrarComplemento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@color/colorPrimary"
+            android:paddingStart="25dp"
+            android:paddingEnd="25dp"
+            android:text="Monto a Pagar: 50$"
+            android:textColor="@color/blanco"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_monto_com" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_ref_com"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrecioMostrarComplemento"
+            app:startIconDrawable="@drawable/ic_listapromo">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_cxc_ref_com"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Referencia Bancaria"
+                android:inputType="text"
+                android:maxLength="20" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/bt_ver_det_descuento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/coloralerta"
+            android:text="Detalle de los descuentos"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup4" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_tasaselec"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            app:boxBackgroundColor="#D9E2F3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textInputLayout2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tie_tasaselec"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:textColorHint="#000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/mainAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup6">
+
+            <CheckBox
+                android:id="@+id/cb_exc_reten"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Excluir retenciones"
+                app:layout_constraintStart_toEndOf="@+id/til_cxc_spbanco"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/radioGroup6" />
+
+            <!--<CheckBox
+                android:id="@+id/cbDocDifCambio"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:buttonTint="#646464"
+                android:text="Doc. Dif. Cambiario"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/radioGroup6" />-->
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
+
+

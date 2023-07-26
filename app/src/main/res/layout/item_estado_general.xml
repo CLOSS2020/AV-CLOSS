@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/itemEdoGenCuenta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/custom_input"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_codcli_est_gen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_item_edo_general_cxc"
+            android:text="Código del cliente"
+            android:textColor="@color/blanco"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingStart="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_nomclie_est_gen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="Nombre del cliente"
+            android:textColor="#1B1919"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_codcli_est_gen" />
+
+        <TextView
+            android:id="@+id/textView84"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="1dp"
+            android:text="Deuda Total:"
+            android:textColor="#101010"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toStartOf="@+id/tv_deuda_est_gen"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nomclie_est_gen" />
+
+        <TextView
+            android:id="@+id/tv_deuda_est_gen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:text="$0000.00"
+            android:textColor="#151825"
+            android:textColorLink="#121522"
+            app:layout_constraintEnd_toStartOf="@+id/textView86"
+            app:layout_constraintStart_toEndOf="@+id/textView84"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nomclie_est_gen" />
+
+        <TextView
+            android:id="@+id/textView86"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:text="Antiguedad:"
+            android:textColor="#000000"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toStartOf="@+id/tv_fecha_est_gen"
+            app:layout_constraintStart_toEndOf="@+id/tv_deuda_est_gen"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nomclie_est_gen" />
+
+        <TextView
+            android:id="@+id/tv_fecha_est_gen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="100 Días"
+            android:textColor="#1B1919"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView86"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nomclie_est_gen" />
+
+        <TextView
+            android:id="@+id/textView88"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:text="Lím. crédito:"
+            android:textColor="#000000"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toStartOf="@+id/tv_limite_est_gen"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView84" />
+
+        <TextView
+            android:id="@+id/tv_limite_est_gen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="1dp"
+            android:text="$0000.00"
+            android:textColor="#1B1919"
+            app:layout_constraintEnd_toStartOf="@+id/textView90"
+            app:layout_constraintStart_toEndOf="@+id/textView88"
+            app:layout_constraintTop_toBottomOf="@+id/textView84" />
+
+        <TextView
+            android:id="@+id/textView90"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="1dp"
+            android:text="Saldo:"
+            android:textColor="#000000"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toStartOf="@+id/tv_saldo_est_gen"
+            app:layout_constraintStart_toEndOf="@+id/tv_limite_est_gen"
+            app:layout_constraintTop_toBottomOf="@+id/tv_deuda_est_gen" />
+
+        <TextView
+            android:id="@+id/tv_saldo_est_gen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="$0000.00"
+            android:textColor="#1B1919"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView90"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fecha_est_gen" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

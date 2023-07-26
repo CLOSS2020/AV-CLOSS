@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.Angel.Light"
+        tools:context=".retencionesActivity"
+        android:paddingBottom="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tlFecha"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:clickable="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_today_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_fecharetenciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:hint="Fecha de Pago"
+                android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--<EditText
+            android:id="@+id/et_fecharetenciones"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="20dp"
+            android:clickable="false"
+            android:ems="10"
+            android:focusable="false"
+            android:hint="Fecha del comprobante"
+            android:inputType="date"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/sp_tiposret"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTipoRet"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tlFecha"
+            app:startIconDrawable="@drawable/ic_baseline_article_24">
+
+            <AutoCompleteTextView
+                android:id="@+id/sp_tiposret"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:hint="Tipo de Retención"
+                android:inputType="none"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--<Spinner
+            android:id="@+id/sp_tiposret"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tlFecha" />-->
+
+        <!--<Spinner
+            android:id="@+id/sp_documentos"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/et_montoret"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_tiposret" />-->
+
+        <Button
+            android:id="@+id/btnDetalle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bordes_redondos"
+            android:text="Ver Documentos"
+            android:textColor="#fff"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilTipoRet" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_cxc_monto_main"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Monto (En Bss)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnDetalle"
+            app:startIconDrawable="@drawable/cash_stack">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_montoret"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--<EditText
+            android:id="@+id/et_montoret"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:ems="10"
+            android:hint="Monto (En Bss)"
+            android:inputType="numberDecimal"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/et_refret"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnDetalle" />-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilRetencionReferencia"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="5dp"
+            android:hint="Referencia (completa)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_cxc_monto_main"
+            app:startIconDrawable="@drawable/ic_listapromo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_refret"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="14"
+                android:maxLines="1"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--<EditText
+            android:id="@+id/et_refret"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="2dp"
+            android:ems="10"
+            android:hint="Referencia (completa)"
+            android:inputType="number"
+            android:maxLength="14"
+            android:maxLines="1"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/bt_agregarret"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_cxc_monto_main" />-->
+
+        <Button
+            android:id="@+id/bt_agregarret"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/custom_menu_button"
+            android:text="AGREGAR RETENCIÓN"
+            android:textColor="#014C83"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/rv_retenciones"
+            app:layout_constraintEnd_toStartOf="@+id/bt_agregarfoto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilRetencionReferencia" />
+
+        <Button
+            android:id="@+id/bt_agregarfoto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/custom_menu_button"
+            android:text="AGREGAR FOTO"
+            android:textColor="#014C83"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/rv_retenciones"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bt_agregarret"
+            app:layout_constraintTop_toBottomOf="@+id/tilRetencionReferencia"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_retenciones"
+            android:layout_width="370dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/gv_fotos"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_agregarret" />
+
+        <GridView
+            android:id="@+id/gv_fotos"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:columnWidth="100dp"
+            android:horizontalSpacing="5dp"
+            android:numColumns="5"
+            android:verticalSpacing="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/bt_aceptar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_retenciones" />
+
+        <Button
+            android:id="@+id/bt_aceptar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/bordes_redondos"
+            android:text="ACEPTAR"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/gv_fotos" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

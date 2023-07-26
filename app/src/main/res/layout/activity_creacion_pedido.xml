@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F8F8"
+    android:fitsSystemWindows="true"
+    tools:context=".CreacionPedidoActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="387dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/marcos"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.857"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+
+        <ListView
+            android:id="@+id/ListPedido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="155dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
+
+        <RadioButton
+            android:id="@+id/RbFactura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Rb1"
+            android:textSize="12sp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <RadioButton
+            android:id="@+id/RbNotaEntrega"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:minHeight="48dp"
+            android:text="@string/Rb2"
+            android:textSize="12sp"
+            tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radioGroup3"
+        android:layout_width="176dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/radioGroup"
+        app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
+
+        <RadioButton
+            android:id="@+id/RbCredito"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Rb3"
+            android:textSize="12sp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <!--05-06-2023 El boton Prepago cambia su nombre a BCV-->
+        <RadioButton
+            android:id="@+id/RbPrepago"
+            android:layout_width="match_parent"
+            android:layout_height="21dp"
+            android:text="BCV"
+            android:textSize="12sp"
+            tools:ignore="TouchTargetSizeCheck" />
+    </RadioGroup>
+
+    <!--<Spinner
+        android:id="@+id/sp_cliente"
+        android:layout_width="283dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/marcos"
+        android:textColor="#000000"
+        android:textSize="9sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />-->
+
+    <TextView
+        android:id="@+id/tv_codigocliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="58dp"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_neto"
+        android:layout_width="146dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="#E3DEB8"
+        android:drawablePadding="5px"
+        android:gravity="center_vertical"
+        android:text="$0.00"
+        android:textAlignment="viewEnd"
+        android:textColor="#191919"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        tools:ignore="RtlCompat" />
+
+    <TextView
+        android:id="@+id/tv_netocondescuento"
+        android:layout_width="146dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:background="#00BCD4"
+        android:drawablePadding="5px"
+        android:gravity="center_vertical"
+        android:text="$0.00"
+        android:textAlignment="viewEnd"
+        android:textColor="#191919"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_neto"
+        tools:ignore="RtlCompat" />
+
+    <!--<ImageButton
+        android:id="@+id/ibt_modificar"
+        android:layout_width="40dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:background="#F8F8F8"
+        app:layout_constraintStart_toEndOf="@+id/sp_cliente"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_drop"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />-->
+
+    <Switch
+        android:id="@+id/sw_negoespecial"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="Activar negociación especial"
+        android:textColor="#33449E"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/textView37"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+    <TextView
+        android:id="@+id/tv_mtomin"
+        android:layout_width="119dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="Monto Mín: $"
+        android:textColor="#F44336"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/tv_subcondcto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sw_negoespecial" />
+
+    <TextView
+        android:id="@+id/tv_nombre_cliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_radius_botr_botl"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingBottom="2dp"
+        android:textColor="#fff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Nombre cliente" />
+
+    <TextView
+        android:id="@+id/tv_avisobloqueo"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="#D63131"
+        android:enabled="false"
+        android:text="*Cliente posee documentos pendientes *"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textColorLink="#ED514C"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_nombre_cliente" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/menu_creacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconTint="@color/blanco"
+        app:itemTextColor="@color/blanco"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_creacion_pedido" />
+
+    <TextView
+        android:id="@+id/textView37"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Subtotal:"
+        android:textColor="#232323"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tv_neto"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+    <TextView
+        android:id="@+id/tv_subcondcto"
+        android:layout_width="65dp"
+        android:layout_height="17dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="4dp"
+        android:text="Sub con %:"
+        android:textAlignment="viewEnd"
+        android:textColor="#232323"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/tv_netocondescuento"
+        app:layout_constraintTop_toBottomOf="@+id/textView37" />
+
+    <Switch
+        android:id="@+id/sw_preventa"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="59dp"
+        android:text="Solo Preventa"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/menu_creacion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        tools:ignore="TouchTargetSizeCheck" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

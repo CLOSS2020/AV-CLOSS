@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#014C83</color>
+    <color name="colorPrimaryDark">#014C83</color>
+    <color name="colorAccent">#323232</color>
+    <color name="rojologo">#f74747</color>
+    <color name="colorcarga">#2196F3</color>
+    <color name="colorbien">#14E605</color>
+    <color name="grisclaro">#F6F5F5</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="letras">#222222</color>
+    <color name="colornoeditable">#FFF28C</color>
+    <color name="colorprocesar">#13C34E</color>
+    <color name="colorkardex">#D4F3DE</color>
+    <color name="coloralerta">#00A884</color>
+</resources>

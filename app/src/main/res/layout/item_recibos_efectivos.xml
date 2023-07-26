@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_id_recibo_efectivo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="id del recibo"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView59"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:text="Monto:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#000"
+            app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toBottomOf="@+id/tv_id_recibo_efectivo" />
+
+        <TextView
+            android:id="@+id/textView60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:text="Fecha:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#000"
+            app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toBottomOf="@+id/textView59" />
+
+        <TextView
+            android:id="@+id/tv_monto_recibo_efectivo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="0.00"
+            android:textColor="#6F6F6F"
+            app:layout_constraintEnd_toStartOf="@+id/cb_recibo_selec_efectivo"
+            app:layout_constraintStart_toEndOf="@+id/textView59"
+            app:layout_constraintTop_toBottomOf="@+id/tv_id_recibo_efectivo" />
+
+        <TextView
+            android:id="@+id/tv_fecha_recibo_efectivo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:text="0000-00-00"
+            android:textColor="#6F6F6F"
+            app:layout_constraintEnd_toStartOf="@+id/cb_recibo_selec_efectivo"
+            app:layout_constraintStart_toEndOf="@+id/textView60"
+            app:layout_constraintTop_toBottomOf="@+id/tv_monto_recibo_efectivo" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_icono_recibo" />
+
+        <CheckBox
+            android:id="@+id/cb_recibo_selec_efectivo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_id_recibo_efectivo" />
+
+        <TextView
+            android:id="@+id/tv_tipo_recibo"
+            android:layout_width="42dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="5dp"
+            android:gravity="center"
+            android:text="TIP"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_cxc"
+    app:startDestination="@id/moduloCXCFragment">
+
+    <fragment
+        android:id="@+id/moduloCXCFragment"
+        android:name="com.appcloos.mimaletin.moduloCXC.ModuloCXCFragment"
+        android:label="Cuentas por Cobrar"
+        tools:layout="@layout/fragment_modulo_cxc">
+        <action
+            android:id="@+id/action_moduloCXCFragment_to_edoCuentaClienteFragment"
+            app:destination="@id/edoCuentaClienteFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/edoCuentaClienteFragment"
+        android:name="com.appcloos.mimaletin.moduloCXC.fragments.EdoCuentaClienteFragment"
+        android:label="Edo. Cuenta del Cliente"
+        tools:layout="@layout/fragment_edo_cuenta_cliente">
+        <action
+            android:id="@+id/action_edoCuentaClienteFragment_to_moduloCXCFragment"
+            app:destination="@id/moduloCXCFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/moduloCXCFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+
+</navigation>

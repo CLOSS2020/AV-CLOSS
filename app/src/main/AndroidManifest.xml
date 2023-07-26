@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PROFILE" /> <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> -->
+    <uses-permission
+        android:name="android.permission.MANAGE_DOCUMENTS"
+        android:required="true"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ModuloReten.ModuloRetenActivity"
+            android:exported="false"
+            android:parentActivityName=".PrincipalActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".EdoCuentaClienteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SelectorClienteReten"
+            android:exported="false" />
+        <activity
+            android:name=".DetalleCXCActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SeleccionarClientePedidoActivity"
+            android:exported="false"
+            android:parentActivityName=".PedidosActivity">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".moduloCXC.ModuloCXCActivity"
+            android:exported="false"
+            android:parentActivityName=".PrincipalActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".creacionDepositoActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.newer" />
+        <activity
+            android:name=".depositoActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.newer" />
+        <activity
+            android:name=".cxcReportActivity"
+            android:exported="false"
+            android:label="@string/title_activity_cxc_report"
+            android:theme="@style/AppTheme.newer" />
+        <activity
+            android:name=".retencionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreacionPrecobranzaActivity"
+            android:exported="false"
+            android:label="Creacion de Precobranza"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".creacionCobranzaActivity"
+            android:exported="true"
+            android:label="Selección de Cliente y Docs" />
+        <activity
+            android:name=".CXCActivity"
+            android:exported="false"
+            android:label="Cuentas por Cobrar"
+            android:parentActivityName=".PrincipalActivity"
+            android:theme="@style/AppTheme.newer" />
+        <activity
+            android:name=".PedidosArchivadosActivity"
+            android:exported="false"
+            android:label="Pedidos Archivados" />
+        <activity
+            android:name=".PromocionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PlanificadorActivity"
+            android:exported="false"
+            android:label="Planificador de CXC" />
+        <activity
+            android:name=".PrecobranzaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ListaReclamosActivity"
+            android:exported="true"
+            android:label="Reclamos"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".ReclamosActivity"
+            android:exported="true" />
+        <activity
+            android:name=".DocumentosActivity"
+            android:exported="true"
+            android:parentActivityName=".ClientesActivity" />
+        <activity
+            android:name=".CobranzasActivity"
+            android:exported="true"
+            android:label="Cuentas por Cobrar"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".DetalleVendedorActivity"
+            android:exported="true"
+            android:parentActivityName=".EstadisticasActivity" />
+        <activity
+            android:name=".EstadisticasActivity"
+            android:exported="true"
+            android:label="Estadísticas de Venta"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".KardexActivity"
+            android:exported="true"
+            android:label="Artículos nuevos/actualizados"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".ModificarPedidoActivity"
+            android:exported="true"
+            android:parentActivityName=".PedidosActivity" />
+        <activity
+            android:name=".CreacionPedidoActivity"
+            android:exported="true"
+            android:label="Crear Pedido"
+            android:parentActivityName=".PedidosActivity" />
+        <activity
+            android:name=".PedidosActivity"
+            android:exported="true"
+            android:label="Pedidos"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".SincronizacionActivity"
+            android:exported="true"
+            android:label="Sincronizar Datos"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".ClientesActivity"
+            android:exported="true"
+            android:label="Listado de Clientes"
+            android:parentActivityName=".PrincipalActivity" />
+        <activity
+            android:name=".CatalogoActivity"
+            android:label="Catálogo de artículos" />
+        <activity
+            android:name=".PrincipalActivity"
+            android:exported="true"
+            android:label="@string/title_activity_principal"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+    </application>
+
+</manifest>

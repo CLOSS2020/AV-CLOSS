@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/it_backcatalogo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/custom_input"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/text_nombre"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:text="TextView"
+            android:textColor="#353535"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/img_thumb"
+            app:layout_constraintTop_toBottomOf="@+id/text_codigo" />
+
+        <TextView
+            android:id="@+id/tv_multiplo"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="9dp"
+            android:background="@drawable/custon_label_multiplo"
+            android:paddingStart="2dp"
+            android:text="Venta en Multiplo"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_existencia"
+            app:layout_constraintTop_toBottomOf="@+id/text_nombre" />
+
+        <TextView
+            android:id="@+id/tv_min"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="9dp"
+            android:background="@drawable/custom_buton"
+            android:paddingStart="2dp"
+            android:text="Cant. Mínima:"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_existencia"
+            app:layout_constraintTop_toBottomOf="@+id/tv_multiplo" />
+
+        <TextView
+            android:id="@+id/text_codigo"
+            android:layout_width="180dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/boton_agregar"
+            android:paddingStart="2dp"
+            android:text="Código:"
+            android:textColor="#1E1E1E"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_max"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="9dp"
+            android:background="@drawable/custom_buton"
+            android:paddingStart="2dp"
+            android:text="Cant. Máxima:"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_precio"
+            app:layout_constraintTop_toBottomOf="@+id/tv_min" />
+
+        <TextView
+            android:id="@+id/text_precio"
+            android:layout_width="158dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:paddingStart="2dp"
+            android:text="Precio: $ 0.00"
+            android:textColor="#009688"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_existencia" />
+
+        <TextView
+            android:id="@+id/text_existencia"
+            android:layout_width="158dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:paddingStart="2dp"
+            android:text="Existencia: "
+            android:textColor="#3F51B5"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_thumb" />
+
+        <TextView
+            android:id="@+id/tv_descuento"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="5dp"
+            android:background="#009688"
+            android:text="-0%"
+            android:textAlignment="center"
+            android:textColor="#F4F4F4"
+            android:textColorLink="#F1F1F1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/text_nombre"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_preventalb"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.666" />
+
+        <TextView
+            android:id="@+id/tv_preciodescuento"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="9dp"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="2dp"
+            android:text="Precio con Descuento:"
+            android:textColor="#05534C"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_precio"
+            app:layout_constraintTop_toBottomOf="@+id/tv_max" />
+
+        <!--
+        <TextView
+            android:id="@+id/tv_dsctonormal"
+            android:layout_width="158dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/boton_procesar"
+            android:text="Precio Dscto:"
+            android:textColor="@color/blanco"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_precio"
+            app:layout_constraintVertical_bias="0.0"
+            android:paddingStart="2dp"/>
+            -->
+
+        <TextView
+            android:id="@+id/tvPedFacNE"
+            android:layout_width="158dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/border_radius"
+            android:paddingStart="5dp"
+            android:textColor="#FFF"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_precio"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_max"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/tv_preventalb"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/custom_preventa"
+            android:text="En Preventa!"
+            android:textAlignment="center"
+            android:textColor="@color/blanco"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@+id/text_codigo"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/img_thumb"
+            android:layout_width="120dp"
+            android:layout_height="86dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_codigo"
+            app:srcCompat="@drawable/boton_agregar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

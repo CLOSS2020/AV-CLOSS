@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="arrayElementos">
+        <item>Articulo 1</item>
+        <item>Articulo 2</item>
+        <item>Articulo 3</item>
+        <item>Articulo 4</item>
+        <item>Articulo 5</item>
+        <item>Articulo 6</item>
+        <item>Articulo 7</item>
+        <item>Articulo 8</item>
+        <item>Articulo 9</item>
+        <item>Articulo 10</item>
+        <item>Articulo 11</item>
+        <item>Articulo 12</item>
+        <item>Articulo 13</item>
+    </string-array>
+</resources>

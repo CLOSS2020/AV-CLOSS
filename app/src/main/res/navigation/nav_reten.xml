@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_reten"
+    app:startDestination="@id/selectClienteRetenFragment">
+
+    <fragment
+        android:id="@+id/selectClienteRetenFragment"
+        android:name="com.appcloos.mimaletin.ModuloReten.SelectClienteRetenFragment"
+        android:label="Seleccione un Cliente"
+        tools:layout="@layout/fragment_select_cliente_reten">
+        <action
+            android:id="@+id/action_selectClienteRetenFragment_to_edoCuentaClienteRetenFragment"
+            app:destination="@id/edoCuentaClienteRetenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/edoCuentaClienteRetenFragment"
+        android:name="com.appcloos.mimaletin.ModuloReten.EdoCuentaClienteRetenFragment"
+        android:label="Eliga un Documento"
+        tools:layout="@layout/fragment_edo_cuenta_cliente_reten">
+        <action
+            android:id="@+id/action_edoCuentaClienteRetenFragment_to_selectClienteRetenFragment"
+            app:destination="@id/selectClienteRetenFragment" />
+        <action
+            android:id="@+id/action_edoCuentaClienteRetenFragment_to_retenFragment"
+            app:destination="@id/retenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/retenFragment"
+        android:name="com.appcloos.mimaletin.ModuloReten.RetenFragment"
+        android:label="Retención"
+        tools:layout="@layout/fragment_reten">
+        <action
+            android:id="@+id/action_retenFragment_to_edoCuentaClienteRetenFragment"
+            app:destination="@id/edoCuentaClienteRetenFragment" />
+    </fragment>
+</navigation>

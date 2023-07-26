@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ModificarPedidoActivity">
+
+    <RadioGroup
+        android:id="@+id/radioGroupCondMod"
+        android:layout_width="125dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/radioGroupDocMod"
+        app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
+
+        <RadioButton
+            android:id="@+id/RbCreditoMod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Rb3"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/RbPrepagoMod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Rb4"
+            android:textSize="12sp" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="00dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="7dp"
+        android:background="@drawable/marcos"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textView38"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupDocMod">
+
+        <ListView
+            android:id="@+id/ListPedidoMod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/radioGroupDocMod"
+        android:layout_width="156dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
+
+        <RadioButton
+            android:id="@+id/RbFacturaMod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Rb1"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/RbNotaEntregaMod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Rb2"
+            android:textSize="12sp" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tv_clientepedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_radius_botr_botl"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingBottom="2dp"
+        android:textColor="#fff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Nombre cliente" />
+
+    <TextView
+        android:id="@+id/tv_avisobloqueo"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="5dp"
+        android:background="#D63131"
+        android:enabled="false"
+        android:text="*Cliente posee documentos pendientes *"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textColorLink="#ED514C"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_clientepedido" />
+
+    <Switch
+        android:id="@+id/sw_negoespecialMod"
+        android:layout_width="193dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:enabled="false"
+        android:text="Activar negociación especial"
+        android:textColor="#3F51B5"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/tv_montominMod"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+    <TextView
+        android:id="@+id/tv_montominMod"
+        android:layout_width="193dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginBottom="6dp"
+        android:enabled="false"
+        android:text="Monto Mín: $"
+        android:textColor="#F44336"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/menu_modifi"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/menu_modifi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconTint="@color/blanco"
+        app:itemTextColor="@color/blanco"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_creacion_pedido"/>
+
+    <TextView
+        android:id="@+id/textView38"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:text="Subtotal:"
+        android:textColor="#1C1C1C"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tv_neto_mod"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+    <TextView
+        android:id="@+id/tv_subdcto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="20dp"
+        android:text="Sub con %:"
+        android:textColor="#1C1C1C"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/menu_modifi"
+        app:layout_constraintEnd_toStartOf="@+id/tv_neto_dcto" />
+
+    <TextView
+        android:id="@+id/tv_neto_mod"
+        android:layout_width="146dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="#E3DEB8"
+        android:drawablePadding="5px"
+        android:gravity="center_vertical"
+        android:text="$0.00"
+        android:textAlignment="viewEnd"
+        android:textColor="#191919"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        tools:ignore="RtlCompat" />
+
+    <TextView
+        android:id="@+id/tv_neto_dcto"
+        android:layout_width="146dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="11dp"
+        android:background="#00BCD4"
+        android:drawablePadding="5px"
+        android:gravity="center_vertical"
+        android:text="$0.00"
+        android:textAlignment="viewEnd"
+        android:textColor="#191919"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/menu_modifi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_neto_mod"
+        app:layout_constraintVertical_bias="0.708"
+        tools:ignore="RtlCompat" />
+</androidx.constraintlayout.widget.ConstraintLayout>

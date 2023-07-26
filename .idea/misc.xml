@@ -1,0 +1,197 @@
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_creacion_cobranza.xml" value="0.23143115942028986" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_creacion_pedido.xml" value="0.33" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_creacion_precobranza.xml" value="0.22" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_cxc_report.xml" value="0.33" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_precobranza.xml" value="0.36666666666666664" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_retenciones.xml" value="0.33" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/activity_sincronizacion.xml" value="0.36666666666666664" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/app_bar_main.xml" value="0.2368659420289855" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/item_check_docs.xml" value="0.5" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/item_cxc_main.xml" value="0.26197916666666665" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/item_documentos.xml" value="0.23143115942028986" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/item_retenciones.xml" value="0.5" />
+        <entry key="..\:/AndroidCode/app/src/main/res/layout/spinner_pagos_clientes.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/drawable/custon_label_multiplo.xml" value="0.24479166666666666" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/drawable/fondoamarillo.xml" value="0.2203125" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/drawable/fondototal.xml" value="0.2203125" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/drawable/ic_baseline_notification_important_24.xml" value="0.2552083333333333" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_catalogo.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_cobranzas.xml" value="0.23402777777777778" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_creacion_cobranza.xml" value="0.163671875" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_creacion_deposito.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_creacion_pedido.xml" value="0.33" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_creacion_precobranza.xml" value="0.22" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_cxc_report.xml" value="0.33" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_cxcactivity.xml" value="0.25" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_deposito.xml" value="0.24027777777777778" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_detalle_vendedor.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_documentos.xml" value="0.23402777777777778" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_main.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_modificar_pedido.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_precobranza.xml" value="0.23402777777777778" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_principal.xml" value="0.33" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/activity_sincronizacion.xml" value="0.17421875" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/app_bar_main.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/content_cxc_report.xml" value="0.33" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/dialog_deposito_ok.xml" value="0.25" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/dialog_descuentos.xml" value="0.22" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/dialog_recibo_ok.xml" value="0.2" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_catalogo.xml" value="0.1" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_check_docs.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_cxc_main.xml" value="0.25" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_detalle_descuento.xml" value="0.5" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_docslintmp.xml" value="0.2125" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_pedido.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_recibos_efectivos.xml" value="0.5" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_resumen_efectivos.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/item_simple_docs.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Notebook/Documents/AndroidCode/app/src/main/res/layout/list_catalogo_personalizado.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/bordes_redondos.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/bordesnegros.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/boton_agregar.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/boton_procesar.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/celda.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/custom_buton.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/custom_fondo_fijo.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/custom_input.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/custom_preventa.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/fondo_listas.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/fondoamarillo.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/fondoblancoconborde.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/fondogris.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/ic_add_plus.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/ic_addfoto.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/ic_archivados.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/ic_img_percent.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/ic_listapromo.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/marcos.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/drawable/side_nav_bar.xml" value="0.3402777777777778" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_catalogo.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_creacion_cobranza.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_creacion_pedido.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_creacion_precobranza.xml" value="0.42460796139927626" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_cxcactivity.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_detalle_vendedor.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_documentos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_estadisticas.xml" value="0.29483695652173914" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_main.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_modificar_pedido.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_pedidos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_pedidos_archivados.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_planificador.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_precobranza.xml" value="0.22" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_principal.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_promociones.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_reclamos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/activity_retenciones.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/app_bar_main.xml" value="0.1824074074074074" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/content_main.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/fragment_home.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/fragment_slideshow.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_catalogo.xml" value="0.67" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_check_docs.xml" value="0.67" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_cxc_main.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_docslintmp.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_documentos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_estadistica.xml" value="0.3171171171171171" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_lineas_docs.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_pedido.xml" value="0.67" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_pedidos_archivados.xml" value="0.75" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_planificador.xml" value="0.67" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/item_promos.xml" value="0.5732899022801303" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/list_catalogo_personalizado.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/list_items.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/list_items_pedidos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/nav_header_main.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/spinner_bancos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/spinner_bancos_e.xml" value="0.2175925925925926" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/spinner_items.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/spinner_pagos_clientes.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/layout/spinner_tasas.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_creacion_pedido.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_estadisticas_main.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_listareclamos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_modulopromos.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_pedidos_main.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_planificador.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_principal.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_principal_bar.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/menu_reclamos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/Documents/appclo/app/src/main/res/menu/principal.xml" value="0.32592592592592595" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/bordes_redondos.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/celda.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/custom_buton.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/custom_input.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/custom_menu_button.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/fondo_listas.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_add_circle.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_addcirculo.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_drop.xml" value="0.3671875" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_eliminar.xml" value="0.3828125" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_fotos.xml" value="0.3671875" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_ok.xml" value="0.3671875" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_reclamo.xml" value="0.3671875" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/drawable/ic_reclamos.xml" value="0.3671875" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_catalogo.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_clientes.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_creacion_pedido.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_creacion_reclamos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_documentos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_estadisticas.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_home.xml" value="0.35260416666666666" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_kardex.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_lista_reclamos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_main.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_pedidos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_principal.xml" value="0.2962962962962963" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_reclamos.xml" value="0.33" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/activity_sincronizacion.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/app_bar_main.xml" value="0.35104166666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/content_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/dialogo_docs.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/dialogo_docs_lineas.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/drawer_layout_princ.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/fragment_pedidos.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_catalogo.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_cliente.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_docslintmp.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_documentos.xml" value="0.5" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_gv_imagenesrcl.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_lineas_docs.xml" value="0.5" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_lineas_reclamos.xml" value="0.67" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_pedido.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_recibos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/item_reclamo.xml" value="0.67" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/list_items_pedidos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/layout/nav_header_main.xml" value="0.35104166666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/app_bar_main.xml" value="0.35104166666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/bottom_nav_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/drawer_layout_princ.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/home.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_catalogo.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_estadisticas_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_listareclamos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_principal.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_principal_bar.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_reclamos.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/menu_search.xml" value="0.2109375" />
+        <entry key="..\:/Users/Pablo Castillo/appclo/app/src/main/res/menu/principal.xml" value="0.2109375" />
+        <entry key="..\:/Users/hgmop/StudioProjects/appclo/app/src/main/res/layout/activity_pedidos_archivados.xml" value="0.3036036036036036" />
+        <entry key="..\:/Users/hgmop/StudioProjects/appclo/app/src/main/res/layout/item_pedidos_archivados.xml" value="0.3036036036036036" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+  <component name="SuppressKotlinCodeStyleNotification">
+    <option name="disableForAll" value="true" />
+  </component>
+</project>

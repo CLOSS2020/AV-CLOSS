@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">>
+
+    <item
+        android:id="@+id/search_view_catalogo"
+        android:title="Buscar"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_search"
+        app:actionViewClass="android.widget.SearchView"/>
+
+  <!--  <item
+        android:id="@+id/bt_precio1"
+        android:title="Precio 1"
+
+        /> -->
+   <!-- <item
+        android:id="@+id/bt_precio2"
+        android:title="Precio 2"
+        />
+    <item
+        android:id="@+id/bt_precio3"
+        android:title="Precio 3" /> -->
+
+</menu>

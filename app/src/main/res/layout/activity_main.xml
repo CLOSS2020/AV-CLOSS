@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".MainActivity">
+
+
+    <EditText
+        android:id="@+id/txt_usuario"
+        android:layout_width="283dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/custom_input"
+        android:drawableStart="@drawable/ic_user"
+        android:drawablePadding="12px"
+        android:editable="true"
+        android:ems="10"
+        android:enabled="true"
+        android:hint="@string/usuariotext"
+        android:inputType="textPersonName"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/imageView4"
+        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintStart_toStartOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/bt_validarempresa" />
+
+    <EditText
+        android:id="@+id/txt_empresa"
+        android:layout_width="188dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/custom_input"
+        android:drawableStart="@drawable/ic_codigo"
+        android:drawablePadding="12px"
+        android:ems="10"
+        android:hint="Código"
+        android:inputType="textPersonName"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/bt_validarempresa"
+        app:layout_constraintStart_toStartOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+
+    <Button
+        android:id="@+id/bt_iniciar"
+        android:layout_width="282dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="132dp"
+        android:background="@drawable/custom_buton"
+        android:enabled="true"
+        android:text="INICIAR SESION"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/tv_desarollado"
+        app:layout_constraintEnd_toEndOf="@+id/txt_password"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/txt_password"
+        app:layout_constraintTop_toBottomOf="@+id/txt_password"
+        app:layout_constraintVertical_bias="0.053" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="99dp"
+        android:layout_height="38dp"
+        android:layout_marginBottom="36dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tv_desarollado"
+        app:layout_constraintStart_toStartOf="@+id/tv_desarollado"
+        app:srcCompat="@drawable/ic_clossnegro" />
+
+    <TextView
+        android:id="@+id/tv_desarollado"
+        android:layout_width="94dp"
+        android:layout_height="22dp"
+        android:text="@string/desarrolladopor"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/txt_password"
+        android:layout_width="284dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/custom_input"
+        android:drawableStart="@drawable/ic_password"
+        android:drawablePadding="12px"
+        android:editable="true"
+        android:ems="10"
+        android:enabled="true"
+        android:hint="@string/passwordtext"
+        android:inputType="textPassword"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/txt_usuario"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/txt_usuario"
+        app:layout_constraintTop_toBottomOf="@+id/txt_usuario" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="223dp"
+        android:layout_height="168dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_avlogo" />
+
+    <TextView
+        android:id="@+id/tvversion"
+        android:layout_width="142dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="18dp"
+        android:text="Ver."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/bt_validarempresa"
+        android:layout_width="86dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="8dp"
+        android:background="#2196F3"
+        android:text="VALIDAR"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/imageView4"
+        app:layout_constraintStart_toEndOf="@+id/txt_empresa"
+        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

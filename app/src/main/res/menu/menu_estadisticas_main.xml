@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"><![CDATA[>
+
+
+    ]]>
+    <item
+        android:id="@+id/sync_estad"
+        android:title="Sincronizar estadisticas"
+        app:showAsAction="always"
+        android:icon="@drawable/sync_button"
+        />
+    <item
+        android:id="@+id/search_view_estadisticas"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
+
+</menu>
