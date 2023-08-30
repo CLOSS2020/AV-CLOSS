@@ -13,4 +13,45 @@
     <color name="colorprocesar">#13C34E</color>
     <color name="colorkardex">#D4F3DE</color>
     <color name="coloralerta">#00A884</color>
+
+    <color name="primaryColor">#13458E</color>
+    <color name="primaryLightColor">#3E70B9</color> +43
+    <color name="primaryDarkColor">#014C83</color> -39 014C83 001E67
+    <color name="secondaryColor">#FFFFFF</color>
+    <color name="secondaryLightColor">#FFFFFF</color>
+    <color name="secondaryDarkColor">#C8C8C8</color>
+    <color name="primaryTextColor">#F6F5F5</color>
+    <color name="secondaryTextColor">#000000</color>
+    <color name="accentColor">#ED2121</color>
+
+    <color name="errorColor">#D50000</color>
+    <color name="warningColor">#FFD600</color>
+
+    <color name="redColor">#FF0000</color>
+    <color name="yellowColor">#FDD835</color>
+    <color name="lightGreenColor">#C0CA33</color>
+    <color name="greenColor">#43A047</color>
+    <color name="orangeColor">#FF6F00</color>
+
+    <color name="blueColor">#0D47A1</color>
+
+    <color name="blackColor">#000</color>
+
+    <color name="blackColor1">#000000</color>
+    <color name="blackColor2">#212121</color>
+    <color name="blackColor3">#303030</color>
+    <color name="blackColor4">#424242</color>
+
+    <color name="whiteColor1">#FFFFFF</color>
+    <color name="whiteColor2">#FAFAFA</color>
+    <color name="whiteColor3">#F5F5F5</color>
+    <color name="whiteColor4">#E0E0E0</color>
+
+    <color name="backgroundDarkColor">#424242</color>
+    <color name="backgroundLightColor">#FFFFFF</color>
+
+    <color name="colorTextPrimary">#000000</color>
+    <color name="colorTextSecondary">#FFFFFF</color>
+    <color name="colorTextVariant">#303030</color>
+
 </resources>

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/it_backcatalogo"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:theme="@style/BackgroundAuxRecicleView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
@@ -12,11 +13,11 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/custom_input"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:theme="@style/BasicStyleElementRecicleView">
 
         <TextView
             android:id="@+id/text_nombre"
@@ -26,7 +27,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
             android:text="TextView"
-            android:textColor="#353535"
+            android:alpha="0.75"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/img_thumb"
@@ -118,7 +119,7 @@
             android:layout_marginTop="5dp"
             android:paddingStart="2dp"
             android:text="Existencia: "
-            android:textColor="#3F51B5"
+            style="@style/TextColorAuxExistencia"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_thumb" />

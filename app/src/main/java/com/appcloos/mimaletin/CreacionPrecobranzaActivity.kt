@@ -17,7 +17,6 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -281,6 +280,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             CorrelativoTexto  = nroCorrelativo.toString()
             CorrelativoTexto  = "0000$CorrelativoTexto"
         }
+        cursorCorrelativo.close()
 
 
         //----
@@ -1430,6 +1430,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
         if(cursor.moveToFirst()){
             esConEspecial = cursor.getString(0)
         }
+        cursor.close()
 
         if(esConEspecial.equals("1")){
             //primero analizo el monto total de las retenciones
@@ -1516,7 +1517,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
                 }
             }
 
-            val intent = Intent(applicationContext, retencionesActivity::class.java)
+            val intent = Intent(applicationContext, RetencionesActivity::class.java)
             var bundle:Bundle = Bundle()
 
             bundle.putSerializable("listaRetenciones", listaRetGuardada)
@@ -1886,7 +1887,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             listaDocumentos.add(documentos)
 
         }
-
+        cursorDocs.close()
         for (i in listaDocumentos.indices){
                 dnetoTotal           += listaDocumentos[i].dtotneto
                 bsIvaTotal           += listaDocumentos[i].bsiva
@@ -2061,7 +2062,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             println(" tasa normal :$tasaNormal, tasa interb :$tasaInterB")
 
         }
-
+        cursorTasas.close()
     }
 
     private fun descargarTasas(URL: String) {
@@ -2111,6 +2112,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
                                 qcodigoLocal.moveToFirst()
                                 //variable para obtener el conteo de documentos que ya esten en el telf
                                 var codigoExistente = qcodigoLocal.getInt(0)
+                                qcodigoLocal.close()
 
                                 if (codigoExistente > 0) {
                                     ke_android.update("kecxc_tasas", qTasas, "kecxc_id= ?", arrayOf(idTasa)
@@ -2158,6 +2160,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             enlaceEmpresa  = cursorE.getString(1)
             codigoSucursal = cursorE.getString(2)
         }
+        cursorE.close()
 
     }
 
@@ -2213,6 +2216,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
                             qcodigoLocal.moveToFirst()
                             //variable para obtener el conteo de documentos que ya esten en el telf
                             var codigoExistente = qcodigoLocal.getInt(0)
+                            qcodigoLocal.close()
 
                             if (codigoExistente > 0) {
                                 ke_android.update("listbanc", qBancos, "codbanco= ?", arrayOf(codbanco)
@@ -2277,6 +2281,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             listaBancos.add(bancos)
 
         }
+        cursorBancos.close()
 
         actualizarBancos()
         var adapterBancos: ArrayAdapter<CharSequence>
@@ -2313,6 +2318,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             println(listaBancosImp.toString())
 
         }
+        cursorBancos.close()
 
         actualizarBancosImp()
         var adapterBancosIm: ArrayAdapter<CharSequence>
@@ -2359,6 +2365,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             listaBancosCm.add(bancos)
 
         }
+        cursorBancos.close()
 
         actualizarBancosCm()
         var adapterBancosCm: ArrayAdapter<CharSequence>

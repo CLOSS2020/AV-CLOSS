@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ModificarPedidoActivity">
+    android:theme="@style/AppTheme"
+    tools:context=".ModificarPedidoActivity"
+    style="@style/BackgroundAux">
 
     <RadioGroup
         android:id="@+id/radioGroupCondMod"
@@ -19,17 +21,21 @@
 
         <RadioButton
             android:id="@+id/RbCreditoMod"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Rb3"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton" />
 
         <RadioButton
             android:id="@+id/RbPrepagoMod"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Rb4"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton" />
     </RadioGroup>
 
     <LinearLayout
@@ -37,8 +43,8 @@
         android:layout_width="00dp"
         android:layout_height="0dp"
         android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginTop="7dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/marcos"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/textView38"
@@ -49,7 +55,8 @@
         <ListView
             android:id="@+id/ListPedidoMod"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp" />
 
     </LinearLayout>
 
@@ -64,17 +71,21 @@
 
         <RadioButton
             android:id="@+id/RbFacturaMod"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Rb1"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton" />
 
         <RadioButton
             android:id="@+id/RbNotaEntregaMod"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Rb2"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton" />
     </RadioGroup>
 
     <TextView
@@ -82,9 +93,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/border_radius_botr_botl"
+        android:paddingStart="10dp"
         android:paddingTop="5dp"
         android:paddingEnd="10dp"
-        android:paddingStart="10dp"
         android:paddingBottom="2dp"
         android:textColor="#fff"
         app:layout_constraintEnd_toEndOf="parent"
@@ -143,9 +154,9 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/menu_modifi"
+        style="@style/NavigationViewCustom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
         app:itemHorizontalTranslationEnabled="false"
         app:itemIconTint="@color/blanco"
         app:itemTextColor="@color/blanco"
@@ -153,7 +164,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_creacion_pedido"/>
+        app:menu="@menu/menu_creacion_pedido" />
 
     <TextView
         android:id="@+id/textView38"
@@ -162,7 +173,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="4dp"
         android:text="Subtotal:"
-        android:textColor="#1C1C1C"
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/tv_neto_mod"

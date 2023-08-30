@@ -1,9 +1,11 @@
 package com.appcloos.mimaletin.moduloCXC.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.databinding.ItemPlanificadorCxcBinding
@@ -12,12 +14,15 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class PlanificadorCXCAdapter(
     private var planificadorCxc: List<PlanificadorCxc>,
     private val onClickListener: (String, String) -> Unit,
     private var DIAS_VALIDOS_BOLIVARES: Int,
+    private val context: Context
 ) :
     RecyclerView.Adapter<PlanificadorCXCAdapter.PlanificadorCXCHolder>() {
 
@@ -38,7 +43,7 @@ class PlanificadorCXCAdapter(
 
             val date1 = SimpleDateFormat(
                 "yyyy-MM-dd", Locale.getDefault()
-            ).parse(planCXC.fechaVencimiento!!)
+            ).parse(planCXC.fechaVencimiento)
 
             val date2 = SimpleDateFormat(
                 "yyyy-MM-dd", Locale.getDefault()
@@ -54,42 +59,92 @@ class PlanificadorCXCAdapter(
             if (date1 == date2) {
                 binding.tvDocVence.text = "Vence Hoy"
                 binding.tvDocVence.setTextColor(Color.rgb(255, 255, 255))
-                binding.tvDocVence.setBackgroundResource(R.drawable.border_radius_red)
-                binding.tvFechaVencimientoModulCXC.setTextColor(Color.rgb(255, 0, 0))
+                binding.tvDocVence.setBackgroundResource(R.drawable.border_radius_error)
+                binding.tvFechaVencimientoModulCXC.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.redColor
+                    )
+                )
             } else if (date1 > date2) {
                 when (dias.toInt()) {
                     in 4..7 -> {
                         binding.tvDocVence.text = "Vence en $dias días"
-                        binding.tvDocVence.setTextColor(Color.rgb(190, 220, 95))
-                        binding.tvFechaVencimientoModulCXC.setTextColor(Color.rgb(255, 200, 55))
+                        binding.tvDocVence.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.lightGreenColor
+                            )
+                        )
+                        binding.tvFechaVencimientoModulCXC.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.yellowColor
+                            )
+                        )
                         binding.tvDocVence.setBackgroundResource(R.drawable.border_radius)
                     }
 
                     in 2..3 -> {
                         binding.tvDocVence.text = "Vence en $dias días"
-                        binding.tvDocVence.setTextColor(Color.rgb(255, 200, 55))
-                        binding.tvFechaVencimientoModulCXC.setTextColor(Color.rgb(255, 0, 0))
+                        binding.tvDocVence.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.yellowColor
+                            )
+                        )
+                        binding.tvFechaVencimientoModulCXC.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.redColor
+                            )
+                        )
                         binding.tvDocVence.setBackgroundResource(R.drawable.border_radius)
                     }
 
                     1 -> {
                         binding.tvDocVence.text = "Vence en $dias días"
-                        binding.tvDocVence.setTextColor(Color.rgb(255, 108, 55))
-                        binding.tvFechaVencimientoModulCXC.setTextColor(Color.rgb(255, 0, 0))
+                        binding.tvDocVence.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.orangeColor
+                            )
+                        )
+                        binding.tvFechaVencimientoModulCXC.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.redColor
+                            )
+                        )
                         binding.tvDocVence.setBackgroundResource(R.drawable.border_radius)
                     }
 
                     else -> {
                         binding.tvDocVence.text = "Por vencer"
-                        binding.tvDocVence.setTextColor(Color.rgb(96, 203, 64))
-                        binding.tvFechaVencimientoModulCXC.setTextColor(Color.rgb(19, 69, 142))
+                        binding.tvDocVence.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.greenColor
+                            )
+                        )
+                        binding.tvFechaVencimientoModulCXC.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.primaryLightColor
+                            )
+                        )
                         binding.tvDocVence.setBackgroundResource(R.drawable.border_radius)
                     }
                 }
             } else {
                 binding.tvDocVence.text = "Vencido"
-                binding.tvDocVence.setTextColor(Color.rgb(255, 50, 60))
-                binding.tvFechaVencimientoModulCXC.setTextColor(Color.rgb(255, 0, 0))
+                binding.tvDocVence.setTextColor(ContextCompat.getColor(context, R.color.redColor))
+                binding.tvFechaVencimientoModulCXC.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.redColor
+                    )
+                )
                 binding.tvDocVence.setBackgroundResource(R.drawable.border_radius)
             }
 
@@ -207,22 +262,42 @@ class PlanificadorCXCAdapter(
             when (planCXC.edoFact) {
                 "0" -> {
                     edoFact = "Pendiente por pagar"
-                    binding.tvEdoFactModulCXC.setTextColor(Color.RED)
+                    binding.tvEdoFactModulCXC.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.redColor
+                        )
+                    )
                 }
 
                 "1" -> {
                     edoFact = "Abonado"
-                    binding.tvEdoFactModulCXC.setTextColor(Color.rgb(255, 194, 34))
+                    binding.tvEdoFactModulCXC.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.yellowColor
+                        )
+                    )
                 }
 
                 "2" -> {
                     edoFact = "Pagado"
-                    binding.tvEdoFactModulCXC.setTextColor(Color.GREEN)
+                    binding.tvEdoFactModulCXC.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.greenColor
+                        )
+                    )
                 }
 
                 else -> {
                     edoFact = "No identificado"
-                    binding.tvEdoFactModulCXC.setTextColor(Color.rgb(117, 117, 117))
+                    binding.tvEdoFactModulCXC.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.blackColor
+                        )
+                    )
                 }
             }
 

@@ -23,6 +23,19 @@ public class Documentos {
     Double retmun_mto;
     Double saldo;
     Double netorestante;
+    String ruta_parme;
+    String emision;
+    String recepcion;
+    String vence;
+    String estatusdoc;
+    String vendedor;
+    String codcoord;
+    Double tasadoc;
+    String fechamodifi;
+    String aceptadev;
+    String fechaDocs;
+    String kti_negesp;
+    Double contribesp, tipoprecio, diascred, dtotneto, dtotimpuest, dtotalfinal, dtotpagos, dtotdescuen, dFlete, dtotdev, dvndmtototal, dretencion, dretencioniva, bsiva, bsflete, bsretencioniva, bsretencion;
 
     public Double getNetorestante() {
         return netorestante;
@@ -160,16 +173,6 @@ public class Documentos {
         this.tasadoc = tasadoc;
     }
 
-    String ruta_parme;
-    String emision;
-    String recepcion;
-    String vence;
-    String estatusdoc;
-    String vendedor;
-    String codcoord;
-    Double tasadoc;
-
-
     public Double getBsiva() {
         return bsiva;
     }
@@ -202,12 +205,6 @@ public class Documentos {
         this.bsretencion = bsretencion;
     }
 
-    String fechamodifi;
-    String aceptadev;
-    String fechaDocs;
-
-
-
     public String getKti_negesp() {
         return kti_negesp;
     }
@@ -215,11 +212,6 @@ public class Documentos {
     public void setKti_negesp(String kti_negesp) {
         this.kti_negesp = kti_negesp;
     }
-
-    String kti_negesp;
-
-    Double contribesp, tipoprecio, diascred, dtotneto, dtotimpuest, dtotalfinal, dtotpagos, dtotdescuen, dFlete, dtotdev, dvndmtototal,
-            dretencion, dretencioniva, bsiva, bsflete, bsretencioniva, bsretencion;
 
     public String getCodcliente() {
         return codcliente;

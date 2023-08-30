@@ -24,11 +24,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 //2023-07-10: Version 36
@@ -38,7 +41,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
     //la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
     //CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
     public AdminSQLiteOpenHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, 37);
+        super(context, name, factory, 39);
     }
 
 
@@ -69,7 +72,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         ke_android.execSQL("CREATE TABLE IF NOT EXISTS subsectores(codigo TEXT, subcodigo TEXT , subsector TEXT, fechamodifi NUMERIC)");
         ke_android.execSQL("CREATE TABLE IF NOT EXISTS subgrupos(codigo TEXT , subcodigo TEXT  , nombre TEXT , fechamodifi NUMERIC)");
         ke_android.execSQL("CREATE TABLE IF NOT EXISTS grupos(codigo TEXT PRIMARY KEY, nombre TEXT, fechamodifi NUMERIC)");
-        ke_android.execSQL("CREATE TABLE IF NOT EXISTS usuarios(nombre TEXT, username TEXT, password TEXT, vendedor TEXT, almacen TEXT, desactivo REAL, fechamodifi NUMERIC, ualterprec REAL, sesionactiva NUMERIC, superves TEXT, ult_sinc NUMERIC DEFAULT '0001-01-01')");
+        ke_android.execSQL("CREATE TABLE IF NOT EXISTS usuarios(nombre TEXT, username TEXT, password TEXT, vendedor TEXT, almacen TEXT, desactivo REAL, fechamodifi NUMERIC, ualterprec REAL, sesionactiva NUMERIC, superves TEXT, ult_sinc NUMERIC DEFAULT '0001-01-01', sinc_primera NUMERIC NOT NULL DEFAULT 0)");
         ke_android.execSQL("CREATE TABLE IF NOT EXISTS ke_opti(kti_ndoc TEXT, kti_tdoc TEXT, kti_codcli TEXT, kti_nombrecli TEXT, kti_codven TEXT, kti_docsol TEXT, kti_condicion TEXT, kti_tipprec REAL, kti_totneto REAL, kti_status TEXT, kti_nroped TEXT, kti_fchdoc NUMERIC, fechamodifi NUMERIC, kti_negesp TEXT, kti_totnetodcto REAL NOT NULL DEFAULT 0, ke_pedstatus TEXT NOT NULL DEFAULT '00')");
         ke_android.execSQL("CREATE TABLE IF NOT EXISTS ke_opmv(kti_tdoc TEXT, kti_ndoc TEXT, kti_tipprec REAL, kmv_codart TEXT, kmv_nombre TEXT, kmv_cant REAL, kmv_artprec REAL, kmv_stot REAL, kmv_dctolin REAL NOT NULL DEFAULT 0, kmv_stotdcto REAL NOT NULL DEFAULT 0)");
         ke_android.execSQL("CREATE TABLE IF NOT EXISTS ke_carrito(kmv_codart TEXT, kmv_nombre TEXT, kmv_cant REAL,  kmv_artprec REAL, kmv_stot REAL, kmv_dctolin REAL NOT NULL DEFAULT 0, kmv_stotdcto REAL NOT NULL DEFAULT 0)");
@@ -414,6 +417,11 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 "  `cnfg_ttip` text ,\n" +
                 "  `fechamodifi` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ,\n" +
                 "  `username` varchar(30) NOT NULL DEFAULT '')");
+
+        ke_android.execSQL("CREATE TABLE IF NOT EXISTS `img_carousel` (\n" +
+                "  `nombre` varchar(250) NOT NULL DEFAULT '',\n" +
+                "  `enlace` varchar(250) NOT NULL DEFAULT '' ,\n" +
+                "  `fechamodifi` datetime NOT NULL DEFAULT '0001-01-01 01:01:01')");
     }
 
 
@@ -755,12 +763,30 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
         }
 
+        if (oldVersion <= 37) {
+            try {
+                ke_android.execSQL("ALTER TABLE `usuarios` ADD sinc_primera NUMERIC NOT NULL DEFAULT 0;");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (oldVersion <= 38) {
+            ke_android.execSQL("CREATE TABLE IF NOT EXISTS `img_carousel` (\n" +
+                    "  `nombre` varchar(250) NOT NULL DEFAULT '',\n" +
+                    "  `enlace` varchar(250) NOT NULL DEFAULT '' ,\n" +
+                    "  `fechamodifi` datetime NOT NULL DEFAULT '0001-01-01 01:01:01')");
+        }
+
 
 // la nueva oldversion <= 34, pero arriba pon 35
 
 
     }
 
+    private void CerarDB(SQLiteDatabase db) {
+        //db.close();
+    }
 
     public void UpReciboCobroStatus(String idRecibo) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -781,7 +807,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
 
-
+        CerarDB(db);
     }
 
     public String getConfigTipo(String config) {
@@ -822,6 +848,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        CerarDB(db);
 
         return num;
 
@@ -832,15 +859,52 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         boolean flag = false;
 
         Cursor cursor = db.rawQuery("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';", null);
-        System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
+        //System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
 
         if (cursor.moveToFirst()) {
             flag = cursor.getInt(0) == 1;
         }
 
         cursor.close();
+        CerarDB(db);
 
         return flag;
+    }
+
+    public Boolean getConfigBoolUsuario(String config, String user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean flag = false;
+
+        Cursor cursor = db.rawQuery("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "' AND username = '" + user + "' AND cnfg_activa = '1.0';", null);
+        //System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
+
+        if (cursor.moveToFirst()) {
+            flag = cursor.getInt(0) == 1;
+        }
+
+        cursor.close();
+        CerarDB(db);
+
+        return flag;
+    }
+
+    public String getConfigString(String config) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String texto;
+
+        Cursor cursor = db.rawQuery("SELECT " + getConfigTipo("C") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "' AND cnfg_activa = '1.0';", null);
+
+        if (cursor.moveToFirst()) {
+            texto = cursor.getString(0);
+        } else {
+            texto = "";
+        }
+
+        cursor.close();
+        CerarDB(db);
+
+        return texto;
+
     }
 
     private String FechaHoy(boolean wTime) {
@@ -866,6 +930,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        CerarDB(db);
 
         return flag;
     }
@@ -882,6 +947,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        CerarDB(db);
 
         return num;
     }
@@ -897,6 +963,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        CerarDB(db);
 
         return retorno;
     }
@@ -927,6 +994,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        CerarDB(db);
 
         return numero;
     }
@@ -940,6 +1008,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 retorno = cursor.getInt(0);
             }
         }
+        CerarDB(db);
 
         return retorno;
     }
@@ -951,6 +1020,112 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        CerarDB(db);
 
+    }
+
+    public boolean ValidarExistencia(String tabla, String campo, String campoWhere) {
+        boolean retorno = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try (Cursor cursor = db.rawQuery("SELECT count(" + campo + ") FROM " + tabla + " WHERE " + campo + " = '" + campoWhere + "';", null)) {
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getInt(0) > 0;
+            }
+        }
+        CerarDB(db);
+
+        return retorno;
+    }
+
+    public void InsertJSON(String table, ContentValues cv) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.beginTransaction();
+            db.insert(table, null, cv);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+        CerarDB(db);
+    }
+
+    public void UpdateJSON(String table, ContentValues cv, String campo, String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.beginTransaction();
+            db.update(table, cv, campo + " = ?", new String[]{id});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+        CerarDB(db);
+    }
+
+    //Actualizacion de tabla auxiliar
+    public void UpdateTablaAux(String table) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            ContentValues cv = new ContentValues();
+
+            cv.put("tabla", table);
+            cv.put("fchhn_ultmod", FechaHoy(true));
+
+            db.beginTransaction();
+
+            db.update("tabla_aux", cv, "tabla = ?", new String[]{table});
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+
+        CerarDB(db);
+    }
+
+    //Funcion que sirve para verificar si el vendedor sincronizo alguna vez en la vida de la app
+    //Se eligio articulos para la funcion por ser una tabla que se llena sin importar la situacion
+    public boolean SincronizoPriVez(String vendedor) {
+        boolean retorno = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try (Cursor cursor = db.rawQuery("select sinc_primera from usuarios WHERE vendedor = '"+vendedor+"';", null)) {
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getInt(0) == 1;
+            }
+        }
+        CerarDB(db);
+
+        return retorno;
+    }
+
+    public List<CarouselItem> getImgCarousel() {
+        List<CarouselItem> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try (Cursor cursor = db.rawQuery("SELECT * FROM img_carousel;", null)) {
+            while (cursor.moveToNext()){
+
+                String nombre = cursor.getString(0);
+                String enlace = cursor.getString(1);
+
+                lista.add(
+                        new CarouselItem(
+                                enlace
+                        )
+                );
+            }
+        }
+        CerarDB(db);
+
+        return lista;
     }
 }

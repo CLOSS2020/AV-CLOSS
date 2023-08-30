@@ -1,16 +1,22 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins{
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'io.gitlab.arturbosch.detekt'
+}
+
 
 android {
-
+    namespace "com.appcloos.mimaletin"
+    compileSdk 33
 
     defaultConfig {
+
         applicationId "com.appcloos.mimaletin"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 62
+        versionCode 88
         compileSdk 33
-        versionName "2.3.3"
+        versionName "2.3.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,10 +53,10 @@ android {
 dependencies {
 
     constraints {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0") {
             because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
         }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0") {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
@@ -65,26 +71,52 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    //implementation 'com.google.firebase:firebase-firestore:24.6.1'
+    implementation 'com.google.firebase:firebase-firestore:24.7.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.itextpdf:itextg:5.5.10'
-    implementation 'com.google.android.material:material:1.9.0'
-    //implementation 'com.google.android.material:material:1.10.0-alpha02'
 
     //Fragment y navigation fragment
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
-    implementation 'androidx.fragment:fragment-ktx:1.6.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.1'
 
     implementation("androidx.viewpager2:viewpager2:1.0.0")
 
+    //actualizaciones de google
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
+
+
+
+    //enviado de datos automatico
+    /*// (Java only)
+    implementation("androidx.work:work-runtime:2.8.1")
+
+    // Kotlin + coroutines
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    // optional - RxJava2 support
+    implementation("androidx.work:work-rxjava2:2.8.1")
+
+    // optional - GCMNetworkManager support
+    implementation("androidx.work:work-gcm:2.8.1")
+
+    // optional - Test helpers
+    androidTestImplementation("androidx.work:work-testing:2.8.1")
+
+    // optional - Multiprocess support
+    implementation "androidx.work:work-multiprocess:2.8.1"*/
+
+
+    // Circle Indicator (To fix the xml preview "Missing classes" error)
+    implementation 'me.relex:circleindicator:2.1.6'
+
+    implementation 'org.imaginativeworld.whynotimagecarousel:whynotimagecarousel:2.1.0'
 
 }

@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.appcompat:appcompat-resources:1.6.1@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/79ffc39edca9386c2a5d1c35631313fa/transformed/jetified-appcompat-resources-1.6.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/79ffc39edca9386c2a5d1c35631313fa/transformed/jetified-appcompat-resources-1.6.1/res" />
-      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/79ffc39edca9386c2a5d1c35631313fa/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/7f034f633b5ef964ff5f9b95a4c780d8/transformed/jetified-appcompat-resources-1.6.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/7f034f633b5ef964ff5f9b95a4c780d8/transformed/jetified-appcompat-resources-1.6.1/res" />
+      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/7f034f633b5ef964ff5f9b95a4c780d8/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

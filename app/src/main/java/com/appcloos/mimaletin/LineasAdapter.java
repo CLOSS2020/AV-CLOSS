@@ -5,22 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class LineasAdapter extends BaseAdapter {
-    private ArrayList<Lineas> listlineas;
-    private Context context;
+    private final ArrayList<Lineas> listlineas;
+    private final Context context;
     private LayoutInflater inflater;
 
-    public LineasAdapter(Context context, ArrayList<Lineas> listlineas){
-        this.context    = context;
+    public LineasAdapter(Context context, ArrayList<Lineas> listlineas) {
+        this.context = context;
         this.listlineas = listlineas;
     }
 
@@ -46,24 +41,24 @@ public class LineasAdapter extends BaseAdapter {
         convertView = LayoutInflater.from(context).inflate(R.layout.item_lineas_docs, null);
 
 
-        TextView tv_codlinea  = convertView.findViewById(R.id.tv_codlinea);
+        TextView tv_codlinea = convertView.findViewById(R.id.tv_codlinea);
         TextView tv_desclinea = convertView.findViewById(R.id.tv_desclinea);
-        TextView tv_mtolinea  = convertView.findViewById(R.id.tv_mtolinea);
+        TextView tv_mtolinea = convertView.findViewById(R.id.tv_mtolinea);
         TextView tv_cantlinea = convertView.findViewById(R.id.tv_cantlinea);
-        TextView tv_pid       = convertView.findViewById(R.id.tv_pid);
-        TextView tv_precfin   = convertView.findViewById(R.id.tv_preciofin);
+        TextView tv_pid = convertView.findViewById(R.id.tv_pid);
+        TextView tv_precfin = convertView.findViewById(R.id.tv_preciofin);
 
-        Double preciofin       = lineas.getDpreciofin();
-        Double mtoTotal        = lineas.getDmontototal();
-        mtoTotal               = Math.round(mtoTotal * 100.0)/100.0;
-        Double cantidad        = lineas.getCantidad();
-        Integer cantidadEntera = cantidad.intValue();
+        Double preciofin = lineas.getDpreciofin();
+        Double mtoTotal = lineas.getDmontototal();
+        mtoTotal = Math.round(mtoTotal * 100.0) / 100.0;
+        Double cantidad = lineas.getCantidad();
+        int cantidadEntera = cantidad.intValue();
 
 
         tv_codlinea.setText("Código:  " + lineas.getCodigo());
         tv_desclinea.setText(lineas.getNombre());
-        tv_mtolinea.setText("Monto: " + mtoTotal.toString() + "$");
-        tv_cantlinea.setText("Cantidad en Doc: " + cantidadEntera.toString());
+        tv_mtolinea.setText("Monto: " + mtoTotal + "$");
+        tv_cantlinea.setText("Cantidad en Doc: " + cantidadEntera);
         tv_pid.setText(lineas.getPid());
         tv_precfin.setText(preciofin.toString());
 

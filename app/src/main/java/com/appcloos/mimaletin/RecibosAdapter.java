@@ -9,12 +9,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class RecibosAdapter  extends BaseAdapter {
-    private ArrayList<Recibos> listrecibos;
-    private Context context;
+public class RecibosAdapter extends BaseAdapter {
+    private final ArrayList<Recibos> listrecibos;
+    private final Context context;
     private LayoutInflater inflater;
 
-    public RecibosAdapter(Context context, ArrayList<Recibos> listrecibos){
+    public RecibosAdapter(Context context, ArrayList<Recibos> listrecibos) {
         this.context = context;
         this.listrecibos = listrecibos;
     }
@@ -41,13 +41,13 @@ public class RecibosAdapter  extends BaseAdapter {
         convertView = LayoutInflater.from(context).inflate(R.layout.item_recibos, null);
 
 
-        TextView nrorec            = (TextView) convertView.findViewById(R.id.nrorec);
-        TextView codclirec         = (TextView) convertView.findViewById(R.id.codigocli);
-        TextView nombreclirec      = (TextView) convertView.findViewById(R.id.nombreclirec);
-        TextView montorec          = (TextView) convertView.findViewById(R.id.montorec);
-        TextView statusrec         = (TextView) convertView.findViewById(R.id.estatusrec);
-        TextView fecharec          = (TextView) convertView.findViewById(R.id.fecharec);
-        TextView vendedorrec       = (TextView) convertView.findViewById(R.id.vendedorrec);
+        TextView nrorec = convertView.findViewById(R.id.nrorec);
+        TextView codclirec = convertView.findViewById(R.id.codigocli);
+        TextView nombreclirec = convertView.findViewById(R.id.nombreclirec);
+        TextView montorec = convertView.findViewById(R.id.montorec);
+        TextView statusrec = convertView.findViewById(R.id.estatusrec);
+        TextView fecharec = convertView.findViewById(R.id.fecharec);
+        TextView vendedorrec = convertView.findViewById(R.id.vendedorrec);
 
         nrorec.setText(recibos.getNroRecibo());
         codclirec.setText(recibos.getCodigoCliente());
@@ -56,8 +56,6 @@ public class RecibosAdapter  extends BaseAdapter {
         statusrec.setText(recibos.getStatusRecibo());
         fecharec.setText(recibos.getFechaRecibo());
         vendedorrec.setText(recibos.getCodigoVendedor());
-
-
 
 
         return convertView;

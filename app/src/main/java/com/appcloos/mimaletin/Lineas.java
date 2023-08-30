@@ -1,6 +1,10 @@
 package com.appcloos.mimaletin;
 
 public class Lineas {
+    String agencia, tipodoc, tipodocv, grupo, subgrupo, codhijo, pid, codigo, nombre, fechadoc, vendedor, codcoord, fechamodifi;
+    Double origen, cantidad, cntdevuelt, vndcntdevuelt, dvndmtototal, dpreciofin, dpreciounit, dmontoneto, dmontototal, timpueprc, unidevuelt;
+    Boolean check;
+
     public String getAgencia() {
         return agencia;
     }
@@ -193,9 +197,6 @@ public class Lineas {
         this.unidevuelt = unidevuelt;
     }
 
-    String agencia, tipodoc, tipodocv, grupo, subgrupo,  codhijo, pid, codigo, nombre, fechadoc, vendedor, codcoord, fechamodifi;
-     Double origen, cantidad, cntdevuelt, vndcntdevuelt,dvndmtototal,dpreciofin, dpreciounit, dmontoneto, dmontototal, timpueprc, unidevuelt;
-
     public Boolean getCheck() {
         return check;
     }
@@ -203,6 +204,4 @@ public class Lineas {
     public void setCheck(Boolean check) {
         this.check = check;
     }
-
-    Boolean check;
 }

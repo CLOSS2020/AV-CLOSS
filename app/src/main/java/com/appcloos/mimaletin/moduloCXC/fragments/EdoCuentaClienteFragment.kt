@@ -24,9 +24,9 @@ import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.AdminSQLiteOpenHelper
 import com.appcloos.mimaletin.Documentos
 import com.appcloos.mimaletin.R
-import com.appcloos.mimaletin.cxcReportActivity
+import com.appcloos.mimaletin.CxcReportActivity
 import com.appcloos.mimaletin.databinding.FragmentEdoCuentaClienteBinding
-import com.appcloos.mimaletin.retencionesActivity
+import com.appcloos.mimaletin.RetencionesActivity
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -167,7 +167,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
 
         //2023-06-08 if que valida que se hayan seleccionado todos los docs vencidos y algunos no vencidos para ser pagados; o un numero menor al total de vencidos sin seleccionar alguno de los no vencidos
         if ((numerico == docsViejos.size) || (numerico <= docsViejos.size && novencidos == 0)) {
-            val intent = Intent(requireContext(), cxcReportActivity::class.java)
+            val intent = Intent(requireContext(), CxcReportActivity::class.java)
             intent.putExtra("cod_usuario", cod_usuario)
             intent.putExtra("codigoEmpresa", codEmpresa)
             intent.putStringArrayListExtra("listaDocs", listaDocsSeleccionados)
@@ -254,7 +254,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
 
         cursor.close()
 
-        val intent = Intent(requireContext(), retencionesActivity::class.java)
+        val intent = Intent(requireContext(), RetencionesActivity::class.java)
         intent.putExtra("cod_usuario", cod_usuario)
         intent.putExtra("codigoEmpresa", codEmpresa)
         intent.putExtra("cliente", cliente)

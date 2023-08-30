@@ -37,7 +37,6 @@ public class PlanificadorActivity extends AppCompatActivity {
     ListView listaplanificador;
     private PlanificadorAdapter planificadorAdapter;
     ArrayList<Documentos> listadocs;
-    private SharedPreferences preferences;
     SwipeRefreshLayout swipeRefreshLayout;
     String cod_usuario, campo;
     private Boolean ll_commit;
@@ -60,7 +59,7 @@ public class PlanificadorActivity extends AppCompatActivity {
         cargarEnlace();
         listaplanificador = findViewById(R.id.listaPlanificador);
         //cargo el codigo del vendedor que viene desde el activity anterior
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         cod_usuario = preferences.getString("cod_usuario", null);
         //identifico el swipe refresh layout
         swipeRefreshLayout = findViewById(R.id.refreshplanificador);

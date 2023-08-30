@@ -3,10 +3,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:theme="@style/AppTheme.Angel.Light"
+    android:theme="@style/AppTheme"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -14,8 +15,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".cxcReportActivity">
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.Angel.Light"
+        tools:context=".CxcReportActivity">
 
         <!--
                 <TextView
@@ -37,12 +39,12 @@
 
         <TextView
             android:id="@+id/textView51"
+            style="@style/BackgroundAuxCXC"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="10dp"
-            android:background="#014C83"
             android:text="Montos por cancelar:"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -55,12 +57,12 @@
 
         <TextView
             android:id="@+id/textView66"
+            style="@style/BackgroundAuxCXC"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="10dp"
-            android:background="#014C83"
             android:text="Datos de Pago:"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -78,7 +80,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
-            android:background="#014C83"
+            style="@style/BackgroundAuxCXC"
             android:text="Recibo Complemento:"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -91,13 +93,13 @@
             app:layout_constraintTop_toBottomOf="@+id/til_cxc_ref_main" />
 
         <TextView
+            style="@style/BackgroundAuxCXC"
             android:id="@+id/textView43"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="10dp"
-            android:background="#014C83"
             android:text="Opciones del recibo"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -142,14 +144,14 @@
                 android:id="@+id/rb_cxc_divisas_main"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Divisas" />
 
             <RadioButton
                 android:id="@+id/rb_cxc_bss_main"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Bss." />
         </RadioGroup>
 
@@ -157,12 +159,9 @@
             android:id="@+id/textView45"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:text="Moneda:"
-            android:textColor="#0B0B0B"
             android:textSize="16sp"
             android:textStyle="bold"
-
             app:layout_constraintStart_toStartOf="@+id/radioGroup4"
             app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
@@ -171,7 +170,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Adicionales:"
-            android:textColor="#0B0B0B"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/cb_cxc_complemento"
@@ -182,7 +180,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tipo pago:"
-            android:textColor="#0B0B0B"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/radioGroup5"
@@ -200,14 +197,14 @@
                 android:id="@+id/rb_cxc_comp_main"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Completo" />
 
             <RadioButton
                 android:id="@+id/rb_cxc_abono_main"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Abono" />
         </RadioGroup>
 
@@ -217,7 +214,7 @@
             android:layout_height="30dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="10dp"
-            android:buttonTint="#646464"
+            android:buttonTint="@drawable/color_checkbox"
             android:text="R. Complemento"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/radioGroup5"
@@ -229,7 +226,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#E7EDF8"
+            android:background="#80E7EDF8"
             android:gravity="center"
             android:text="Neto:"
             android:textColor="#000000"
@@ -243,7 +240,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#E7EDF8"
+            android:background="#80E7EDF8"
             android:gravity="center"
             android:text="I.V.A.:"
             android:textColor="#000000"
@@ -257,7 +254,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#E7EDF8"
+            android:background="#80E7EDF8"
             android:gravity="center"
             android:text="Flete:"
             android:textColor="#000000"
@@ -271,7 +268,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#E7EDF8"
+            android:background="#80E7EDF8"
             android:gravity="center"
             android:text="Retenciones(-):"
             android:textColor="#000000"
@@ -285,7 +282,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#E7EDF8"
+            android:background="#80E7EDF8"
             android:gravity="center"
             android:text="Descuentos:"
             android:textColor="#000000"
@@ -299,7 +296,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#CAC9C9"
+            android:background="#80CAC9C9"
             android:gravity="center"
             android:text="Total:"
             android:textColor="#000000"
@@ -319,7 +316,6 @@
             android:paddingEnd="5dp"
             android:text="0.00"
             android:textAlignment="gravity"
-            android:textColor="#171717"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView54"
@@ -337,7 +333,6 @@
             android:paddingEnd="5dp"
             android:text="0.00"
             android:textAlignment="gravity"
-            android:textColor="#171717"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -356,7 +351,6 @@
             android:paddingEnd="5dp"
             android:text="0.00"
             android:textAlignment="gravity"
-            android:textColor="#171717"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -375,7 +369,6 @@
             android:paddingEnd="5dp"
             android:text="0.00"
             android:textAlignment="gravity"
-            android:textColor="#171717"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -394,7 +387,6 @@
             android:paddingEnd="5dp"
             android:text="0.00"
             android:textAlignment="gravity"
-            android:textColor="#171717"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView54"
@@ -425,7 +417,7 @@
             android:layout_height="30dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="10dp"
-            android:buttonTint="#646464"
+            android:buttonTint="@drawable/color_checkbox"
             android:text="Dar Descuentos"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/radioGroup5"
@@ -433,13 +425,13 @@
 
         <Button
             android:id="@+id/bt_cxc_procesar"
+            style="@style/BasicStyleButtomMaterial"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/colorPrimary"
             android:text="PROCESAR RECIBO"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -448,7 +440,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_cxc_monto_main"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/StyleTextInputLayoutEditText"
+            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -469,7 +462,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_cxc_ref_main"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/StyleTextInputLayoutEditText"
+            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -491,7 +485,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_cxc_spbanco"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            style="@style/StyleTextInputLayoutAutoComplete"
+            android:theme="@style/StyleTextInputLayoutAutoComplete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -504,6 +499,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/sp_cxc_banco_main"
+                style="@style/AutoComplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Banco:"
@@ -527,7 +523,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Pago en Transferencia" />
 
             <RadioButton
@@ -536,24 +532,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Pago en Efectivo" />
         </RadioGroup>
 
         <Button
             android:id="@+id/bt_cxc_retenciones"
-            style="?attr/materialButtonOutlinedStyle"
+            style="@style/BasicStyleButtomMaterialReten"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:text="Retenciones"
-            android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_ref_com"
-            app:strokeColor="@color/colorPrimary" />
+            app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
 
         <RadioGroup
             android:id="@+id/rg3"
@@ -571,7 +566,7 @@
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Pago en Transf."
                 android:visibility="invisible" />
 
@@ -580,7 +575,7 @@
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Pago en Efectivo"
                 android:visibility="invisible" />
         </RadioGroup>
@@ -602,7 +597,7 @@
                 android:layout_width="172dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Divisas"
                 android:visibility="invisible" />
 
@@ -611,7 +606,7 @@
                 android:layout_width="172dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_radiobox"
                 android:text="Bss"
                 android:visibility="invisible" />
 
@@ -620,7 +615,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_banco_com"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            style="@style/StyleTextInputLayoutAutoComplete"
+            android:theme="@style/StyleTextInputLayoutAutoComplete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -634,15 +630,18 @@
 
             <AutoCompleteTextView
                 android:id="@+id/sp_cxc_banco_com"
+                style="@style/AutoComplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
+                android:hint="Banco Complemento"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_monto_com"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/StyleTextInputLayoutEditText"
+            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -665,7 +664,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:background="@color/colorPrimary"
+            style="@style/BackgroundAuxCXC"
             android:paddingStart="25dp"
             android:paddingEnd="25dp"
             android:text="Monto a Pagar: 50$"
@@ -676,7 +675,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_ref_com"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/StyleTextInputLayoutEditText"
+            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -713,23 +713,22 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_tasaselec"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/StyleTextInputLayoutEditTextCXCTasa"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            app:boxBackgroundColor="#D9E2F3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textInputLayout2"
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tie_tasaselec"
+                style="@style/StyleTextInputLayoutEditTextTasa"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:focusable="false"
-                android:textColorHint="#000" />
+                android:focusable="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -748,7 +747,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_weight="1"
-                android:buttonTint="#646464"
+                android:buttonTint="@drawable/color_checkbox"
                 android:text="Excluir retenciones"
                 app:layout_constraintStart_toEndOf="@+id/til_cxc_spbanco"
                 app:layout_constraintStart_toStartOf="parent"

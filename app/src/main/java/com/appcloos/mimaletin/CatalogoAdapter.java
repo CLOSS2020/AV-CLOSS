@@ -126,7 +126,7 @@ public class CatalogoAdapter extends BaseAdapter {
             textdescuento.setVisibility(View.VISIBLE);
             textdescuento.setText("-" + dctonumerico  + "%");
             textpreciodescuento.setVisibility(View.VISIBLE);
-            textpreciodescuento.setText("Precio con desc: $"+ preciocondescuento.toString());
+            textpreciodescuento.setText("Precio con desc: $"+ preciocondescuento);
         }
 
         if (catalogo.vta_solofac == 1){

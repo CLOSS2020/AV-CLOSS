@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="5dp"
-    tools:context=".DetalleCXCActivity">
+    tools:context=".DetalleCXCActivity"
+    android:theme="@style/AppTheme"
+    style="@style/BackgroundAux">
 
     <TextView
         android:id="@+id/tvCod"
@@ -22,7 +24,6 @@
         android:id="@+id/tvTipoRecibo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#070461"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +34,6 @@
         android:id="@+id/tvEmision"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTipoRecibo"
@@ -43,7 +43,6 @@
         android:id="@+id/tvTipoMoneda"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvEmision"
         tools:text="Moneda del Recibo: Dolar" />
@@ -52,7 +51,6 @@
         android:id="@+id/tvBanco"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTipoMoneda" />
 
@@ -60,7 +58,6 @@
         android:id="@+id/tvReferencia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvBanco" />
 
@@ -68,7 +65,6 @@
         android:id="@+id/tvMonto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"

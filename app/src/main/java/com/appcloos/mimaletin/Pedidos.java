@@ -1,6 +1,6 @@
 package com.appcloos.mimaletin;
 
-public class Pedidos{
+public class Pedidos {
     String codigoCliente;
     String codigoVendedor;
     String docSolicitado;
@@ -12,7 +12,8 @@ public class Pedidos{
     Double totalNeto;
     String fechaDocumento;
     String numeroPedido;
-
+    Double totalNetoDcto;
+    String estatus;
 
     public Double getTotalNetoDcto() {
         return totalNetoDcto;
@@ -21,8 +22,6 @@ public class Pedidos{
     public void setTotalNetoDcto(Double totalNetoDcto) {
         this.totalNetoDcto = totalNetoDcto;
     }
-
-    Double totalNetoDcto;
 
     public String getNumeroPedido() {
         return numeroPedido;
@@ -119,6 +118,4 @@ public class Pedidos{
     public void setEstatus(String estatus) {
         this.estatus = estatus;
     }
-
-    String estatus;
 }

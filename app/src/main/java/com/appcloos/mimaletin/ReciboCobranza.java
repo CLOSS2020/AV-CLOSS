@@ -1,5 +1,7 @@
 package com.appcloos.mimaletin;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -8,9 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -39,9 +41,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
-import static android.content.Context.MODE_PRIVATE;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,7 +54,7 @@ public class ReciboCobranza extends Fragment {
     AdminSQLiteOpenHelper conn;
     SQLiteDatabase ke_android;
     SharedPreferences preferences;
-    public static String cod_usuario, clientePagar, codigoCliente, nroRecibo, CorrelativoTexto, nombreEmpresa = "", enlaceEmpresa = "", codigoSucursal="";
+    public static String cod_usuario, clientePagar, codigoCliente, nroRecibo, CorrelativoTexto, nombreEmpresa = "", enlaceEmpresa = "", codigoSucursal = "";
     ArrayList<Cliente> listacliente;
     ArrayList<String> listainfoClientes;
     Spinner spinnerClientes;
@@ -70,10 +72,6 @@ public class ReciboCobranza extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public ReciboCobranza() {
         // Required empty public constructor
@@ -101,10 +99,9 @@ public class ReciboCobranza extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-
-
+            // TODO: Rename and change types of parameters
+            String mParam1 = getArguments().getString(ARG_PARAM1);
+            String mParam2 = getArguments().getString(ARG_PARAM2);
 
 
         }
@@ -120,43 +117,38 @@ public class ReciboCobranza extends Fragment {
         //identificacion de los elementos en el fragment
         spinnerClientes = v.findViewById(R.id.spinnercli);
         bt_procesarpago = v.findViewById(R.id.bt_procesarpago);
-        et_montopago    = v.findViewById(R.id.et_montopago);
+        et_montopago = v.findViewById(R.id.et_montopago);
 
 
         conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 10);
         ke_android = conn.getWritableDatabase();
         cargarEnlace();
-        preferences    = getActivity().getSharedPreferences("Preferences", MODE_PRIVATE);
-        cod_usuario    = preferences.getString("cod_usuario", null);
+        preferences = requireActivity().getSharedPreferences("Preferences", MODE_PRIVATE);
+        cod_usuario = preferences.getString("cod_usuario", null);
         CargarClientes();
         obtenerCorrelativo();
 
 
-
         // Inflate the layout for this fragment
 
-        bt_procesarpago.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(codigoCliente == null){
-                    Toast.makeText(getActivity().getApplicationContext(), "Debes Seleccionar un cliente", Toast.LENGTH_LONG).show();
-                }else {
-                    validaryProcesar();
-                }
-
-
-
+        bt_procesarpago.setOnClickListener(view -> {
+            if (codigoCliente == null) {
+                Toast.makeText(getActivity().getApplicationContext(), "Debes Seleccionar un cliente", Toast.LENGTH_LONG).show();
+            } else {
+                validaryProcesar();
             }
+
+
         });
 
         //guardar la seleccion del spinner (osea el codigo y nombre del cliente).
         spinnerClientes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if(position!= 0){
-                    clientePagar  = listacliente.get(position-1).getNombre();
-                    codigoCliente = listacliente.get(position-1).getCodigo();
-                } else{
+                if (position != 0) {
+                    clientePagar = listacliente.get(position - 1).getNombre();
+                    codigoCliente = listacliente.get(position - 1).getCodigo();
+                } else {
                     codigoCliente = null;
                 }
             }
@@ -168,8 +160,6 @@ public class ReciboCobranza extends Fragment {
         });
 
 
-
-
         return v;
     }
 
@@ -177,14 +167,15 @@ public class ReciboCobranza extends Fragment {
     private void obtenerCorrelativo() {
         conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 6);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT MAX(kcc_numero) FROM ke_correlacxc WHERE kcc_vendedor ='"+ cod_usuario + "'", null);
+        Cursor cursor = ke_android.rawQuery("SELECT MAX(kcc_numero) FROM ke_correlacxc WHERE kcc_vendedor ='" + cod_usuario + "'", null);
 
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             nroCorrelativo = cursor.getInt(0);
-            nroCorrelativo = nroCorrelativo+1;
-            CorrelativoTexto = String.valueOf(nroCorrelativo);
-            CorrelativoTexto = "0000"+ nroCorrelativo;
+            nroCorrelativo = nroCorrelativo + 1;
+            //CorrelativoTexto = String.valueOf(nroCorrelativo);
+            CorrelativoTexto = "0000" + nroCorrelativo;
         }
+        cursor.close();
     }
 
     private void cargarEnlace() {
@@ -195,11 +186,12 @@ public class ReciboCobranza extends Fragment {
                         "kee_sucursal"};
         Cursor cursor = ke_android.query("ke_enlace", columnas, "1", null, null, null, null);
 
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0);
             enlaceEmpresa = cursor.getString(1);
             codigoSucursal = cursor.getString(2);
         }
+        cursor.close();
 
     }
 
@@ -216,15 +208,14 @@ public class ReciboCobranza extends Fragment {
         String valorPago = et_montopago.getText().toString().trim();
 
 
-
-        if(valorPago.equals("") ){
-            Toast.makeText(getActivity().getApplicationContext(), "Debes introducir un Monto", Toast.LENGTH_LONG).show();
+        if (valorPago.equals("")) {
+            Toast.makeText(requireActivity().getApplicationContext(), "Debes introducir un Monto", Toast.LENGTH_LONG).show();
         } else {
             montoPago = Integer.parseInt(valorPago);
-            if (montoPago > 0 ) {
+            if (montoPago > 0) {
 
 
-                AlertDialog.Builder ventana = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(requireActivity(),R.style.AlertDialogCustom));
                 ventana.setTitle("Confirmación de Datos");
                 ventana.setMessage("¿Está seguro que desea crear un recibo de reporte por efectivo con estos datos?,\n Luego de procesado no podrá ser modificado");
 
@@ -236,7 +227,7 @@ public class ReciboCobranza extends Fragment {
                         generarNumerodeRecibo();
 
                         Date fechaTabla = new Date(Calendar.getInstance().getTimeInMillis());
-                        SimpleDateFormat formatoFechaTabla = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                        SimpleDateFormat formatoFechaTabla = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
                         String fechaGuardar = formatoFechaTabla.format(fechaTabla);
 
 
@@ -244,7 +235,6 @@ public class ReciboCobranza extends Fragment {
                         String kcx_codcli = codigoCliente;
                         String kcx_codven = cod_usuario;
                         String kcx_ncliente = clientePagar;
-                        String kcx_fechamodifi = fechaGuardar;
                         int kcx_monto = montoPago;
                         String kcx_status = "0";
 
@@ -261,7 +251,7 @@ public class ReciboCobranza extends Fragment {
                             insertar.put("kcx_codcli", kcx_codcli);
                             insertar.put("kcx_codven", kcx_codven);
                             insertar.put("kcx_ncliente", kcx_ncliente);
-                            insertar.put("kcx_fechamodifi", kcx_fechamodifi);
+                            insertar.put("kcx_fechamodifi", fechaGuardar);
                             insertar.put("kcx_monto", kcx_monto);
                             insertar.put("kcx_status", kcx_status);
 
@@ -275,9 +265,9 @@ public class ReciboCobranza extends Fragment {
                             ke_android.insert("ke_correlacxc", null, aumentarCorrelatiov);
                             ke_android.setTransactionSuccessful();
 
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             Toast.makeText(getActivity(), "Error en: " + ex, Toast.LENGTH_SHORT).show();
-                        }finally {
+                        } finally {
                             ke_android.endTransaction();
 
                         }
@@ -285,31 +275,26 @@ public class ReciboCobranza extends Fragment {
                         cargarRecibo();
 
 
-                        Toast.makeText(getActivity().getApplicationContext(), "Recibo registrado", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireActivity().getApplicationContext(), "Recibo registrado", Toast.LENGTH_LONG).show();
                         LimpiarCampos();
 
                     }
                 });
 
 
-                ventana.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //hacer nada
-                    }
+                ventana.setNegativeButton("Cancelar", (dialogInterface, i) -> {
+                    //hacer nada
                 });
 
                 AlertDialog dialogo = ventana.create();
                 dialogo.show();
 
                 obtenerCorrelativo();
-                }
             }
-
+        }
 
 
     }
-
 
 
     private void cargarRecibo() {
@@ -319,11 +304,11 @@ public class ReciboCobranza extends Fragment {
 
         conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 7);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT kcx_nrorecibo, kcx_codcli, kcx_codven, kcx_fechamodifi, kcx_monto FROM ke_cxc WHERE kcx_status = '0' and kcx_nrorecibo='"+ nroRecibo + "'", null);
+        Cursor cursor = ke_android.rawQuery("SELECT kcx_nrorecibo, kcx_codcli, kcx_codven, kcx_fechamodifi, kcx_monto FROM ke_cxc WHERE kcx_status = '0' and kcx_nrorecibo='" + nroRecibo + "'", null);
 
         arrayRec = new JSONArray();
 
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
 
             JSONObject objetoRecibo = new JSONObject();
             try {
@@ -344,14 +329,12 @@ public class ReciboCobranza extends Fragment {
                 arrayRec.put(objetoRecibo);
 
 
-
-
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
                 Toast.makeText(getActivity(), "Error al cargar el recibo" + e, Toast.LENGTH_SHORT).show();
             }
         }
-
+        cursor.close();
         JSONObject jsonObject = new JSONObject();
         try {
 
@@ -367,7 +350,6 @@ public class ReciboCobranza extends Fragment {
             insertarRecibo(jsonStrREC);
 
 
-
         } catch (Exception exc) {
             exc.printStackTrace();
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el recibo" + exc, Toast.LENGTH_SHORT).show();
@@ -377,8 +359,8 @@ public class ReciboCobranza extends Fragment {
     }
 
     public void insertarRecibo(final String jsonrec) {
-        RequestQueue requestQueue   = Volley.newRequestQueue(getActivity());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://"+enlaceEmpresa+"/Rest/Recibos_2.php", new Response.Listener<String>() {
+        RequestQueue requestQueue = Volley.newRequestQueue(requireActivity());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://" + enlaceEmpresa + "/Rest/Recibos_2.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (response.trim().equals("OK")) {
@@ -386,26 +368,23 @@ public class ReciboCobranza extends Fragment {
                     bt_procesarpago.setEnabled(true);
                     bt_procesarpago.setBackgroundColor(Color.rgb(0, 150, 136));
                     cambiarEstadoRecibo();
-                    getActivity().finish();
-                    getActivity().overridePendingTransition(0, 0);
-                    startActivity(getActivity().getIntent());
-                    getActivity().overridePendingTransition(0, 0);//para refrescar el RecyclerView
+                    requireActivity().finish();
+                    requireActivity().overridePendingTransition(0, 0);
+                    startActivity(requireActivity().getIntent());
+                    requireActivity().overridePendingTransition(0, 0);//para refrescar el RecyclerView
 
                     //getActivity().finish();
 
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(getActivity(), "Error en la subida", Toast.LENGTH_SHORT).show();
-                bt_procesarpago.setEnabled(true);
-                bt_procesarpago.setBackgroundColor(Color.rgb(0, 150, 136));
-            }
-        }){
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
+        }, error -> {
+            error.printStackTrace();
+            Toast.makeText(getActivity(), "Error en la subida", Toast.LENGTH_SHORT).show();
+            bt_procesarpago.setEnabled(true);
+            bt_procesarpago.setBackgroundColor(Color.rgb(0, 150, 136));
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
                 params.put("jsonrec", jsonrec);
                 params.put("agencia", codigoSucursal);
                 return params;
@@ -420,14 +399,14 @@ public class ReciboCobranza extends Fragment {
 
         SQLiteDatabase ke_android = conn.getWritableDatabase();
         //System.out.println(arrayRec);
-        for (int i = 0; i <  arrayRec.length(); i++) {
+        for (int i = 0; i < arrayRec.length(); i++) {
             try {
                 JSONObject objetodeRecibo = arrayRec.getJSONObject(i);
 
                 String codigoDelReciboEnArray = objetodeRecibo.getString("kcx_nrorecibo");
                 ke_android.execSQL("UPDATE ke_cxc SET kcx_status = '1' WHERE kcx_nrorecibo = '" + codigoDelReciboEnArray + "'");
 
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -437,7 +416,7 @@ public class ReciboCobranza extends Fragment {
 
     private void generarNumerodeRecibo() {
         Date fechaHoy = new Date(Calendar.getInstance().getTimeInMillis());
-        SimpleDateFormat formatofecha = new SimpleDateFormat("yyMM");
+        SimpleDateFormat formatofecha = new SimpleDateFormat("yyMM", Locale.getDefault());
         String fecha = formatofecha.format(fechaHoy);
         CorrelativoTexto = right(CorrelativoTexto, 4);
         nroRecibo = "WE-" + cod_usuario.trim() + "-" + fecha + CorrelativoTexto;
@@ -445,27 +424,28 @@ public class ReciboCobranza extends Fragment {
 
 
     private void CargarClientes() {
-        conn = new AdminSQLiteOpenHelper(getActivity().getApplicationContext(), "ke_android", null, 4);
+        conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null, 4);
         SQLiteDatabase ke_android = conn.getReadableDatabase();
-        Cliente cliente = null;
-        listacliente  = new ArrayList<Cliente>();
-        Cursor cursor = ke_android.rawQuery("SELECT codigo, nombre FROM cliempre WHERE vendedor ='"+ cod_usuario.toString().trim() +"' ORDER BY nombre ASC", null);
+        Cliente cliente;
+        listacliente = new ArrayList<>();
+        Cursor cursor = ke_android.rawQuery("SELECT codigo, nombre FROM cliempre WHERE vendedor ='" + cod_usuario.trim() + "' ORDER BY nombre ASC", null);
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             cliente = new Cliente();
             cliente.setCodigo(cursor.getString(0));
             cliente.setNombre(cursor.getString(1));
             listacliente.add(cliente);
         }
+        cursor.close();
         ke_android.close();
         obtenerlistaCliente();
-        ArrayAdapter<CharSequence> adapterSpinner = new ArrayAdapter(this.getActivity(), R.layout.spinner_pagos_clientes , listainfoClientes);
+        ArrayAdapter<CharSequence> adapterSpinner = new ArrayAdapter(this.getActivity(), R.layout.spinner_pagos_clientes, listainfoClientes);
         spinnerClientes.setAdapter(adapterSpinner);
         adapterSpinner.notifyDataSetChanged();
     }
 
     private void obtenerlistaCliente() {
-        listainfoClientes = new ArrayList<String>();
+        listainfoClientes = new ArrayList<>();
         listainfoClientes.add("Seleccione un Cliente...");
 
         for (int i = 0; i < listacliente.size(); i++) {
@@ -476,9 +456,8 @@ public class ReciboCobranza extends Fragment {
 
     public static String right(String valor, int longitud) {
         //una función "right" utilizando la clase substring
-        return  valor.substring(valor.length() - longitud );
+        return valor.substring(valor.length() - longitud);
     }
-
 
 
 }

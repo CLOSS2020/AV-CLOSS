@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:theme="@style/BasicStyleElementRecicleView2">
 
     <TableLayout
         android:id="@+id/tableLayout"
@@ -29,14 +30,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="COD:"
-                android:textColor="#292929"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_codvend"
                 android:layout_width="225dp"
-                android:layout_height="wrap_content"
-                android:textColor="#2C2C2C" />
+                android:layout_height="wrap_content" />
         </TableRow>
 
         <TableRow
@@ -48,14 +47,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Asesor: "
-                android:textColor="#2B2B2B"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_nombrevend"
                 android:layout_width="220dp"
-                android:layout_height="match_parent"
-                android:textColor="#2C2C2C" />
+                android:layout_height="match_parent" />
         </TableRow>
 
         <TableRow
@@ -67,14 +64,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Act.:"
-                android:textColor="#2C2C2C"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_fechaact"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#333333" />
+                android:layout_height="wrap_content" />
         </TableRow>
 
     </TableLayout>
@@ -102,7 +97,6 @@
                 android:layout_height="match_parent"
                 android:text="% de venta:"
                 android:textAlignment="center"
-                android:textColor="#2E2E2E"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </TableRow>

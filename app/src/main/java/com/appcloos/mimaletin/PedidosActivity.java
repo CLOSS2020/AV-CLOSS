@@ -7,14 +7,20 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -27,7 +33,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,8 +47,12 @@ public class PedidosActivity extends AppCompatActivity {
     AdminSQLiteOpenHelper conn;
     private SharedPreferences sharpref;
     ArrayList<Pedidos> listapedidos;
+
+    LineasAdapter lineasAdapter;
     ArrayList<String> listainfo, listapedido;
     ArrayList<Carrito> listalineas;
+
+    ArrayList<Lineas> listalineasdoc;
     PedidoAdapter pedidoAdapter;
 
     ListView lv_pedidos;
@@ -58,7 +67,7 @@ public class PedidosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pedidos);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //mantener la orientacion vertical
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); //mantener la orientacion vertical
         sharpref = getSharedPreferences("sharpref", MODE_PRIVATE);
         Add = findViewById(R.id.bt_nuevop);
         lv_pedidos = findViewById(R.id.lv_pedidos);
@@ -73,109 +82,103 @@ public class PedidosActivity extends AppCompatActivity {
 
 
         cargarEnlace();
-        Add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LimpiarCarrito();
-                IraCreacionPedido();
+        Add.setOnClickListener(view -> {
+            LimpiarCarrito();
+            IraCreacionPedido();
 
 
-            }
         });
         /********************************************************************************/
 
-        lv_pedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                codigoPedido = listapedidos.get(position).getNumeroDocumento();
-                statusPedido = statusPedido;
-                n_cliente = listapedidos.get(position).getNombreCliente();
-                codigoCliente = listapedidos.get(position).getCodigoCliente();
-                fechapedido = listapedidos.get(position).getFechaDocumento();
-                pedidonumero = listapedidos.get(position).getNumeroPedido();
-                totneto = String.valueOf(listapedidos.get(position).getTotalNeto());
+        lv_pedidos.setOnItemClickListener((adapterView, view, position, l) -> {
+            codigoPedido = listapedidos.get(position).getNumeroDocumento();
+            n_cliente = listapedidos.get(position).getNombreCliente();
+            codigoCliente = listapedidos.get(position).getCodigoCliente();
+            fechapedido = listapedidos.get(position).getFechaDocumento();
+            pedidonumero = listapedidos.get(position).getNumeroPedido();
+            totneto = String.valueOf(listapedidos.get(position).getTotalNeto());
 
-                //System.out.println("ESTE ES EL ESTATUS QUE ESTA LLEGANDO DEL PEDIDO " + statusPedido);
+            //System.out.println("ESTE ES EL ESTATUS QUE ESTA LLEGANDO DEL PEDIDO " + statusPedido);
 
-                AlertDialog.Builder ventana = new AlertDialog.Builder(PedidosActivity.this);
-                ventana.setTitle("Mensaje del sistema");
-                ventana.setMessage("Por favor, elige una opción");
+            AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(PedidosActivity.this,R.style.AlertDialogCustom));
+            ventana.setTitle("Mensaje del sistema");
+            ventana.setMessage("Por favor, elige una opción");
 
-                ventana.setPositiveButton("Modificar Pedido", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (statusPedido.equals("0")) {
-                            LimpiarCarrito();
-                            IraModificacionPedido();
-                        } else {
-                            Toast.makeText(getBaseContext(), "Este pedido ya no puede ser modificado", Toast.LENGTH_LONG).show();
-                        }
+            ventana.setPositiveButton("Modificar Pedido", (dialogInterface, i) -> {
+                if (statusPedido.equals("0")) {
+                    LimpiarCarrito();
+                    IraModificacionPedido();
+                } else {
+                    Toast.makeText(getBaseContext(), "Este pedido ya no puede ser modificado", Toast.LENGTH_LONG).show();
+                }
 
-                    }
-                });
+            });
 
 
-                ventana.setNegativeButton("Borrar Pedido", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (statusPedido.equals("0")) {
+            ventana.setNegativeButton("Borrar Pedido", (dialogInterface, i) -> {
+                if (statusPedido.equals("0")) {
 
-                            AlertDialog.Builder subventana = new AlertDialog.Builder(PedidosActivity.this);
-                            subventana.setTitle("Mensaje de confirmación");
-                            subventana.setMessage("¿Estás seguro de borrar el pedido?");
+                    AlertDialog.Builder subventana = new AlertDialog.Builder(new ContextThemeWrapper(PedidosActivity.this,R.style.AlertDialogCustom));
+                    subventana.setTitle("Mensaje de confirmación");
+                    subventana.setMessage("¿Estás seguro de borrar el pedido?");
 
-                            subventana.setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    BorrarPedido();
-                                }
-                            });
+                    subventana.setPositiveButton("Si", (dialogInterface1, i1) -> BorrarPedido());
 
-                            subventana.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Toast.makeText(PedidosActivity.this, "Eliminación cancelada", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                    subventana.setNegativeButton("No", (dialogInterface12, i12) -> Toast.makeText(PedidosActivity.this, "Eliminación cancelada", Toast.LENGTH_SHORT).show());
 
-                            AlertDialog dialogo2 = subventana.create();
-                            dialogo2.show();
-                        } else if (statusPedido.equals("5")) {
+                    AlertDialog dialogo2 = subventana.create();
+                    dialogo2.show();
+                } else if (statusPedido.equals("5")) {
 
-                            BorrarPedidoAlt();
-                            Toast.makeText(getBaseContext(), "Este pedido fue borrado solamente del dispositivo.", Toast.LENGTH_LONG).show();
-                            //Toast.makeText(getBaseContext(), "Este pedido fue borrado solamente del dispositivo.", Toast.LENGTH_LONG).show();
-                        }
+                    BorrarPedidoAlt();
+                    Toast.makeText(getBaseContext(), "Este pedido fue borrado solamente del dispositivo.", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getBaseContext(), "Este pedido fue borrado solamente del dispositivo.", Toast.LENGTH_LONG).show();
+                }
 
-                    }
-                });
+            });
 
 
-                ventana.setNeutralButton("Ver Pedido", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+            ventana.setNeutralButton("Ver Pedido", (dialogInterface, i) -> {
 
-                        AlertDialog.Builder dialogofull = new AlertDialog.Builder(PedidosActivity.this, R.style.FullSreenDialog);
+                AlertDialog.Builder dialogofull = new AlertDialog.Builder(new ContextThemeWrapper(PedidosActivity.this,R.style.AlertDialogCustom));
 
-                        dialogofull.setTitle(codigoPedido);
-                        ListView listadeLineas = new ListView(PedidosActivity.this);
-                        CargarLineasdelPedido();
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(PedidosActivity.this, R.layout.list_items, listapedido);
-                        listadeLineas.setAdapter(arrayAdapter);
-                        dialogofull.setView(listadeLineas);
-                        AlertDialog dialogoverpedido = dialogofull.create();
-                        dialogoverpedido.show();
-                    }
-                });
+                //dialogofull.setTitle(codigoPedido);
+
+                TextView title = new TextView(PedidosActivity.this);
+                title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                title.setTypeface(Typeface.DEFAULT_BOLD);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMargins(40, 20, 0, 30);
+                title.setPadding(40,30,0,40);
+                title.setLayoutParams(lp);
+                title.setText("Pedido: "+codigoPedido);
+                dialogofull.setCustomTitle(title);
+
+                ListView listadeLineas = new ListView(PedidosActivity.this);
+                listadeLineas.setHeaderDividersEnabled(true);
+
+                CargarLineasdelPedido();
+                lineasAdapter = new LineasAdapter(PedidosActivity.this, listalineasdoc);
+                listadeLineas.setAdapter(lineasAdapter);
+                lineasAdapter.notifyDataSetChanged();
+                dialogofull.setView(listadeLineas);
+
+                //ListView listadeLineas = new ListView(PedidosActivity.this);
+                //CargarLineasdelPedido();
+                //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(PedidosActivity.this, R.layout.list_items, listapedido);
+                //listadeLineas.setAdapter(arrayAdapter);
+                //dialogofull.setView(listadeLineas);
+                AlertDialog dialogoverpedido = dialogofull.create();
+                dialogoverpedido.show();
+            });
 
 
-                AlertDialog dialogo = ventana.create();
-                dialogo.show();
-            }
-
-
+            AlertDialog dialogo = ventana.create();
+            dialogo.show();
         });
 
+        ObjetoAux objetoAux = new ObjetoAux(this);
+        objetoAux.descargaDesactivo(cod_usuario);
     }
 
     private void cargarEnlace() {
@@ -191,6 +194,8 @@ public class PedidosActivity extends AppCompatActivity {
             enlaceEmpresa = cursor.getString(1);
             codigoSucursal = cursor.getString(2);
         }
+
+        cursor.close();
 
     }
 
@@ -230,81 +235,78 @@ public class PedidosActivity extends AppCompatActivity {
     private void ValidarPendientes(String URL) {
 
         //cada vez que se ejecute, vacio la lista para asegurarme que los datos no se repitan
-        listainfo = new ArrayList<String>();
+        listainfo = new ArrayList<>();
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                if (response != null) {
-                    //preparo los datos para la conexion a la base de datos
-                    conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 12);
-                    SQLiteDatabase ke_android = conn.getWritableDatabase();
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, response -> {
+            if (response != null) {
+                //preparo los datos para la conexion a la base de datos
+                conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 12);
+                SQLiteDatabase ke_android = conn.getWritableDatabase();
 
-                    JSONObject jsonObject = null;
-                    //mientras la respuesta sea mayor a 0
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
-                            //guardo lo que viene del jsonobject
-                            jsonObject = response.getJSONObject(i);
-                            //y lo agrego como un elemento string a la lista
-                            listainfo.add(jsonObject.getString("kti_ndoc"));
+                JSONObject jsonObject;
+                //mientras la respuesta sea mayor a 0
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        //guardo lo que viene del jsonobject
+                        jsonObject = response.getJSONObject(i);
+                        //y lo agrego como un elemento string a la lista
+                        listainfo.add(jsonObject.getString("kti_ndoc"));
 
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    //Hago la consulta para determinar que pedidos del mes estan "procesados"
-                    //y que voy a validar que esten en la nube.
-                    String tabla = "ke_opti";
-                    String[] columnas = new String[]{
-                            "kti_ndoc," +
-                                    "datetime('now','start of month') as principiomes," +
-                                    "  datetime('now') as hoy"
-                    };
-                    String condicion = "kti_status = '1' AND kti_fchdoc BETWEEN principiomes AND hoy";
-                    Cursor cursor = ke_android.query(tabla, columnas, condicion, null, null, null, null);
+                }
+                //Hago la consulta para determinar que pedidos del mes estan "procesados"
+                //y que voy a validar que esten en la nube.
+                String tabla = "ke_opti";
+                String[] columnas = new String[]{
+                        "kti_ndoc," +
+                                "datetime('now','start of month') as principiomes," +
+                                "  datetime('now') as hoy"
+                };
+                String condicion = "kti_status = '1' AND kti_fchdoc BETWEEN principiomes AND hoy";
+                Cursor cursor = ke_android.query(tabla, columnas, condicion, null, null, null, null);
 
-                    while (cursor.moveToNext()) {
-                        String pedidoEnTelf = cursor.getString(0);
-                        System.out.println("PEDIDO EN SISTEMA: " + pedidoEnTelf);
-                        if (!pedidoEnTelf.equals("")) {
-                            if (!listainfo.contains(pedidoEnTelf)) {
-                                ke_android.beginTransaction();
-                                try {
-                                    System.out.println("Este pedido no se encuentra en la nube, debe subirse");
-                                    ke_android.execSQL("UPDATE ke_opti SET kti_status = '0' WHERE kti_ndoc ='" + pedidoEnTelf + "'");
-                                    ke_android.setTransactionSuccessful();
-                                    ke_android.endTransaction();
+                while (cursor.moveToNext()) {
+                    String pedidoEnTelf = cursor.getString(0);
+                    System.out.println("PEDIDO EN SISTEMA: " + pedidoEnTelf);
+                    if (!pedidoEnTelf.equals("")) {
+                        if (!listainfo.contains(pedidoEnTelf)) {
+                            ke_android.beginTransaction();
+                            try {
+                                System.out.println("Este pedido no se encuentra en la nube, debe subirse");
+                                ke_android.execSQL("UPDATE ke_opti SET kti_status = '0' WHERE kti_ndoc ='" + pedidoEnTelf + "'");
+                                ke_android.setTransactionSuccessful();
+                                ke_android.endTransaction();
 
-                                    PedidosActivity.this.finish();
-                                    PedidosActivity.this.overridePendingTransition(0, 0);
-                                    startActivity(PedidosActivity.this.getIntent());
-                                    PedidosActivity.this.overridePendingTransition(0, 0);//para refrescar el RecyclerView
-                                } catch (Exception ex) {
-                                    ke_android.endTransaction();
-                                }
-                            } else {
-                                System.out.println("Este pedido ya está en la nube");
+                                PedidosActivity.this.finish();
+                                PedidosActivity.this.overridePendingTransition(0, 0);
+                                startActivity(PedidosActivity.this.getIntent());
+                                PedidosActivity.this.overridePendingTransition(0, 0);//para refrescar el RecyclerView
+                            } catch (Exception ex) {
+                                ke_android.endTransaction();
                             }
                         } else {
-                            System.out.println("No hay pedidos por subir");
+                            System.out.println("Este pedido ya está en la nube");
                         }
+                    } else {
+                        System.out.println("No hay pedidos por subir");
                     }
-
-
                 }
+                cursor.close();
+
 
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
-            }
+        }, error -> {
+            System.out.println("--Error--");
+            error.printStackTrace();
+            System.out.println("--Error--");
         }) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            protected Map<String, String> getParams() {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados las fechas
-                Map<String, String> parametros = new HashMap<String, String>();
+                Map<String, String> parametros = new HashMap<>();
                 parametros.put("cod_usuario", cod_usuario);
 
                 return parametros;
@@ -317,7 +319,7 @@ public class PedidosActivity extends AppCompatActivity {
     }
 
     private void iraArchivados() {
-        sharpref.edit().clear().commit();
+        sharpref.edit().clear().apply();
         Intent intent = new Intent(PedidosActivity.this, PedidosArchivadosActivity.class);
         intent.putExtra("cod_usuario", cod_usuario);
         startActivity(intent);
@@ -336,7 +338,7 @@ public class PedidosActivity extends AppCompatActivity {
 
     public void IraModificacionPedido() {
 
-        sharpref.edit().clear().commit();
+        sharpref.edit().clear().apply();
         Intent intent = new Intent(PedidosActivity.this, ModificarPedidoActivity.class);
         intent.putExtra("codigopedido", codigoPedido);
         intent.putExtra("codigocliente", codigoCliente);
@@ -360,12 +362,12 @@ public class PedidosActivity extends AppCompatActivity {
     }
 
     public void cargarPedidos() {
-        listapedidos = new ArrayList<Pedidos>();
+        listapedidos = new ArrayList<>();
         conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 8);
         final SQLiteDatabase ke_android = conn.getWritableDatabase();
 
         Cursor cursor = ke_android.rawQuery("SELECT kti_codcli, kti_ndoc, kti_nombrecli, kti_fchdoc, kti_totneto, kti_status, kti_nroped, kti_totnetodcto, datetime('now','start of month') as principiomes,\n" +
-                "  datetime('now') as hoy, ke_pedstatus FROM ke_opti WHERE kti_status !='3' AND kti_codven = '" + cod_usuario.toString().trim() + "' and kti_fchdoc BETWEEN principiomes AND hoy", null);
+                "  datetime('now') as hoy, ke_pedstatus FROM ke_opti WHERE kti_status !='3' AND kti_codven = '" + cod_usuario.trim() + "' and kti_fchdoc BETWEEN principiomes AND hoy", null);
 
         while (cursor.moveToNext()) {
             String estatusEval = cursor.getString(5);
@@ -425,7 +427,7 @@ public class PedidosActivity extends AppCompatActivity {
             }
             if (nropedidoEval == null) {
                 nropedido = "Por Asignar";
-            } else if (nropedidoEval != null) {
+            } else {
                 nropedido = nropedidoEval;
             }
 
@@ -450,7 +452,8 @@ public class PedidosActivity extends AppCompatActivity {
 
 
     private void CargarLineasdelPedido() {
-        listalineas = new ArrayList<Carrito>();
+        listalineas = new ArrayList<>();
+        listalineasdoc = new ArrayList<>();
         // System.out.println(cod_usuario);
         conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 12);
         final SQLiteDatabase ke_android = conn.getWritableDatabase();
@@ -466,13 +469,22 @@ public class PedidosActivity extends AppCompatActivity {
             carrito.setPreciou(cursor.getDouble(4));
             listalineas.add(carrito);
 
+            Lineas lineas = new Lineas();
+            lineas.setCodigo(cursor.getString(0));
+            lineas.setNombre(cursor.getString(1));
+            lineas.setCantidad(cursor.getDouble(2));
+            lineas.setDpreciofin(cursor.getDouble(3));
+            lineas.setDmontototal(cursor.getDouble(3));
+            listalineasdoc.add(lineas);
+
         }
+        cursor.close();
         ke_android.close();
         obtenerlineas();
     }
 
     private void obtenerlineas() {
-        listapedido = new ArrayList<String>();
+        listapedido = new ArrayList<>();
 
         for (int i = 0; i < listalineas.size(); i++) {
             listapedido.add("Codigo: " + listalineas.get(i).getCodigo()
@@ -530,12 +542,13 @@ public class PedidosActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             sesionActiva = cursor.getString(0).trim();
         }
+        cursor.close();
     }
 
 
     private void cerrarsesion() {
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        preferences.edit().clear().commit();
+        preferences.edit().clear().apply();
 
         PrincipalActivity.getInstance().finish();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -546,57 +559,49 @@ public class PedidosActivity extends AppCompatActivity {
 
 
     private void ValidezDeSesion(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                if (response != null) {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, response -> {
+            if (response != null) {
 
-                    JSONObject jsonObject = null; //creamos un objeto json vacio
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
-                            jsonObject = response.getJSONObject(i);
-                            sesionNube = jsonObject.getString("sesionactiva").trim();
-                            System.out.println(sesionNube);
+                JSONObject jsonObject; //creamos un objeto json vacio
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        jsonObject = response.getJSONObject(i);
+                        sesionNube = jsonObject.getString("sesionactiva").trim();
+                        System.out.println(sesionNube);
 
 
-                            if (!sesionNube.equals(sesionActiva)) {
-                                AlertDialog.Builder ventana = new AlertDialog.Builder(PedidosActivity.this);
-                                ventana.setTitle("Alerta del sistema:");
-                                ventana.setMessage("Su sesión ha expirado porque existe otra activa, será redireccionado a la pantalla de inicio");
-                                ventana.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        cerrarsesion();
-                                        finish();
-                                    }
-                                });
-                                AlertDialog dialogo = ventana.create();
-                                dialogo.show();
+                        if (!sesionNube.equals(sesionActiva)) {
+                            AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(PedidosActivity.this,R.style.AlertDialogCustom));
+                            ventana.setTitle("Alerta del sistema:");
+                            ventana.setMessage("Su sesión ha expirado porque existe otra activa, será redireccionado a la pantalla de inicio");
+                            ventana.setPositiveButton("Aceptar", (dialogInterface, i1) -> {
+                                cerrarsesion();
+                                finish();
+                            });
+                            AlertDialog dialogo = ventana.create();
+                            dialogo.show();
 
 
-                            } else if (sesionNube.equals(sesionActiva)) {
-                                System.out.println("La sesion es la misma");
-                                /* Toast.makeText(getApplicationContext(), "La sesion es la misma", Toast.LENGTH_LONG).show();*/
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } else {
+                            System.out.println("La sesion es la misma");
+                            /* Toast.makeText(getApplicationContext(), "La sesion es la misma", Toast.LENGTH_LONG).show();*/
                         }
 
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } else {
-                    // Toast.makeText(getApplicationContext(), "empty", Toast.LENGTH_LONG).show();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
+                }
+            } else {
+                // Toast.makeText(getApplicationContext(), "empty", Toast.LENGTH_LONG).show();
             }
+        }, error -> {
+            System.out.println("--Error--");
+            error.printStackTrace();
+            System.out.println("--Error--");
         }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
-                return parametros;
+            protected Map<String, String> getParams() {
+                return new HashMap<>();
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);

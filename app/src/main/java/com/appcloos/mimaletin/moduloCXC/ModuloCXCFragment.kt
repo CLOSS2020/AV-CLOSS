@@ -1,18 +1,10 @@
 package com.appcloos.mimaletin.moduloCXC
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import androidx.viewbinding.ViewBindings
-import com.appcloos.mimaletin.PrincipalActivity
-import com.appcloos.mimaletin.R
-import com.appcloos.mimaletin.cxcReportActivity
-import com.appcloos.mimaletin.databinding.ActivityModuloCxcBinding
 import com.appcloos.mimaletin.databinding.FragmentModuloCxcBinding
 import com.appcloos.mimaletin.moduloCXC.fragments.EdoGenCuentaFragment
 import com.appcloos.mimaletin.moduloCXC.fragments.PlanificadorCXCFragment

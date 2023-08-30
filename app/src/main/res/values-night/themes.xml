@@ -1,0 +1,402 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/primaryColor</item>-->
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorAccent">#E0E0E0</item>
+
+        <item name="colorPrimary">@color/blackColor2</item>
+        <item name="colorPrimaryVariant">@color/blackColor1</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+
+        <item name="colorSecondary">@color/primaryColor</item>
+        <item name="colorSecondaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+
+        <item name="android:statusBarColor">@color/blackColor1</item>
+        <item name="android:navigationBarColor">@color/blackColor2</item>
+
+
+        <item name="android:windowBackground">@color/blackColor3</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColorHint">@color/primaryTextColor</item>
+    </style>
+
+    <style name="AppThemeMaterial" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/primaryColor</item>-->
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorAccent">#E0E0E0</item>
+
+        <item name="colorPrimary">@color/blackColor2</item>
+        <item name="colorPrimaryVariant">@color/blackColor1</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+
+        <item name="colorSecondary">@color/primaryColor</item>
+        <item name="colorSecondaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+
+        <item name="android:statusBarColor">@color/blackColor1</item>
+        <item name="android:navigationBarColor">@color/blackColor2</item>
+
+
+        <item name="android:windowBackground">@color/blackColor3</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColorHint">@color/primaryTextColor</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:navigationBarColor">@color/primaryColor</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="FullSreenDialog" parent="Theme.AppCompat.Light">
+        <item name="android:layout_width">23dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/grisclaro</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/primaryColor</item>
+    </style>
+
+    <style name="AppTheme.newer" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/blackColor2</item>
+        <item name="colorPrimaryDark">@color/blackColor2</item>
+        <item name="colorPrimaryVariant">@color/blackColor2</item>
+        <item name="colorAccent">@color/blackColor2</item>
+        <item name="android:colorBackground">@color/grisclaro</item>
+        <item name="android:statusBarColor">@color/blackColor2</item>
+        <item name="android:navigationBarColor">@color/blackColor2</item>
+    </style>
+
+    <style name="AppTheme.Angel.Light" parent="ThemeOverlay.MaterialComponents.Dark">
+        <item name="android:statusBarColor">@color/blackColor1</item>
+        <item name="android:navigationBarColor">@color/blackColor2</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">#014C83</item>
+        <item name="colorAccent">#014C83</item>
+    </style>
+
+
+    <style name="datePickerTheme" parent="android:Theme.Material.Light.Dialog">
+        <!--<item name="android:colorAccent">#FFFFFF</item>                   &lt;!&ndash;header background&ndash;&gt;
+
+        <item name="android:windowBackground">@color/blackColor3</item>     &lt;!&ndash;calendar background&ndash;&gt;
+        <item name="android:colorControlActivated">@color/blackColor4</item> &lt;!&ndash;selected day&ndash;&gt;
+        <item name="android:textColorPrimary">@color/whiteColor4</item> &lt;!&ndash;days of the month&ndash;&gt;
+        <item name="android:textColorSecondary">@color/whiteColor1</item>    &lt;!&ndash;days of the week&ndash;&gt;
+        <item name="android:colorControlHighlight">#FFFFFF</item>
+        <item name="android:colorControlNormal">#FFFFFF</item>
+
+        <item name="android:buttonBarNegativeButtonStyle">
+            @style/DatePickerTheme.ButtonBarNegativeButtonStyle
+        </item>
+        <item name="android:buttonBarPositiveButtonStyle">
+            @style/DatePickerTheme.ButtonBarPositiveButtonStyle
+        </item>-->
+
+
+    </style>
+
+    <style name="DatePickerTheme.ButtonBarNegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DatePickerTheme.ButtonBarPositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/whiteColor4</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="BasicThemeAngel" parent="AppThemeMaterial">
+        <item name="colorPrimary">@color/whiteColor4</item>
+        <item name="colorPrimaryVariant">@color/whiteColor4</item>
+        <item name="colorOnPrimary">@color/whiteColor4</item>
+
+        <item name="colorSecondary">@color/primaryColor</item>
+        <item name="colorSecondaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+
+        <item name="android:statusBarColor">@color/blackColor1</item>
+
+
+
+        <item name="android:textColor">@color/whiteColor4</item>
+        <item name="itemIconTint">@color/whiteColor4</item>
+        <item name="subheaderColor">@color/whiteColor4</item>
+
+    </style>
+
+    <style name="BasicStyleRecicleView" parent="AppTheme">
+        <item name="android:background">@color/blackColor3</item>
+    </style>
+
+    <style name="BasicStyleElementRecicleView" parent="AppTheme">
+        <item name="android:background">@drawable/custom_input_night</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="BasicStyleElementRecicleView2" parent="AppTheme">
+        <item name="android:background">@color/blackColor4</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="BasicStyleButtom" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@drawable/bordes_redondos_night</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <style name="BasicStyleButtomMaterial" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:backgroundTint">@color/blackColor4</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+    </style>
+
+    <style name="BasicStyleButtomMaterialReten" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/whiteColor4</item>
+        <item name="android:textColor">@color/whiteColor4</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="BasicStyleButtom2" parent="AppTheme">
+        <item name="android:background">@color/blackColor4</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:background">@color/blackColor3</item>
+        <item name="android:textColorPrimary">@color/whiteColor4</item>
+        <item name="colorAccent">@color/whiteColor1</item>
+        <item name="android:textColorSecondary">@color/whiteColor4</item>
+        <item name="textColorAlertDialogListItem">@color/whiteColor1</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonStyle">
+            @style/AlertDialogCustom.ButtonAlertDialog
+        </item>
+    </style>
+
+    <style name="AlertDialogCustom.ButtonAlertDialog">
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="NeutralButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="EditTextStyleCustom" parent="AlertDialogCustom">
+        <item name="android:textColor">@color/whiteColor4</item>
+        <item name="android:backgroundTint">@color/whiteColor4</item>
+    </style>
+
+    <style name="ProgressDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/whiteColor2</item>
+        <item name="android:textColorPrimary">@color/blanco</item>
+        <item name="android:background">@color/blackColor3</item>
+    </style>
+
+    <style name="NavigationViewCustom">
+        <item name="android:background">@color/blackColor2</item>
+    </style>
+
+    <style name="BasicStyleRadioButton" parent="Base.Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="colorControlNormal">@color/whiteColor4</item>
+        <item name="colorControlActivated">@color/whiteColor1</item>
+        <item name="colorAccent">@color/whiteColor1</item>
+        <item name="android:tint">@color/whiteColor1</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="buttonTint">@color/whiteColor1</item>
+    </style>
+
+    <style name="BackgroundAuxRecicleView" parent="AppTheme">
+        <item name="android:background">@color/blackColor3</item>
+    </style>
+
+    <style name="TextColorAuxExistencia" parent="AppTheme">
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="BackgroundAuxTable" parent="AppTheme">
+        <item name="android:background">@color/blackColor1</item>
+    </style>
+
+    <style name="BackgroundAuxElementCXC1" parent="AppTheme">
+        <item name="android:background">#80E0E0E0</item>
+        <item name="android:textColor">@color/blackColor1</item>
+    </style>
+
+    <style name="BackgroundAuxElementCXC2" parent="AppTheme">
+        <item name="android:background">#4DE0E0E0</item>
+        <item name="android:textColor">@color/blackColor1</item>
+    </style>
+
+    <style name="StyleTextInputLayoutAutoComplete" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="colorOnSurface">@color/whiteColor4</item>
+        <item name="colorPrimary">@color/whiteColor1</item>
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+    </style>
+
+    <style name="AutoComplete">
+        <item name="android:popupBackground">@color/blackColor4</item>
+        <item name="android:dropDownSelector">#40E0E0E0</item>
+
+    </style>
+
+    <style name="StyleTextInputLayoutEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="colorOnSurface">@color/whiteColor4</item>
+        <item name="colorPrimary">@color/whiteColor1</item>
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+    </style>
+
+    <style name="StyleTextInputLayoutEditTextCXCTasa" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="colorOnSurface">@color/whiteColor4</item>
+        <item name="colorPrimary">@color/whiteColor1</item>
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+        <item name="boxBackgroundColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="StyleTextInputLayoutEditTextTasa" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/blackColor1</item>
+        <item name="colorControlNormal">@color/blackColor1</item>
+        <item name="colorControlActivated">@color/blackColor1</item>
+        <item name="colorControlHighlight">@color/blackColor1</item>
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="android:textColorHint">@color/blackColor1</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Base_ToolbarStyle">
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:background">@color/blackColor2</item>
+        <item name="android:theme">@style/Base_ToolbarTheme</item>
+        <item name="titleTextAppearance">@style/CustomTitleTextAppearance</item>
+        <item name="subtitleTextAppearance">@style/CustomSubTitleTextAppearance</item>
+    </style>
+
+    <style name="Base_ToolbarTheme">
+        <!-- Color used for the title of the Toolbar - as long as not overridden -->
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+        <!-- Used to color back button and three dots -->
+        <item name="android:textColorSecondary">@color/whiteColor4</item>
+
+        <item name="colorAccent">@color/whiteColor4</item>
+    </style>
+
+    <style name="CustomTitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <!--<item name="android:fontFamily">@string/ff_roboto_condensed</item>-->
+        <item name="android:title">CXC</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+    </style>
+
+    <style name="CustomSubTitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <!--<item name="android:fontFamily">@string/ff_roboto_condensed</item>-->
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="TabLayoutStyle">
+        <item name="android:background">@color/blackColor2</item>
+        <item name="tabIndicatorColor">@color/whiteColor4</item>
+        <item name="tabSelectedTextColor">@color/whiteColor1</item>
+        <item name="tabTextColor">@color/secondaryDarkColor</item>
+    </style>
+
+    <style name="ElementModuloCXC">
+        <item name="android:textColor">@color/blackColor4</item>
+    </style>
+
+    <style name="BackgroundAux" parent="AppTheme">
+        <item name="android:background">@color/blackColor3</item>
+    </style>
+
+    <style name="BackgroundAuxCXC" parent="AppTheme">
+        <item name="android:background">@color/blackColor2</item>
+    </style>
+
+
+
+    <style name="MyDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">#555555</item>
+        <!--selected Item color-->
+        <item name="colorControlActivated">@color/primaryLightColor</item>
+        <!-- arrow bordercolor(<>)-->
+        <item name="android:selectableItemBackgroundBorderless">@color/blackColor3</item>
+        <!-- Highlight item color-->
+        <item name="colorControlHighlight">#004DE5</item>
+        <!--Calender Background color -->
+        <item name="android:windowBackground">#424242</item>
+        <!-- Ok Cancel Color-->
+        <item name="android:textColor">@color/whiteColor1</item>
+        <!-- Week TextColor-->
+        <item name="android:textColorSecondary">@color/whiteColor3</item>
+        <!-- Calender Number color arrow color (< >) -->
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+        <!--day , month-->
+        <item name="android:textColorPrimaryInverse">@color/whiteColor1</item>
+        <!-- year-->
+        <item name="android:textColorSecondaryInverse">@color/whiteColor2</item>
+
+        <item name="android:buttonBarNegativeButtonStyle">
+            @style/DatePickerTheme.ButtonBarNegativeButtonStyle
+        </item>
+        <item name="android:buttonBarPositiveButtonStyle">
+            @style/DatePickerTheme.ButtonBarPositiveButtonStyle
+        </item>
+
+    </style>
+
+    <style name="ButtonReten" parent="AppTheme">
+        <item name="android:background">@drawable/custom_menu_button</item>
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="EditTextStyleCustom2" parent="AppTheme">
+        <item name="android:textColor">@color/whiteColor4</item>
+        <item name="colorAccent">@color/whiteColor4</item>
+        <item name="backgroundTint">@color/whiteColor4</item>
+    </style>
+
+    <style name="TextViewCustom" parent="AppTheme">
+        <item name="android:textColor">@color/whiteColor4</item>
+    </style>
+
+    <style name="NavMenuCustom" parent="AppTheme">
+        <item name="android:backgroundTint">@color/blackColor4</item>
+
+        <item name="itemTextColor">@color/whiteColor4</item>
+        <item name="android:textColor">@color/whiteColor4</item>
+        <item name="itemIconTint">@color/whiteColor4</item>
+        <item name="subheaderColor">@color/whiteColor4</item>
+    </style>
+
+</resources>

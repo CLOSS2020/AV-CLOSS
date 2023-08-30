@@ -7,56 +7,65 @@
 
 package com.appcloos.mimaletin
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputLayout
+import java.text.FieldPosition
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 
-class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.QuantityListener {
+class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.QuantityListener {
     //componentes
 
     private lateinit var conn: AdminSQLiteOpenHelper
-    lateinit var ke_android: SQLiteDatabase
+    lateinit var keAndroid: SQLiteDatabase
 
-    lateinit var bt_aceptar: Button
-    lateinit var bt_agregar: Button
+    private lateinit var btAceptar: Button
+    private lateinit var btAgregar: Button
     lateinit var btnAgregarFoto: Button
 
     lateinit var preferences: SharedPreferences
 
-    lateinit var et_fecharetenciones: EditText
-    lateinit var et_refret: EditText
-    lateinit var et_montoret: EditText
+    private lateinit var etFecharetenciones: EditText
+    private lateinit var etRefret: EditText
+    private lateinit var etMontoret: EditText
+    private lateinit var tilCxcMontoMain: TextInputLayout
 
-    lateinit var sp_tiposret: Spinner
-    lateinit var sp_documentos: Spinner
+    private lateinit var spTiposret: AutoCompleteTextView
 
-    lateinit var listaRetenciones: ArrayList<Retenciones>
+    private lateinit var spDocumentos: AutoCompleteTextView
+
+    private lateinit var listaRetenciones: ArrayList<Retenciones>
     lateinit var listaTiposRet: ArrayList<String>
     lateinit var listaDocs: ArrayList<String>
 
-    lateinit var rv_retenciones: RecyclerView
-    val adapter: retencionesAdapter = retencionesAdapter()
+    private lateinit var rvRetenciones: RecyclerView
+    val adapter: RetencionesAdapter = RetencionesAdapter()
 
     /*Esta variable servirá para determinar que retenciones
     * deben ser registradas en */
-    var variableBandera: String? = ""
-    var correlativoRetencion = ""
-    var refRet = ""
-    var montoRet: Double? = 0.00
+    private var variableBandera: String? = ""
+    private var correlativoRetencion = ""
+    private var refRet = ""
+    private var montoRet: Double? = 0.00
     var tipoRetSeleccionada = ""
-    var fechaParaCorrelativo = ""
-    var fechaRet = ""
+    private var fechaParaCorrelativo = ""
+    private var fechaRet = ""
     var nroDoc = ""
 
     var valor = 0.0
@@ -75,21 +84,23 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
         setContentView(R.layout.activity_retenciones)
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 18)
-        ke_android = conn.writableDatabase
+        keAndroid = conn.writableDatabase
         /* //EditTexts de iva
          et_nroretiva     = findViewById(R.id.et_nroretiva)*/
-        et_fecharetenciones = findViewById(R.id.et_fecharetenciones)
-        et_montoret = findViewById(R.id.et_montoret)
-        et_refret = findViewById(R.id.et_refret)
+        etFecharetenciones = findViewById(R.id.et_fecharetenciones)
+        etMontoret = findViewById(R.id.et_montoret)
+        etRefret = findViewById(R.id.et_refret)
 
 
-        sp_tiposret = findViewById(R.id.sp_tiposret)
-        sp_documentos = findViewById(R.id.sp_documentos)
-        bt_aceptar = findViewById(R.id.bt_aceptar)
-        bt_agregar = findViewById(R.id.bt_agregarret)
+        spTiposret = findViewById(R.id.sp_tiposret)
+        spDocumentos = findViewById(R.id.sp_documentos)
+        btAceptar = findViewById(R.id.bt_aceptar)
+        btAgregar = findViewById(R.id.bt_agregarret)
         //btnAgregarFoto = findViewById(R.id.bt_agregarfoto)
 
-        rv_retenciones = findViewById(R.id.rv_retenciones)
+        rvRetenciones = findViewById(R.id.rv_retenciones)
+
+        tilCxcMontoMain = findViewById(R.id.til_cxc_monto_main)
 
         //gvFotos = findViewById(R.id.gv_fotos)
 
@@ -111,7 +122,7 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
         verficarRetYaGuardadas()
 
         //listener del boton
-        bt_aceptar.setOnClickListener(View.OnClickListener {
+        btAceptar.setOnClickListener {
             if (listaRetenciones.size > 0) {
                 guardarRetenciones()
             } else {
@@ -124,16 +135,16 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
                 guardarRetenciones()
             }
 
-        })
+        }
 
-        et_fecharetenciones.setOnClickListener { showDatePickerDialog() }
+        etFecharetenciones.setOnClickListener { showDatePickerDialog() }
 
-        bt_agregar.setOnClickListener(View.OnClickListener {
+        btAgregar.setOnClickListener {
             addRetencion()
-        })
+        }
 
         //seleccion del tipo de retencion
-        sp_tiposret.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        /*spTiposret.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
@@ -144,12 +155,18 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
                 position: Int,
                 id: Long,
             ) {
-                tipoRetSeleccionada = listaTiposRet.get(position)
+                tipoRetSeleccionada = listaTiposRet[position]
                 cambioRetencion()
             }
-        }
+        }*/
 
-        sp_documentos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spTiposret.onItemClickListener =
+            AdapterView.OnItemClickListener { adapterView, view, position, id ->
+                tipoRetSeleccionada = listaTiposRet[position]
+                cambioRetencion()
+            }
+
+        /*spDocumentos.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
@@ -160,11 +177,18 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
                 position: Int,
                 id: Long,
             ) {
-                nroDoc = listaDocs.get(position)
+                nroDoc = listaDocs[position]
                 println("ELNUEMRO $nroDoc")
                 cambioRetencion()
             }
-        }
+        }*/
+
+        spDocumentos.onItemClickListener =
+            AdapterView.OnItemClickListener { adapterView, view, position, id ->
+                nroDoc = listaDocs[position]
+                println("ELNUEMRO $nroDoc")
+                cambioRetencion()
+            }
 
 
 //        btnAgregarFoto.setOnClickListener {
@@ -222,11 +246,11 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
         }
         try {
 
-            if (nroDoc.length == 0) {
+            if (nroDoc.isEmpty()) {
                 nroDoc = listaDocs[0]
             }
 
-            val cursor: Cursor = ke_android.rawQuery(
+            val cursor: Cursor = keAndroid.rawQuery(
                 "SELECT $valorRetencion FROM ke_doccti WHERE documento= '$nroDoc'",
                 null
             )
@@ -237,9 +261,12 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
 
             cursor.close()
 
-            et_montoret.hint = "El monto requerido $valor Bs."
+            tilCxcMontoMain.hint = "El monto requerido $valor Bs."
         } catch (e: Exception) {
-            et_montoret.hint = "Monto (En Bss)"
+            println("--Error--")
+            e.printStackTrace()
+            println("--Error--")
+            tilCxcMontoMain.hint = "Monto (En Bss)"
         }
 
 
@@ -248,7 +275,10 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
     private fun addRetencion() {
 
         //valido que todo esté bien
-        if (fechaRet == "" || et_refret.text.toString() == "" || fechaParaCorrelativo == "" || et_montoret.text.toString() == ""
+        if (fechaRet == "" ||
+            etRefret.text.toString() == "" ||
+            fechaParaCorrelativo == "" ||
+            etMontoret.text.toString() == ""
         ) {
 
             Toast.makeText(
@@ -258,13 +288,13 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
             ).show()
 
         } else {
-            montoRet = et_montoret.text.toString().toDouble()
-            refRet = et_refret.text.toString()
+            montoRet = etMontoret.text.toString().toDouble()
+            refRet = etRefret.text.toString()
             if (montoRet!! >= valor - 1 && montoRet!! <= valor + 1) {
                 if (refRet.length == 14) {
                     //si todo bien, debo añadir cada ret a la lista
                     correlativoRetencion = "$fechaParaCorrelativo$refRet"
-                    var retenciones: Retenciones = Retenciones()
+                    val retenciones = Retenciones()
 
                     retenciones.fecharet = fechaRet
                     retenciones.nroret = correlativoRetencion
@@ -275,15 +305,15 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
 
                     listaRetenciones.add(retenciones)
                     //limpio los campos
-                    et_montoret.text.clear()
-                    et_refret.text.clear()
-                    et_fecharetenciones.text.clear()
+                    etMontoret.text.clear()
+                    etRefret.text.clear()
+                    etFecharetenciones.text.clear()
                     Toast.makeText(applicationContext, "Retención agregada", Toast.LENGTH_SHORT)
                         .show()
 
-                    rv_retenciones.layoutManager = LinearLayoutManager(applicationContext)
+                    rvRetenciones.layoutManager = LinearLayoutManager(applicationContext)
                     adapter.retencionAdapter(applicationContext, listaRetenciones, this)
-                    rv_retenciones.adapter = adapter
+                    rvRetenciones.adapter = adapter
                     adapter.notifyDataSetChanged()
                 } else {
                     Toast.makeText(
@@ -314,21 +344,21 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
 
     }
 
-    fun onDateSelected(day: Int, month: Int, year: Int) {
-        var fechaMostrar = "$year-$month-$day"
+    private fun onDateSelected(day: Int, month: Int, year: Int) {
+        val fechaMostrar = "$year-$month-$day"
 
         //et_fecharetenciones.setText("$fechaMostrar")
         //en formato para query de tasas
         fechaRet = ""
-        var formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
-        var date: Date = formatter.parse(fechaMostrar)
-        var formatNuevo: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
-        var formatNuevoVista: SimpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date: Date = formatter.parse(fechaMostrar)!!
+        val formatNuevo = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formatNuevoVista = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         fechaRet = formatNuevo.format(date)
 
-        et_fecharetenciones.setText("Fecha: ${formatNuevoVista.format(date)}")
+        etFecharetenciones.setText("Fecha: ${formatNuevoVista.format(date)}")
 
-        var formatoParaCorrelativo: SimpleDateFormat = SimpleDateFormat("yyyyMM")
+        val formatoParaCorrelativo = SimpleDateFormat("yyyyMM", Locale.getDefault())
         fechaParaCorrelativo = formatoParaCorrelativo.format(date)
 
     }
@@ -336,24 +366,22 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
 
     private fun activarRetenciones() {
         if (listaTiposRet.size > 0) {
-            var adapter: ArrayAdapter<CharSequence>
-            adapter = ArrayAdapter(
+            val adapter: ArrayAdapter<CharSequence> = ArrayAdapter(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
                 listaTiposRet as List<CharSequence>
             )
-            sp_tiposret.adapter = adapter
+            spTiposret.setAdapter(adapter)
             adapter.notifyDataSetChanged()
         }
 
         if (listaDocs.size > 0) {
-            var adapter: ArrayAdapter<CharSequence>
-            adapter = ArrayAdapter(
+            val adapter: ArrayAdapter<CharSequence> = ArrayAdapter(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
                 listaDocs as List<CharSequence>
             )
-            sp_documentos.adapter = adapter
+            spDocumentos.setAdapter(adapter)
             adapter.notifyDataSetChanged()
         }
 
@@ -364,10 +392,17 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
 
         //var listaRetCadena:Set<String> = listaRetenciones.groupBy { it.tiporet }.keys
         for (i in listaRetenciones) {
-            println("nro doc: ${i.nrodoc}, tipo ${i.tiporet}, nroret ${i.nroret}, refret ${i.refret}  fecha ${i.fecharet}  monto ${i.montoret}")
+            println(
+                "nro doc: ${i.nrodoc}, " +
+                        "tipo ${i.tiporet}, " +
+                        "nroret ${i.nroret}, " +
+                        "refret ${i.refret}  " +
+                        "fecha ${i.fecharet}  " +
+                        "monto ${i.montoret}"
+            )
 
         }
-        var bundle: Bundle = Bundle()
+        val bundle = Bundle()
         bundle.putSerializable("listaRetenciones", listaRetenciones)
         intent.putExtras(bundle)
         setResult(RESULT_OK, intent)
@@ -388,37 +423,39 @@ class retencionesActivity : AppCompatActivity(), retencionesAdapter.RetHolder.Qu
         return valorRetorno
     }
 
-    override fun onQuantityChange(listaChange: ArrayList<Retenciones>) {
-        println(listaChange)
-        evaluarLista(listaChange)
+    override fun onQuantityChange(position: Int) {
+        println(position)
+        adapter.notifyItemRemoved(position)
+        listaRetenciones.removeAt(position)
+
+        //evaluarLista(listaChange)
 
     }
 
     private fun evaluarLista(listaChange: ArrayList<Retenciones>) {
-        if (listaChange.isEmpty()) {
+        listaRetenciones = if (listaChange.isEmpty()) {
 
-            listaRetenciones = listaChange
+            listaChange
 
         } else {
 
-            listaRetenciones = listaChange
+            listaChange
         }
-        rv_retenciones.layoutManager = LinearLayoutManager(applicationContext)
+        rvRetenciones.layoutManager = LinearLayoutManager(applicationContext)
         adapter.retencionAdapter(applicationContext, listaRetenciones, this)
-        rv_retenciones.adapter = adapter
+        rvRetenciones.adapter = adapter
         adapter.notifyDataSetChanged()
     }
 
     private fun verficarRetYaGuardadas() {
 
-        var bundle: Bundle = Bundle()
-        bundle = intent.extras!!
+        val bundle: Bundle = intent.extras!!
         listaRetenciones = bundle.getSerializable("listaRetenciones") as ArrayList<Retenciones>
         if (listaRetenciones.size > 0) {
 
-            rv_retenciones.layoutManager = LinearLayoutManager(applicationContext)
+            rvRetenciones.layoutManager = LinearLayoutManager(applicationContext)
             adapter.retencionAdapter(applicationContext, listaRetenciones, this)
-            rv_retenciones.adapter = adapter
+            rvRetenciones.adapter = adapter
             adapter.notifyDataSetChanged()
         }
 

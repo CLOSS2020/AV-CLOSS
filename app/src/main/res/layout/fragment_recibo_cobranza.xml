@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReciboCobranza">
+    tools:context=".ReciboCobranza"
+    android:theme="@style/AppTheme">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -27,6 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
+            style="@style/EditTextStyleCustom2"
             android:id="@+id/et_montopago"
             android:layout_width="325dp"
             android:layout_height="44dp"
@@ -42,7 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
             android:text="Seleccione un cliente:"
-            android:textColor="#373737"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.165"
@@ -51,6 +52,7 @@
 
         <Spinner
             android:id="@+id/spinnercli"
+            style="@style/AutoComplete"
             android:layout_width="323dp"
             android:layout_height="40dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +77,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Introduzca el monto:"
-            android:textColor="#303030"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.157"

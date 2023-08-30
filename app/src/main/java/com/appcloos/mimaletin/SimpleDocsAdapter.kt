@@ -7,22 +7,31 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class SimpleDocsAdapter: RecyclerView.Adapter<SimpleDocsAdapter.SDocsHolder>() {
+class SimpleDocsAdapter : RecyclerView.Adapter<SimpleDocsAdapter.SDocsHolder>() {
     lateinit var cobranza: ArrayList<CXC>
-    lateinit var context : Context
+    lateinit var context: Context
 
-    fun SimpleDocsAdapter(context: Context, cobranza:ArrayList<CXC>){
+    fun SimpleDocsAdapter(context: Context, cobranza: ArrayList<CXC>) {
         this.context = context
         this.cobranza = cobranza
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleDocsAdapter.SDocsHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): SDocsHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return SimpleDocsAdapter.SDocsHolder(layoutInflater.inflate(R.layout.item_simple_docs, parent, false))
+        return SDocsHolder(
+            layoutInflater.inflate(
+                R.layout.item_simple_docs,
+                parent,
+                false
+            )
+        )
     }
 
-    override fun onBindViewHolder(holder: SimpleDocsAdapter.SDocsHolder, position: Int) {
-        holder.bind(cobranza.get(position))
+    override fun onBindViewHolder(holder: SDocsHolder, position: Int) {
+        holder.bind(cobranza[position])
 
     }
 
@@ -30,13 +39,13 @@ class SimpleDocsAdapter: RecyclerView.Adapter<SimpleDocsAdapter.SDocsHolder>() {
         return cobranza.size
     }
 
-    class SDocsHolder(val view: View): RecyclerView.ViewHolder(view){
-        val nrodoc  = view.findViewById<TextView>(R.id.tv_nrodoc_sdocs)
-        val cliente = view.findViewById<TextView>(R.id.tv_nocli_sdocs)
+    class SDocsHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val nrodoc: TextView = view.findViewById(R.id.tv_nrodoc_sdocs)
+        val cliente: TextView = view.findViewById(R.id.tv_nocli_sdocs)
 
 
-        fun bind(cobranza:CXC){
-            nrodoc.text =  cobranza.documento
+        fun bind(cobranza: CXC) {
+            nrodoc.text = cobranza.documento
             cliente.text = cobranza.cliente
         }
     }

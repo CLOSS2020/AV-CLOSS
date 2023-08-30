@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F8F8"
     android:fitsSystemWindows="true"
-    tools:context=".CreacionPedidoActivity">
+    android:theme="@style/AppTheme"
+    tools:context=".CreacionPedidoActivity"
+    style="@style/BackgroundAux">
 
     <LinearLayout
         android:id="@+id/linearLayout4"
@@ -24,6 +25,7 @@
 
         <ListView
             android:id="@+id/ListPedido"
+            android:layout_margin="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -40,19 +42,23 @@
 
         <RadioButton
             android:id="@+id/RbFactura"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Rb1"
             android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton"
             tools:ignore="TouchTargetSizeCheck" />
 
         <RadioButton
             android:id="@+id/RbNotaEntrega"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:minHeight="48dp"
             android:text="@string/Rb2"
             android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton"
             tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
     </RadioGroup>
 
@@ -69,19 +75,23 @@
 
         <RadioButton
             android:id="@+id/RbCredito"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Rb3"
             android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton"
             tools:ignore="TouchTargetSizeCheck" />
 
         <!--05-06-2023 El boton Prepago cambia su nombre a BCV-->
         <RadioButton
             android:id="@+id/RbPrepago"
+            style="@style/BasicStyleRadioButton"
             android:layout_width="match_parent"
             android:layout_height="21dp"
             android:text="BCV"
             android:textSize="12sp"
+            android:theme="@style/BasicStyleRadioButton"
             tools:ignore="TouchTargetSizeCheck" />
     </RadioGroup>
 
@@ -194,9 +204,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/border_radius_botr_botl"
+        android:paddingStart="10dp"
         android:paddingTop="5dp"
         android:paddingEnd="10dp"
-        android:paddingStart="10dp"
         android:paddingBottom="2dp"
         android:textColor="#fff"
         app:layout_constraintEnd_toEndOf="parent"
@@ -206,9 +216,9 @@
 
     <TextView
         android:id="@+id/tv_avisobloqueo"
-        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="20dp"
+        android:layout_marginTop="5dp"
         android:background="#D63131"
         android:enabled="false"
         android:text="*Cliente posee documentos pendientes *"
@@ -224,9 +234,9 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/menu_creacion"
+        style="@style/NavigationViewCustom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
         app:itemHorizontalTranslationEnabled="false"
         app:itemIconTint="@color/blanco"
         app:itemTextColor="@color/blanco"
@@ -243,7 +253,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="Subtotal:"
-        android:textColor="#232323"
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/tv_neto"
@@ -257,7 +266,6 @@
         android:layout_marginEnd="4dp"
         android:text="Sub con %:"
         android:textAlignment="viewEnd"
-        android:textColor="#232323"
         android:textSize="10sp"
         android:textStyle="bold"
         android:visibility="invisible"

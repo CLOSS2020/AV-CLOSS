@@ -9,9 +9,6 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
 import java.util.Locale
 
 
@@ -20,8 +17,6 @@ class CXCAdapter(
     var context: Context,
     private val onClickListener: (String) -> Unit,
 ) : RecyclerView.Adapter<CXCAdapter.CXCHolder>() {
-
-    private lateinit var conSQL: AdminSQLiteOpenHelper
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CXCHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -40,16 +35,16 @@ class CXCAdapter(
 
     inner class CXCHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        val idCobranza = view.findViewById<TextView>(R.id.idCxc)
-        val fchcob = view.findViewById<TextView>(R.id.tv_fecharec_cxc)
-        val montocob = view.findViewById<TextView>(R.id.tv_monto_cxc_rec)
-        val stado = view.findViewById<TextView>(R.id.tv_stat_cxc)
-        val clCxcRec = view.findViewById<ConstraintLayout>(R.id.cl_cxc_recibo)
-        val tipoDoc = view.findViewById<TextView>(R.id.tvTipoRecibo)
+        private val idCobranza: TextView = view.findViewById(R.id.idCxc)
+        private val fchcob: TextView = view.findViewById(R.id.tv_fecharec_cxc)
+        private val montocob: TextView = view.findViewById(R.id.tv_monto_cxc_rec)
+        private val stado: TextView = view.findViewById(R.id.tv_stat_cxc)
+        private val clCxcRec: ConstraintLayout = view.findViewById(R.id.cl_cxc_recibo)
+        val tipoDoc: TextView = view.findViewById(R.id.tvTipoRecibo)
         private val nombreCli: TextView = view.findViewById(R.id.tvNombreCli)
 
 
-        var fechaPago = ""
+        private var fechaPago = ""
 
         fun bind(cobranza: CXC, onClickListener: (String) -> Unit) {
 
@@ -77,7 +72,10 @@ class CXCAdapter(
 
             } else if (cobranza.bsretiva > 0.00 || cobranza.bsretflete > 0.00) {
                 montocob.text =
-                    "Monto:${if (cobranza.bsretiva <= 0.00) "" else " (Ret IVA) ${cobranza.bsretiva} Bs. "}${if (cobranza.bsretiva <= 0.00 || cobranza.bsretflete <= 0.00) "" else "/"}${if (cobranza.bsretflete <= 0.00) "" else " (Ret Fle) ${cobranza.bsretflete} Bs."}"
+                    "Monto:" +
+                            (if (cobranza.bsretiva <= 0.00) "" else " (Ret IVA) ${cobranza.bsretiva} Bs. ") +
+                            (if (cobranza.bsretiva <= 0.00 || cobranza.bsretflete <= 0.00) "" else "/") +
+                            if (cobranza.bsretflete <= 0.00) "" else " (Ret Fle) ${cobranza.bsretflete} Bs."
             }
 
 
@@ -85,13 +83,13 @@ class CXCAdapter(
                 "0" -> {
                     stado.text = "Estado: Por subir"
                     stado.setTextColor(Color.RED)
-                    stado.setBackgroundColor(Color.rgb(255, 255, 255))
+                    //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 "1" -> {
                     stado.text = "Estado: Subido"
                     stado.setTextColor(Color.rgb(63, 197, 39))
-                    stado.setBackgroundColor(Color.rgb(255, 255, 255))
+                    //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 "3" -> {
@@ -109,19 +107,19 @@ class CXCAdapter(
                 "9" -> {
                     stado.text = "Estado: Anexo Creado"
                     stado.setTextColor(Color.rgb(240, 167, 50))
-                    stado.setBackgroundColor(Color.rgb(255, 255, 255))
+                    //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 "10" -> {
                     stado.text = "Estado: Actualizado"
                     stado.setTextColor(Color.rgb(35, 169, 242))
-                    stado.setBackgroundColor(Color.rgb(255, 255, 255))
+                    //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 else -> {
                     stado.text = "Estado: No Identificado"
                     stado.setTextColor(Color.rgb(0, 0, 0))
-                    stado.setBackgroundColor(Color.rgb(255, 255, 255))
+                    //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
             }
 

@@ -5,14 +5,15 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
     android:fitsSystemWindows="true"
+    android:theme="@style/BasicThemeAngel"
     tools:openDrawer="start">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:theme="@style/BackgroundAux">
 
         <TextView
             android:id="@+id/version"
@@ -20,6 +21,7 @@
             android:layout_height="25dp"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="15dp"
+            android:alpha="0.50"
             android:text="ver"
             android:textAlignment="textEnd"
             android:textStyle="bold"
@@ -32,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="50dp"
+            android:alpha="0.50"
             android:text="Prueba 17.07.2023"
             android:textAlignment="textEnd"
             android:textStyle="bold"
@@ -45,8 +48,8 @@
             android:layout_marginStart="25dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="25dp"
-            android:background="@drawable/drawmenubar"
-            android:visibility="invisible"
+            android:background="@drawable/bordes_redondos"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,6 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="9dp"
+                android:background="#00000000"
                 android:text="Fecha de la Tasa"
                 android:textColor="#FFFFFF"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,6 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:background="#00000000"
                 android:text="Tasa del día:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#FFFFFF"
@@ -81,7 +86,7 @@
                 android:layout_height="38dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="17dp"
-                android:background="#3F51B5"
+                android:background="@drawable/border_radius_secondary_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync" />
@@ -92,7 +97,7 @@
                 android:layout_height="38dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="16dp"
-                android:background="#E91E63"
+                android:background="@drawable/border_radius_error"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/img_sync_tasa"
@@ -105,6 +110,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
+                android:background="#00000000"
                 android:text="0.00 Bs"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 android:textColor="#FFFFFF"
@@ -113,26 +119,54 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_fecha_tasa" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="55dp"
+            android:layout_marginEnd="20dp"
+            android:text="▶Promociones◀"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="0dp"
-            android:layout_height="186dp"
+            android:layout_height="300dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="91dp"
             android:layout_marginEnd="20dp"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
+            <!--Libreria : https://github.com/ImaginativeShohag/Why-Not-Image-Carousel-->
+
+            <org.imaginativeworld.whynotimagecarousel.ImageCarousel
+                android:id="@+id/carousel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:autoPlay="true"
+                app:autoPlayDelay="3000"
+                app:carouselType="SHOWCASE"
+                app:scaleOnScroll="true"
+                app:showBottomShadow="false"
+                app:showCaption="false"
+                app:showNavigationButtons="false"
+                app:showTopShadow="false" />
+
+            <!--<TextView
                 android:id="@+id/textView81"
+                style="@style/TextViewCustom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Aviso Importante:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#00408E"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView6" />
@@ -146,7 +180,6 @@
                 android:layout_marginEnd="15dp"
                 android:gravity="center"
                 android:text="A partir del 01/11/2022, todos nuestros precios tienen descuento de pronto pago incluido."
-                android:textColor="#323232"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView81" />
@@ -161,7 +194,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_notification_important_24" />
+                app:srcCompat="@drawable/ic_baseline_notification_important_24" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -174,6 +207,7 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
+        style="@style/NavMenuCustom"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"

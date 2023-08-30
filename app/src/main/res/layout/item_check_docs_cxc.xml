@@ -33,6 +33,7 @@
             tools:text="Monto Total:" />
 
         <TextView
+            style="@style/ElementModuloCXC"
             android:id="@+id/tv_montodebe"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
@@ -40,7 +41,6 @@
             android:background="@drawable/bordes_redondos_blanco"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
-            android:textColor="@color/colorPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,11 +49,11 @@
 
         <CheckBox
             android:id="@+id/cb_sel_doc"
+            android:buttonTint="@drawable/checkbox_cxc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginEnd="16dp"
-            android:textColor="#FBFBFB"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:enabled="false"/>

@@ -7,90 +7,98 @@
     android:layout_height="135dp"
     android:layout_marginBottom="5dp"
     android:background="#FFF"
-    android:padding="10dp">
+    android:theme="@style/BasicStyleElementRecicleView2">
 
-    <TextView
-        android:id="@+id/tvCodigoCliente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="132465" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
-    <TextView
-        android:id="@+id/tvNombreCliente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCodigoCliente"
-        tools:text="Joseito" />
+        <TextView
+            android:id="@+id/tvCodigoCliente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="132465" />
 
-    <TextView
-        android:id="@+id/tvDocsVencidosMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Docs Vencidos: "
-        android:textColor="#000"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente" />
+        <TextView
+            android:id="@+id/tvNombreCliente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCodigoCliente"
+            tools:text="Joseito" />
 
-    <TextView
-        android:id="@+id/tvDocsVencidos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        app:layout_constraintStart_toEndOf="@+id/tvDocsVencidosMain"
-        app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente"
-        tools:text="Activa" />
+        <TextView
+            android:id="@+id/tvDocsVencidosMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0.75"
+            android:text="Docs Vencidos: "
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente" />
 
-    <TextView
-        android:id="@+id/tvContrispeMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Contribuyente Esp."
-        android:textColor="#000"
-        app:layout_constraintEnd_toStartOf="@+id/tvContrioEspe"
-        app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente" />
+        <TextView
+            android:id="@+id/tvDocsVencidos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0.75"
+            app:layout_constraintStart_toEndOf="@+id/tvDocsVencidosMain"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente"
+            tools:text="Activa" />
 
-    <TextView
-        android:id="@+id/tvContrioEspe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente"
-        tools:text="Activa" />
+        <TextView
+            android:id="@+id/tvContrispeMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0.75"
+            android:text="Contribuyente Esp."
+            app:layout_constraintEnd_toStartOf="@+id/tvContrioEspe"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente" />
 
-    <TextView
-        android:id="@+id/tvPedidoDiasMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Dias sin hacer pedidos: "
-        android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDocsVencidos"
-        app:layout_goneMarginTop="5dp" />
+        <TextView
+            android:id="@+id/tvContrioEspe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0.75"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente"
+            tools:text="Activa" />
 
-    <TextView
-        android:id="@+id/tvPedidoDias"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/tvPedidoDiasMain"
-        app:layout_constraintTop_toBottomOf="@+id/tvDocsVencidos"
-        app:layout_goneMarginTop="5dp"
-        tools:text="50" />
+        <TextView
+            android:id="@+id/tvPedidoDiasMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0.75"
+            android:text="Dias sin hacer pedidos: "
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDocsVencidos"
+            app:layout_goneMarginTop="5dp" />
+
+        <TextView
+            android:id="@+id/tvPedidoDias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0.75"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/tvPedidoDiasMain"
+            app:layout_constraintTop_toBottomOf="@+id/tvDocsVencidos"
+            app:layout_goneMarginTop="5dp"
+            tools:text="50" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

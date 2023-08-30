@@ -16,7 +16,7 @@ class DetalleCXCActivity : AppCompatActivity() {
     //var codigoRecibo = intent.getStringExtra("codigoRecibo") as String
 
     private lateinit var binding: ActivityDetalleCxcactivityBinding
-    private lateinit var ke_android: SQLiteDatabase
+    private lateinit var keAndroid: SQLiteDatabase
     private lateinit var conn: AdminSQLiteOpenHelper
 
     //val bundle = intent.extras
@@ -35,33 +35,31 @@ class DetalleCXCActivity : AppCompatActivity() {
         cxcndoc = preferences.getString("recibo", null).toString()
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 26)
-        ke_android = conn.writableDatabase
+        keAndroid = conn.writableDatabase
 
-        val cursor = ke_android.rawQuery("SELECT * FROM ke_precobranza WHERE cxcndoc = '$cxcndoc';",null)
+        val cursor =
+            keAndroid.rawQuery("SELECT * FROM ke_precobranza WHERE cxcndoc = '$cxcndoc';", null)
 
-        if (cursor.moveToNext()){
+        if (cursor.moveToNext()) {
 
-            var fechaEmision = ""
-
-            if (cursor.getString(1) == "D") {
+            val fechaEmision: String = if (cursor.getString(1) == "D") {
                 val ldt: LocalDateTime = LocalDateTime.parse(
-                    cursor.getString(6),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    cursor.getString(6), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 )
                 val writingFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a")
-                fechaEmision = ldt.format(writingFormatter)
-            }else{
+                ldt.format(writingFormatter)
+            } else {
                 val readingFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date = LocalDate.parse(cursor.getString(6), readingFormatter)
                 val writingFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                fechaEmision = date.format(writingFormatter)
+                date.format(writingFormatter)
             }
 
 
 
             binding.tvCod.text = cxcndoc
 
-            binding.tvTipoRecibo.text = when (cursor.getString(1)){
+            binding.tvTipoRecibo.text = when (cursor.getString(1)) {
                 "W" -> "Recibo de Cobro"
                 "D" -> "Axeno de Deposito"
                 else -> "No Identificado"
@@ -69,20 +67,27 @@ class DetalleCXCActivity : AppCompatActivity() {
 
             binding.tvEmision.text = "Emisión: $fechaEmision"
 
-            binding.tvTipoMoneda.text = "Moneda del Recibo: ${if (cursor.getString(18) == "2") "Dolar" else "Bolívar"}"
+            binding.tvTipoMoneda.text =
+                "Moneda del Recibo: ${if (cursor.getString(18) == "2") "Dolar" else "Bolívar"}"
 
             binding.tvBanco.text = cursor.getString(29)
 
-            val cursorBanco = ke_android.rawQuery("SELECT nombanco FROM listbanc WHERE codbanco = '${cursor.getString(29)}';",null)
+            val cursorBanco = keAndroid.rawQuery(
+                "SELECT nombanco FROM listbanc WHERE codbanco = '${
+                    cursor.getString(29)
+                }';", null
+            )
 
-            if (cursorBanco.moveToNext()){
+            if (cursorBanco.moveToNext()) {
                 binding.tvBanco.text = "${cursor.getString(29)} ${cursorBanco.getString(0)}"
                 binding.tvReferencia.text = "REF: ${cursor.getString(33)}"
-                binding.tvMonto.text = "Monto: ${cursor.getString(32)} ${if (cursor.getString(18) == "2") "$" else "Bs."}"
+                binding.tvMonto.text =
+                    "Monto: ${cursor.getString(32)} ${if (cursor.getString(18) == "2") "$" else "Bs."}"
             } else {
                 binding.tvBanco.text = "Efectivo"
                 binding.tvMonto.text = "Monto: ${cursor.getString(27)} $"
             }
+            cursorBanco.close()
 
         } else {
             Toast.makeText(this, "Recibo no Existe", Toast.LENGTH_SHORT).show()

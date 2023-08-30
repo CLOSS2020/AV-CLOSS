@@ -1,10 +1,9 @@
 package com.appcloos.mimaletin;
 
 public class Reclamo {
-    String ndoc, status, agefac, tipfac, docfac, fechadoc, codclasif, substatus, agenc, tipnc, docnc, agedev, codart, nombre, pid,
-            tipdev, docdev, notas, codven, codcoord, codcli, nombrecli, fechamodifi;
+    String ndoc, status, agefac, tipfac, docfac, fechadoc, codclasif, substatus, agenc, tipnc, docnc, agedev, codart, nombre, pid, tipdev, docdev, notas, codven, codcoord, codcli, nombrecli, fechamodifi;
 
-    Double tipprec, totneto, totnetodef,cant, artprec, stot, cantdef, stotdef;
+    Double tipprec, totneto, totnetodef, cant, artprec, stot, cantdef, stotdef;
 
     public String getNdoc() {
         return ndoc;

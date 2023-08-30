@@ -64,21 +64,26 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".creacionDepositoActivity"
+            android:name=".CreacionDepositoActivity"
             android:exported="true"
             android:theme="@style/AppTheme.newer" />
         <activity
-            android:name=".depositoActivity"
+            android:name=".DepositoActivity"
             android:exported="true"
             android:theme="@style/AppTheme.newer" />
         <activity
-            android:name=".cxcReportActivity"
+            android:name=".CxcReportActivity"
             android:exported="false"
             android:label="@string/title_activity_cxc_report"
             android:theme="@style/AppTheme.newer" />
         <activity
-            android:name=".retencionesActivity"
-            android:exported="false" />
+            android:name=".RetencionesActivity"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".CreacionPrecobranzaActivity"
             android:exported="false"

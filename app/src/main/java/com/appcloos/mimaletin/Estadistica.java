@@ -5,15 +5,6 @@ public class Estadistica {
     Double cntpedidos;
     Double mtopedidos;
     Double cntfacturas;
-
-    public String getFecha_estad() {
-        return fecha_estad;
-    }
-
-    public void setFecha_estad(String fecha_estad) {
-        this.fecha_estad = fecha_estad;
-    }
-
     Double mtofacturas;
     Double metavend;
     Double prcmeta;
@@ -26,6 +17,14 @@ public class Estadistica {
     Double rlom_montovtas;
     Double rlom_prcvtas;
     Double rlom_prcvisit;
+
+    public String getFecha_estad() {
+        return fecha_estad;
+    }
+
+    public void setFecha_estad(String fecha_estad) {
+        this.fecha_estad = fecha_estad;
+    }
 
     public String getCodcoord() {
         return codcoord;

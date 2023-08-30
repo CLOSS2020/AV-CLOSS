@@ -30,8 +30,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class CarritoAdapter extends BaseAdapter {
-    private ArrayList<Carrito> listcarrito;
-    private Context context;
+    private final ArrayList<Carrito> listcarrito;
+    private final Context context;
     private LayoutInflater inflater;
 
     //tendra como parametro el contexto donde se use y el arraylist de tipo carrito que se use en
@@ -67,12 +67,12 @@ public class CarritoAdapter extends BaseAdapter {
         final Carrito carrito = (Carrito) getItem(position);
         convertView = LayoutInflater.from(context).inflate(R.layout.item_catalogo, null);
 
-        TextView textcodigo              = (TextView) convertView.findViewById(R.id.text_codigo);
-        TextView textnombre              = (TextView) convertView.findViewById(R.id.text_nombre);
-        TextView textexistencia          = (TextView) convertView.findViewById(R.id.text_existencia);
-        TextView textprecio              = (TextView) convertView.findViewById(R.id.text_precio);
-        TextView textdescuento           = (TextView) convertView.findViewById(R.id.tv_descuento);
-        TextView textpreciodescuento     = (TextView) convertView.findViewById(R.id.tv_preciodescuento);
+        TextView textcodigo              = convertView.findViewById(R.id.text_codigo);
+        TextView textnombre              = convertView.findViewById(R.id.text_nombre);
+        TextView textexistencia          = convertView.findViewById(R.id.text_existencia);
+        TextView textprecio              = convertView.findViewById(R.id.text_precio);
+        TextView textdescuento           = convertView.findViewById(R.id.tv_descuento);
+        TextView textpreciodescuento     = convertView.findViewById(R.id.tv_preciodescuento);
         //TextView textDescuentoNormal     = (TextView) convertView.findViewById(R.id.tv_dsctonormal);
         Double dctonumerico              = carrito.getDctolin();
         ImageView img_thumb              = convertView.findViewById(R.id.img_thumb);

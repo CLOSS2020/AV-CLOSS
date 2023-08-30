@@ -22,8 +22,6 @@
 
 package com.appcloos.mimaletin;
 
-import static android.widget.Toast.LENGTH_LONG;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -38,30 +36,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
-import com.google.android.play.core.appupdate.AppUpdateOptions;
 import com.google.android.play.core.install.model.ActivityResult;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,7 +59,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements Serializable {
@@ -91,26 +82,30 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     private static final int MY_REQUEST_CODE = 100;
 
+    AppUpdateManager appUpdateManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //mantener la orientacion vertical
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); //mantener la orientacion vertical
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide(); //metodo para esconder la actionbar
-
-        et_empresa = (EditText) findViewById(R.id.txt_empresa); //codigo validador de la empresa
-        et_usuario = (EditText) findViewById(R.id.txt_usuario); // este objeto es referente al id del txt usuario
-        et_password = (EditText) findViewById(R.id.txt_password); // y este del txt password
-        bt_iniciar = (Button) findViewById(R.id.bt_iniciar); //y una variable para el boton.
-        bt_validar = (Button) findViewById(R.id.bt_validarempresa); //validar la empresa segun el codigo
-        tv_version = (TextView) findViewById(R.id.tvversion);
-        et_empresa = (EditText) findViewById(R.id.txt_empresa); //codigo validador de la empresa
-        tv_version.setText("Ver. " + versionApp);
+        Objects.requireNonNull(getSupportActionBar()).hide(); //metodo para esconder la actionbar
+        //checkForAppUpdate();
+        et_empresa = findViewById(R.id.txt_empresa); //codigo validador de la empresa
+        et_usuario = findViewById(R.id.txt_usuario); // este objeto es referente al id del txt usuario
+        et_password = findViewById(R.id.txt_password); // y este del txt password
+        bt_iniciar = findViewById(R.id.bt_iniciar); //y una variable para el boton.
+        bt_validar = findViewById(R.id.bt_validarempresa); //validar la empresa segun el codigo
+        tv_version = findViewById(R.id.tvversion);
+        et_empresa = findViewById(R.id.txt_empresa); //codigo validador de la empresa
+        tv_version.setText("Ver. " + Constantes.VERSION_NAME);
         enlace = "";
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         conn = new AdminSQLiteOpenHelper(MainActivity.this, "ke_android", null, 12);
         objetoAux = new ObjetoAux(this);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        getDelegate().applyDayNight();
         ValidarSesion();
         enlace = "";
         bt_validar.setVisibility(View.INVISIBLE);
@@ -119,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         et_usuario.setEnabled(true);
         et_password.setEnabled(true);
 
-        checkForAppUpdate();
+        //checkForAppUpdate();
         //obtenerVersion("https://cloccidental.com/webservice/versionapp.php?version_usuario=" + versionApp);
 
         /*bt_validar.setOnClickListener(new View.OnClickListener() {
@@ -147,169 +142,159 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             }
         });*/
 
-        bt_iniciar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {  //le indicamos al boton que usara un metodo on click listener
+        bt_iniciar.setOnClickListener(view -> {  //le indicamos al boton que usara un metodo on click listener
 
-                et_usuario.setEnabled(true);
-                et_password.setEnabled(true);
-                bt_iniciar.setText("Iniciar Sesion");
+            et_usuario.setEnabled(true);
+            et_password.setEnabled(true);
+            bt_iniciar.setText("Iniciar Sesion");
 
-                nick_usuario = et_usuario.getText().toString(); // guardamos en la variable lo que viDebes indicar la empresa ene del objeto
-                pass_usuario = et_password.getText().toString();// guardamos en la variable lo que viene del objeto
+            nick_usuario = et_usuario.getText().toString(); // guardamos en la variable lo que viDebes indicar la empresa ene del objeto
+            pass_usuario = et_password.getText().toString();// guardamos en la variable lo que viene del objeto
 
-                if (!nick_usuario.isEmpty() && !pass_usuario.isEmpty()) { //si el nombre de usuarioy  el password no estan en blanco que ejecute
-                    //el metodo a continuacion
+            if (!nick_usuario.isEmpty() && !pass_usuario.isEmpty()) { //si el nombre de usuarioy  el password no estan en blanco que ejecute
+                //el metodo a continuacion
 
-                    bt_iniciar.setEnabled(false);
-                    bt_iniciar.setText("Iniciando Sesión");
+                bt_iniciar.setEnabled(false);
+                bt_iniciar.setText("Iniciando Sesión");
 
-                    ValidarUsuario("https://" + enlace + "/webservice/validar_usuario_actualizadoV_5.php?nick_usuario=" + nick_usuario + "&pass_usuario=" + pass_usuario + "&agencia=" + codigoSuc); //llamamos al metodo para validar y hacer login de usuario.
-                    //System.out.println("https://"+ enlace + "/webservice/validar_usuario_actualizadoV_5.php?nick_usuario="+nick_usuario + "&pass_usuario=" + pass_usuario +"&agencia=" + codigoSuc);
+                ValidarUsuario("https://" + enlace + "/webservice/validar_usuario_actualizadoV_5.php?nick_usuario=" + nick_usuario + "&pass_usuario=" + pass_usuario + "&agencia=" + codigoSuc); //llamamos al metodo para validar y hacer login de usuario.
+                //System.out.println("https://"+ enlace + "/webservice/validar_usuario_actualizadoV_5.php?nick_usuario="+nick_usuario + "&pass_usuario=" + pass_usuario +"&agencia=" + codigoSuc);
 
-                } else {
-                    Toast.makeText(MainActivity.this, "No se permiten campos en blanco.", Toast.LENGTH_LONG).show(); // si esta vacio,
-                    //le decimos al usuario que no se permiten campos en blanco.
-                }
-
-
+            } else {
+                Toast.makeText(MainActivity.this, "No se permiten campos en blanco.", Toast.LENGTH_LONG).show(); // si esta vacio,
+                //le decimos al usuario que no se permiten campos en blanco.
             }
-        });
 
+
+        });
 
 
     }
 
     private void validarEmpresaLicencia(String URL) {
         SQLiteDatabase ke_android = conn.getWritableDatabase();
+        System.out.println(URL);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, response -> {
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
+            if (response != null) {
+                JSONObject jsonObject; //creamos un objeto json vacio
 
-                if (response != null) {
-                    JSONObject jsonObject = null; //creamos un objeto json vacio
+                ke_android.beginTransaction();
+                ke_android.execSQL("DELETE FROM ke_enlace");
+                ke_android.execSQL("DELETE FROM ke_modulos");
+                try {
+                    //bajamos los datos de la empresa/sucursal
+                    jsonObject = response.getJSONObject(0);
+                    codigoEmp = jsonObject.getString("codigoEmpresa");
+                    enlace = jsonObject.getString("enlaceEmpresa");
+                    nombreEmp = jsonObject.getString("nombreEmpresa");
+                    statusEmp = jsonObject.getString("statusEmpresa");
+                    codigoSuc = jsonObject.getString("agenciaEmpresa");
 
-                    ke_android.beginTransaction();
-                    ke_android.execSQL("DELETE FROM ke_enlace");
-                    ke_android.execSQL("DELETE FROM ke_modulos");
-                    try {
-                        //bajamos los datos de la empresa/sucursal
-                        jsonObject = response.getJSONObject(0);
-                        codigoEmp = jsonObject.getString("codigoEmpresa");
-                        enlace = jsonObject.getString("enlaceEmpresa");
-                        nombreEmp = jsonObject.getString("nombreEmpresa");
-                        statusEmp = jsonObject.getString("statusEmpresa");
-                        codigoSuc = jsonObject.getString("agenciaEmpresa");
+                    ContentValues guardarEnlaces = new ContentValues();
+                    guardarEnlaces.put("kee_codigo", codigoEmp);
+                    guardarEnlaces.put("kee_nombre", nombreEmp);
+                    guardarEnlaces.put("kee_url", enlace);
+                    guardarEnlaces.put("kee_status", statusEmp);
+                    guardarEnlaces.put("kee_sucursal", codigoSuc);
 
-                        ContentValues guardarEnlaces = new ContentValues();
-                        guardarEnlaces.put("kee_codigo", codigoEmp);
-                        guardarEnlaces.put("kee_nombre", nombreEmp);
-                        guardarEnlaces.put("kee_url", enlace);
-                        guardarEnlaces.put("kee_status", statusEmp);
-                        guardarEnlaces.put("kee_sucursal", codigoSuc);
+                    /*//analizamos si hay modulos
+                    Cursor cursorurl = ke_android.rawQuery("SELECT count(kmo_codigo) FROM ke_modulos WHERE ked_codigo ='" + codigoEmp+"' AND kmo_codigo='" + codigoModulo+"'", null);
+                    cursorurl.moveToFirst();*/
+                    ke_android.insert("ke_enlace", null, guardarEnlaces);
+                    //si ya hay modulos, es que hay empresa
+                    /*int conteoEnlace = cursorurl.getInt(0);
+                    if(conteoEnlace > 0){
+                        ke_android.execSQL("UPDATE ke_enlace SET kee_codigo ='" + codigoEmp + "', kee_nombre = '" +nombreEmp+ "', kee_url = '"+enlace+ "', kee_status='"+statusEmp+ "', kee_sucursal='"+codigoSuc+"'" +
+                                " WHERE kee_codigo = '"+codigoEmp +"' AND kee_sucursal ='" + codigoSuc +  "'");
+                     //caso contrario, guardo la nueva empresa
+                    }else{
 
-                        /*//analizamos si hay modulos
-                        Cursor cursorurl = ke_android.rawQuery("SELECT count(kmo_codigo) FROM ke_modulos WHERE ked_codigo ='" + codigoEmp+"' AND kmo_codigo='" + codigoModulo+"'", null);
-                        cursorurl.moveToFirst();*/
-                        ke_android.insert("ke_enlace", null, guardarEnlaces);
-                        //si ya hay modulos, es que hay empresa
-                        /*int conteoEnlace = cursorurl.getInt(0);
-                        if(conteoEnlace > 0){
-                            ke_android.execSQL("UPDATE ke_enlace SET kee_codigo ='" + codigoEmp + "', kee_nombre = '" +nombreEmp+ "', kee_url = '"+enlace+ "', kee_status='"+statusEmp+ "', kee_sucursal='"+codigoSuc+"'" +
-                                    " WHERE kee_codigo = '"+codigoEmp +"' AND kee_sucursal ='" + codigoSuc +  "'");
-                         //caso contrario, guardo la nueva empresa
-                        }else{
-
-                        }*/
+                    }*/
 
 
-                        //en este proceso vamos a cargar los permisos
-                        JSONObject permisosJson = null;
-                        for (int i = 0; i < response.length(); i++) {
+                    //en este proceso vamos a cargar los permisos
+                    JSONObject permisosJson;
+                    for (int i = 0; i < response.length(); i++) {
 
 
-                            permisosJson = response.getJSONObject(i);
-                            codigoModulo = permisosJson.getString("codigoModulo");
-                            //System.out.println("CODIGO DEL MODULO " + codigoModulo);
-                            activoModulo = permisosJson.getString("estadoModulo");
-                            //System.out.println("ESTADO DEL MODULO " + activoModulo);
+                        permisosJson = response.getJSONObject(i);
+                        codigoModulo = permisosJson.getString("codigoModulo");
+                        //System.out.println("CODIGO DEL MODULO " + codigoModulo);
+                        activoModulo = permisosJson.getString("estadoModulo");
+                        //System.out.println("ESTADO DEL MODULO " + activoModulo);
 
-                           /* Cursor cursor = ke_android.rawQuery("SELECT count(kmo_codigo) FROM ke_modulos WHERE ked_codigo ='" + codigoEmp+"' AND kmo_codigo='" + codigoModulo+"' AND kee_sucursal ='" + codigoSuc +  "'", null);
-                            cursor.moveToFirst();
+                       /* Cursor cursor = ke_android.rawQuery("SELECT count(kmo_codigo) FROM ke_modulos WHERE ked_codigo ='" + codigoEmp+"' AND kmo_codigo='" + codigoModulo+"' AND kee_sucursal ='" + codigoSuc +  "'", null);
+                        cursor.moveToFirst();
 
-                            int conteoPermiso = cursor.getInt(0);
-                            System.out.println("Conteo de Permisos: " + conteoPermiso);
+                        int conteoPermiso = cursor.getInt(0);
+                        System.out.println("Conteo de Permisos: " + conteoPermiso);
 
 
-                            if(conteoPermiso > 0){*/
-                               /* ContentValues guardarPermisos = new ContentValues();
-                                guardarPermisos.put("ked_codigo", codigoEmp);
-                                guardarPermisos.put("kmo_codigo", codigoModulo);
-                                guardarPermisos.put("kmo_status", activoModulo);
-
-                                ke_android.update("ke_modulos", guardarPermisos, "ked_codigo = "+codigoEmp +" AND kmo_codigo = ?", new String[]{codigoModulo});*/
-
-                            /*NO SE POR QUE, PERO SOLO AGARRA EL UPDATE HACIENDOLO DE LA FORMA LARGA*/
-                            //ke_android.execSQL("UPDATE ke_modulos SET kmo_status ='" +activoModulo+ "' WHERE ked_codigo = '"+codigoEmp +"' AND kmo_codigo = '" + codigoModulo +"' AND kee_sucursal ='" + codigoSuc +  "'");
-
-                            /*  }else{*/
-                            ContentValues guardarPermisos = new ContentValues();
+                        if(conteoPermiso > 0){*/
+                           /* ContentValues guardarPermisos = new ContentValues();
                             guardarPermisos.put("ked_codigo", codigoEmp);
                             guardarPermisos.put("kmo_codigo", codigoModulo);
                             guardarPermisos.put("kmo_status", activoModulo);
-                            guardarPermisos.put("kee_sucursal", codigoSuc);
 
-                            ke_android.insert("ke_modulos", null, guardarPermisos);
-                            //  }
+                            ke_android.update("ke_modulos", guardarPermisos, "ked_codigo = "+codigoEmp +" AND kmo_codigo = ?", new String[]{codigoModulo});*/
 
-                        }
-                        ke_android.setTransactionSuccessful();
-                        ke_android.endTransaction();
+                        /*NO SE POR QUE, PERO SOLO AGARRA EL UPDATE HACIENDOLO DE LA FORMA LARGA*/
+                        //ke_android.execSQL("UPDATE ke_modulos SET kmo_status ='" +activoModulo+ "' WHERE ked_codigo = '"+codigoEmp +"' AND kmo_codigo = '" + codigoModulo +"' AND kee_sucursal ='" + codigoSuc +  "'");
 
+                        /*  }else{*/
+                        ContentValues guardarPermisos = new ContentValues();
+                        guardarPermisos.put("ked_codigo", codigoEmp);
+                        guardarPermisos.put("kmo_codigo", codigoModulo);
+                        guardarPermisos.put("kmo_status", activoModulo);
+                        guardarPermisos.put("kee_sucursal", codigoSuc);
 
-                        if (!enlace.equals("")) {
-                            //si existe la empresa, muestro los campos
-                            et_usuario.setVisibility(View.VISIBLE);
-                            et_password.setVisibility(View.VISIBLE);
-                            bt_iniciar.setVisibility(View.VISIBLE);
-                            //los activo
-                            et_usuario.setEnabled(true);
-                            et_password.setEnabled(true);
-                            bt_iniciar.setEnabled(true);
+                        ke_android.insert("ke_modulos", null, guardarPermisos);
+                        //  }
 
-                        } else {
-                            //de lo contrario, los escondo
-                            et_usuario.setVisibility(View.INVISIBLE);
-                            et_password.setVisibility(View.INVISIBLE);
-                            bt_iniciar.setVisibility(View.INVISIBLE);
-                            //los activo
-                            et_usuario.setEnabled(false);
-                            et_password.setEnabled(false);
-                            bt_iniciar.setEnabled(false);
-                        }
-
-                    } catch (Exception e) {
-                        System.out.println(e);
-                        Toast.makeText(MainActivity.this, "Error en la validacion", Toast.LENGTH_LONG).show();
-                        ke_android.endTransaction();
                     }
+                    ke_android.setTransactionSuccessful();
+                    ke_android.endTransaction();
+
+
+                    if (!enlace.equals("")) {
+                        //si existe la empresa, muestro los campos
+                        et_usuario.setVisibility(View.VISIBLE);
+                        et_password.setVisibility(View.VISIBLE);
+                        bt_iniciar.setVisibility(View.VISIBLE);
+                        //los activo
+                        et_usuario.setEnabled(true);
+                        et_password.setEnabled(true);
+                        bt_iniciar.setEnabled(true);
+
+                    } else {
+                        //de lo contrario, los escondo
+                        et_usuario.setVisibility(View.INVISIBLE);
+                        et_password.setVisibility(View.INVISIBLE);
+                        bt_iniciar.setVisibility(View.INVISIBLE);
+                        //los activo
+                        et_usuario.setEnabled(false);
+                        et_password.setEnabled(false);
+                        bt_iniciar.setEnabled(false);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "Error en la validacion", Toast.LENGTH_LONG).show();
+                    ke_android.endTransaction();
                 }
-
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
-            }
+        }, error -> {
+            System.out.println("--Error--");
+            error.printStackTrace();
         }) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            protected Map<String, String> getParams() {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados el usuario y password.
-                Map<String, String> parametros = new HashMap<String, String>();
                 //parametros.put("version_usuario", versionApp);
 
-                return parametros;
+                return new HashMap<>();
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -319,66 +304,61 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     public void obtenerVersion(String URL) {
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, response -> {
 
-                if (response != null) {
-                    System.out.println("llego aqui");
-                    JSONObject jsonObject = null; //creamos un objeto json vacio
+            if (response != null) {
+                System.out.println("llego aqui");
+                JSONObject jsonObject; //creamos un objeto json vacio
 
-                    try {
-                        jsonObject = response.getJSONObject(0);
-                        System.out.println("contenido del json object" + jsonObject);
+                try {
+                    jsonObject = response.getJSONObject(0);
+                    System.out.println("contenido del json object" + jsonObject);
 
-                        versionNube = jsonObject.getString("kve_version").trim();
-                        System.out.println("version en nube " + versionNube);
-                        caducidad = jsonObject.getString("kve_activa");
+                    versionNube = jsonObject.getString("kve_version").trim();
+                    System.out.println("version en nube " + versionNube);
+                    caducidad = jsonObject.getString("kve_activa");
 
-                        if (!versionNube.equals(versionApp)) {
+                    if (!versionNube.equals(versionApp)) {
+
+                        Toast.makeText(MainActivity.this, "Esta versión se encuentra obsoleta, por favor, actualice", Toast.LENGTH_LONG).show();
+                        bt_iniciar.setEnabled(false);
+
+                    } else {
+
+                        if (caducidad.equals("0")) {
 
                             Toast.makeText(MainActivity.this, "Esta versión se encuentra obsoleta, por favor, actualice", Toast.LENGTH_LONG).show();
                             bt_iniciar.setEnabled(false);
 
-                        } else if (versionNube.equals(versionApp)) {
-
-                            if (caducidad.equals("0")) {
-
-                                Toast.makeText(MainActivity.this, "Esta versión se encuentra obsoleta, por favor, actualice", Toast.LENGTH_LONG).show();
-                                bt_iniciar.setEnabled(false);
-
-                            } else if (caducidad.equals("1")) {
-                                //TODO EN ORDEN, NO TO CAMOS NADA.
-                            }
+                        } else if (caducidad.equals("1")) {
+                            //TODO EN ORDEN, NO TO CAMOS NADA.
                         }
-
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        Toast.makeText(MainActivity.this, "Esta versión se encuentra obsoleta, por favor, actualice", Toast.LENGTH_LONG).show();
-                        bt_iniciar.setEnabled(false);
                     }
 
 
-                } else if (response.equals("")) {
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                     Toast.makeText(MainActivity.this, "Esta versión se encuentra obsoleta, por favor, actualice", Toast.LENGTH_LONG).show();
                     bt_iniciar.setEnabled(false);
                 }
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
+            } else if (response.equals("")) {
+                Toast.makeText(MainActivity.this, "Esta versión se encuentra obsoleta, por favor, actualice", Toast.LENGTH_LONG).show();
+                bt_iniciar.setEnabled(false);
             }
+
+        }, error -> {
+            System.out.println("--Error--");
+            error.printStackTrace();
+            System.out.println("--Error--");
         }) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            protected Map<String, String> getParams() {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados el usuario y password.
-                Map<String, String> parametros = new HashMap<String, String>();
                 //parametros.put("version_usuario", versionApp);
 
-                return parametros;
+                return new HashMap<>();
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -391,199 +371,196 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         System.out.println(URL);
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) { //a traves de un json array request, traemos la informacion que viene del usuario
-                if (response != null) { // si la respuesta no viene vacia
-                    int sesion = 0; //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, response -> { //a traves de un json array request, traemos la informacion que viene del usuario
+            if (response != null) { // si la respuesta no viene vacia
+                int sesion = 0; //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
 
-                    System.out.println(response);
+                System.out.println(response);
 
-                    JSONObject jsonObject = null; //creamos un objeto json vacio
-                    for (int i = 0; i < response.length(); i++) { /*pongo todo en el objeto segun lo que venga */
-                        try {
-                            jsonObject = response.getJSONObject(i);
+                JSONObject jsonObject; //creamos un objeto json vacio
+                for (int i = 0; i < response.length(); i++) { /*pongo todo en el objeto segun lo que venga */
+                    try {
 
-                            n_usuario = jsonObject.getString("nombre"); //el nombre del vendedor
-                            cod_usuario = jsonObject.getString("vendedor"); //el codigo
-                            nombre_usuario = jsonObject.getString("username");  //almacenamos el nombre de usuario
-                            almacen = jsonObject.getString("almacen").trim();
-                            desactivo = jsonObject.getDouble("desactivo"); //este campo nos indicara si el usuario se encuentra bloqueado o no.
-                            fechamodifi = jsonObject.getString("fechamodifi").trim();
-                            ualterprec = jsonObject.getDouble("ualterprec");
-                            ultimoped = jsonObject.getString("correlativo"); //obtenemos el ultimo correlativo
-                            sesionactiva = jsonObject.getString("sesionactiva"); //traemos la fecha de la sesion que estamos iniciando.
-                            superves = jsonObject.getString("superves");
-                            vendedor = jsonObject.getString("vendedor").trim();
-                            ultimorec = jsonObject.getString("recibocobro").trim();
-                            ultimorcl = jsonObject.getString("correlativoreclamo").trim();
-                            ultimorcxc = jsonObject.getString("correlativoprecobranza").trim();
-                            sesion = jsonObject.getInt("sesion");
+                        conn.DeleteAll("usuarios");
 
-                        } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                        jsonObject = response.getJSONObject(i);
+
+                        n_usuario = jsonObject.getString("nombre"); //el nombre del vendedor
+                        cod_usuario = jsonObject.getString("vendedor"); //el codigo
+                        nombre_usuario = jsonObject.getString("username");  //almacenamos el nombre de usuario
+                        almacen = jsonObject.getString("almacen").trim();
+                        desactivo = jsonObject.getDouble("desactivo"); //este campo nos indicara si el usuario se encuentra bloqueado o no.
+                        fechamodifi = jsonObject.getString("fechamodifi").trim();
+                        ualterprec = jsonObject.getDouble("ualterprec");
+                        ultimoped = jsonObject.getString("correlativo"); //obtenemos el ultimo correlativo
+                        sesionactiva = jsonObject.getString("sesionactiva"); //traemos la fecha de la sesion que estamos iniciando.
+                        superves = jsonObject.getString("superves");
+                        vendedor = jsonObject.getString("vendedor").trim();
+                        ultimorec = jsonObject.getString("recibocobro").trim();
+                        ultimorcl = jsonObject.getString("correlativoreclamo").trim();
+                        ultimorcxc = jsonObject.getString("correlativoprecobranza").trim();
+                        sesion = jsonObject.getInt("sesion");
+
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
+                }
 
-                    if (cod_usuario.length() == 0) {
+                if (cod_usuario.length() == 0) {
 
-                        System.out.println("LLEGO AQUI" + cod_usuario);
+                    System.out.println("LLEGO AQUI" + cod_usuario);
 
-                        Toast.makeText(MainActivity.this, "Usuario o password incorrecto", Toast.LENGTH_LONG).show();
-                        bt_iniciar.setEnabled(true);
-                        bt_iniciar.setText("Iniciar Sesión");
-
-                    } else {
-
-                        if (sesion == 1) {
-                            Toast.makeText(MainActivity.this, "Previamente Logueado", Toast.LENGTH_LONG).show();
-                            bt_iniciar.setEnabled(true);
-                            bt_iniciar.setText("Iniciar Sesión");
-                            return;
-                        }
-
-                        if (desactivo == 0.0 || desactivo == 1.0) {
-
-                            if (ultimoped.length() == 0) {
-                                ultimoped = "0000";
-                            }
-
-                            if (ultimorec.length() == 0) {
-                                ultimorec = "0000";
-                            }
-
-                            if (ultimorcl.length() == 0) {
-                                ultimorcl = "0000";
-                            }
-
-                            if (ultimorcxc.length() == 0) {
-                                ultimorcxc = "0000";
-                            }
-
-                            SQLiteDatabase ke_android = conn.getWritableDatabase();
-                            ke_android.beginTransaction();
-
-                            try {
-                                //preparacion e inserción del correlativo de pedidos
-                                String correlativoTexto = right(ultimoped, 4);
-                                int nroCorrelativo = Integer.parseInt(correlativoTexto);
-                                nroCorrelativo = nroCorrelativo + 1;
-
-                                ContentValues insertar = new ContentValues();
-                                insertar.put("kco_numero", nroCorrelativo);
-                                insertar.put("kco_vendedor", cod_usuario.trim());
-
-                                ke_android.insert("ke_correla", null, insertar);
-                                //--------------------------------------------------------------------
-
-                                //preparacion e inserción del correlativo de recibos
-                                String reciboTexto = right(ultimorec, 4);
-                                int nroRecibo = Integer.parseInt(reciboTexto);
-                                nroRecibo = nroRecibo + 1;
-
-                                ContentValues insertarRec = new ContentValues();
-                                insertarRec.put("kcc_numero", nroRecibo);
-                                insertarRec.put("kcc_vendedor", cod_usuario.trim());
-
-                                ke_android.insert("ke_correlacxc", null, insertarRec);
-                                //-------------------------------------------------------
-
-                                //preparacion e inserción del correlativo de reclamos
-                                String reclamoTexto = right(ultimorcl, 4);
-                                int nroReclamo = Integer.parseInt(reclamoTexto);
-                                nroReclamo = nroReclamo + 1;
-
-                                ContentValues insertarRcl = new ContentValues();
-                                insertarRcl.put("kdev_numero", nroReclamo);
-                                insertarRcl.put("kdev_vendedor", cod_usuario.trim());
-
-                                ke_android.insert("ke_correladev", null, insertarRcl);
-                                //---------------------------------------------------------------------------
-
-                                //preparacion e inserción del correlativo de precobranza
-                                String correlaCXC = right(ultimorcxc, 4);
-                                int nroCXC = Integer.parseInt(correlaCXC);
-                                nroCXC = nroCXC + 1;
-
-                                ContentValues insertarCXC = new ContentValues();
-                                insertarCXC.put("kcor_numero", nroCXC);
-                                insertarCXC.put("kcor_vendedor", cod_usuario.trim());
-
-                                ke_android.insert("ke_corprec", null, insertarCXC);
-                                //---------------------------------------------------------------------------
-
-
-                                ke_android.delete("usuarios", "username = ?", new String[]{nick_usuario});
-
-                                //agrego la fecha en la cual inició sesión
-                                Date hoy = Calendar.getInstance().getTime();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                String fechaSync = sdf.format(hoy);
-
-
-                                ContentValues usuarioDatos = new ContentValues();
-                                usuarioDatos.put("nombre", n_usuario);
-                                usuarioDatos.put("username", nombre_usuario);
-                                usuarioDatos.put("password", pass_usuario);
-                                usuarioDatos.put("vendedor", vendedor);
-                                usuarioDatos.put("almacen", almacen);
-                                usuarioDatos.put("desactivo", desactivo);
-                                usuarioDatos.put("fechamodifi", fechaSync);
-                                usuarioDatos.put("ualterprec", ualterprec);
-                                usuarioDatos.put("sesionactiva", sesionactiva);
-                                usuarioDatos.put("superves", superves);
-
-                                ke_android.insert("usuarios", null, usuarioDatos);
-                                ke_android.setTransactionSuccessful();
-
-
-                            } catch (Exception e) {
-                                Toast.makeText(MainActivity.this, "Error insertando correlativo " + e, Toast.LENGTH_LONG).show();
-                                ke_android.endTransaction();
-
-                            } finally {
-                                ke_android.endTransaction();
-                            }
-
-                            objetoAux.login(cod_usuario,1);
-
-                            iraPrincipal();
-
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("nick_usuario", nick_usuario);
-                            editor.putString("cod_usuario", cod_usuario);
-                            editor.putString("nombre_usuario", n_usuario);
-                            editor.putString("superves", superves);
-                            editor.putString("codigoEmpresa", codigoEmp);
-                            editor.putString("codigoSucursal", codigoSuc);
-                            editor.commit();
-
-                        } else if (desactivo == 2.0) {
-                            Toast.makeText(MainActivity.this, "Este usuario se encuentra desactivado", Toast.LENGTH_LONG).show();
-                            bt_iniciar.setEnabled(true);
-                            bt_iniciar.setText("Iniciar Sesión");
-                        }
-
-                    }
-                } else {
                     Toast.makeText(MainActivity.this, "Usuario o password incorrecto", Toast.LENGTH_LONG).show();
                     bt_iniciar.setEnabled(true);
                     bt_iniciar.setText("Iniciar Sesión");
+
+                } else {
+
+                    if (sesion == 1) {
+                        Toast.makeText(MainActivity.this, "Previamente Logueado", Toast.LENGTH_LONG).show();
+                        bt_iniciar.setEnabled(true);
+                        bt_iniciar.setText("Iniciar Sesión");
+                        return;
+                    }
+
+                    if (desactivo == 0.0 || desactivo == 1.0) {
+
+                        if (ultimoped.length() == 0) {
+                            ultimoped = "0000";
+                        }
+
+                        if (ultimorec.length() == 0) {
+                            ultimorec = "0000";
+                        }
+
+                        if (ultimorcl.length() == 0) {
+                            ultimorcl = "0000";
+                        }
+
+                        if (ultimorcxc.length() == 0) {
+                            ultimorcxc = "0000";
+                        }
+
+                        SQLiteDatabase ke_android = conn.getWritableDatabase();
+                        ke_android.beginTransaction();
+
+                        try {
+                            //preparacion e inserción del correlativo de pedidos
+                            String correlativoTexto = right(ultimoped, 4);
+                            int nroCorrelativo = Integer.parseInt(correlativoTexto);
+                            nroCorrelativo = nroCorrelativo + 1;
+
+                            ContentValues insertar = new ContentValues();
+                            insertar.put("kco_numero", nroCorrelativo);
+                            insertar.put("kco_vendedor", cod_usuario.trim());
+
+                            ke_android.insert("ke_correla", null, insertar);
+                            //--------------------------------------------------------------------
+
+                            //preparacion e inserción del correlativo de recibos
+                            String reciboTexto = right(ultimorec, 4);
+                            int nroRecibo = Integer.parseInt(reciboTexto);
+                            nroRecibo = nroRecibo + 1;
+
+                            ContentValues insertarRec = new ContentValues();
+                            insertarRec.put("kcc_numero", nroRecibo);
+                            insertarRec.put("kcc_vendedor", cod_usuario.trim());
+
+                            ke_android.insert("ke_correlacxc", null, insertarRec);
+                            //-------------------------------------------------------
+
+                            //preparacion e inserción del correlativo de reclamos
+                            String reclamoTexto = right(ultimorcl, 4);
+                            int nroReclamo = Integer.parseInt(reclamoTexto);
+                            nroReclamo = nroReclamo + 1;
+
+                            ContentValues insertarRcl = new ContentValues();
+                            insertarRcl.put("kdev_numero", nroReclamo);
+                            insertarRcl.put("kdev_vendedor", cod_usuario.trim());
+
+                            ke_android.insert("ke_correladev", null, insertarRcl);
+                            //---------------------------------------------------------------------------
+
+                            //preparacion e inserción del correlativo de precobranza
+                            String correlaCXC = right(ultimorcxc, 4);
+                            int nroCXC = Integer.parseInt(correlaCXC);
+                            nroCXC = nroCXC + 1;
+
+                            ContentValues insertarCXC = new ContentValues();
+                            insertarCXC.put("kcor_numero", nroCXC);
+                            insertarCXC.put("kcor_vendedor", cod_usuario.trim());
+
+                            ke_android.insert("ke_corprec", null, insertarCXC);
+                            //---------------------------------------------------------------------------
+
+
+                            ke_android.delete("usuarios", "username = ?", new String[]{nick_usuario});
+
+                            //agrego la fecha en la cual inició sesión
+                            Date hoy = Calendar.getInstance().getTime();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                            String fechaSync = sdf.format(hoy);
+
+
+                            ContentValues usuarioDatos = new ContentValues();
+                            usuarioDatos.put("nombre", n_usuario);
+                            usuarioDatos.put("username", nombre_usuario);
+                            usuarioDatos.put("password", pass_usuario);
+                            usuarioDatos.put("vendedor", vendedor);
+                            usuarioDatos.put("almacen", almacen);
+                            usuarioDatos.put("desactivo", desactivo);
+                            usuarioDatos.put("fechamodifi", fechaSync);
+                            usuarioDatos.put("ualterprec", ualterprec);
+                            usuarioDatos.put("sesionactiva", sesionactiva);
+                            usuarioDatos.put("superves", superves);
+
+                            ke_android.insert("usuarios", null, usuarioDatos);
+                            ke_android.setTransactionSuccessful();
+
+
+                        } catch (Exception e) {
+                            Toast.makeText(MainActivity.this, "Error insertando correlativo " + e, Toast.LENGTH_LONG).show();
+                            ke_android.endTransaction();
+
+                        } finally {
+                            ke_android.endTransaction();
+                        }
+
+                        objetoAux.login(cod_usuario, 1);
+
+                        iraPrincipal();
+
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("nick_usuario", nick_usuario);
+                        editor.putString("cod_usuario", cod_usuario);
+                        editor.putString("nombre_usuario", n_usuario);
+                        editor.putString("superves", superves);
+                        editor.putString("codigoEmpresa", codigoEmp);
+                        editor.putString("codigoSucursal", codigoSuc);
+                        editor.apply();
+
+                    } else if (desactivo == 2.0) {
+                        Toast.makeText(MainActivity.this, "Este usuario se encuentra desactivado", Toast.LENGTH_LONG).show();
+                        bt_iniciar.setEnabled(true);
+                        bt_iniciar.setText("Iniciar Sesión");
+                    }
+
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
+            } else {
+                Toast.makeText(MainActivity.this, "Usuario o password incorrecto", Toast.LENGTH_LONG).show();
                 bt_iniciar.setEnabled(true);
                 bt_iniciar.setText("Iniciar Sesión");
-                Toast.makeText(getApplicationContext(), "Error en inicio de sesión ", Toast.LENGTH_LONG).show();
             }
+        }, error -> {
+            error.printStackTrace();
+            bt_iniciar.setEnabled(true);
+            bt_iniciar.setText("Iniciar Sesión");
+            Toast.makeText(getApplicationContext(), "Error en inicio de sesión ", Toast.LENGTH_LONG).show();
         }) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            protected Map<String, String> getParams() {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados el usuario y password.
-                Map<String, String> parametros = new HashMap<String, String>();
+                Map<String, String> parametros = new HashMap<>();
                 parametros.put("nick_usuario", nick_usuario);
                 parametros.put("pass_usuario", pass_usuario);
                 return parametros;
@@ -649,6 +626,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             desactivo = cursor.getDouble(0);
             System.out.println(desactivo);
         }
+        cursor.close();
         if (nick_usuario != null && !desactivo.equals(2.0)) {
             iraPrincipal();
         } else {
@@ -674,17 +652,35 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         codigo_empresa = "081196";
         super.onResume();
         validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=" + codigo_empresa);
+
+        /*appUpdateManager
+                .getAppUpdateInfo()
+                .addOnSuccessListener(
+                        appUpdateInfo -> {
+                            if (appUpdateInfo.updateAvailability()
+                            == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS){
+                                try {
+                                    appUpdateManager.startUpdateFlowForResult(
+                                            appUpdateInfo,
+                                            AppUpdateType.IMMEDIATE,
+                                            this,
+                                            MY_REQUEST_CODE
+                                    );
+                                } catch (IntentSender.SendIntentException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+                );*/
     }
 
     private void checkForAppUpdate(){
-        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
+        appUpdateManager = AppUpdateManagerFactory.create(this);
 
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
 
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                    && appUpdateInfo.clientVersionStalenessDays() != null
-                    && appUpdateInfo.clientVersionStalenessDays() >= 2
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
 
                 /*try {
@@ -716,6 +712,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 }
 
             }
+            else {
+                ValidarSesion();
+            }
         });
     }
 
@@ -727,6 +726,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 Toast.makeText(this, "Actualización Exitosa!", Toast.LENGTH_SHORT).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Actualización Cancelada", Toast.LENGTH_SHORT).show();
+                this.finish();
+                System.exit(0);
             } else if (resultCode == ActivityResult.RESULT_IN_APP_UPDATE_FAILED) {
                 Toast.makeText(this, "Algo salio mal", Toast.LENGTH_SHORT).show();
             } else {
@@ -734,5 +735,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             }
         }
     }
+
+
 
 }

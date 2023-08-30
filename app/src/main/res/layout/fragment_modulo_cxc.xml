@@ -8,16 +8,13 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tbLayout"
+        style="@style/TabLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tabGravity="fill"
-        app:tabIndicatorColor="@color/rojologo"
-        app:tabSelectedTextColor="#FFF"
-        app:tabTextColor="#AAA" />
+        app:tabGravity="fill" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"

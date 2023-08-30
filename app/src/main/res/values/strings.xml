@@ -28,11 +28,11 @@
     <string name="subirp">Subir Datos</string>
     <string name="catalogo">Catálogo</string>
     <string name="clientes">Clientes</string>
-    <string name="sincronizar">Descargar Datos</string>
+    <string name="sincronizar">DESCARGAR DATOS</string>
     <string name="cod_articulo">codigor</string>
     <string name="nombre_articulo">nombre</string>
     <string name="estadosync">Estado: </string>
-    <string name="subir">Subir Pedidos</string>
+    <string name="subir">SUBIR PEDIDOS</string>
     <string name="Agregar">Agregar artículo</string>
     <string name="Procesar">Procesar </string>
     <string name="Rb1">Factura </string>

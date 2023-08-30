@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/primaryColor"
     tools:context=".MainActivity">
 
 
@@ -21,6 +22,8 @@
         android:enabled="true"
         android:hint="@string/usuariotext"
         android:inputType="textPersonName"
+        android:textColor="#808080"
+        android:textColorHint="#80808080"
         android:textSize="18sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/imageView4"
@@ -100,6 +103,8 @@
         android:enabled="true"
         android:hint="@string/passwordtext"
         android:inputType="textPassword"
+        android:textColor="#808080"
+        android:textColorHint="#80808080"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/txt_usuario"
         app:layout_constraintHorizontal_bias="1.0"

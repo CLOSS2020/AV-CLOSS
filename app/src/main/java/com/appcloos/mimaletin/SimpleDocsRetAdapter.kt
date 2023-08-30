@@ -10,23 +10,28 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.appcloos.mimaletin.viewmodel.CXC.ke_precobradocs
 
-class SimpleDocsRetAdapter(context: Context, private val kePrecobradocs:ArrayList<ke_precobradocs>): RecyclerView.Adapter<SimpleDocsRetAdapter.SimpleDocsRetHolder>() {
+class SimpleDocsRetAdapter(
+    context: Context,
+    private val kePrecobradocs: ArrayList<ke_precobradocs>
+) : RecyclerView.Adapter<SimpleDocsRetAdapter.SimpleDocsRetHolder>() {
 
     private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null, 28)
-    var ke_android: SQLiteDatabase = conn.writableDatabase
+    var keAndroid: SQLiteDatabase = conn.writableDatabase
 
-    inner class SimpleDocsRetHolder(val view: View): RecyclerView.ViewHolder(view) {
-        val nrodoc  = view.findViewById<TextView>(R.id.tv_nrodoc_sdocs)
-        val cliente = view.findViewById<TextView>(R.id.tv_nocli_sdocs)
-        lateinit var nomcliente : String
+    inner class SimpleDocsRetHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val nrodoc: TextView = view.findViewById(R.id.tv_nrodoc_sdocs)
+        val cliente: TextView = view.findViewById(R.id.tv_nocli_sdocs)
+        lateinit var nomcliente: String
 
-        fun bind(kePrecobradocs:ke_precobradocs){
-            nrodoc.text =  kePrecobradocs.documento
+        fun bind(kePrecobradocs: ke_precobradocs) {
+            nrodoc.text = kePrecobradocs.documento
 
-            val buscaCliente: Cursor =
-                ke_android.rawQuery("SELECT nombrecli FROM ke_doccti WHERE documento = '${kePrecobradocs.documento}'", null);
+            val buscaCliente: Cursor = keAndroid.rawQuery(
+                "SELECT nombrecli FROM ke_doccti WHERE documento = '${kePrecobradocs.documento}'",
+                null
+            )
 
-            while (buscaCliente.moveToNext()){
+            while (buscaCliente.moveToNext()) {
                 nomcliente = buscaCliente.getString(0)
             }
 

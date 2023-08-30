@@ -10,11 +10,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class PedidoAdapter extends BaseAdapter {
-    private ArrayList<Pedidos> listpedidos;
-    private Context context;
+    private final ArrayList<Pedidos> listpedidos;
+    private final Context context;
     private LayoutInflater inflater;
 
-    public PedidoAdapter(Context context, ArrayList<Pedidos> listpedidos){
+    public PedidoAdapter(Context context, ArrayList<Pedidos> listpedidos) {
         this.context = context;
         this.listpedidos = listpedidos;
 
@@ -42,14 +42,14 @@ public class PedidoAdapter extends BaseAdapter {
         final Pedidos pedidos = (Pedidos) getItem(position);
         convertView = LayoutInflater.from(context).inflate(R.layout.item_pedido, null);
 
-        TextView textcodigoped     = (TextView) convertView.findViewById(R.id.txt_codinternopedido);
-        TextView textnroped        = (TextView) convertView.findViewById(R.id.txt_numeroped);
-        TextView textcodigocliente = (TextView) convertView.findViewById(R.id.txt_codclienteped);
-        TextView textnombrecliente = (TextView) convertView.findViewById(R.id.txt_nombrecliente);
-        TextView textmontoneto     = (TextView) convertView.findViewById(R.id.txt_montonetoped);
-        TextView textestatusped    = (TextView) convertView.findViewById(R.id.txt_estatusped);
-        TextView textfechapedido   = (TextView) convertView.findViewById(R.id.txt_fechapedcreado);
-        TextView textmontonetodcto = (TextView) convertView.findViewById(R.id.txt_montonetodcto);
+        TextView textcodigoped = convertView.findViewById(R.id.txt_codinternopedido);
+        TextView textnroped = convertView.findViewById(R.id.txt_numeroped);
+        TextView textcodigocliente = convertView.findViewById(R.id.txt_codclienteped);
+        TextView textnombrecliente = convertView.findViewById(R.id.txt_nombrecliente);
+        TextView textmontoneto = convertView.findViewById(R.id.txt_montonetoped);
+        TextView textestatusped = convertView.findViewById(R.id.txt_estatusped);
+        TextView textfechapedido = convertView.findViewById(R.id.txt_fechapedcreado);
+        TextView textmontonetodcto = convertView.findViewById(R.id.txt_montonetodcto);
 
         Double montoNeto = pedidos.getTotalNeto();
         montoNeto = (montoNeto * 100.00) / 100.00;
@@ -65,7 +65,7 @@ public class PedidoAdapter extends BaseAdapter {
         }*/
 
         textcodigoped.setText("COD: " + pedidos.getNumeroDocumento());
-        textnroped.setText("Nº "+ pedidos.getNumeroPedido());
+        textnroped.setText("Nº " + pedidos.getNumeroPedido());
         textcodigocliente.setText("Cliente: " + pedidos.getCodigoCliente());
         textnombrecliente.setText(pedidos.getNombreCliente());
         textmontoneto.setText("Monto Neto: $" + pedidos.getTotalNeto());

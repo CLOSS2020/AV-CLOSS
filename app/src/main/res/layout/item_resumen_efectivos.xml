@@ -12,7 +12,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        android:background="@drawable/custom_input"
+        android:theme="@style/BasicStyleElementRecicleView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.1@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/74ca1efbb664253a1f2667e8af25aeeb/transformed/jetified-lifecycle-livedata-core-ktx-2.6.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/74ca1efbb664253a1f2667e8af25aeeb/transformed/jetified-lifecycle-livedata-core-ktx-2.6.1/res" />
-      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/74ca1efbb664253a1f2667e8af25aeeb/transformed/jetified-lifecycle-livedata-core-ktx-2.6.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/891563ea40dc223b8dc87edb0d7f5f85/transformed/jetified-lifecycle-livedata-core-ktx-2.6.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/891563ea40dc223b8dc87edb0d7f5f85/transformed/jetified-lifecycle-livedata-core-ktx-2.6.1/res" />
+      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/891563ea40dc223b8dc87edb0d7f5f85/transformed/jetified-lifecycle-livedata-core-ktx-2.6.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

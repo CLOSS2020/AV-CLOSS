@@ -3,6 +3,7 @@ package com.appcloos.mimaletin;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
@@ -27,6 +28,9 @@ public class CobranzasActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.TabLayout);
         viewPager = findViewById(R.id.ViewPager);
+
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String cod_usuario = preferences.getString("cod_usuario", null);
 
         pagerAdapter = new PagerController(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
@@ -62,5 +66,8 @@ public class CobranzasActivity extends AppCompatActivity {
             }
         });
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        ObjetoAux objetoAux = new ObjetoAux(this);
+        objetoAux.descargaDesactivo(cod_usuario);
     }
 }

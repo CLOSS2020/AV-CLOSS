@@ -1,9 +1,5 @@
 package com.appcloos.mimaletin;
 
-import static com.appcloos.mimaletin.PrincipalActivity.cod_usuario;
-
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,16 +9,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -33,23 +25,16 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -59,16 +44,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class CreacionPedidoActivity extends AppCompatActivity {
 
-    private int APP_ITEMS_FACTURAS, APP_ITEMS_NOTAS_ENTREGA, NOEMIFAC, NOEMINOTA;
+    private int APP_ITEMS_FACTURAS;
+    private int APP_ITEMS_NOTAS_ENTREGA;
 
     private long APP_DIAS_PEDIDO_COMPLEMENTO;
 
     private RadioButton Factura, NotaEntrega, Credito, Prepago;
-    private RadioGroup GrupoRadio;
     public static String documento, formaPago;
     ArrayAdapter adapter;
     ArrayAdapter<CharSequence> adapterSpinner;
@@ -97,26 +85,24 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     public static int enteroPrecio, conteoDocs;
     public static String nroPedido, CorrelativoTexto, nombreEmpresa = "", enlaceEmpresa = "", tipoDoc = "PED", enpreventa,
             n_cliente, tipoDePrecioaMostrar, negociacionActiva, fechaVence, nuevoVencimiento, kti_negesp;
-    private SharedPreferences preferences;
-    private CarritoAdapter carritoAdapter;
     //CheckBox cb_negoespecial;
     Switch sw_negoespecial;
     Switch sw_preventa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //mantener la orientacion vertical
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); //mantener la orientacion vertical
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creacion_pedido);
         // getSupportActionBar().hide(); //metodo para esconder la actionbar
 
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         cod_usuario = preferences.getString("cod_usuario", null);
         enpreventa = "0";
         menunav = findViewById(R.id.menu_creacion);
         menunav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        codigoCliente = getIntent().getExtras().getString("cod_cliente");
+        codigoCliente = Objects.requireNonNull(getIntent().getExtras()).getString("cod_cliente");
         n_cliente = getIntent().getExtras().getString("nombre_cliente");
 
         conn = new AdminSQLiteOpenHelper(CreacionPedidoActivity.this, "ke_android", null, 12);
@@ -125,8 +111,8 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
         APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));
         APP_DIAS_PEDIDO_COMPLEMENTO = conn.getConfigNum("APP_DIAS_PEDIDO_COMPLEMENTO").longValue();
-        NOEMIFAC = conn.getCampoInt("cliempre", "noemifac", "codigo", codigoCliente);
-        NOEMINOTA = conn.getCampoInt("cliempre", "noeminota", "codigo", codigoCliente);
+        int NOEMIFAC = conn.getCampoInt("cliempre", "noemifac", "codigo", codigoCliente);
+        int NOEMINOTA = conn.getCampoInt("cliempre", "noeminota", "codigo", codigoCliente);
 
         cargarEnlace();
         Cursor cursor = ke_android.rawQuery("SELECT MAX(kco_numero) FROM ke_correla WHERE kco_vendedor ='" + cod_usuario + "'", null);
@@ -134,19 +120,21 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             nroCorrelativo = cursor.getInt(0);
             nroCorrelativo = nroCorrelativo + 1;
-            CorrelativoTexto = String.valueOf(nroCorrelativo);
+            //CorrelativoTexto = String.valueOf(nroCorrelativo);
             CorrelativoTexto = "0000" + nroCorrelativo;
 
             generarNumeroPedido();
-            getSupportActionBar().setTitle("Pedido: " + nroPedido);
+            Objects.requireNonNull(getSupportActionBar()).setTitle("Pedido: " + nroPedido);
         }
-        GrupoRadio = (RadioGroup) findViewById(R.id.radioGroup);
-        Factura = (RadioButton) findViewById(R.id.RbFactura);
-        NotaEntrega = (RadioButton) findViewById(R.id.RbNotaEntrega);
-        Credito = (RadioButton) findViewById(R.id.RbCredito);
-        Prepago = (RadioButton) findViewById(R.id.RbPrepago);
+        cursor.close();
+        RadioGroup grupoRadio = findViewById(R.id.radioGroup);
+        Factura = findViewById(R.id.RbFactura);
+        NotaEntrega = findViewById(R.id.RbNotaEntrega);
+        Credito = findViewById(R.id.RbCredito);
+        Prepago = findViewById(R.id.RbPrepago);
         tv_neto = findViewById(R.id.tv_neto);
         tv_codigocliente = findViewById(R.id.tv_codigocliente);
+        listaLineas = findViewById(R.id.ListPedido);
         //spinner             = findViewById(R.id.sp_cliente);
         //ibt_modificar       = findViewById(R.id.ibt_modificar);
         //cb_negoespecial = findViewById(R.id.cb_negespecial);
@@ -162,39 +150,27 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         llamarFuncionesAsignacion();
 
         tvNombreCliente.setText(n_cliente);
-        GrupoRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.RbFactura) {
-                    tv_bloqueado.setVisibility(View.VISIBLE);
-                    tv_bloqueado.setText("Las facturas solo tendrán un máximo de " + APP_ITEMS_FACTURAS + " líneas de artículos");
-                } else if (checkedId == R.id.RbNotaEntrega) {
-                    tv_bloqueado.setVisibility(View.VISIBLE);
-                    tv_bloqueado.setText("Las N/E solo tendrán un máximo de " + APP_ITEMS_NOTAS_ENTREGA + " líneas de artículos");
-                }
+        grupoRadio.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.RbFactura) {
+                tv_bloqueado.setVisibility(View.VISIBLE);
+                tv_bloqueado.setText("Las facturas solo tendrán un máximo de " + APP_ITEMS_FACTURAS + " líneas de artículos");
+            } else if (checkedId == R.id.RbNotaEntrega) {
+                tv_bloqueado.setVisibility(View.VISIBLE);
+                tv_bloqueado.setText("Las N/E solo tendrán un máximo de " + APP_ITEMS_NOTAS_ENTREGA + " líneas de artículos");
             }
         });
 
-        Prepago.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                recalculoPrecio(isChecked);
+        Prepago.setOnCheckedChangeListener((buttonView, isChecked) -> recalculoPrecio(isChecked));
 
-            }
-        });
-
-        NotaEntrega.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Prepago.setChecked(false);
-                    Prepago.setVisibility(View.INVISIBLE);
-                    Prepago.setEnabled(false);
-                    Credito.setChecked(true);
-                } else {
-                    Prepago.setVisibility(View.VISIBLE);
-                    Prepago.setEnabled(true);
-                }
+        NotaEntrega.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                Prepago.setChecked(false);
+                Prepago.setVisibility(View.INVISIBLE);
+                Prepago.setEnabled(false);
+                Credito.setChecked(true);
+            } else {
+                Prepago.setVisibility(View.VISIBLE);
+                Prepago.setEnabled(true);
             }
         });
 
@@ -215,7 +191,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             }
         });*/
 
-        listaLineas = findViewById(R.id.ListPedido);
+
        /* carritoAdapter = new CarritoAdapter(CreacionPedidoActivity.this, listacarrito);
         listaLineas.setAdapter(carritoAdapter);*/
 
@@ -270,291 +246,269 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         //en este metodo onlistener, cuando se mantiene presionado un item, da la opcion de sacarlo del carrito
         //y luego refrescar la lista de lineas del pedido
 
-        listaLineas.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                final String codigo = listacarrito.get(position).getCodigo();
+        listaLineas.setOnItemLongClickListener((adapterView, view, position, l) -> {
+            final String codigo = listacarrito.get(position).getCodigo();
 
-                final AlertDialog.Builder ventana = new AlertDialog.Builder(CreacionPedidoActivity.this);
-                ventana.setTitle("Mensaje del Sistema");
-                ventana.setMessage("¿Desea eliminar este artículo?");
+            final AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(CreacionPedidoActivity.this,R.style.AlertDialogCustom));
+            ventana.setTitle("Mensaje del Sistema");
+            ventana.setMessage("¿Desea eliminar este artículo?");
 
-                ventana.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 8);
-                        SQLiteDatabase ke_android = conn.getWritableDatabase();
-                        ke_android.execSQL("DELETE FROM ke_carrito WHERE kmv_codart ='" + codigo + "'");
-                        actualizaLista();
+            ventana.setPositiveButton("Aceptar", (dialogInterface, i) -> {
+                conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 8);
+                SQLiteDatabase ke_android1 = conn.getWritableDatabase();
+                ke_android1.execSQL("DELETE FROM ke_carrito WHERE kmv_codart ='" + codigo + "'");
+                actualizaLista();
 
-                        Toast.makeText(CreacionPedidoActivity.this, "Artículo borrado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreacionPedidoActivity.this, "Artículo borrado", Toast.LENGTH_SHORT).show();
 
 
-                    }
-                });
+            });
 
-                ventana.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
+            ventana.setNegativeButton("Cancelar", (dialogInterface, i) -> dialogInterface.dismiss());
 
-                AlertDialog dialogo = ventana.create();
-                dialogo.show();
+            AlertDialog dialogo = ventana.create();
+            dialogo.show();
 
 
-                return false;
-            }
+            return false;
         });
 
         /*******************************************************************************************************************/
 
-        listaLineas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                //-- obtiene el codigo del articulo y el descuento en la línea
-                final String codigo = listacarrito.get(position).getCodigo();
-                final Double dctolin = listacarrito.get(position).getDctolin();
+        listaLineas.setOnItemClickListener((adapterView, view, position, l) -> {
+            //-- obtiene el codigo del articulo y el descuento en la línea
+            final String codigo = listacarrito.get(position).getCodigo();
+            final Double dctolin = listacarrito.get(position).getDctolin();
 
-                final EditText cajatexto = new EditText(CreacionPedidoActivity.this);
-                cajatexto.setInputType(InputType.TYPE_CLASS_NUMBER);
+            final EditText cajatexto = new EditText(new ContextThemeWrapper(CreacionPedidoActivity.this,R.style.EditTextStyleCustom));
+            cajatexto.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-                conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
-                final SQLiteDatabase ke_android = conn.getWritableDatabase();
-                Cursor cursor_mul = ke_android.rawQuery("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
-                System.out.println("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
+            conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
+            final SQLiteDatabase ke_android12 = conn.getWritableDatabase();
+            Cursor cursor_mul = ke_android12.rawQuery("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
+            System.out.println("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
 
-                cursor_mul.moveToFirst();
-                double vta_Min = cursor_mul.getDouble(0);
-                int vta_minenx = cursor_mul.getInt(1);
+            cursor_mul.moveToFirst();
+            double vta_Min = cursor_mul.getDouble(0);
+            int vta_minenx = cursor_mul.getInt(1);
 
-                System.out.println("ventaMin: " + vta_Min);
+            cursor_mul.close();
 
-                AlertDialog.Builder ventana = new AlertDialog.Builder(CreacionPedidoActivity.this);
-                ventana.setTitle("Modificar Linea");
-                ventana.setMessage("Porfavor, elige la cantidad");
-                if (vta_minenx == 1) {
+            System.out.println("ventaMin: " + vta_Min);
 
-                    LinearLayout layout_h = new LinearLayout(CreacionPedidoActivity.this);
-                    layout_h.setOrientation(LinearLayout.HORIZONTAL);
-                    final TextView mensajeCantidadMultiplo = new TextView(CreacionPedidoActivity.this);
+            AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(CreacionPedidoActivity.this,R.style.AlertDialogCustom));
+            ventana.setTitle("Modificar Linea");
+            ventana.setMessage("Porfavor, elige la cantidad");
+            if (vta_minenx == 1) {
 
-                    mensajeCantidadMultiplo.setTextSize(20);
-                    mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD);
-                    mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
-                    mensajeCantidadMultiplo.setText(((int) Math.round(vta_Min)) + " x ");
-                    //mensajeCantidadMultiplo.setLayoutParams(params);
-                    cajatexto.setWidth(1000);
-                    cajatexto.setHint("Cantidad de paquetes a pedir");
-                    layout_h.addView(mensajeCantidadMultiplo);
-                    //cajatexto.setLayoutParams(params2);
-                    layout_h.addView(cajatexto);
+                LinearLayout layout_h = new LinearLayout(CreacionPedidoActivity.this);
+                layout_h.setOrientation(LinearLayout.HORIZONTAL);
+                final TextView mensajeCantidadMultiplo = new TextView(CreacionPedidoActivity.this);
 
-                    ventana.setView(layout_h);
+                mensajeCantidadMultiplo.setTextSize(20);
+                mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD);
+                mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
+                mensajeCantidadMultiplo.setText(((int) Math.round(vta_Min)) + " x ");
+                //mensajeCantidadMultiplo.setLayoutParams(params);
+                cajatexto.setWidth(1000);
+                cajatexto.setHint("Cantidad de paquetes a pedir");
+                layout_h.addView(mensajeCantidadMultiplo);
+                //cajatexto.setLayoutParams(params2);
+                layout_h.addView(cajatexto);
+
+                ventana.setView(layout_h);
+            } else {
+                ventana.setView(cajatexto);
+            }
+            ventana.setPositiveButton("Aceptar", (dialogInterface, i) -> {
+
+
+                if (cajatexto.getText().toString().isEmpty()) {
+                    Toast.makeText(CreacionPedidoActivity.this, "la cantidad no puede estar en blanco", Toast.LENGTH_SHORT).show();
                 } else {
-                    ventana.setView(cajatexto);
-                }
-                ventana.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    /* 16-11-2021 Corregido error de texto vacio que generaba crash en la app */
+                    String cantidad_nueva = cajatexto.getText().toString();
 
+                    int cantidad = Integer.parseInt(cantidad_nueva);
 
-                        if (cajatexto.getText().toString().isEmpty()) {
-                            Toast.makeText(CreacionPedidoActivity.this, "la cantidad no puede estar en blanco", Toast.LENGTH_SHORT).show();
+                    if (cantidad != 0) {
+                        Cursor cursor1 = ke_android12.rawQuery("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
+                        cursor1.moveToNext();
+                        //System.out.println("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
+                        double precio = cursor1.getDouble(0);
+                        double existencia = cursor1.getDouble(1);
+                        Double ventaMax = cursor1.getDouble(3);
+                        double ventaMin = cursor1.getDouble(2);
+                        int vta_minenx1 = cursor1.getInt(4);
+                        cursor1.close();
+                        int existencia_validar = (int) Math.round(existencia);
+
+                        System.out.println(cantidad);
+                        System.out.println(existencia_validar);
+
+                        if (cantidad > existencia_validar) {
+                            Toast.makeText(CreacionPedidoActivity.this, "La cantidad no puede ser superior a la existencia", Toast.LENGTH_SHORT).show();
                         } else {
-                            /* 16-11-2021 Corregido error de texto vacio que generaba crash en la app */
-                            String cantidad_nueva = cajatexto.getText().toString();
-
-                            int cantidad = Integer.parseInt(cantidad_nueva);
-
-                            if (cantidad != 0) {
-                                Cursor cursor = ke_android.rawQuery("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
-                                cursor.moveToNext();
-                                //System.out.println("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
-                                Double precio = cursor.getDouble(0);
-                                Double existencia = cursor.getDouble(1);
-                                Double ventaMax = cursor.getDouble(3);
-                                Double ventaMin = cursor.getDouble(2);
-                                int vta_minenx = cursor.getInt(4);
-                                int existencia_validar = (int) Math.round(existencia);
-
-                                System.out.println(cantidad);
-                                System.out.println(existencia_validar);
-
-                                if (cantidad > existencia_validar) {
-                                    Toast.makeText(CreacionPedidoActivity.this, "La cantidad no puede ser superior a la existencia", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    if (ventaMin > 0) {
-                                        System.out.println("Multiplo: " + vta_minenx);
-                                        if (vta_minenx == 1) {
-                                            if (cantidad * ventaMin > existencia) {
-                                                Toast.makeText(CreacionPedidoActivity.this, "Debe de elegir una cantidad dentro de la existencia", Toast.LENGTH_LONG).show();
-                                            } else if (cantidad * ventaMin <= existencia) {
-                                                int cantidad_new = (int) (cantidad * ventaMin);
-                                                System.out.println("Nueva cantidad " + cantidad_new);
-                                                Double precioTotal = precio * cantidad_new;
-                                                System.out.println("Precio total: " + precioTotal);
-                                                precioTotal = Math.round(precioTotal * 100.00) / 100.00;
-
-                                                ke_android.beginTransaction();
-                                                try {
-
-                                                    Double precioNuevo = precioTotal;
-                                                    precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
-
-                                                    Double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
-                                                    mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
-
-
-                                                    ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad_new + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
-
-
-                                                    ke_android.setTransactionSuccessful();
-                                                    ke_android.endTransaction();
-                                                    Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
-                                                } catch (Exception ex) {
-                                                    System.out.println(ex);
-                                                    ke_android.endTransaction();
-
-                                                }
-                                            }
-
-                                        } else {
-                                            if (cantidad < ventaMin) {
-                                                Toast.makeText(CreacionPedidoActivity.this, "Debe cumplir con la cantidad mínima para la venta", Toast.LENGTH_LONG).show();
-                                            } else if (cantidad >= ventaMin) {
-
-                                                Double precioTotal = precio * Double.valueOf(cantidad);
-                                                precioTotal = Math.round(precioTotal * 100.00) / 100.00;
-
-                                                ke_android.beginTransaction();
-                                                try {
-
-                                                    Double precioNuevo = precio * Double.valueOf(cantidad);
-                                                    precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
-
-                                                    Double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
-                                                    mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
-
-
-                                                    ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
-
-
-                                                    ke_android.setTransactionSuccessful();
-                                                    ke_android.endTransaction();
-                                                    Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
-                                                    //finish();
-                                                } catch (Exception ex) {
-                                                    System.out.println(ex);
-                                                    ke_android.endTransaction();
-
-                                                }
-                                            }
-                                        }
-
-
-                                    } else {
-                                        Double precioTotal = precio * Double.valueOf(cantidad);
+                            if (ventaMin > 0) {
+                                System.out.println("Multiplo: " + vta_minenx1);
+                                if (vta_minenx1 == 1) {
+                                    if (cantidad * ventaMin > existencia) {
+                                        Toast.makeText(CreacionPedidoActivity.this, "Debe de elegir una cantidad dentro de la existencia", Toast.LENGTH_LONG).show();
+                                    } else if (cantidad * ventaMin <= existencia) {
+                                        int cantidad_new = (int) (cantidad * ventaMin);
+                                        System.out.println("Nueva cantidad " + cantidad_new);
+                                        double precioTotal = precio * cantidad_new;
+                                        System.out.println("Precio total: " + precioTotal);
                                         precioTotal = Math.round(precioTotal * 100.00) / 100.00;
 
-                                        ke_android.beginTransaction();
+                                        ke_android12.beginTransaction();
                                         try {
 
-                                            Double precioNuevo = precio * Double.valueOf(cantidad);
+                                            double precioNuevo = precioTotal;
                                             precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
-                                            Double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
+                                            double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
                                             mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
 
 
-                                            ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
+                                            ke_android12.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad_new + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
 
 
-                                            ke_android.setTransactionSuccessful();
-                                            ke_android.endTransaction();
-                                            //finish();
+                                            ke_android12.setTransactionSuccessful();
+                                            ke_android12.endTransaction();
                                             Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
                                         } catch (Exception ex) {
-                                            System.out.println(ex);
-                                            ke_android.endTransaction();
+                                            System.out.println("--Error--");
+                                            ex.printStackTrace();
+                                            ke_android12.endTransaction();
 
                                         }
                                     }
-                                    /*
-                                    Double precioNuevo = precio * Double.valueOf(cantidad);
+
+                                } else {
+                                    if (cantidad < ventaMin) {
+                                        Toast.makeText(CreacionPedidoActivity.this, "Debe cumplir con la cantidad mínima para la venta", Toast.LENGTH_LONG).show();
+                                    } else if (cantidad >= ventaMin) {
+
+                                        double precioTotal = precio * (double) cantidad;
+                                        precioTotal = Math.round(precioTotal * 100.00) / 100.00;
+
+                                        ke_android12.beginTransaction();
+                                        try {
+
+                                            double precioNuevo = precio * (double) cantidad;
+                                            precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
+
+                                            double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
+                                            mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+
+
+                                            ke_android12.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
+
+
+                                            ke_android12.setTransactionSuccessful();
+                                            ke_android12.endTransaction();
+                                            Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
+                                            //finish();
+                                        } catch (Exception ex) {
+                                            System.out.println("--Error--");
+                                            ex.printStackTrace();
+                                            ke_android12.endTransaction();
+
+                                        }
+                                    }
+                                }
+
+
+                            } else {
+                                double precioTotal = precio * (double) cantidad;
+                                precioTotal = Math.round(precioTotal * 100.00) / 100.00;
+
+                                ke_android12.beginTransaction();
+                                try {
+
+                                    double precioNuevo = precio * (double) cantidad;
                                     precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
-                                    Double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin/100));
+                                    double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
                                     mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
 
-                                    ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioNuevo + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
-                                    actualizaLista();
 
-                                    Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();*/
+                                    ke_android12.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
 
-                                    actualizaLista();
-                                    Toast.makeText(CreacionPedidoActivity.this, "Articulo añadido", Toast.LENGTH_LONG).show();
+
+                                    ke_android12.setTransactionSuccessful();
+                                    ke_android12.endTransaction();
+                                    //finish();
+                                    Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
+                                } catch (Exception ex) {
+                                    System.out.println("--Error--");
+                                    ex.printStackTrace();
+                                    ke_android12.endTransaction();
+
                                 }
-                            } else {
-                                Toast.makeText(CreacionPedidoActivity.this, "La existencia no puede ser 0", Toast.LENGTH_SHORT).show();
                             }
+                            /*
+                            Double precioNuevo = precio * Double.valueOf(cantidad);
+                            precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
+                            Double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin/100));
+                            mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+
+                            ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioNuevo + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
+                            actualizaLista();
+
+                            Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();*/
+
+                            actualizaLista();
+                            Toast.makeText(CreacionPedidoActivity.this, "Articulo añadido", Toast.LENGTH_LONG).show();
                         }
+                    } else {
+                        Toast.makeText(CreacionPedidoActivity.this, "La existencia no puede ser 0", Toast.LENGTH_SHORT).show();
                     }
-                });
 
-                ventana.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                AlertDialog dialogo = ventana.create();
-                dialogo.show();
+                }
+            });
+
+            ventana.setNegativeButton("Cancelar", (dialogInterface, i) -> dialogInterface.dismiss());
+            AlertDialog dialogo = ventana.create();
+            dialogo.show();
 
 
-            }
         });
 
 
-        sw_negoespecial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        sw_negoespecial.setOnCheckedChangeListener((compoundButton, b) -> {
 
-                if (compoundButton.isChecked()) {
+            if (compoundButton.isChecked()) {
 
-                    tv_mtomin.setEnabled(true);
-                    tv_mtomin.setVisibility(View.VISIBLE);
-                    tv_mtomin.setText("Monto Mín: $" + montoMinimo);
+                tv_mtomin.setEnabled(true);
+                tv_mtomin.setVisibility(View.VISIBLE);
+                tv_mtomin.setText("Monto Mín: $" + montoMinimo);
 
-                } else {
-                    tv_mtomin.setEnabled(false);
-                    tv_mtomin.setVisibility(View.INVISIBLE);
+            } else {
+                tv_mtomin.setEnabled(false);
+                tv_mtomin.setVisibility(View.INVISIBLE);
 
-                }
+            }
 /*
-                recalculoPrecio(b);*/
-            }
+            recalculoPrecio(b);*/
         });
 
 
-        sw_preventa.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (compoundButton.isChecked()) {
-                    enpreventa = "1";
-                    vaciarCarrito();
-                    CargarLineas();
-                    SumaNeto();
+        sw_preventa.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (compoundButton.isChecked()) {
+                enpreventa = "1";
+                vaciarCarrito();
+                CargarLineas();
+                SumaNeto();
 
 
-                } else if (!compoundButton.isChecked()) {
-                    enpreventa = "0";
-                    vaciarCarrito();
-                    CargarLineas();
-                    SumaNeto();
-                }
+            } else if (!compoundButton.isChecked()) {
+                enpreventa = "0";
+                vaciarCarrito();
+                CargarLineas();
+                SumaNeto();
             }
         });
 
@@ -572,19 +526,19 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             NotaEntrega.setVisibility(View.VISIBLE);
         }
 
-        if (NOEMIFAC == 1 && NOEMINOTA == 1){
+        if (NOEMIFAC == 1 && NOEMINOTA == 1) {
             Toast.makeText(this, "Cliente suspendido", Toast.LENGTH_SHORT).show();
             finish();
         }
 
         Factura.setOnClickListener(v -> {
             analizarArticulos("vta_solone", listacarrito);
-            obtenerMontoMinimoTotal();
+            montoMinimoTotal = obtenerMontoMinimoTotal();
         });
 
         NotaEntrega.setOnClickListener(v -> {
             analizarArticulos("vta_solofac", listacarrito);
-            obtenerMontoMinimoTotal();
+            montoMinimoTotal = obtenerMontoMinimoTotal();
         });
 
         /*Factura.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -600,18 +554,18 @@ public class CreacionPedidoActivity extends AppCompatActivity {
 
         int num = 0;
         //int numNE = 0;
-        for (int i = 0; i < listacarrito.size(); i++){
+        for (int i = 0; i < listacarrito.size(); i++) {
             num = conn.getCampoInt("articulo", campo, "codigo", listacarrito.get(i).codigo);
             //numNE += conn.getCampoInt("articulo", "vta_solone", "codigo", listacarrito.get(i).codigo);
-            if (num > 0){
+            if (num > 0) {
                 break;
             }
         }
 
-        if (num > 0 && NotaEntrega.isChecked()){
+        if (num > 0 && NotaEntrega.isChecked()) {
             Toast.makeText(this, "Posee artículos que solo están disponibles para Facturas", Toast.LENGTH_SHORT).show();
             Factura.setChecked(true);
-        } else if (num > 0 && Factura.isChecked()){
+        } else if (num > 0 && Factura.isChecked()) {
             Toast.makeText(this, "Posee artículos que solo están disponibles para Notas de Entrega", Toast.LENGTH_SHORT).show();
             NotaEntrega.setChecked(true);
         }
@@ -661,8 +615,8 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             cursor = ke_android.rawQuery("SELECT " + tipoDePrecioaMostrar + " FROM articulo WHERE codigo = '" + codigo + "'", null);
             cursor.moveToFirst();
             Double precio = Math.round(cursor.getDouble(0) * 100.00) / 100.00;
-            Double precioTotal = (precio * cantidad);
-            Double precioTotalRedondo = Math.round(precioTotal * 100.00) / 100.00;
+            double precioTotal = (precio * cantidad);
+            double precioTotalRedondo = Math.round(precioTotal * 100.00) / 100.00;
             cursor.close();
 
 
@@ -676,7 +630,6 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     }
 
     /// validacion de pedidos complementarios
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private Boolean validarSiHayPedidosActivos() {
 
         LocalDateTime hoy = LocalDateTime.now();
@@ -685,7 +638,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         String fechaAnterior = ayer.format(formatter);
 
 
-        Boolean valorCentinela = false;
+        boolean valorCentinela;
         SQLiteDatabase ke_android = conn.getWritableDatabase();
 
         Cursor cursorPeds = ke_android.rawQuery("SELECT kti_ndoc FROM ke_opti WHERE kti_codcli = '" + codigoCliente + "'  AND kti_status <> '3' AND kti_fchdoc >='" + fechaAnterior + "'", null);
@@ -703,11 +656,11 @@ public class CreacionPedidoActivity extends AppCompatActivity {
 
     private Double obtenerMontoMinimoTotal() {
         Double monto;
-        if (Factura.isChecked()){
+        if (Factura.isChecked()) {
             monto = conn.getConfigNum("APP_MONTO_MINIMO_FAC");
-        }else if (NotaEntrega.isChecked()){
+        } else if (NotaEntrega.isChecked()) {
             monto = conn.getConfigNum("APP_MONTO_MINIMO_NE");
-        }else {
+        } else {
             monto = 75.00;
         }
 
@@ -722,7 +675,8 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             ke_android.setTransactionSuccessful();
 
         } catch (Exception e) {
-
+            System.out.println("--Error--");
+            e.printStackTrace();
         } finally {
             ke_android.endTransaction();
         }
@@ -746,7 +700,6 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     }
 
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
@@ -775,7 +728,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
                 case R.id.ic_procesarpedido:
                     boolean centinel = validarSiHayPedidosActivos();
                     if (!negociacionIsActiva() && montoNetoConDescuento < montoMinimoTotal && !centinel) {
-                        Toast.makeText(CreacionPedidoActivity.this, "Para procesar el pedido, debe cumplir con el monto mínimo de $" + montoMinimoTotal, Toast.LENGTH_LONG).show();
+                        Toast.makeText(CreacionPedidoActivity.this, "El monto minimo es de $" + montoMinimoTotal, Toast.LENGTH_LONG).show();
                     } else if (montoNetoConDescuento >= montoMinimoTotal || centinel) {
                         if ((Factura.isChecked() && listacarrito.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarrito.size() > APP_ITEMS_NOTAS_ENTREGA)) {
                             if (Factura.isChecked()) {
@@ -810,9 +763,9 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         ValidarSalida();
     }
 
-    private AlertDialog ValidarSalida() {
+    private void ValidarSalida() {
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(CreacionPedidoActivity.this,R.style.AlertDialogCustom))
                 .setTitle("Salir")
                 .setMessage("¿Está seguro de desear salir?")
                 .setCancelable(true)
@@ -827,45 +780,37 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         });
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(v -> dialog.dismiss());
 
-        return dialog;
     }
 
 
     private void cargarPendientes(String URL) {
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                if (response != null) {
-                    System.out.println("llegando info");
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, response -> {
+            if (response != null) {
+                System.out.println("llegando info");
 
-                    JSONObject jsonObject = null;
+                JSONObject jsonObject;
 
-                    try {
-                        jsonObject = response.getJSONObject(0);
-                        conteoDocs = jsonObject.getInt("conteo");
-                        fechaVence = jsonObject.getString("ultimafecha");
-                        kti_negesp = jsonObject.getString("kti_negesp");
+                try {
+                    jsonObject = response.getJSONObject(0);
+                    conteoDocs = jsonObject.getInt("conteo");
+                    fechaVence = jsonObject.getString("ultimafecha");
+                    kti_negesp = jsonObject.getString("kti_negesp");
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
+        }, error -> {
+            System.out.println("--Error--");
+            error.printStackTrace();
         }) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            protected Map<String, String> getParams() {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados el usuario y password.
-                Map<String, String> parametros = new HashMap<String, String>();
                 //parametros.put("version_usuario", versionApp);
 
-                return parametros;
+                return new HashMap<>();
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -873,28 +818,24 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     }
 
     private void funcionCaducidad() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        //obtengo la fecha del sistema al ejecutar la función:
+        LocalDateTime hoy = LocalDateTime.now(); //el dia en que se hizo el grabado
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String fecha_hoy = hoy.format(formatter);
 
-            //obtengo la fecha del sistema al ejecutar la función:
-            LocalDateTime hoy = LocalDateTime.now(); //el dia en que se hizo el grabado
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String fecha_hoy = hoy.format(formatter);
-
-            SQLiteDatabase ke_android = conn.getWritableDatabase();
+        SQLiteDatabase ke_android = conn.getWritableDatabase();
 
 
-            try {
-                ke_android.beginTransaction();
-                ke_android.execSQL("DELETE FROM ke_limitart WHERE kli_fechavence <='" + fecha_hoy + "'");
-                ke_android.setTransactionSuccessful();
+        try {
+            ke_android.beginTransaction();
+            ke_android.execSQL("DELETE FROM ke_limitart WHERE kli_fechavence <='" + fecha_hoy + "'");
+            ke_android.setTransactionSuccessful();
 
-            } catch (Exception e) {
-
-            } finally {
-                ke_android.endTransaction();
-            }
-
-
+        } catch (Exception e) {
+            System.out.println("--Error--");
+            e.printStackTrace();
+        } finally {
+            ke_android.endTransaction();
         }
 
 
@@ -920,7 +861,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
                 tv_subcondcto.setVisibility(View.VISIBLE);
                 tv_netocondescuento.setVisibility(View.VISIBLE);
                 montoNetoConDescuento = Math.round(montoNetoConDescuento * 100.00) / 100.00;
-                tv_netocondescuento.setText("$" + montoNetoConDescuento.toString());
+                tv_netocondescuento.setText("$" + montoNetoConDescuento);
             } else {
 
                 tv_netocondescuento.setText("$0.00");
@@ -936,14 +877,15 @@ public class CreacionPedidoActivity extends AppCompatActivity {
 
             //---aqui tambien se coloca algo en caso de que sea 0 con descuento
         }
+        cursor.close();
 
-        if (negociacionIsActiva() == true) {
+        if (negociacionIsActiva()) {
 
 
             if (precioTotalporArticulo >= montoMinimo) {
                 tv_mtomin.setTextColor(Color.rgb(22, 129, 67));
 
-            } else if (precioTotalporArticulo < montoMinimo) {
+            } else {
                 tv_mtomin.setTextColor(Color.rgb(244, 67, 54));
             }
 
@@ -983,9 +925,9 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     public void CargarClientes() {
         conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
         SQLiteDatabase ke_android = conn.getReadableDatabase();
-        Cliente cliente = null;
-        listacliente = new ArrayList<Cliente>();
-        Cursor cursor = ke_android.rawQuery("SELECT codigo, nombre FROM cliempre WHERE vendedor ='" + cod_usuario.toString().trim() + "' ORDER BY nombre ASC", null);
+        Cliente cliente;
+        listacliente = new ArrayList<>();
+        Cursor cursor = ke_android.rawQuery("SELECT codigo, nombre FROM cliempre WHERE vendedor ='" + cod_usuario.trim() + "' ORDER BY nombre ASC", null);
 
         while (cursor.moveToNext()) {
             cliente = new Cliente();
@@ -993,6 +935,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             cliente.setNombre(cursor.getString(1));
             listacliente.add(cliente);
         }
+        cursor.close();
         ke_android.close();
         obtenerlistaCliente();
         //ArrayAdapter<CharSequence> adapterSpinner = new ArrayAdapter(getBaseContext(), R.layout.spinner_items , listainfoClientes);
@@ -1003,7 +946,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     }
 
     private void obtenerlistaCliente() {
-        listainfoClientes = new ArrayList<String>();
+        listainfoClientes = new ArrayList<>();
         listainfoClientes.add("Seleccione un Cliente...");
 
         for (int i = 0; i < listacliente.size(); i++) {
@@ -1016,14 +959,16 @@ public class CreacionPedidoActivity extends AppCompatActivity {
     public void CargarLineas() {
         CarritoCompras();
 
-        if (listacarrito.size() != 0) {
+        if (!listacarrito.isEmpty()) {
 
             // adapter.notifyDataSetChanged();
-            carritoAdapter = new CarritoAdapter(CreacionPedidoActivity.this, listacarrito);
+            CarritoAdapter carritoAdapter = new CarritoAdapter(CreacionPedidoActivity.this, listacarrito);
             listaLineas.setAdapter(carritoAdapter);
             carritoAdapter.notifyDataSetChanged();
 
-        } else if (listacarrito.size() == 0) {
+        } else {
+            CarritoAdapter carritoAdapter = new CarritoAdapter(CreacionPedidoActivity.this, new ArrayList<>());
+            listaLineas.setAdapter(carritoAdapter);
             //Toast.makeText(CreacionPedidoActivity.this, "Por favor, agrega lineas al pedido", Toast.LENGTH_SHORT).show();
         }
     }
@@ -1049,7 +994,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
 
 
     private void CarritoCompras() {
-        listacarrito = new ArrayList<Carrito>();
+        listacarrito = new ArrayList<>();
 
         conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
         final SQLiteDatabase ke_android = conn.getWritableDatabase();
@@ -1084,6 +1029,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             negociacionActiva = cursor.getString(0);
             montoMinimo = cursor.getDouble(1); //IMPORTANTE: EL CLIENTE CUENTA CON UN MONTO MINIMO PARA LA NEG. ESPECIAL
         }
+        cursor.close();
 
         if (negociacionActiva.equals("0")) {
             sw_negoespecial.setEnabled(false);
@@ -1124,7 +1070,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
                 if (negociacionIsActiva()) {
                     if (montoNetoConDescuento >= montoMinimo) {
                         guardarDatosDelPedido();
-                    } else if (montoNetoConDescuento < montoMinimo) {
+                    } else {
                         Toast.makeText(CreacionPedidoActivity.this, "En negociación especial, el pedido debe cumplir con el monto mínimo asignado.", Toast.LENGTH_LONG).show();
                     }
 
@@ -1140,7 +1086,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
 
     public void generarNumeroPedido() {
         Date fechaHoy = new Date(Calendar.getInstance().getTimeInMillis());
-        SimpleDateFormat formatofecha = new SimpleDateFormat("yyMM");
+        SimpleDateFormat formatofecha = new SimpleDateFormat("yyMM", Locale.getDefault());
         String fecha = formatofecha.format(fechaHoy);
 
         CorrelativoTexto = right(CorrelativoTexto, 4);
@@ -1184,10 +1130,9 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             String kti_negesp = negociacionActiva;
 
             Date fechaTabla = new Date(Calendar.getInstance().getTimeInMillis());//
-            SimpleDateFormat formatoFechaTabla = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String fechaGuardar = formatoFechaTabla.format(fechaTabla);
+            SimpleDateFormat formatoFechaTabla = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
-            String kti_fchdoc = fechaGuardar;
+            String kti_fchdoc = formatoFechaTabla.format(fechaTabla);
 
 
             try {
@@ -1310,6 +1255,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
             preciocliente = cursor.getDouble(0);
             enteroPrecio = (int) Math.round(preciocliente);
         }
+        cursor.close();
 /*
 
         System.out.println("bbbbbbbbbbbbbbbbbbbb" + negociacionIsActiva());
@@ -1362,16 +1308,18 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         Cursor cursorcarrito = ke_android.rawQuery("SELECT kmv_codart, kmv_cant FROM ke_carrito WHERE 1", null);
         while (cursorcarrito.moveToNext()) {
             String codigoArticuloCarrito = cursorcarrito.getString(0);
-            Double CantidadCarrito = cursorcarrito.getDouble(1);
+            double CantidadCarrito = cursorcarrito.getDouble(1);
+            cursorcarrito.close();
 
             Cursor cursorprecio = ke_android.rawQuery("SELECT " + tipoDePrecioaMostrar + " FROM articulo WHERE codigo ='" + codigoArticuloCarrito + "'", null);
             while (cursorprecio.moveToNext()) {
-                Double PrecioNuevo = cursorprecio.getDouble(0);
+                double PrecioNuevo = cursorprecio.getDouble(0);
                 PrecioNuevo = Math.round(PrecioNuevo * 100.00) / 100.0;
-                Double SubTotalNuevo = PrecioNuevo * CantidadCarrito;
+                double SubTotalNuevo = PrecioNuevo * CantidadCarrito;
                 SubTotalNuevo = Math.round(SubTotalNuevo * 100.00) / 100.00;
                 ke_android.execSQL("UPDATE ke_carrito SET kmv_artprec =" + PrecioNuevo + ", kmv_stot =" + SubTotalNuevo + " WHERE kmv_codart='" + codigoArticuloCarrito + "'");
             }
+            cursorprecio.close();
 
         }
 
@@ -1405,6 +1353,7 @@ public class CreacionPedidoActivity extends AppCompatActivity {
         while (cu_comp.moveToNext()) {
             resultado = cu_comp.getInt(0);
         }
+        cu_comp.close();
 
         return resultado;
     }

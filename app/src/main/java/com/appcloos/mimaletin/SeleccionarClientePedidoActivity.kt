@@ -19,12 +19,11 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySeleccionarClientePedidoBinding
 
     private var clientes: ArrayList<Cliente> = ArrayList()
-    private var clienteList: List<Cliente> = clientes.toMutableList()
 
     private lateinit var preferences: SharedPreferences
-    private lateinit var cod_usuario: String
+    private lateinit var codUsuario: String
 
-    lateinit var ke_android: SQLiteDatabase
+    lateinit var keAndroid: SQLiteDatabase
     private lateinit var conn: AdminSQLiteOpenHelper
 
     private lateinit var adapter: SeleccionarClientePedidoAdapter
@@ -35,13 +34,13 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
-        cod_usuario = preferences.getString("cod_usuario", null).toString()
+        codUsuario = preferences.getString("cod_usuario", null).toString()
 
         supportActionBar!!.title = "Selecione un Cliente"
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 24)
 
-        ke_android = conn.writableDatabase
+        keAndroid = conn.writableDatabase
 
         buscarArticulo("")
 
@@ -49,9 +48,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
         binding.rvMainPedido.layoutManager = LinearLayoutManager(this)
         adapter = SeleccionarClientePedidoAdapter(
-            clientes,
-            onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
-            this
+            clientes, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, this
         )
         binding.rvMainPedido.adapter = adapter
 
@@ -85,8 +82,9 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             clientes = ArrayList()
             // System.out.println("IMPRIMIENDO EL NOMBRE " + busqueda);
 
-            val cursorca = ke_android.rawQuery(
-                "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre WHERE status = '1' AND vendedor = '$cod_usuario' ORDER BY nombre ASC",
+            val cursorca = keAndroid.rawQuery(
+                "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
+                        "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY nombre ASC",
                 null
             )
 
@@ -113,8 +111,11 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             clientes = ArrayList()
             // System.out.println("IMPRIMIENDO EL NOMBRE " + busqueda);
 
-            val cursorca = ke_android.rawQuery(
-                "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre WHERE status = '1' AND vendedor = '$cod_usuario' AND (nombre LIKE '%$busqueda%' OR codigo LIKE '%$busqueda%') ORDER BY nombre ASC",
+            val cursorca = keAndroid.rawQuery(
+                "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
+                        "WHERE status = '1' AND " +
+                        "vendedor = '$codUsuario' AND (nombre LIKE '%$busqueda%' OR " +
+                        "codigo LIKE '%$busqueda%') ORDER BY nombre ASC",
                 null
             )
 
@@ -155,8 +156,9 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
     }
 
     private fun guardarClintes() {
-        val cursorTasas: Cursor = ke_android.rawQuery(
-            "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre WHERE status = '1' AND vendedor = '$cod_usuario' ORDER BY nombre ASC",
+        val cursorTasas: Cursor = keAndroid.rawQuery(
+            "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
+                    "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY nombre ASC",
             null
         )
 

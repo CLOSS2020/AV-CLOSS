@@ -1,13 +1,13 @@
 package com.appcloos.mimaletin;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
@@ -16,8 +16,6 @@ public class PedidosArchivadosActivity extends AppCompatActivity {
     ListView lv_archivados;
     AdminSQLiteOpenHelper conn;
     SQLiteDatabase ke_android;
-    private SharedPreferences preferences;
-    private static String cod_usuario;
     ArrayList<Pedidos> listapedidos;
     PedidosArchivadosAdapter pedidosArchivadosAdapter;
 
@@ -25,14 +23,14 @@ public class PedidosArchivadosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pedidos_archivados);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //mantener la orientacion vertical
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); //mantener la orientacion vertical
 
         conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 12);
         ke_android = conn.getWritableDatabase();
         lv_archivados = findViewById(R.id.lv_archivados);
 
-        preferences    = getSharedPreferences("Preferences", MODE_PRIVATE);
-        cod_usuario    = preferences.getString("cod_usuario", null);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String cod_usuario = preferences.getString("cod_usuario", null);
 
         cargarPedidosArchivados(cod_usuario);
 
@@ -40,10 +38,10 @@ public class PedidosArchivadosActivity extends AppCompatActivity {
     }
 
     private void cargarPedidosArchivados(String cod_usuario) {
-        listapedidos = new ArrayList<Pedidos>();
+        listapedidos = new ArrayList<>();
         String tabla = "ke_opti";
-        String [] consulta = new String[]{
-                        "kti_ndoc," +
+        String[] consulta = new String[]{
+                "kti_ndoc," +
                         "kti_nombrecli," +
                         "kti_totneto," +
                         "kti_nroped," +
@@ -55,7 +53,7 @@ public class PedidosArchivadosActivity extends AppCompatActivity {
 
         Cursor cursor = ke_android.query(tabla, consulta, condicion, null, null, null, null);
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             Pedidos pedidos = new Pedidos();
             pedidos.setNumeroDocumento(cursor.getString(0));
             pedidos.setNombreCliente(cursor.getString(1));
@@ -64,17 +62,17 @@ public class PedidosArchivadosActivity extends AppCompatActivity {
             listapedidos.add(pedidos);
 
         }
+        cursor.close();
 
-        if(listapedidos != null){
+        if (listapedidos != null) {
             pedidosArchivadosAdapter = new PedidosArchivadosAdapter(PedidosArchivadosActivity.this, listapedidos);
             lv_archivados.setAdapter(pedidosArchivadosAdapter);
             pedidosArchivadosAdapter.notifyDataSetChanged();
-        }else{
+        } else {
             //en caso de que no llegue
             System.out.println("pedidos vacios");
         }
     }
-
 
 
 }

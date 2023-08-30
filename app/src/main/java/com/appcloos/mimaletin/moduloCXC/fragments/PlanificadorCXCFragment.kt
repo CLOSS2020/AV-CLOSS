@@ -102,7 +102,7 @@ class PlanificadorCXCFragment : Fragment() {
         binding.rvPlanModulCXC.layoutManager = LinearLayoutManager(requireContext())
         //cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
         consultarDocs("")
-        adapter = PlanificadorCXCAdapter(planificadorCxc = listaPlanificadorCxc, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()) //<-----------------------------------------------Te fala la LIST del objeto PlanificadorCXC
+        adapter = PlanificadorCXCAdapter(planificadorCxc = listaPlanificadorCxc, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt(), requireContext()) //<-----------------------------------------------Te fala la LIST del objeto PlanificadorCXC
         binding.rvPlanModulCXC.adapter = adapter
 
     }
@@ -185,7 +185,7 @@ class PlanificadorCXCFragment : Fragment() {
         }
         cursor.close()
         ke_android.close()
-        adapter = PlanificadorCXCAdapter(listaPlanificadorCxc, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()) //<-----------------------------------------------
+        adapter = PlanificadorCXCAdapter(listaPlanificadorCxc, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt(), requireContext()) //<-----------------------------------------------
         binding.rvPlanModulCXC.adapter = adapter
 
     }
@@ -252,7 +252,7 @@ class PlanificadorCXCFragment : Fragment() {
         }
         cursor.close()
         ke_android.close()
-        adapter = PlanificadorCXCAdapter(listaPlanificadorCxc, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()) //<-----------------------------------------------
+        adapter = PlanificadorCXCAdapter(listaPlanificadorCxc, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt(), requireContext()) //<-----------------------------------------------
         binding.rvPlanModulCXC.adapter = adapter
     }
 

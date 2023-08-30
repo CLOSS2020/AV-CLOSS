@@ -22,9 +22,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.EditText
 import android.widget.GridView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -40,13 +38,11 @@ import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.Retenciones
 import com.appcloos.mimaletin.classes.DecimalDigitsInputFilter
 import com.appcloos.mimaletin.databinding.FragmentRetenBinding
-import com.appcloos.mimaletin.databinding.FragmentSelectClienteRetenBinding
 import com.appcloos.mimaletin.retencion.DetalleRetencion
 import com.appcloos.mimaletin.retencion.DetalleRetencionAdapter
-import com.appcloos.mimaletin.retencionesAdapter
+import com.appcloos.mimaletin.RetencionesAdapter
 import com.appcloos.mimaletin.viewmodel.CXC.ke_precobradocs
 import com.appcloos.mimaletin.viewmodel.CXC.ke_precobranza
-import com.google.android.material.textfield.TextInputLayout
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -58,7 +54,7 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 
-class RetenFragment : Fragment(), retencionesAdapter.RetHolder.QuantityListener {
+class RetenFragment : Fragment(), RetencionesAdapter.RetHolder.QuantityListener {
 
     private lateinit var binding: FragmentRetenBinding
 
@@ -92,7 +88,7 @@ class RetenFragment : Fragment(), retencionesAdapter.RetHolder.QuantityListener 
 
     lateinit var adapter2: DetalleRetencionAdapter
 
-    val adapter: retencionesAdapter = retencionesAdapter()
+    val adapter: RetencionesAdapter = RetencionesAdapter()
 
     /*Esta variable servirá para determinar que retenciones
     * deben ser registradas en */
@@ -664,9 +660,13 @@ class RetenFragment : Fragment(), retencionesAdapter.RetHolder.QuantityListener 
         return valorRetorno
     }
 
-    override fun onQuantityChange(listaChange: ArrayList<Retenciones>) {
+    override fun onQuantityChange(listaChange: Int) {
         //println(listaChange)
-        evaluarLista(listaChange)
+        //evaluarLista(listaChange)
+        //2023-08-04 ahora no se pasa la lista sino la posicion para mejorar el sistema
+        //Daba error al emilinar una retencion
+        adapter.notifyItemRemoved(listaChange)
+        listaRetenciones.removeAt(listaChange)
 
     }
 

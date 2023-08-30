@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetalleVendedorActivity">
+    android:theme="@style/AppTheme"
+    tools:context=".DetalleVendedorActivity"
+    style="@style/BackgroundAux">
 
     <TableLayout
         android:layout_width="305dp"
@@ -22,7 +24,7 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#0E6AB3"
+            style="@style/BackgroundAuxTable"
             android:textAlignment="inherit">
 
             <TextView
@@ -45,7 +47,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Cantidad de clientes:"
-                android:textColor="#222222"
                 android:textSize="12sp" />
 
             <TextView
@@ -55,7 +56,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#393838"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -70,7 +71,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Clientes visitados:"
-                android:textColor="#222222"
                 android:textSize="12sp" />
 
             <TextView
@@ -80,7 +80,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#393838"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -94,7 +94,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="% de visitas:"
-                android:textColor="#2C2C2C"
                 android:textSize="12sp" />
 
             <TextView
@@ -104,7 +103,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#393838"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -118,7 +117,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="P.R.  en visitas:"
-                android:textColor="#333333"
                 android:textSize="12sp" />
 
             <TextView
@@ -128,7 +126,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#393838"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -142,7 +140,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="P.N. en visitas:"
-                android:textColor="#333333"
                 android:textSize="12sp" />
 
             <TextView
@@ -152,7 +149,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#393838"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -160,7 +157,7 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#0E6AB3">
+            style="@style/BackgroundAuxTable">
 
             <TextView
                 android:id="@+id/tv_ventas"
@@ -179,9 +176,7 @@
                 android:id="@+id/tv_pedidoscant"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Cantidad de Pedidos:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -191,7 +186,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -204,9 +199,7 @@
                 android:id="@+id/textView17"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Monto Pedidos:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -216,7 +209,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -229,9 +222,7 @@
                 android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Cantidad de Facturas:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -241,7 +232,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -254,9 +245,7 @@
                 android:id="@+id/textView19"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Monto Facturas:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -266,7 +255,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -279,9 +268,7 @@
                 android:id="@+id/textView27"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Monto Notas de Credito PP:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -291,7 +278,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -304,9 +291,7 @@
                 android:id="@+id/textView28"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Monto en Devolución:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -316,7 +301,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -329,9 +314,7 @@
                 android:id="@+id/textView29"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Devolución Mala Facturación:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -341,7 +324,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -354,9 +337,7 @@
                 android:id="@+id/textView26"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Monto Facturas Neto:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -366,7 +347,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -379,9 +360,7 @@
                 android:id="@+id/textView20"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Meta"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -391,7 +370,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -404,9 +383,7 @@
                 android:id="@+id/textView21"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="% cumplido de meta:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -416,7 +393,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -429,9 +406,7 @@
                 android:id="@+id/textView30"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="Monto total cobrado en el período:"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -441,7 +416,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -454,9 +429,7 @@
                 android:id="@+id/textView22"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="P.R. (por monto de venta):"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -466,7 +439,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -479,9 +452,7 @@
                 android:id="@+id/textView23"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="P.N. (por monto de venta):"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -491,7 +462,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -504,9 +475,7 @@
                 android:id="@+id/textView24"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="P.R. (por % de venta):"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -516,7 +485,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
@@ -529,9 +498,7 @@
                 android:id="@+id/textView25"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
                 android:text="P.N. (por %  de venta):"
-                android:textColor="#292929"
                 android:textSize="12sp" />
 
             <TextView
@@ -541,7 +508,7 @@
                 android:background="#C6C6C6"
                 android:text="0"
                 android:textAlignment="center"
-                android:textColor="#303030"
+                android:textColor="@color/blackColor2"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>

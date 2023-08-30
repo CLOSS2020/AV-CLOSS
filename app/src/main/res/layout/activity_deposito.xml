@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/AppTheme.Angel.Light"
-    tools:context=".depositoActivity">
+    android:theme="@style/BackgroundAuxRecicleView"
+    tools:context=".DepositoActivity">
 
     <TextView
         android:id="@+id/tvNombreCliente"
@@ -36,11 +36,13 @@
 
     <Button
         android:id="@+id/bt_sigte"
+        style="@style/BasicStyleButtomMaterial"
         android:layout_height="50dp"
         android:layout_width="0dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:text="SIGUIENTE"
         android:textColor="#fff"
         app:layout_constraintBottom_toBottomOf="parent"

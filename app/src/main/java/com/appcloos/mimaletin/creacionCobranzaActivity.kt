@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
-import android.service.controls.actions.ControlAction
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,15 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import java.lang.Exception
-import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -180,7 +175,7 @@ class creacionCobranzaActivity : AppCompatActivity(), SelecDocAdapter.DocHolder.
     }
 
     private fun irAPrecobranza(listaDocsSeleccionados: ArrayList<String>) {
-        val intent = Intent(applicationContext, cxcReportActivity::class.java)
+        val intent = Intent(applicationContext, CxcReportActivity::class.java)
         intent.putExtra("cod_usuario", cod_usuario)
         intent.putExtra("codigoEmpresa", codEmpresa)
         intent.putStringArrayListExtra("listaDocs", listaDocsSeleccionados)
@@ -198,6 +193,7 @@ class creacionCobranzaActivity : AppCompatActivity(), SelecDocAdapter.DocHolder.
             enlaceEmpresa  = cursorE.getString(1)
             codigoSucursal = cursorE.getString(2)
         }
+        cursorE.close()
     }
 
 

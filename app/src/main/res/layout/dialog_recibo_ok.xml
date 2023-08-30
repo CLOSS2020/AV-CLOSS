@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAuxRecicleView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/custom_input"
+        android:paddingBottom="12dp"
+        android:theme="@style/AppTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -28,7 +30,6 @@
             android:layout_marginEnd="40dp"
             android:gravity="center"
             android:text="Nombre del Cliente"
-            android:textColor="#1B1B1B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +37,7 @@
 
         <TextView
             android:id="@+id/textView65"
+            style="@style/TextViewCustom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -44,7 +46,7 @@
             android:gravity="center"
             android:text="DEL CLIENTE:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -60,32 +62,34 @@
             android:gravity="center"
             android:text="Se ha generado un recibo de pre-cobranza con los siguientes datos:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#000000"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/lb_prcid"
+            style="@style/TextViewCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="15dp"
             android:text="ID DEL RECIBO:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView40" />
 
         <TextView
             android:id="@+id/lb_fechaprc"
+            style="@style/TextViewCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:text="F. DEL RECIBO:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lb_prcid" />
 
@@ -97,7 +101,6 @@
             android:layout_marginTop="15dp"
             android:layout_marginEnd="10dp"
             android:text="tv_prcid"
-            android:textColor="#1B1B1B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lb_prcid"
             app:layout_constraintTop_toBottomOf="@+id/textView40" />
@@ -110,13 +113,13 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:text="TextView"
-            android:textColor="#1B1B1B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lb_fechaprc"
             app:layout_constraintTop_toBottomOf="@+id/tv_prcid" />
 
         <TextView
             android:id="@+id/tv_montodiag"
+            style="@style/AppTheme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -125,7 +128,6 @@
             android:gravity="center"
             android:text="0.00"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textColor="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView62" />
@@ -139,13 +141,13 @@
             android:gravity="center"
             android:text="$/Bs."
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="#1B1B1B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_montodiag" />
 
         <TextView
             android:id="@+id/textView62"
+            style="@style/TextViewCustom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -154,13 +156,14 @@
             android:gravity="center"
             android:text="MONTO REPORTADO:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lb_fechaprc" />
 
         <TextView
             android:id="@+id/textView68"
+            style="@style/TextViewCustom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -169,7 +172,7 @@
             android:gravity="center"
             android:text="BANCO:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_clientediag" />
@@ -182,13 +185,13 @@
             android:layout_marginEnd="40dp"
             android:gravity="center"
             android:text="NOMBRE"
-            android:textColor="#1B1B1B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView68" />
 
         <TextView
             android:id="@+id/textView70"
+            style="@style/TextViewCustom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -197,7 +200,7 @@
             android:gravity="center"
             android:text="REFERENCIA:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_bancodiag" />
@@ -210,7 +213,6 @@
             android:layout_marginEnd="40dp"
             android:gravity="center"
             android:text="0000000"
-            android:textColor="#1B1B1B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView70" />
@@ -230,10 +232,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_docs_recibo"
+            style="@style/BackgroundAuxRecicleView"
             android:layout_width="344dp"
             android:layout_height="143dp"
             android:layout_marginStart="20dp"
-            android:background="@drawable/boton_agregar"
             android:layout_marginTop="1dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -242,6 +244,7 @@
 
         <TextView
             android:id="@+id/textView72"
+            style="@style/TextViewCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
@@ -249,11 +252,11 @@
             android:layout_marginEnd="40dp"
             android:text="DOCUMENTOS EN EL RECIBO:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#00408E"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_refdiag" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

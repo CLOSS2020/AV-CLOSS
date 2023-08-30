@@ -10,11 +10,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class PedidosArchivadosAdapter extends BaseAdapter {
-    private ArrayList<Pedidos> listpedidos;
-    private Context context;
+    private final ArrayList<Pedidos> listpedidos;
+    private final Context context;
 
-    public PedidosArchivadosAdapter(Context context, ArrayList<Pedidos> listpedidos){
-        this.context     = context;
+    public PedidosArchivadosAdapter(Context context, ArrayList<Pedidos> listpedidos) {
+        this.context = context;
         this.listpedidos = listpedidos;
     }
 
@@ -40,10 +40,10 @@ public class PedidosArchivadosAdapter extends BaseAdapter {
         convertView = LayoutInflater.from(context).inflate(R.layout.item_pedidos_archivados, null);
 
         final Pedidos pedidos = (Pedidos) getItem(position);
-        TextView textCorrelativo = (TextView) convertView.findViewById(R.id.tv_ndoc);
-        TextView textNroPedido = (TextView) convertView.findViewById(R.id.tv_nroped);
-        TextView textNombreCliente = (TextView) convertView.findViewById(R.id.tv_nombrecli);
-        TextView textMontoPedido = (TextView) convertView.findViewById(R.id.tv_monto);
+        TextView textCorrelativo = convertView.findViewById(R.id.tv_ndoc);
+        TextView textNroPedido = convertView.findViewById(R.id.tv_nroped);
+        TextView textNombreCliente = convertView.findViewById(R.id.tv_nombrecli);
+        TextView textMontoPedido = convertView.findViewById(R.id.tv_monto);
 
         textCorrelativo.setText(pedidos.getNumeroDocumento());
         textNroPedido.setText(pedidos.getNumeroPedido());

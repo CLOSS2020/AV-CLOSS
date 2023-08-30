@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.Angel.Light"
-        tools:context=".retencionesActivity"
+        tools:context=".RetencionesActivity"
         android:paddingBottom="10dp">
 
         <com.google.android.material.textfield.TextInputLayout

@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -121,6 +122,9 @@ public class CatalogoActivity extends AppCompatActivity  {
         //corro actDirect
         ActDirec();
 
+        ObjetoAux objetoAux = new ObjetoAux(this);
+        objetoAux.descargaDesactivo(cod_usuario);
+
     }
     //este metodo inicializa un menu con el searchview y el selector de precios   SLECT
     @Override
@@ -206,6 +210,7 @@ public class CatalogoActivity extends AppCompatActivity  {
             nombreEmpresa = cursor.getString(0);
             enlaceEmpresa = cursor.getString(1);
         }
+        cursor.close();
         ke_android.close();
     }
 
@@ -258,15 +263,15 @@ public class CatalogoActivity extends AppCompatActivity  {
                         Toast.makeText(CatalogoActivity.this, "El artículo ya se encuentra en el pedido",Toast.LENGTH_SHORT).show();
                     } else {
 
-                        final EditText cajaDescuento = new EditText(CatalogoActivity.this);
-                        final EditText cajatexto     = new EditText(CatalogoActivity.this);
+                        final EditText cajaDescuento = new EditText(new ContextThemeWrapper(CatalogoActivity.this,R.style.EditTextStyleCustom));
+                        final EditText cajatexto     = new EditText(new ContextThemeWrapper(CatalogoActivity.this,R.style.EditTextStyleCustom));
 
                         cajaDescuento.setInputType(InputType.TYPE_CLASS_NUMBER);
                         cajatexto.setInputType(InputType.TYPE_CLASS_NUMBER);
                         //cajatexto.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)}); -- como referencia para  campos de notas
 
                         //un alert dialogo builder que va a servir para introducir cantidad de articulos
-                        AlertDialog.Builder ventana = new AlertDialog.Builder(CatalogoActivity.this);
+                        AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(CatalogoActivity.this,R.style.AlertDialogCustom));
                         //declaramos textviews porque vamos a usar layout
                         final TextView titulo  = new TextView(CatalogoActivity.this);
                         final TextView mensaje = new TextView(CatalogoActivity.this);
@@ -276,13 +281,13 @@ public class CatalogoActivity extends AppCompatActivity  {
 
                         //declaramos las propiedades de cada textview
                         mensaje.setTextSize(15);
-                        mensaje.setTextColor(Color.parseColor("#313131"));
+                        //mensaje.setTextColor(Color.parseColor("#313131"));
                         mensajecantidad.setTextSize(15);
-                        mensajecantidad.setTextColor(Color.parseColor("#313131"));
+                        //mensajecantidad.setTextColor(Color.parseColor("#313131"));
                         montoEnPedido.setTextSize(15);
-                        montoEnPedido.setTextColor(Color.parseColor("#313131"));
+                        //montoEnPedido.setTextColor(Color.parseColor("#313131"));
                         titulo.setText("Selección del artículo");
-                        titulo.setTextColor(Color.parseColor("#313131"));
+                        //titulo.setTextColor(Color.parseColor("#313131"));
                         titulo.setTextSize(22);
                         titulo.setTypeface(null, Typeface.BOLD);
 
@@ -309,6 +314,7 @@ public class CatalogoActivity extends AppCompatActivity  {
                         Cursor cursor_preTotal = ke_android.rawQuery("SELECT SUM(kmv_stotdcto) FROM ke_carrito", null);
                         cursor_preTotal.moveToFirst();
                         precioTotalporArticulo = cursor_preTotal.getDouble(0);
+                        cursor_preTotal.close();
                         precioTotalporArticulo = Math.round(precioTotalporArticulo * 100.00) / 100.00;
 
                         montoEnPedido.setText("Monto del Pedido: $" + precioTotalporArticulo + "\n"+
@@ -324,7 +330,7 @@ public class CatalogoActivity extends AppCompatActivity  {
                             final TextView mensajeCantidadMultiplo = new TextView(CatalogoActivity.this);
                             final TextView mensajeMultiplo = new TextView(CatalogoActivity.this);
                             mensajeMultiplo.setTextSize(15);
-                            mensajeMultiplo.setTextColor(Color.parseColor("#313131"));
+                            //mensajeMultiplo.setTextColor(Color.parseColor("#313131"));
                             mensajeMultiplo.setText("Cantidad de paquetes: " + ((int) Math.floor(existencia/ventaMin)));
 
 
@@ -336,7 +342,7 @@ public class CatalogoActivity extends AppCompatActivity  {
 
                             mensajeCantidadMultiplo.setTextSize(20);
                             mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD);
-                            mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
+                            //mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
                             mensajeCantidadMultiplo.setText(((int) Math.round(ventaMin)) + " x ");
                             //mensajeCantidadMultiplo.setLayoutParams(params);
                             cajatexto.setWidth(1000);
@@ -605,6 +611,7 @@ public class CatalogoActivity extends AppCompatActivity  {
                                         Cursor cursorF = ke_android.rawQuery("SELECT COUNT(kmv_codart) FROM ke_carrito", null);
                                         cursorF.moveToFirst();
                                         int cantidadCarritoFac = cursorF.getInt(0);
+                                        cursorF.close();
                                         System.out.println("El numero "+ cantidadCarritoFac);
                                         if ((cantidadCarritoFac > APP_ITEMS_FACTURAS) && factura) {
                                             finish();
@@ -629,6 +636,7 @@ public class CatalogoActivity extends AppCompatActivity  {
                         dialogo.show(); // y lo muestro
 
                     }
+                    cursor.close();
 
 
                 }
@@ -637,25 +645,22 @@ public class CatalogoActivity extends AppCompatActivity  {
             //si viene desde el menu principal, entonces solo voy a mostrar el catalogo
         }else if (seleccionado == 1){
             //un listener que, por los momentos, me permitira mostrar una imagen (mas adelante se debe desarrollar la ficha)
-            listaArticulos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            listaArticulos.setOnItemClickListener((parent, view, position, id) -> {
 
-                    final String cod_articulo = listacatalogo.get(position).getCodigo().trim();
-                    final ImageView imagen = new ImageView(CatalogoActivity.this);
-                    String enlace = "https://"+enlaceEmpresa+"/img/"+cod_articulo+".jpg";
-                    Picasso.get().load(enlace).resize(1000, 1000).centerCrop().into(imagen);
+                final String cod_articulo = listacatalogo.get(position).getCodigo().trim();
+                final ImageView imagen = new ImageView(CatalogoActivity.this);
+                String enlace = "https://"+enlaceEmpresa+"/img/"+cod_articulo+".jpg";
+                Picasso.get().load(enlace).resize(1000, 1000).centerCrop().into(imagen);
 
-                    //este builder mostrara la ficha del articulo
-                    AlertDialog.Builder ventana = new AlertDialog.Builder(CatalogoActivity.this);
-                    ventana.setTitle("Imagen del articulo");
-                    ventana.setView(imagen);
-                    ventana.setPositiveButton("Aceptar", null);
+                //este builder mostrara la ficha del articulo
+                AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(CatalogoActivity.this,R.style.AlertDialogCustom));
+                ventana.setTitle("Imagen del articulo");
+                ventana.setView(imagen);
+                ventana.setPositiveButton("Aceptar", null);
 
-                    AlertDialog dialogo = ventana.create();
-                    dialogo.show(); //
+                AlertDialog dialogo = ventana.create();
+                dialogo.show(); //
 
-                }
             });
             consultarArticulosNormal(preciomostrar);
 
@@ -687,6 +692,8 @@ public class CatalogoActivity extends AppCompatActivity  {
         while(cu_comp.moveToNext()){
             resultado = cu_comp.getInt(0);
         }
+
+        cu_comp.close();
 
         return resultado;
     }

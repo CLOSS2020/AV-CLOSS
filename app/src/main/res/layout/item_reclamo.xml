@@ -7,12 +7,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        style="@style/BasicStyleElementRecicleView"
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/custom_input"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="5dp"
-            android:textColor="#171717"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/tv_nombreclircl" />
 
@@ -37,7 +36,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
             android:text="COD:"
-            android:textColor="#1B1B1B"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_nombreclircl" />
@@ -63,7 +61,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="3dp"
             android:text="Cliente:"
-            android:textColor="#171717"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
@@ -97,7 +94,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="7dp"
-            android:textColor="#171717"
             app:layout_constraintStart_toEndOf="@+id/textView44"
             app:layout_constraintTop_toBottomOf="@+id/tv_montorcl" />
 
@@ -108,7 +104,6 @@
             android:layout_marginStart="2dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="9dp"
-            android:textColor="#171717"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView16"
             app:layout_constraintTop_toBottomOf="@+id/tv_nombreclircl" />
@@ -132,7 +127,6 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:textColor="#171717"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView28"
             app:layout_constraintTop_toBottomOf="@+id/tv_fcreado"
@@ -145,7 +139,6 @@
             android:layout_marginStart="21dp"
             android:layout_marginTop="4dp"
             android:text="Cliente:"
-            android:textColor="#1B1B1B"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -157,7 +150,6 @@
             android:layout_marginStart="21dp"
             android:layout_marginTop="7dp"
             android:text="Fecha Creado:"
-            android:textColor="#1B1B1B"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView16" />
@@ -169,7 +161,6 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:text="Mto reportado:"
-            android:textColor="#1B1B1B"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/tv_montorcl"
             app:layout_constraintStart_toEndOf="@+id/tv_codrcl"
@@ -183,7 +174,6 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:text="Ultm. Act:"
-            android:textColor="#1B1B1B"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -195,7 +185,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="4dp"
-            android:textColor="#171717"
             app:layout_constraintStart_toEndOf="@+id/textView14"
             app:layout_constraintTop_toBottomOf="@+id/tv_docrcl" />
 

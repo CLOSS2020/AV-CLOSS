@@ -15,12 +15,12 @@ class SelectorClienteReten : AppCompatActivity() {
     private lateinit var binding: ActivitySelectorClienteRetenBinding
 
     private var clientes: ArrayList<Cliente> = ArrayList()
-    private var clienteList:List<Cliente> = clientes.toMutableList()
+    //private var clienteList:List<Cliente> = clientes.toMutableList()
 
     private lateinit var preferences: SharedPreferences
-    private lateinit var cod_usuario: String
+    private lateinit var codUsuario: String
 
-    lateinit var ke_android: SQLiteDatabase
+    lateinit var keAndroid: SQLiteDatabase
     private lateinit var conn: AdminSQLiteOpenHelper
 
     private lateinit var adapter: SeleccionarClientePedidoAdapter
@@ -31,20 +31,23 @@ class SelectorClienteReten : AppCompatActivity() {
         setContentView(binding.root)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
-        cod_usuario = preferences.getString("cod_usuario", null).toString()
+        codUsuario = preferences.getString("cod_usuario", null).toString()
 
         supportActionBar!!.title = "Selecione un Cliente"
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 24)
 
-        ke_android = conn.writableDatabase
+        keAndroid = conn.writableDatabase
 
         buscarClintes()
 
         println("Cantidad de lineas -> ${clientes.size}")
 
         binding.rvMainSelctReten.layoutManager = LinearLayoutManager(this)
-        adapter = SeleccionarClientePedidoAdapter(clientes, onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) }, this)
+        adapter = SeleccionarClientePedidoAdapter(clientes,
+            onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) },
+            this
+        )
         binding.rvMainSelctReten.adapter = adapter
     }
 
@@ -53,7 +56,7 @@ class SelectorClienteReten : AppCompatActivity() {
         editor.putString("cliente", cliente)
         editor.putString("nomCliente", nomCliente)
         editor.putString("origin", "Reten")
-        editor.putString("cod_usuario", cod_usuario)
+        editor.putString("cod_usuario", codUsuario)
         editor.apply()
 
         val intent = Intent(this, ModuloCXCActivity::class.java)
@@ -61,9 +64,14 @@ class SelectorClienteReten : AppCompatActivity() {
     }
 
     private fun buscarClintes() {
-        val cursorTasas: Cursor = ke_android.rawQuery("SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre WHERE status = '1' AND vendedor = '$cod_usuario' AND contribespecial = '1' ORDER BY nombre ASC", null)
+        val cursorTasas: Cursor = keAndroid.rawQuery(
+            "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
+                    "WHERE status = '1' AND vendedor = '$codUsuario' AND contribespecial = '1' " +
+                    "ORDER BY nombre ASC",
+            null
+        )
 
-        while (cursorTasas.moveToNext()){
+        while (cursorTasas.moveToNext()) {
             val cliente = Cliente()
 
             cliente.codigo = cursorTasas.getString(0)

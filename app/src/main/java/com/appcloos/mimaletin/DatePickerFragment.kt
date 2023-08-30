@@ -9,7 +9,9 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 class DatePickerFragment(
@@ -34,38 +36,36 @@ class DatePickerFragment(
         val day = calen.get(Calendar.DAY_OF_MONTH)
         val month = calen.get(Calendar.MONTH)
         val year = calen.get(Calendar.YEAR)
-        val picker = DatePickerDialog(activity as Context, this, year, month, day)
+        val picker =
+            DatePickerDialog(activity as Context, R.style.MyDatePickerStyle, this, year, month, day)
 
         println(" fecha que es interna por variable:  $day, $month, $year")
 
         picker.datePicker.maxDate = calen.timeInMillis
 
         //calculo la fecha anterior de 3 dias (por los momentos, parametrizar despues)
-        Date()
-        /*calen.time = date*/
+        Date()/*calen.time = date*/
         when (actividad) {
             "cxcReportActivity" -> {
                 calen.add(Calendar.DATE, -2) //reduje los dias
                 picker.datePicker.minDate = calen.timeInMillis
             }
+
             "retencionesActivity" -> {
                 if (nroDoc == null) {
                     dismiss()
                     Toast.makeText(contexto, "Selecione un documento", Toast.LENGTH_SHORT).show()
                 } else {
-                    val conn =
-                        AdminSQLiteOpenHelper(contexto, "ke_android", null, 25)
-                    val ke_android: SQLiteDatabase = conn.writableDatabase
+                    val conn = AdminSQLiteOpenHelper(contexto, "ke_android", null, 25)
+                    val keAndroid: SQLiteDatabase = conn.writableDatabase
 
-                    val cursor = ke_android.rawQuery(
-                        "SELECT emision FROM ke_doccti WHERE documento ='$nroDoc'",
-                        null
+                    val cursor = keAndroid.rawQuery(
+                        "SELECT emision FROM ke_doccti WHERE documento ='$nroDoc'", null
                     )
 
                     if (cursor.moveToFirst()) {
                         val date1 = SimpleDateFormat(
-                            "yyyy-MM-dd",
-                            Locale.getDefault()
+                            "yyyy-MM-dd", Locale.getDefault()
                         ).parse(cursor.getString(0))
                         cursor.close()
 
@@ -84,6 +84,7 @@ class DatePickerFragment(
                     }
                 }
             }
+
             else -> {
 
             }

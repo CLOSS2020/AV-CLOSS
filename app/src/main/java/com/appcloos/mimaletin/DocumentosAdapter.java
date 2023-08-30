@@ -10,12 +10,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class DocumentosAdapter extends BaseAdapter {
-    private ArrayList<Documentos> listdocumentos;
-    private Context context;
-    private LayoutInflater inflater;
     public static String estatusMostrar;
+    private final ArrayList<Documentos> listdocumentos;
+    private final Context context;
+    private LayoutInflater inflater;
 
-    public DocumentosAdapter(Context context, ArrayList<Documentos> listdocumentos){
+    public DocumentosAdapter(Context context, ArrayList<Documentos> listdocumentos) {
         this.context = context;
         this.listdocumentos = listdocumentos;
     }
@@ -41,21 +41,21 @@ public class DocumentosAdapter extends BaseAdapter {
         final Documentos documentos = (Documentos) getItem(position);
         convertView = LayoutInflater.from(context).inflate(R.layout.item_documentos, null);
 
-        TextView lb_nrodoc     = (TextView) convertView.findViewById(R.id.lb_nrodoc);
-        TextView lb_tipodocv   = (TextView) convertView.findViewById(R.id.lb_tipodocv);
-        TextView lb_estatus    = (TextView) convertView.findViewById(R.id.lb_estatus);
-        TextView lb_montototal = (TextView) convertView.findViewById(R.id.lb_montototal);
-        TextView lb_emision    = (TextView) convertView.findViewById(R.id.lb_emision);
-        TextView lb_recepcion  = (TextView) convertView.findViewById(R.id.lb_recepcion);
-        TextView lb_aceptadev  = (TextView) convertView.findViewById(R.id.lb_aceptadev);
+        TextView lb_nrodoc = convertView.findViewById(R.id.lb_nrodoc);
+        TextView lb_tipodocv = convertView.findViewById(R.id.lb_tipodocv);
+        TextView lb_estatus = convertView.findViewById(R.id.lb_estatus);
+        TextView lb_montototal = convertView.findViewById(R.id.lb_montototal);
+        TextView lb_emision = convertView.findViewById(R.id.lb_emision);
+        TextView lb_recepcion = convertView.findViewById(R.id.lb_recepcion);
+        TextView lb_aceptadev = convertView.findViewById(R.id.lb_aceptadev);
 
         String estatus = documentos.getEstatusdoc();
 
-        switch (estatus){
+        switch (estatus) {
 
             case "0":
                 estatusMostrar = "Pendiente p. pagar";
-                 break;
+                break;
 
             case "1":
                 estatusMostrar = "Abonado";
@@ -72,7 +72,7 @@ public class DocumentosAdapter extends BaseAdapter {
         }
 
         Double MtoFinal = documentos.getDtotalfinal();
-        MtoFinal = Math.round(MtoFinal*100.0)/100.0;
+        MtoFinal = Math.round(MtoFinal * 100.0) / 100.0;
         lb_nrodoc.setText(documentos.getDocumento());
         lb_tipodocv.setText(documentos.getTipodocv());
         lb_estatus.setText(estatusMostrar);

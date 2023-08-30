@@ -48,9 +48,9 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ViewHold
 
         public ViewHolderDatos(@NonNull View itemView, onClienteListener onClienteListener) {
             super(itemView);
-             textcodigocliente = (TextView) itemView.findViewById(R.id.text_codcliente);
-             textnombrecliente = (TextView) itemView.findViewById(R.id.text_nombrecliente);
-             textdireccion     = (TextView) itemView.findViewById(R.id.text_direccion);
+             textcodigocliente = itemView.findViewById(R.id.text_codcliente);
+             textnombrecliente = itemView.findViewById(R.id.text_nombrecliente);
+             textdireccion     = itemView.findViewById(R.id.text_direccion);
              this.onClienteListener = onClienteListener;
 
              itemView.setOnClickListener(this);

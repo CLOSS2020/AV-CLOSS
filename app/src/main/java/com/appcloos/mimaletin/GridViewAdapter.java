@@ -1,4 +1,5 @@
 package com.appcloos.mimaletin;
+
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -39,8 +40,8 @@ public class GridViewAdapter extends BaseAdapter {
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
 
-        if(view == null) {
-            layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        if (view == null) {
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.item_gv_imagenesrcl, null);
         }
 
@@ -49,12 +50,9 @@ public class GridViewAdapter extends BaseAdapter {
 
         ivImagen.setImageURI(listaImagenes.get(i));
 
-        ibtnEliminar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listaImagenes.remove(i);
-                notifyDataSetChanged();
-            }
+        ibtnEliminar.setOnClickListener(view1 -> {
+            listaImagenes.remove(i);
+            notifyDataSetChanged();
         });
         return view;
     }

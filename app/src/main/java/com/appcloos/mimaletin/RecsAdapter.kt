@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class RecsAdapter: RecyclerView.Adapter<RecsAdapter.RecHolder>() {
+class RecsAdapter : RecyclerView.Adapter<RecsAdapter.RecHolder>() {
 
     lateinit var cobranza: ArrayList<CXC>
-    lateinit var context : Context
+    lateinit var context: Context
 
-    fun RecsAdapter(context: Context, cobranza:ArrayList<CXC>){
+    fun RecsAdapter(context: Context, cobranza: ArrayList<CXC>) {
         this.context = context
         this.cobranza = cobranza
     }
@@ -23,7 +23,7 @@ class RecsAdapter: RecyclerView.Adapter<RecsAdapter.RecHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecHolder, position: Int) {
-        holder.bind(cobranza.get(position))
+        holder.bind(cobranza[position])
 
     }
 
@@ -31,11 +31,11 @@ class RecsAdapter: RecyclerView.Adapter<RecsAdapter.RecHolder>() {
         return cobranza.size
     }
 
-    class RecHolder(val view: View):RecyclerView.ViewHolder(view){
-        val idcxc  = view.findViewById<TextView>(R.id.tv_id_resumen)
+    class RecHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val idcxc = view.findViewById<TextView>(R.id.tv_id_resumen)
         val mtocxc = view.findViewById<TextView>(R.id.tv_efec_resumen)
 
-        fun bind(cobranza:CXC){
+        fun bind(cobranza: CXC) {
             idcxc.text = "ID: ${cobranza.id_recibo}"
             mtocxc.text = "$ ${cobranza.efectivo}"
         }
