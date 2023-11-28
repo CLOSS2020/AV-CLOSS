@@ -2,6 +2,8 @@ package com.appcloos.mimaletin
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
@@ -28,6 +30,9 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
         binding = ActivityDepositoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        windowsColor(Constantes.AGENCIA)
+        setColors()
         supportActionBar!!.title = "Seleccione un Deposito"
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
@@ -108,6 +113,23 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
             binding.btSigte.visibility = View.VISIBLE
             listaRecsSeleccionados = listaChange
         }
+    }
+
+
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
+        // you could also use a switch if you have many themes that could apply
+        return theme
+    }
+
+    private fun setColors() {
+        binding.apply {
+            tvNombreCliente.setDrawableHeadAgencia(Constantes.AGENCIA)
+            btSigte.backgroundTintList =
+                ColorStateList.valueOf(btSigte.colorAgencia(Constantes.AGENCIA))
+        }
+
     }
 
 }

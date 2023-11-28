@@ -54,15 +54,15 @@ public class PedidoAdapter extends BaseAdapter {
         Double montoNeto = pedidos.getTotalNeto();
         montoNeto = (montoNeto * 100.00) / 100.00;
 
-       /* Double montoNetoconDcto = pedidos.getTotalNetoDcto();
+        Double montoNetoconDcto = pedidos.getTotalNetoDcto();
         montoNetoconDcto = (montoNetoconDcto * 100.00) / 100.00;
 
-        Double diferencia = montoNeto - montoNetoconDcto;
+        double diferencia = montoNeto - montoNetoconDcto;
 
         if(diferencia > 0.0){
             textmontonetodcto.setVisibility(View.VISIBLE);
-            textmontonetodcto.setText("Monto con Dscto: $" + montoNetoconDcto.toString());
-        }*/
+            textmontonetodcto.setText("Monto con Dscto: $" + montoNetoconDcto);
+        }
 
         textcodigoped.setText("COD: " + pedidos.getNumeroDocumento());
         textnroped.setText("Nº " + pedidos.getNumeroPedido());

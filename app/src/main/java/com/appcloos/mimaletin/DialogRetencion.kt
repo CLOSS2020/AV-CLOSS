@@ -15,8 +15,8 @@ import android.widget.TextView
 import androidx.core.graphics.createBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.appcloos.mimaletin.viewmodel.CXC.ke_precobradocs
-import com.appcloos.mimaletin.viewmodel.CXC.ke_precobranza
+import com.appcloos.mimaletin.model.CXC.ke_precobradocs
+import com.appcloos.mimaletin.model.CXC.ke_precobranza
 
 class DialogRetencion {
 

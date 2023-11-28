@@ -25,6 +25,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.appcloos.mimaletin.AdminSQLiteOpenHelper
 import com.appcloos.mimaletin.Cliente
+import com.appcloos.mimaletin.DialogClientesDatos
 import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.SeleccionarClientePedidoAdapter
 import com.appcloos.mimaletin.databinding.FragmentSelectClienteRetenBinding
@@ -115,6 +116,7 @@ class SelectClienteRetenFragment : Fragment() {
         adapter = SeleccionarClientePedidoAdapter(
             clientes,
             onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) },
+            onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
             requireContext()
         )
         binding.rvMainSelctReten.adapter = adapter
@@ -161,6 +163,11 @@ class SelectClienteRetenFragment : Fragment() {
         })
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun dialogCliente(cliente: String, nomCliente: String) {
+        val dialog = DialogClientesDatos(requireContext(), cliente, nomCliente)
+        dialog.show()
     }
 
 

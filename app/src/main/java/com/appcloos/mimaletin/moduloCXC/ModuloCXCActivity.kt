@@ -1,7 +1,9 @@
 package com.appcloos.mimaletin.moduloCXC
 
 
+import android.app.Activity
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -10,13 +12,16 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.appcloos.mimaletin.Constantes
 import com.appcloos.mimaletin.ObjetoAux
 import com.appcloos.mimaletin.R
+import com.appcloos.mimaletin.colorAgencia
+import com.appcloos.mimaletin.colorToolBarAux
 import com.appcloos.mimaletin.databinding.ActivityModuloCxcBinding
-import java.security.AccessController.getContext
-
-
-
+import com.appcloos.mimaletin.setThemeAgencia
+import com.appcloos.mimaletin.setThemeNoBarAgencia
+import com.appcloos.mimaletin.setThemeNoBarCXCAgencia
+import com.appcloos.mimaletin.windowsColor
 
 
 class ModuloCXCActivity : AppCompatActivity() {
@@ -57,24 +62,23 @@ class ModuloCXCActivity : AppCompatActivity() {
 
         //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
         //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
-        val window = this.window
+        windowsColor(Constantes.AGENCIA)
+        setColors()
 
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
 
-        val nightModeFlags: Int = this.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK
+    }
 
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO){
-            window.statusBarColor = ContextCompat.getColor(this, R.color.primaryColor)
-            window.navigationBarColor = ContextCompat.getColor(this, R.color.primaryColor)
-        }else{
-            window.statusBarColor = ContextCompat.getColor(this, R.color.blackColor1)
-            window.navigationBarColor = ContextCompat.getColor(this, R.color.blackColor2)
+    private fun setColors() {
+        binding.toolBar.apply {
+            setBackgroundColor(colorToolBarAux(Constantes.AGENCIA))
         }
+    }
 
-
-
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        theme.applyStyle(setThemeNoBarCXCAgencia(Constantes.AGENCIA), true)
+        // you could also use a switch if you have many themes that could apply
+        return theme
     }
 
     /*override fun onSupportNavigateUp(): Boolean {

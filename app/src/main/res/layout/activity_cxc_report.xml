@@ -16,7 +16,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.Angel.Light"
+        android:paddingBottom="5dp"
+        android:theme="@style/AppTheme.Basic.Light"
         tools:context=".CxcReportActivity">
 
         <!--
@@ -74,13 +75,13 @@
             app:layout_constraintTop_toBottomOf="@+id/textView58" />
 
         <TextView
-            android:id="@+id/tv_cxc_complemento"
+            android:id="@+id/tvCxcComplemento"
+            style="@style/BackgroundAuxCXC"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
-            style="@style/BackgroundAuxCXC"
             android:text="Recibo Complemento:"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -93,8 +94,8 @@
             app:layout_constraintTop_toBottomOf="@+id/til_cxc_ref_main" />
 
         <TextView
-            style="@style/BackgroundAuxCXC"
             android:id="@+id/textView43"
+            style="@style/BackgroundAuxCXC"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -108,7 +109,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+            app:layout_constraintTop_toBottomOf="@+id/tilTasaselec" />
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -119,6 +120,8 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:clickable="false"
+            app:layout_constraintBottom_toBottomOf="@+id/tilTasaselec"
+            app:layout_constraintEnd_toStartOf="@+id/tilTasaselec"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:startIconDrawable="@drawable/ic_baseline_calendar_today_24">
@@ -132,93 +135,148 @@
                 android:inputType="date" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <RadioGroup
-            android:id="@+id/radioGroup4"
-            android:layout_width="120dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTasaselec"
+            style="@style/StyleTextInputLayoutEditTextCXCTasa"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="7"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textInputLayout2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tie_tasaselec"
+                style="@style/StyleTextInputLayoutEditTextTasa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                tools:text="40.20 Bs." />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/llMoneda"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/llTipoPago"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView45">
+            app:layout_constraintTop_toBottomOf="@+id/textView43">
 
-            <RadioButton
-                android:id="@+id/rb_cxc_divisas_main"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:buttonTint="@drawable/color_radiobox"
-                android:text="Divisas" />
+            <TextView
+                android:id="@+id/tvMoneda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Moneda:"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-            <RadioButton
-                android:id="@+id/rb_cxc_bss_main"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:buttonTint="@drawable/color_radiobox"
-                android:text="Bss." />
-        </RadioGroup>
+            <RadioGroup
+                android:id="@+id/rgMoneda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textView45"
+                <RadioButton
+                    android:id="@+id/rbCxcDivisasMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:buttonTint="@drawable/color_radiobox"
+                    android:text="Divisas" />
+
+                <RadioButton
+                    android:id="@+id/rbCxcBssMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/color_radiobox"
+                    android:text="Bss." />
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTipoPago"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Moneda:"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/radioGroup4"
-            app:layout_constraintTop_toBottomOf="@+id/textView43" />
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/llAdd"
+            app:layout_constraintStart_toEndOf="@+id/llMoneda"
+            app:layout_constraintTop_toTopOf="@+id/llMoneda">
 
-        <TextView
-            android:id="@+id/textView47"
+            <TextView
+                android:id="@+id/textView48"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipo pago:"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/rb_cxc_comp_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/color_radiobox"
+                    android:text="Completo" />
+
+                <RadioButton
+                    android:id="@+id/rb_cxc_abono_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/color_radiobox"
+                    android:text="Abono" />
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Adicionales:"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/cb_cxc_complemento"
-            app:layout_constraintTop_toBottomOf="@+id/textView43" />
-
-        <TextView
-            android:id="@+id/textView48"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tipo pago:"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/radioGroup5"
-            app:layout_constraintTop_toBottomOf="@+id/textView43" />
-
-        <RadioGroup
-            android:id="@+id/radioGroup5"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            app:layout_constraintStart_toEndOf="@+id/radioGroup4"
-            app:layout_constraintTop_toBottomOf="@+id/textView48">
-
-            <RadioButton
-                android:id="@+id/rb_cxc_comp_main"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:buttonTint="@drawable/color_radiobox"
-                android:text="Completo" />
-
-            <RadioButton
-                android:id="@+id/rb_cxc_abono_main"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:buttonTint="@drawable/color_radiobox"
-                android:text="Abono" />
-        </RadioGroup>
-
-        <CheckBox
-            android:id="@+id/cb_cxc_complemento"
-            android:layout_width="130dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="5dp"
             android:layout_marginEnd="10dp"
-            android:buttonTint="@drawable/color_checkbox"
-            android:text="R. Complemento"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/radioGroup5"
-            app:layout_constraintTop_toBottomOf="@+id/textView47" />
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/llTipoPago"
+            app:layout_constraintTop_toTopOf="@+id/llTipoPago">
+
+            <TextView
+                android:id="@+id/textView47"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adicionales:"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/cb_cxc_complemento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:buttonTint="@drawable/color_checkbox"
+                android:text="R. Complemento"
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/cb_cxc_descuentos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:buttonTint="@drawable/color_checkbox"
+                android:text="Dar Descuentos"
+                android:textSize="12sp" />
+
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textView54"
@@ -226,10 +284,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#80E7EDF8"
+            android:background="#337F7F7F"
             android:gravity="center"
             android:text="Neto:"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView51" />
@@ -240,10 +298,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#80E7EDF8"
+            android:background="#337F7F7F"
             android:gravity="center"
             android:text="I.V.A.:"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView54" />
@@ -254,10 +312,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#80E7EDF8"
+            android:background="#337F7F7F"
             android:gravity="center"
             android:text="Flete:"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView55" />
@@ -268,10 +326,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#80E7EDF8"
+            android:background="#337F7F7F"
             android:gravity="center"
             android:text="Retenciones(-):"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView56" />
@@ -282,10 +340,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#80E7EDF8"
+            android:background="#337F7F7F"
             android:gravity="center"
             android:text="Descuentos:"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView57" />
@@ -296,19 +354,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
-            android:background="#80CAC9C9"
+            android:background="#597F7F7F"
             android:gravity="center"
             android:text="Total:"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView41" />
 
         <TextView
-            android:id="@+id/tv_cxc_neto"
+            android:id="@+id/tvCxcNeto"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/fondoamarillo"
@@ -322,10 +379,9 @@
             app:layout_constraintTop_toBottomOf="@+id/textView51" />
 
         <TextView
-            android:id="@+id/tv_cxc_iva"
+            android:id="@+id/tvCxcIva"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/fondoamarillo"
@@ -337,13 +393,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView54"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_neto" />
+            app:layout_constraintTop_toBottomOf="@+id/tvCxcNeto" />
 
         <TextView
-            android:id="@+id/tv_cxc_flete"
+            android:id="@+id/tvCxcFlete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/fondoamarillo"
@@ -355,13 +410,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView54"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_iva" />
+            app:layout_constraintTop_toBottomOf="@+id/tvCxcIva" />
 
         <TextView
-            android:id="@+id/tv_cxc_reten"
+            android:id="@+id/tvCxcReten"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/fondoamarillo"
@@ -373,13 +427,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView54"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_flete" />
+            app:layout_constraintTop_toBottomOf="@+id/tvCxcFlete" />
 
         <TextView
-            android:id="@+id/tv_cxc_dctos"
+            android:id="@+id/tvCxcDctos"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/fondoamarillo"
@@ -390,13 +443,12 @@
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView54"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_reten" />
+            app:layout_constraintTop_toBottomOf="@+id/tvCxcReten" />
 
         <TextView
-            android:id="@+id/tv_cxc_total"
+            android:id="@+id/tvCxcTotal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/fondototal"
@@ -409,43 +461,17 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView54"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_dctos" />
+            app:layout_constraintTop_toBottomOf="@+id/tvCxcDctos" />
 
-        <CheckBox
-            android:id="@+id/cb_cxc_descuentos"
-            android:layout_width="130dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="10dp"
-            android:buttonTint="@drawable/color_checkbox"
-            android:text="Dar Descuentos"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/radioGroup5"
-            app:layout_constraintTop_toBottomOf="@+id/cb_cxc_complemento" />
-
-        <Button
-            android:id="@+id/bt_cxc_procesar"
-            style="@style/BasicStyleButtomMaterial"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="PROCESAR RECIBO"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/bt_cxc_retenciones"
-            app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_cxc_monto_main"
             style="@style/StyleTextInputLayoutEditText"
-            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:theme="@style/StyleTextInputLayoutEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_cxc_spbanco"
@@ -463,11 +489,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_cxc_ref_main"
             style="@style/StyleTextInputLayoutEditText"
-            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:theme="@style/StyleTextInputLayoutEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_cxc_monto_main"
@@ -486,11 +512,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_cxc_spbanco"
             style="@style/StyleTextInputLayoutAutoComplete"
-            android:theme="@style/StyleTextInputLayoutAutoComplete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:theme="@style/StyleTextInputLayoutAutoComplete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -510,7 +536,7 @@
         <RadioGroup
             android:id="@+id/radioGroup6"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:orientation="horizontal"
@@ -521,7 +547,7 @@
             <RadioButton
                 android:id="@+id/rb_cxc_transf_main"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:buttonTint="@drawable/color_radiobox"
                 android:text="Pago en Transferencia" />
@@ -529,37 +555,24 @@
             <RadioButton
                 android:id="@+id/rb_cxc_efectivo_main"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="0dp"
                 android:layout_weight="1"
                 android:buttonTint="@drawable/color_radiobox"
                 android:text="Pago en Efectivo" />
         </RadioGroup>
 
-        <Button
-            android:id="@+id/bt_cxc_retenciones"
-            style="@style/BasicStyleButtomMaterialReten"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="Retenciones"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
 
         <RadioGroup
             android:id="@+id/rg3"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cxc_complemento">
+            app:layout_constraintTop_toBottomOf="@+id/tvCxcComplemento">
 
             <RadioButton
                 android:id="@+id/rb_cxc_transf_com"
@@ -584,7 +597,7 @@
         <RadioGroup
             android:id="@+id/radioGroup8"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:orientation="horizontal"
@@ -616,11 +629,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_banco_com"
             style="@style/StyleTextInputLayoutAutoComplete"
-            android:theme="@style/StyleTextInputLayoutAutoComplete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:theme="@style/StyleTextInputLayoutAutoComplete"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -633,19 +646,19 @@
                 style="@style/AutoComplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
                 android:hint="Banco Complemento"
+                android:inputType="none"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_monto_com"
             style="@style/StyleTextInputLayoutEditText"
-            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:theme="@style/StyleTextInputLayoutEditText"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -656,15 +669,16 @@
                 android:id="@+id/et_cxc_monto_com"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvPrecioMostrarComplemento"
+            style="@style/BackgroundAuxCXC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            style="@style/BackgroundAuxCXC"
             android:paddingStart="25dp"
             android:paddingEnd="25dp"
             android:text="Monto a Pagar: 50$"
@@ -676,11 +690,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_ref_com"
             style="@style/StyleTextInputLayoutEditText"
-            android:theme="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:theme="@style/StyleTextInputLayoutEditText"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -709,27 +723,8 @@
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioGroup4" />
+            app:layout_constraintTop_toBottomOf="@+id/llMoneda" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_tasaselec"
-            style="@style/StyleTextInputLayoutEditTextCXCTasa"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textInputLayout2"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tie_tasaselec"
-                style="@style/StyleTextInputLayoutEditTextTasa"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:focusable="false" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:id="@+id/mainAdd"
@@ -745,10 +740,10 @@
             <CheckBox
                 android:id="@+id/cb_exc_reten"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:buttonTint="@drawable/color_checkbox"
-                android:text="Excluir retenciones"
+                android:text="Excluir retención de Flete"
                 app:layout_constraintStart_toEndOf="@+id/til_cxc_spbanco"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/radioGroup6" />
@@ -764,6 +759,48 @@
                 app:layout_constraintTop_toBottomOf="@+id/radioGroup6" />-->
 
         </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bt_cxc_retenciones"
+            style="@style/BasicStyleButtomMaterialReten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:text="Retenciones"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            app:layout_constraintBottom_toTopOf="@+id/bt_cxc_procesar"
+            app:layout_constraintEnd_toStartOf="@+id/btnFoto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFoto"
+            style="@style/BasicStyleButtomMaterialReten"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="SUBIR / VER FOTO"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            app:layout_constraintBottom_toTopOf="@+id/bt_cxc_procesar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bt_cxc_retenciones"
+            app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bt_cxc_procesar"
+            style="@style/BasicStyleButtomMaterial"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:padding="5dp"
+            android:text="PROCESAR PAGO"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnFoto" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

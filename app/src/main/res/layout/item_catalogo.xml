@@ -9,15 +9,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:theme="@style/BasicStyleElementRecicleView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:theme="@style/BasicStyleElementRecicleView">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/text_nombre"
@@ -26,8 +26,8 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
-            android:text="TextView"
             android:alpha="0.75"
+            android:text="TextView"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/img_thumb"
@@ -36,12 +36,12 @@
         <TextView
             android:id="@+id/tv_multiplo"
             android:layout_width="0dp"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="9dp"
             android:background="@drawable/custon_label_multiplo"
-            android:paddingStart="2dp"
+            android:paddingStart="5dp"
             android:text="Venta en Multiplo"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
@@ -53,12 +53,12 @@
         <TextView
             android:id="@+id/tv_min"
             android:layout_width="0dp"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="9dp"
             android:background="@drawable/custom_buton"
-            android:paddingStart="2dp"
+            android:paddingStart="5dp"
             android:text="Cant. Mínima:"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
@@ -69,7 +69,7 @@
 
         <TextView
             android:id="@+id/text_codigo"
-            android:layout_width="180dp"
+            android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="12dp"
@@ -78,18 +78,20 @@
             android:text="Código:"
             android:textColor="#1E1E1E"
             android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/tv_preventalb"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_max"
             android:layout_width="0dp"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="9dp"
             android:background="@drawable/custom_buton"
-            android:paddingStart="2dp"
+            android:paddingStart="5dp"
             android:text="Cant. Máxima:"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
@@ -101,7 +103,7 @@
         <TextView
             android:id="@+id/text_precio"
             android:layout_width="158dp"
-            android:layout_height="21dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:paddingStart="2dp"
@@ -113,13 +115,13 @@
 
         <TextView
             android:id="@+id/text_existencia"
+            style="@style/TextColorAuxExistencia"
             android:layout_width="158dp"
-            android:layout_height="21dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:paddingStart="2dp"
             android:text="Existencia: "
-            style="@style/TextColorAuxExistencia"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_thumb" />
@@ -132,8 +134,10 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="6dp"
             android:layout_marginBottom="5dp"
-            android:background="#009688"
-            android:text="-0%"
+            android:background="@drawable/custon_label_descuento"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="-10%"
             android:textAlignment="center"
             android:textColor="#F4F4F4"
             android:textColorLink="#F1F1F1"
@@ -148,15 +152,16 @@
 
         <TextView
             android:id="@+id/tv_preciodescuento"
+            style="@style/ColorDescuento"
             android:layout_width="0dp"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="1dp"
             android:layout_marginEnd="9dp"
             android:layout_marginBottom="10dp"
-            android:paddingStart="2dp"
+            android:paddingStart="5dp"
             android:text="Precio con Descuento:"
-            android:textColor="#05534C"
+            android:textStyle="bold"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -186,7 +191,7 @@
         <TextView
             android:id="@+id/tvPedFacNE"
             android:layout_width="158dp"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"
@@ -212,6 +217,7 @@
             android:textAlignment="center"
             android:textColor="@color/blanco"
             android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/tv_descuento"
             app:layout_constraintStart_toEndOf="@+id/text_codigo"
             app:layout_constraintTop_toTopOf="parent" />
 

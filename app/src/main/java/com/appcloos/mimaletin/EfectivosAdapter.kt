@@ -84,6 +84,8 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
             montoRec.text = "$" + recibos.efectivo.toString()
             fechaRec.text = recibos.fchrecibo
 
+            isSeleccionado.buttonTintList = isSeleccionado.setColorCheckBox(Constantes.AGENCIA)
+
             if (recibos.efectivo > 0.00) {
                 tipoRec.text = "EFC"
             }

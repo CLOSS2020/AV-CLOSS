@@ -98,4 +98,41 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+
+    <string name="fac">FAC</string>
+    <string name="n_e">N/E</string>
+
+    <string name="factura">Factura</string>
+    <string name="nota_entrega">Nota de Entrega</string>
+
+    <string name="por_pagar">Pendiente por pagar</string>
+    <string name="abonado">Abonado</string>
+    <string name="pagado">Pagado</string>
+    <string name="no_identificado">No identificado</string>
+
+    <!--PlanificadorCXC-->
+    <string name="plancxc_vencimiento">Vencimiento</string>
+    <string name="plancxc_recepcion">Recepción</string>
+    <string name="plancxc_cuenta">Cuenta</string>
+    <string name="plancxc_doc">DOC</string>
+    <string name="plancxc_numero_doc">Nº</string>
+
+    <!--Sincronizar-->
+    <string name="sinc_vendedor">Vendedor:</string>
+    <string name="sinc_clientes">Clientes:</string>
+    <string name="sinc_grupos">Grupos:</string>
+    <string name="sinc_zona">Zona:</string>
+    <string name="sinc_ruta">Ruta:</string>
+    <string name="sinc_articulos">Articulos:</string>
+    <string name="sinc_informacion_adicional">Información Adicional:</string>
+    <string name="sinc_pedidos_actualizados">Pedidos actualizados:</string>
+    <string name="sinc_documentos">Documentos:</string>
+    <string name="sinc_subir_precobranzas">Subir Precobranzas</string>
+    <string name="sinc_pedidos_subidos">Pedidos Subidos:</string>
+
+    <!--Pedidos-->
+    <string name="ped_credito">Credito</string>
+    <string name="ped_bcv">BCV</string>
+    <string name="ped_fac">Factura</string>
+    <string name="ped_nota">Nota de Entrega</string>
 </resources>

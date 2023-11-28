@@ -2,28 +2,28 @@ package com.appcloos.mimaletin
 
 import android.content.Context
 import android.content.res.Configuration
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.appcloos.mimaletin.databinding.ItemClientePedidoBinding
-import java.security.AccessController.getContext
-
-
-
+import com.appcloos.mimaletin.domain.ClienteAlertauseCase
 
 
 class SeleccionarClientePedidoAdapter(
     private var clientes: List<Cliente>,
     private val onClickListener: (String, String) -> Unit,
+    private val onLongClickListener: (String, String) -> Unit,
     private val context: Context
 ) : RecyclerView.Adapter<SeleccionarClientePedidoAdapter.SeleccionarClientePedidoHolder>() {
 
     var nightModeFlags: Int = context.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
+
     inner class SeleccionarClientePedidoHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         private var conn: AdminSQLiteOpenHelper =
@@ -32,7 +32,11 @@ class SeleccionarClientePedidoAdapter(
 
         val binding = ItemClientePedidoBinding.bind(view)
 
-        fun render(cliente: Cliente, onClickListener: (String, String) -> Unit) {
+        fun render(
+            cliente: Cliente,
+            onClickListener: (String, String) -> Unit,
+            onLongClickListener: (String, String) -> Unit
+        ) {
 
             when (cliente.contribespecial) {
                 1.0 -> {
@@ -42,9 +46,9 @@ class SeleccionarClientePedidoAdapter(
 
                 0.0 -> {
                     binding.tvContrioEspe.text = " No Activo"
-                    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+                    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
                         binding.tvContrioEspe.setTextColor(Color.rgb(201, 200, 200))
-                    }else{
+                    } else {
                         binding.tvContrioEspe.setTextColor(Color.rgb(64, 64, 64))
                     }
                     //binding.tvContrioEspe.setTextColor(Color.rgb(0, 0, 0))
@@ -52,9 +56,9 @@ class SeleccionarClientePedidoAdapter(
 
                 else -> {
                     binding.tvContrioEspe.text = " No identificado"
-                    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+                    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
                         binding.tvContrioEspe.setTextColor(Color.rgb(201, 200, 200))
-                    }else{
+                    } else {
                         binding.tvContrioEspe.setTextColor(Color.rgb(64, 64, 64))
                     }
                     //binding.tvContrioEspe.setTextColor(Color.rgb(0, 0, 0))
@@ -75,34 +79,95 @@ class SeleccionarClientePedidoAdapter(
                     binding.tvDocsVencidos.setTextColor(Color.rgb(0, 0, 0))
                 }
             }*/
+            binding.tvDocsVencidos.apply {
+                text = cliente.kne_activa.toString()
+                if (cliente.kne_activa > 0.0) {
+                    alertError()
+                } else {
+                    alertNormal()
+                }
+            }
 
-            binding.tvDocsVencidos.text = cliente.kne_activa.toString()
+
 
             binding.tvCodigoCliente.text = cliente.codigo
             binding.tvNombreCliente.text = cliente.nombre
 
             if (cliente.status == null) {
-                val cursorTasas: Cursor = keAndroid.rawQuery(
-                    "SELECT ROUND(JULIANDAY('now') - JULIANDAY(kti_fchdoc)) FROM ke_opti " +
-                            "WHERE kti_codcli = '${cliente.codigo}'",
-                    null
-                )
+
+                val conn = AdminSQLiteOpenHelper(context, "ke_android", null, 1)
+
+                val diasPedidos =
+                    conn.getCampoInt("cliempre", "diasultvta", "codigo", cliente.codigo)
 
                 binding.tvPedidoDiasMain.text = "Dias sin hacer pedidos: "
-                binding.tvPedidoDias.text =
-                    if (cursorTasas.moveToFirst()) cursorTasas.getString(0) else "No encontrado"
-                cursorTasas.close()
+                binding.tvPedidoDias.text = if (diasPedidos <= 0) "0" else diasPedidos.toString()
+                diasSinPedido(diasPedidos, binding.tvPedidoDias)
             } else {
                 binding.tvPedidoDiasMain.text = "Documentos: "
                 binding.tvPedidoDias.text = cliente.status.toInt().toString()
             }
 
+            //Icono de advertensia
+            val comparar = ClienteAlertauseCase().comparar(cliente.codigo, context)
+            val colorIcon = ClienteAlertauseCase().compararIcon(cliente.codigo, context)
+            binding.ivAlerta.apply {
+                isVisible = comparar
+                setColorFilter(color(colorIcon))
+            }
 
 
-            binding.clMainSlecClientePedido.setOnClickListener {
+
+
+
+            binding.clMainSlecClientePedido.apply {
+                setOnClickListener { onClickListener(cliente.codigo!!, cliente.nombre!!) }
+                setOnLongClickListener {
+                    onLongClickListener(cliente.codigo!!, cliente.nombre!!)
+                    true
+                }
+            }
+            /*binding.clMainSlecClientePedido.setOnClickListener {
                 onClickListener(
                     cliente.codigo!!, cliente.nombre!!
                 )
+            }*/
+
+        }
+
+        private fun diasSinPedido(diasPedidos: Int, view: TextView) {
+            view.apply {
+                when (diasPedidos) {
+                    in 0..8 -> {
+                        setTextColor(color(R.color.greenColor))
+                        setBackgroundResource(R.drawable.border_radius)
+                    }
+
+                    in 9..17 -> {
+                        setTextColor(color(R.color.lightGreenColor))
+                        setBackgroundResource(R.drawable.border_radius)
+                    }
+
+                    in 18..26 -> {
+                        setTextColor(color(R.color.yellowColor))
+                        setBackgroundResource(R.drawable.border_radius)
+                    }
+
+                    in 27..35 -> {
+                        setTextColor(color(R.color.orangeColor))
+                        setBackgroundResource(R.drawable.border_radius)
+                    }
+
+                    in 36..45 -> {
+                        setTextColor(color(R.color.redColor))
+                        setBackgroundResource(R.drawable.border_radius)
+                    }
+
+                    else -> {
+                        setTextColor(color(R.color.white))
+                        setBackgroundResource(R.drawable.border_radius_error)
+                    }
+                }
             }
 
         }
@@ -124,7 +189,7 @@ class SeleccionarClientePedidoAdapter(
     override fun getItemCount(): Int = clientes.size
 
     override fun onBindViewHolder(holder: SeleccionarClientePedidoHolder, position: Int) {
-        holder.render(clientes[position], onClickListener)
+        holder.render(clientes[position], onClickListener, onLongClickListener)
     }
 
     fun actualizarClientes(clientes: List<Cliente>) {

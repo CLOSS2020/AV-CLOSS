@@ -21,6 +21,12 @@
             android:title="Act/Nuevos Artículos"
             android:visible="false"/>
 
+        <item
+            android:id="@+id/moduloPromo"
+            android:enabled="true"
+            android:icon="@drawable/ic_porcentaje"
+            android:title="Articulos en Promo"
+            android:visible="false"/>
 
         <item
             android:id="@+id/icpedidos"
@@ -125,9 +131,22 @@
         </item>
     </group>
 
+    <group android:id="@+id/gruop_menu_sesion">
+        <item android:title="Sesión">
+            <menu>
+                <item
+                    android:id="@+id/cambiarSesion"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_account"
+                    android:title="Cambiar Sesión" />
+
+            </menu>
+        </item>
+    </group>
+
 
     <group android:id="@+id/gruop_menu3">
-        <item android:title="Opciones">
+        <item android:title="Salir">
             <menu>
                 <item
                     android:id="@+id/iccerrarsesion"

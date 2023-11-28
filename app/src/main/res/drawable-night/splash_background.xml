@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--Pantalla splash-->
+<!--Es la pantalla que se ve durante el arranque de la app-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/blackColor4" />
+
+    <item
+        android:width="700px"
+        android:height="700px"
+        android:gravity="center">
+        <bitmap android:src="@drawable/av_closs" />
+    </item>
+
+</layer-list>

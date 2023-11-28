@@ -125,6 +125,19 @@
             app:layout_constraintStart_toEndOf="@+id/tvEdoFactModulCXC"
             app:layout_constraintTop_toBottomOf="@+id/tvFechaRecepcionModulCXC" />
 
+        <TextView
+            android:id="@+id/tvReclamo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/border_radius_error"
+            android:padding="5dp"
+            android:text="RCL"
+            android:textColor="@color/whiteColor1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/AppThemeMaterial"
     tools:context=".CXCActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -13,8 +14,6 @@
         android:layout_marginEnd="44dp"
         android:layout_marginBottom="40dp"
         android:clickable="true"
-        android:background="#2196F3"
-        app:backgroundTint="#03A9F4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:rippleColor="#F1F1F1"
@@ -45,12 +44,12 @@
         android:contentDescription="Anexo Deposito"
         android:text="Nuevo Deposito"
         android:visibility="invisible"
-        app:backgroundTint="#BFD5E4"
         app:layout_constraintBottom_toTopOf="@+id/fbt_addcxc"
         app:layout_constraintEnd_toEndOf="@+id/fbt_addcxc" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_cxc"
+        style="@style/BackgroundAuxRecicleView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
@@ -58,8 +57,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        style="@style/BackgroundAuxRecicleView"
-
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 

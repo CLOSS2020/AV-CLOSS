@@ -1,9 +1,7 @@
 package com.appcloos.mimaletin
 
-import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.VolleyError
@@ -65,14 +63,15 @@ class ObjetoAux(val context: Context) {
         requestQueue.add(jsonObjectRequest)
     }
 
-    fun descargaDesactivo(codUsuario: String){
-        val url = "https://cloccidental.com/webservice/desactivo.php?cod_usuario=$codUsuario";
+    fun descargaDesactivo(codUsuario: String) {
+        val url = "https://cloccidental.com/webservice/desactivo.php?cod_usuario=$codUsuario"
 
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject? ->
                 if (response != null &&
                     response.getString("desactivos") != "null" &&
-                    response.getString("status") == "0") {
+                    response.getString("status") == "0"
+                ) {
                     try {
                         val desactivos = response.getJSONArray("desactivos")
                         val jsonObject: JSONObject = desactivos.getJSONObject(0)
@@ -82,7 +81,7 @@ class ObjetoAux(val context: Context) {
                         val cv = ContentValues()
                         cv.put("desactivo", jsonObject.getString("desactivo"))
 
-                        conn.UpdateJSON("usuarios", cv, "vendedor", vendedor)
+                        conn.updateJSON("usuarios", cv, "vendedor", vendedor)
 
                         println("Si se logro descargar desactivo")
                         println(jsonObject.getString("desactivo"))
@@ -90,8 +89,7 @@ class ObjetoAux(val context: Context) {
                         e.printStackTrace()
                         println("No se logro descargar desactivo")
                     }
-                }
-                else{
+                } else {
                     println("No se logro descargar desactivo")
                     println("Response --> $response")
                 }

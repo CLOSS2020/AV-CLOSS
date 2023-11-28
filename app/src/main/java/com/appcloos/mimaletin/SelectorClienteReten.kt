@@ -46,6 +46,7 @@ class SelectorClienteReten : AppCompatActivity() {
         binding.rvMainSelctReten.layoutManager = LinearLayoutManager(this)
         adapter = SeleccionarClientePedidoAdapter(clientes,
             onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) },
+            onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
             this
         )
         binding.rvMainSelctReten.adapter = adapter
@@ -82,6 +83,11 @@ class SelectorClienteReten : AppCompatActivity() {
             clientes.add(cliente)
         }
         cursorTasas.close()
+    }
+
+    private fun dialogCliente(cliente: String, nomCliente: String) {
+        val dialog = DialogClientesDatos(this, cliente, nomCliente)
+        dialog.show()
     }
 
 }

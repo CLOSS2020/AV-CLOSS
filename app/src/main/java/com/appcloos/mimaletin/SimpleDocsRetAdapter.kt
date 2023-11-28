@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.appcloos.mimaletin.viewmodel.CXC.ke_precobradocs
+import com.appcloos.mimaletin.model.CXC.ke_precobradocs
 
 class SimpleDocsRetAdapter(
     context: Context,

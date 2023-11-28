@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:theme="@style/BasicThemeAngel"
+    android:theme="@style/BasicThemeBasic"
     tools:openDrawer="start">
 
 
@@ -48,12 +48,13 @@
             android:layout_marginStart="25dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="25dp"
+            android:layout_marginBottom="80dp"
             android:background="@drawable/bordes_redondos"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/tv_fecha_tasa"
@@ -119,7 +120,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_fecha_tasa" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
+        <!--<TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -130,19 +131,20 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="0dp"
-            android:layout_height="300dp"
+            android:layout_height="0dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="91dp"
+            android:layout_marginTop="70dp"
             android:layout_marginEnd="20dp"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout">
 
             <!--Libreria : https://github.com/ImaginativeShohag/Why-Not-Image-Carousel-->
 

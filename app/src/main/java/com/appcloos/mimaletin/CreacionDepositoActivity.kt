@@ -1,21 +1,35 @@
 package com.appcloos.mimaletin
 
 import android.content.ContentValues
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import com.appcloos.mimaletin.Constantes.AGENCIA
 import com.appcloos.mimaletin.databinding.ActivityCreacionDepositoBinding
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -55,10 +69,18 @@ class CreacionDepositoActivity : AppCompatActivity() {
     var fecha_auxiliar = "0000-00-00"
     private var fechaDep = ""
 
+    private var listaImagenes: MutableList<Uri> = mutableListOf()
+
+    private var requestCodeImg = random()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreacionDepositoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        windowsColor(AGENCIA)
+        setColors()
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 18)
         keAndroid = conn.writableDatabase
@@ -130,9 +152,41 @@ class CreacionDepositoActivity : AppCompatActivity() {
             }
         }
 
-
         binding.btDepProc.setOnClickListener {
             procesarDeposito()
+        }
+
+        binding.btnFoto.setOnClickListener {
+            listaImagenes.clear()
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_GET_CONTENT
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                type = "image/jpeg"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, "SELECCIONA LAS IMAGENES")
+            startActivityForResult(shareIntent, requestCodeImg)
+        }
+
+        binding.btnFoto.setOnLongClickListener {
+            if (listaImagenes.isNotEmpty()) {
+                dialogImg()
+            }
+            true
+        }
+    }
+
+    private fun setColors() {
+
+        binding.apply {
+            tvDepMontot.setDrawableCobranzaAgencia(AGENCIA)
+            btDepProc.setBackgroundColor(btDepProc.colorButtonAgencia(AGENCIA))
+
+            btnFoto.setColorModelVariant(AGENCIA)
+
+            tilDepSpbanco.setColorModel(AGENCIA)
+            tilDepRef.setColorModel(AGENCIA)
+
         }
     }
 
@@ -154,6 +208,13 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
         val referenciaBanco = binding.etDepRef.text.toString().uppercase()
         val montoTotal: Double = binding.tvDepMontot.text.toString().toDouble()
+
+        val contadorImg = 1
+
+        if (listaImagenes.size < contadorImg) {
+            toast("Debe incluir un minimo de $contadorImg imágen")
+            return
+        }
 
         //valido la fecha
         if (fechaDep.isEmpty()) {
@@ -313,6 +374,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 qcabecera.put("codvend", listaCabeceraNueva[i].codigoVend)
                 qcabecera.put("tiporecibo", listaCabeceraNueva[i].tipoRecibo)
                 qcabecera.put("fchrecibo", listaCabeceraNueva[i].fchrecibo)
+                qcabecera.put("clicontesp", listaCabeceraNueva[i].clicontesp)
                 qcabecera.put("bsneto", listaCabeceraNueva[i].bsneto)
                 qcabecera.put("bsiva", listaCabeceraNueva[i].bsiva)
                 qcabecera.put("bsretiva", listaCabeceraNueva[i].bsretiva)
@@ -320,10 +382,12 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 qcabecera.put("bstotal", listaCabeceraNueva[i].bstotal)
                 qcabecera.put("dolneto", listaCabeceraNueva[i].dolneto)
                 qcabecera.put("doliva", listaCabeceraNueva[i].doliva)
-                // qcabecera.put("dolretiva", listaReciboPrCabecera[i].dolretiva)
+                qcabecera.put("dolretiva", listaCabeceraNueva[i].dolretiva)
                 qcabecera.put("dolflete", listaCabeceraNueva[i].dolflete)
                 qcabecera.put("doltotal", listaCabeceraNueva[i].doltotal)
                 qcabecera.put("moneda", listaCabeceraNueva[i].moneda)
+                qcabecera.put("netocob", listaCabeceraNueva[i].netocob)
+                //qcabecera.put("efectivo", listaCabeceraNueva[i].efectivo)
                 qcabecera.put("bcocod", listaCabeceraNueva[i].bcocod)
                 qcabecera.put("bcomonto", listaCabeceraNueva[i].bcomonto)
                 qcabecera.put("bcoref", listaCabeceraNueva[i].bcoref)
@@ -355,12 +419,53 @@ class CreacionDepositoActivity : AppCompatActivity() {
                     qlineas.put("tnetoddol", listaLineasNueva[j].tnetoddol)
                     qlineas.put("afavor", listaLineasNueva[j].afavor)
                     qlineas.put("reten", reten[j])
+                    val cliente = conn.getCampoString(
+                        "ke_doccti",
+                        "codcliente",
+                        "documento",
+                        listaLineasNueva[j].documento
+                    )
+                    qlineas.put("codcliente", cliente)
+                    qlineas.put(
+                        "nombrecli",
+                        conn.getCampoString("cliempre", "nombre", "codigo", cliente)
+                    )
+                    qlineas.put(
+                        "tasadoc",
+                        conn.getCampoDouble(
+                            "ke_doccti",
+                            "tasadoc",
+                            "documento",
+                            listaLineasNueva[j].documento
+                        )
+                    )
+                    //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
+                    qlineas.put(
+                        "cbsretiva",
+                        conn.getCampoDouble(
+                            "ke_doccti",
+                            "cbsretiva",
+                            "documento",
+                            listaLineasNueva[j].documento
+                        )
+                    )
+                    qlineas.put(
+                        "cbsretflete",
+                        conn.getCampoDouble(
+                            "ke_doccti",
+                            "cbsretflete",
+                            "documento",
+                            listaLineasNueva[j].documento
+                        )
+                    )
                     println("Numero $j")
                     //qlineas.put("monto_aux_pdf", listaRecibos[j].efectivo)
                     keAndroid.insert("ke_precobradocs", null, qlineas)
                 }
 
                 keAndroid.insert("ke_precobranza", null, qcabecera)
+
+                conn.saveImg(listaImagenes, nroDeposito, this) // <-- Guardando imagenes
 
                 val qcorrelativo = ContentValues()
                 qcorrelativo.put("kcor_numero", nroCorrelativo)
@@ -698,6 +803,61 @@ class CreacionDepositoActivity : AppCompatActivity() {
         }
         cursor.close()
         return 0
+    }
+
+    private fun dialogImg() {
+        val builder = AlertDialog.Builder(this)
+        val customView = LayoutInflater.from(this).inflate(R.layout.custom_dialog_list_img, null)
+        builder.setView(customView)
+        val adapterDialog = DialogImgAdapter(listaImagenes) {
+            listaImagenes.removeAt(it)
+        }
+        adapterDialog.updateAdapter(listaImagenes)
+        val btnAceptar = customView.findViewById<Button>(R.id.btnAceptar)
+        val rvlistaImg = customView.findViewById<RecyclerView>(R.id.rvListaImg)
+
+        rvlistaImg.apply {
+            adapter = adapterDialog
+            layoutManager = GridLayoutManager(context, 1)
+            setHasFixedSize(true)
+        }
+
+        val creacion = builder.create()
+        creacion.show()
+        btnAceptar.setBackgroundColor(btnAceptar.colorAgencia(AGENCIA))
+        btnAceptar.setOnClickListener { _: View? -> creacion.dismiss() }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if ((requestCode == this.requestCodeImg) && (resultCode == RESULT_OK)) {
+            try {
+                lateinit var imageUri: Uri
+                val clipData = data!!.clipData
+                if (clipData == null) {
+                    imageUri = data.data!!
+                    listaImagenes.add(imageUri)
+                    println(listaImagenes)
+                } else {
+                    for (i in 0 until clipData.itemCount) {
+                        listaImagenes.add(clipData.getItemAt(i).uri)
+                        println(listaImagenes)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Algo salió mal", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        theme.applyStyle(setThemeAgencia(AGENCIA), true)
+        // you could also use a switch if you have many themes that could apply
+        return theme
     }
 
 

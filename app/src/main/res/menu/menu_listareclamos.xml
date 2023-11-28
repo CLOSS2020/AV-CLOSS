@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"><![CDATA[>
-
-
-    ]]>
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/actu_reclamos"
-        app:showAsAction="always"
         android:icon="@drawable/ic_sync"
-        android:title="Actualizar Reclamos" />
-
+        android:title="Actualizar Reclamos"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/subir_reclamos"
-        app:showAsAction="always"
         android:icon="@drawable/ic_upload"
-        android:title="Subir Reclamos" />
-
+        android:title="Subir Reclamos"
+        app:showAsAction="always" />
 
 </menu>

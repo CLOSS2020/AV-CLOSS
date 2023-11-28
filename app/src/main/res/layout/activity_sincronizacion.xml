@@ -2,179 +2,170 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme"
-    style="@style/BackgroundAux">
+    tools:context=".sincronizar.SincronizarActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".SincronizacionActivity">
+        android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/bt_sync"
+            android:id="@+id/btnSync"
             style="@style/BasicStyleButtom"
             android:layout_width="0dp"
             android:layout_height="44dp"
             android:layout_marginStart="54dp"
             android:layout_marginTop="36dp"
             android:layout_marginEnd="54dp"
-            android:layout_marginBottom="45dp"
             android:text="@string/sincronizar"
             android:textColor="@color/blanco"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_aviso"
+            app:layout_constraintBottom_toTopOf="@+id/tvAviso"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
-            android:id="@+id/tv_aviso"
+            android:id="@+id/tvAviso"
             android:layout_width="0dp"
-            android:layout_height="33dp"
-            android:layout_marginStart="42dp"
-            android:layout_marginTop="92dp"
-            android:layout_marginEnd="42dp"
-            android:layout_marginBottom="88dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_grupos"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/btnSync"
+            app:layout_constraintStart_toStartOf="@+id/btnSync"
+            app:layout_constraintTop_toBottomOf="@+id/btnSync" />
 
         <TextView
-            android:id="@+id/tv_vendedor"
+            android:id="@+id/tvVendedor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="36dp"
-            android:layout_marginTop="136dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
             android:text="Vendedor:"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/tvAviso" />
 
         <TextView
-            android:id="@+id/tv_cliente"
+            android:id="@+id/tvCliente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Clientes:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_vendedor"
-            app:layout_constraintTop_toBottomOf="@+id/tv_vendedor" />
+            app:layout_constraintStart_toStartOf="@+id/tvVendedor"
+            app:layout_constraintTop_toBottomOf="@+id/tvVendedor" />
 
         <TextView
-            android:id="@+id/tv_grupos"
+            android:id="@+id/tvGrupos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Grupos:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_cliente"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cliente" />
+            app:layout_constraintStart_toStartOf="@+id/tvCliente"
+            app:layout_constraintTop_toBottomOf="@+id/tvCliente" />
 
         <TextView
-            android:id="@+id/tv_sector"
+            android:id="@+id/tvSector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
+            android:layout_marginTop="10dp"
             android:text="Zona:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_grupos"
-            app:layout_constraintTop_toBottomOf="@+id/tv_grupos" />
+            app:layout_constraintStart_toStartOf="@+id/tvGrupos"
+            app:layout_constraintTop_toBottomOf="@+id/tvGrupos" />
 
         <TextView
-            android:id="@+id/tv_subsector"
+            android:id="@+id/tvSubsector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
+            android:layout_marginTop="10dp"
             android:text="Ruta:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_sector"
-            app:layout_constraintTop_toBottomOf="@+id/tv_sector" />
+            app:layout_constraintStart_toStartOf="@+id/tvSector"
+            app:layout_constraintTop_toBottomOf="@+id/tvSector" />
 
         <TextView
-            android:id="@+id/tv_articulos"
+            android:id="@+id/tvArticulos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="Articulos:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_subsector"
-            app:layout_constraintTop_toBottomOf="@+id/tv_subsector" />
+            app:layout_constraintStart_toStartOf="@+id/tvSubsector"
+            app:layout_constraintTop_toBottomOf="@+id/tvSubsector" />
 
         <TextView
-            android:id="@+id/tv_subgrupos"
+            android:id="@+id/tvSubgrupos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="Información Adicional:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_articulos"
-            app:layout_constraintTop_toBottomOf="@+id/tv_articulos" />
+            app:layout_constraintStart_toStartOf="@+id/tvArticulos"
+            app:layout_constraintTop_toBottomOf="@+id/tvArticulos" />
 
         <TextView
-            android:id="@+id/tv_pedidosact"
+            android:id="@+id/tvPedidosact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="Pedidos actualizados:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_subgrupos"
-            app:layout_constraintTop_toBottomOf="@+id/tv_subgrupos" />
+            app:layout_constraintStart_toStartOf="@+id/tvSubgrupos"
+            app:layout_constraintTop_toBottomOf="@+id/tvSubgrupos" />
 
         <TextView
             android:id="@+id/tvDocumentos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="Documentos:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_subgrupos"
-            app:layout_constraintTop_toBottomOf="@+id/tv_pedidosact" />
+            app:layout_constraintStart_toStartOf="@+id/tvPedidosact"
+            app:layout_constraintTop_toBottomOf="@+id/tvPedidosact" />
 
         <Button
-            android:id="@+id/bt_subir"
+            android:id="@+id/btnSubir"
             style="@style/BasicStyleButtom"
             android:layout_width="0dp"
-            android:layout_height="47dp"
-            android:layout_marginStart="57dp"
-            android:layout_marginTop="180dp"
-            android:layout_marginEnd="57dp"
-            android:layout_marginBottom="172dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:text="@string/subir"
             android:textColor="@color/blanco"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_grupos"
+            app:layout_constraintEnd_toEndOf="@+id/btnSync"
+            app:layout_constraintStart_toStartOf="@+id/btnSync"
+            app:layout_constraintTop_toBottomOf="@+id/tvDocumentos"
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/tv_subidospedidos"
             android:layout_width="wrap_content"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="56dp"
             android:layout_marginTop="8dp"
             android:text="Pedidos Subidos:"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bt_subir" />
+            app:layout_constraintEnd_toEndOf="@+id/tvDocumentos"
+            app:layout_constraintStart_toStartOf="@+id/tvDocumentos"
+            app:layout_constraintTop_toBottomOf="@+id/btnSubir" />
 
         <Button
-            android:id="@+id/bt_subirprecob"
+            android:id="@+id/btnSubirprecob"
             style="@style/BasicStyleButtom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="60dp"
+            android:layout_marginTop="16dp"
             android:text="SUBIR PRECOBRANZAS"
             android:textColor="#FFFFFF"
             android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnSync"
+            app:layout_constraintStart_toStartOf="@+id/btnSync"
             app:layout_constraintTop_toBottomOf="@+id/tv_subidospedidos" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

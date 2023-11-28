@@ -77,7 +77,7 @@ public class CarritoAdapter extends BaseAdapter {
         Double dctonumerico              = carrito.getDctolin();
         ImageView img_thumb              = convertView.findViewById(R.id.img_thumb);
 
-        textcodigo.setText("Código: "+ carrito.getCodigo());
+        textcodigo.setText("Cod: "+ carrito.getCodigo());
         textnombre.setText(carrito.getNombre());
         textexistencia.setText("Cantidad: " +carrito.getCantidad());
 
@@ -85,7 +85,7 @@ public class CarritoAdapter extends BaseAdapter {
         textprecio.setText("Precio: $"+ precio.toString());
 
         Double montoDsctoNormal      = precio * 0.20;
-        Double precioConDsctoNormal  = precio - montoDsctoNormal;
+        double precioConDsctoNormal  = precio - montoDsctoNormal;
         precioConDsctoNormal = Math.round(precioConDsctoNormal*100.00)/100.00;
         //textDescuentoNormal.setText("Precio Dscto: $" + precioConDsctoNormal.toString());
 
@@ -93,13 +93,13 @@ public class CarritoAdapter extends BaseAdapter {
         if(dctonumerico  > 0.0) {
             Double dctoaplicar  = dctonumerico  / 100;
             Double mtodescuento = precio * dctoaplicar;
-            Double preciocondescuento = precio - mtodescuento;
+            double preciocondescuento = precio - mtodescuento;
 
             preciocondescuento = Math.round(preciocondescuento * 100.00) / 100.00;
             textdescuento.setVisibility(View.VISIBLE);
-            textdescuento.setText("-" + dctonumerico  + "%");
+            textdescuento.setText("Promo -" + dctonumerico  + "%");
             textpreciodescuento.setVisibility(View.VISIBLE);
-            textpreciodescuento.setText("Precio con desc: $"+ preciocondescuento.toString());
+            textpreciodescuento.setText("Prc Desc: $"+ preciocondescuento);
 
         }
         //generacion de la miniatura de la imagen --

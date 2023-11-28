@@ -2,6 +2,7 @@ package com.appcloos.mimaletin
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
@@ -44,11 +45,12 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
         buscarArticulo("")
 
-        println("Cantidad de lineas -> ${clientes.size}")
-
         binding.rvMainPedido.layoutManager = LinearLayoutManager(this)
         adapter = SeleccionarClientePedidoAdapter(
-            clientes, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }, this
+            clientes,
+            onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
+            onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
+            this
         )
         binding.rvMainPedido.adapter = adapter
 
@@ -62,13 +64,11 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
         val buscador = MenuItemCompat.getActionView(menuItem) as SearchView
         buscador.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(busqueda: String): Boolean {
-                println("lo que ingreso -> $busqueda")
                 buscarArticulo(busqueda)
                 return true
             }
 
             override fun onQueryTextChange(busqueda: String): Boolean {
-                println("lo que saco -> $busqueda")
                 buscarArticulo(busqueda)
                 return true
             }
@@ -84,7 +84,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
             val cursorca = keAndroid.rawQuery(
                 "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
-                        "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY nombre ASC",
+                        "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY diasultvta DESC",
                 null
             )
 
@@ -103,6 +103,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             adapter = SeleccionarClientePedidoAdapter(
                 clientes,
                 onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
+                onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
                 this
             )
             binding.rvMainPedido.adapter = adapter
@@ -115,7 +116,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
                         "WHERE status = '1' AND " +
                         "vendedor = '$codUsuario' AND (nombre LIKE '%$busqueda%' OR " +
-                        "codigo LIKE '%$busqueda%') ORDER BY nombre ASC",
+                        "codigo LIKE '%$busqueda%') ORDER BY diasultvta DESC",
                 null
             )
 
@@ -134,11 +135,17 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             adapter = SeleccionarClientePedidoAdapter(
                 clientes,
                 onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
+                onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
                 this
             )
             binding.rvMainPedido.adapter = adapter
             adapter.notifyDataSetChanged()
         }
+    }
+
+    private fun dialogCliente(cliente: String, nomCliente: String) {
+        val dialog = DialogClientesDatos(this, cliente, nomCliente)
+        dialog.show()
     }
 
 
@@ -174,4 +181,12 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
         }
         cursorTasas.close()
     }
+
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
+        // you could also use a switch if you have many themes that could apply
+        return theme
+    }
+
 }

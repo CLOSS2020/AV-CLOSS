@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PROFILE" /> <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> -->
     <uses-permission
@@ -17,6 +16,7 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
@@ -25,10 +25,23 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".sincronizar.SincronizarActivity"
+            android:exported="false" />
+        <activity
             android:name=".ModuloReten.ModuloRetenActivity"
             android:exported="false"
             android:parentActivityName=".PrincipalActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -41,7 +54,8 @@
             android:exported="false" />
         <activity
             android:name=".DetalleCXCActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".CXCActivity" />
         <activity
             android:name=".SeleccionarClientePedidoActivity"
             android:exported="false"
@@ -78,7 +92,7 @@
             android:theme="@style/AppTheme.newer" />
         <activity
             android:name=".RetencionesActivity"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.ALTERNATIVE" />
@@ -105,7 +119,8 @@
             android:label="Pedidos Archivados" />
         <activity
             android:name=".PromocionesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".PrincipalActivity" />
         <activity
             android:name=".PlanificadorActivity"
             android:exported="false"
@@ -178,13 +193,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

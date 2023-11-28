@@ -6,13 +6,13 @@
         <item name="colorPrimaryDark">@color/primaryColor</item>
         <item name="colorAccent">@color/rojologo</item>
 
-        <item name="colorPrimary">@color/primaryColor</item>
+<!--        <item name="colorPrimary">@color/primaryColor</item>-->
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/blanco</item>
+<!--        <item name="colorOnPrimary">@color/blanco</item>-->
 
-        <item name="colorSecondary">@color/secondaryColor</item>
+<!--        <item name="colorSecondary">@color/secondaryColor</item>-->
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
-        <item name="colorOnSecondary">@color/blackColor</item>
+<!--        <item name="colorOnSecondary">@color/blackColor</item>-->
 
         <item name="android:statusBarColor">@color/primaryColor</item>
         <item name="android:navigationBarColor">@color/primaryColor</item>
@@ -21,6 +21,33 @@
         <item name="android:windowBackground">#FAFAFA</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
         <item name="android:textColorHint">@color/secondaryTextColor</item>
+
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
     <style name="AppThemeMaterial" parent="Theme.MaterialComponents.Light.DarkActionBar">
@@ -29,13 +56,13 @@
         <item name="colorPrimaryDark">@color/primaryColor</item>
         <item name="colorAccent">@color/rojologo</item>
 
-        <item name="colorPrimary">@color/primaryColor</item>
+<!--        <item name="colorPrimary">@color/primaryColor</item>-->
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/blanco</item>
+<!--        <item name="colorOnPrimary">@color/blanco</item>-->
 
-        <item name="colorSecondary">@color/secondaryColor</item>
+<!--        <item name="colorSecondary">@color/secondaryColor</item>-->
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
-        <item name="colorOnSecondary">@color/blackColor</item>
+<!--        <item name="colorOnSecondary">@color/blackColor</item>-->
 
         <item name="android:statusBarColor">@color/primaryColor</item>
         <item name="android:navigationBarColor">@color/primaryColor</item>
@@ -44,6 +71,83 @@
         <item name="android:windowBackground">#FAFAFA</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
         <item name="android:textColorHint">@color/secondaryTextColor</item>
+
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+    </style>
+
+    <style name="AppThemeCXC" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/primaryColor</item>-->
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorAccent">@color/rojologo</item>
+
+        <!--        <item name="colorPrimary">@color/primaryColor</item>-->
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <!--        <item name="colorOnPrimary">@color/blanco</item>-->
+
+        <!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <!--        <item name="colorOnSecondary">@color/blackColor</item>-->
+
+        <item name="android:statusBarColor">@color/primaryColor</item>
+        <item name="android:navigationBarColor">@color/primaryColor</item>
+
+        <!--<item name="android:background">#F5F5F5</item>-->
+        <item name="android:windowBackground">#FAFAFA</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -77,11 +181,12 @@
         <item name="android:navigationBarColor">@color/primaryColor</item>
     </style>
 
-    <style name="AppTheme.Angel.Light" parent="Theme.MaterialComponents.Light">
+    <style name="AppTheme.Basic.Light" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">#014C83</item>
         <item name="colorAccent">#014C83</item>
         <item name="android:navigationBarColor">@color/primaryColor</item>
+        <item name="android:statusBarColor">@color/primaryColor</item>
     </style>
 
 
@@ -113,7 +218,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="BasicThemeAngel" parent="AppThemeMaterial">
+    <style name="BasicThemeBasic" parent="AppThemeMaterial">
         <item name="colorPrimary">@color/blackColor2</item>
         <item name="colorPrimaryVariant">@color/blackColor1</item>
         <item name="colorOnPrimary">@color/blackColor</item>
@@ -125,10 +230,12 @@
         <item name="android:statusBarColor">@color/blackColor1</item>
 
 
-
         <item name="android:textColor">@color/blackColor1</item>
         <item name="itemIconTint">@color/blackColor1</item>
         <item name="subheaderColor">@color/blackColor1</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="BasicStyleRecicleView" parent="AppTheme">
@@ -201,6 +308,7 @@
 
     <style name="EditTextStyleCustom" parent="AlertDialogCustom">
         <item name="android:textColor">@color/blackColor1</item>
+        <item name="android:textColorHint">@color/grayPerfect</item>
         <item name="android:backgroundTint">@color/rojologo</item>
     </style>
 
@@ -213,7 +321,7 @@
     <style name="NavigationViewCustom">
         <item name="android:background">@color/primaryColor</item>
     </style>
-    
+
     <style name="BasicStyleRadioButton" parent="Base.Widget.AppCompat.CompoundButton.RadioButton">
         <item name="colorControlNormal">@color/blackColor4</item>
         <item name="colorControlActivated">@color/rojologo</item>
@@ -265,6 +373,7 @@
         <item name="colorOnSurface">@color/blackColor3</item>
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="android:textColorPrimary">@color/blackColor2</item>
+        <item name="colorControlActivated">@color/grayPerfect</item>
     </style>
 
     <style name="StyleTextInputLayoutEditTextCXCTasa" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
@@ -301,7 +410,7 @@
         <!-- Used to color back button and three dots -->
         <item name="android:textColorSecondary">@color/whiteColor4</item>
 
-        <item name="colorAccent">@color/rojologo</item>
+        <item name="colorAccent">@color/whiteColor1</item>
     </style>
 
     <style name="CustomTitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -359,5 +468,605 @@
         <item name="itemIconTint">@color/blackColor4</item>
         <item name="subheaderColor">@color/blackColor4</item>
     </style>
+
+    <style name="BackgroundDivider" parent="AppTheme">
+        <item name="android:background">@color/blackColor4</item>
+    </style>
+
+    <style name="ColorDescuento" parent="AppTheme">
+        <item name="android:textColor">#05534C</item>
+    </style>
+
+    <style name="BasicStyleCheckBox" parent="AppTheme">
+        <item name="colorControlNormal">@color/blackColor4</item>
+        <item name="colorControlActivated">@color/rojologo</item>
+        <item name="colorAccent">@color/rojologo</item>
+        <item name="android:tint">#ffffff</item>
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="buttonTint">@color/rojologo</item>
+        <item name="android:textColorPrimary">@color/blackColor1</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="SincProgressBarStyle" parent="AppTheme">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:indeterminateTint">@color/primaryColor</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="SincTextViewStyle" parent="AppTheme">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/primaryColor</item>
+        <item name="android:navigationBarColor">@color/primaryColor</item>
+    </style>
+
+    <style name="AlertDialogCustomLayout" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/whiteColor1</item>
+        <item name="android:textColor">@color/blackColor1</item>
+    </style>
+
+    <style name="AlertDialogCustomLayoutButton" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">#00000000</item>
+        <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="SubtitleClientesMain" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primaryColor</item>
+    </style>
+
+
+
+
+
+
+
+
+
+    <!-- Base application theme. -->
+    <style name="AppThemeWokin" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/wokinPrimaryColor</item>-->
+        <item name="colorPrimaryDark">@color/wokinPrimaryColor</item>
+        <item name="colorAccent">@color/wokinAccentColor</item>
+
+<!--        <item name="colorPrimary">@color/wokinPrimaryColor</item>-->
+        <item name="colorPrimaryVariant">@color/wokinPrimaryDarkColor</item>
+<!--        <item name="colorOnPrimary">@color/blanco</item>-->
+
+<!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+<!--        <item name="colorOnSecondary">@color/blackColor</item>-->
+
+        <item name="android:statusBarColor">@color/wokinPrimaryColor</item>
+        <item name="android:navigationBarColor">@color/wokinColor3</item>
+
+        <!--<item name="android:background">#F5F5F5</item>-->
+        <item name="android:windowBackground">#FAFAFA</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+
+        <item name="colorPrimary">@color/md_theme_light_primary_wokin</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary_wokin</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer_wokin</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer_wokin</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary_wokin</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary_wokin</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer_wokin</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer_wokin</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary_wokin</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary_wokin</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer_wokin</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer_wokin</item>
+        <item name="colorError">@color/md_theme_light_error_wokin</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer_wokin</item>
+        <item name="colorOnError">@color/md_theme_light_onError_wokin</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer_wokin</item>
+        <item name="android:colorBackground">@color/md_theme_light_background_wokin</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground_wokin</item>
+        <item name="colorSurface">@color/md_theme_light_surface_wokin</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface_wokin</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant_wokin</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant_wokin</item>
+        <item name="colorOutline">@color/md_theme_light_outline_wokin</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface_wokin</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface_wokin</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary_wokin</item>
+    </style>
+
+    <style name="AppThemeMaterialWokin" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/wokinPrimaryColor</item>-->
+        <item name="colorPrimaryDark">@color/wokinPrimaryColor</item>
+        <item name="colorAccent">@color/wokinAccentColor</item>
+
+<!--        <item name="colorPrimary">@color/wokinPrimaryColor</item>-->
+        <item name="colorPrimaryVariant">@color/wokinPrimaryDarkColor</item>
+<!--        <item name="colorOnPrimary">@color/blanco</item>-->
+
+<!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+<!--        <item name="colorOnSecondary">@color/blackColor</item>-->
+
+        <item name="android:statusBarColor">@color/wokinPrimaryColor</item>
+        <item name="android:navigationBarColor">@color/wokinColor3</item>
+
+        <!--<item name="android:background">#F5F5F5</item>-->
+        <item name="android:windowBackground">#FAFAFA</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+
+        <item name="colorPrimary">@color/md_theme_light_primary_wokin</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary_wokin</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer_wokin</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer_wokin</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary_wokin</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary_wokin</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer_wokin</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer_wokin</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary_wokin</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary_wokin</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer_wokin</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer_wokin</item>
+        <item name="colorError">@color/md_theme_light_error_wokin</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer_wokin</item>
+        <item name="colorOnError">@color/md_theme_light_onError_wokin</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer_wokin</item>
+        <item name="android:colorBackground">@color/md_theme_light_background_wokin</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground_wokin</item>
+        <item name="colorSurface">@color/md_theme_light_surface_wokin</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface_wokin</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant_wokin</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant_wokin</item>
+        <item name="colorOutline">@color/md_theme_light_outline_wokin</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface_wokin</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface_wokin</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary_wokin</item>
+    </style>
+
+    <style name="AppThemeCXCWokin" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/wokinPrimaryColor</item>-->
+        <item name="colorPrimaryDark">@color/wokinPrimaryColor</item>
+        <item name="colorAccent">@color/wokinAccentColor</item>
+
+        <!--        <item name="colorPrimary">@color/wokinPrimaryColor</item>-->
+        <item name="colorPrimaryVariant">@color/wokinPrimaryDarkColor</item>
+        <!--        <item name="colorOnPrimary">@color/blanco</item>-->
+
+        <!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <!--        <item name="colorOnSecondary">@color/blackColor</item>-->
+
+        <item name="android:statusBarColor">@color/wokinPrimaryColor</item>
+        <item name="android:navigationBarColor">@color/wokinColor3</item>
+
+        <!--<item name="android:background">#F5F5F5</item>-->
+        <item name="android:windowBackground">#FAFAFA</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+
+        <item name="colorPrimary">@color/md_theme_light_primary_wokin</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary_wokin</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer_wokin</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer_wokin</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary_wokin</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary_wokin</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer_wokin</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer_wokin</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary_wokin</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary_wokin</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer_wokin</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer_wokin</item>
+        <item name="colorError">@color/md_theme_light_error_wokin</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer_wokin</item>
+        <item name="colorOnError">@color/md_theme_light_onError_wokin</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer_wokin</item>
+        <item name="android:colorBackground">@color/md_theme_light_background_wokin</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground_wokin</item>
+        <item name="colorSurface">@color/md_theme_light_surface_wokin</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface_wokin</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant_wokin</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant_wokin</item>
+        <item name="colorOutline">@color/md_theme_light_outline_wokin</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface_wokin</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface_wokin</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary_wokin</item>
+    </style>
+
+    <style name="AppThemeWokin.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:navigationBarColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="AppThemeWokin.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppThemeWokin.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="FullSreenDialogWokin" parent="Theme.AppCompat.Light">
+        <item name="android:layout_width">23dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="colorPrimary">@color/wokinPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/wokinPrimaryColor</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/grisclaro</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="AppThemeWokin.newer" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/wokinPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/wokinPrimaryColor</item>
+        <item name="colorPrimaryVariant">@color/wokinPrimaryDarkColor</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/grisclaro</item>
+        <item name="android:navigationBarColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="AppThemeWokin.Basic.Light" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/wokinPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/wokinPrimaryDarkColor</item>
+        <item name="colorAccent">@color/wokinPrimaryDarkColor</item>
+        <item name="android:statusBarColor">@color/wokinPrimaryColor</item>
+        <item name="android:navigationBarColor">@color/wokinColor3</item>
+    </style>
+
+
+    <style name="MyDatePickerStyleWokin" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:colorAccent">@color/wokinPrimaryColor
+        </item>                   <!--header background-->
+        <item name="android:windowBackground">@color/blanco</item>     <!--calendar background-->
+        <item name="android:colorControlActivated">@color/wokinPrimaryColor
+        </item> <!--selected day-->
+        <item name="android:textColorPrimary">@color/colorAccent</item> <!--days of the month-->
+        <item name="android:textColorSecondary">@color/wokinPrimaryColor
+        </item>    <!--days of the week-->
+        <item name="android:buttonBarNegativeButtonStyle">
+            @style/DatePickerThemeWokin.ButtonBarNegativeButtonStyle
+        </item>
+        <item name="android:buttonBarPositiveButtonStyle">
+            @style/DatePickerThemeWokin.ButtonBarPositiveButtonStyle
+        </item>
+
+    </style>
+
+    <style name="DatePickerThemeWokin.ButtonBarNegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/wokinColor6</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DatePickerThemeWokin.ButtonBarPositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="BasicThemeBasicWokin" parent="AppThemeMaterialWokin">
+        <item name="colorPrimary">@color/blackColor2</item>
+        <item name="colorPrimaryVariant">@color/blackColor1</item>
+        <item name="colorOnPrimary">@color/blackColor</item>
+
+        <item name="colorSecondary">@color/wokinPrimaryColor</item>
+        <item name="colorSecondaryVariant">@color/wokinPrimaryDarkColor</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+
+        <item name="android:statusBarColor">@color/wokinPrimaryColor</item>
+        <item name="android:navigationBarColor">@color/wokinColor3</item>
+
+
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="itemIconTint">@color/blackColor1</item>
+        <item name="subheaderColor">@color/blackColor1</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="BasicStyleRecicleViewWokin" parent="AppThemeWokin">
+        <item name="android:background">#EDEDED</item>
+    </style>
+
+    <style name="BasicStyleElementRecicleViewWokin" parent="AppThemeWokin">
+        <item name="android:background">@drawable/custom_input</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="BasicStyleElementRecicleView2Wokin" parent="AppThemeWokin">
+        <item name="android:background">@color/whiteColor1</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="BasicStyleButtomWokin" parent="AppThemeWokin">
+        <item name="android:background">@drawable/bordes_redondos</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/blanco</item>
+    </style>
+
+    <style name="BasicStyleButtomMaterialWokin" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:backgroundTint">@color/wokinPrimaryColor</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+    </style>
+
+    <style name="BasicStyleButtomMaterialRetenWokin" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/wokinPrimaryDarkColor</item>
+        <item name="android:textColor">@color/wokinPrimaryDarkColor</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="BasicStyleButtom2Wokin" parent="AppThemeWokin">
+        <item name="android:background">@color/wokinPrimaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <style name="AlertDialogCustomWokin" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:background">@color/blanco</item>
+        <item name="android:textColorPrimary">@color/blackColor2</item>
+        <item name="colorAccent">@color/wokinAccentColor</item>
+        <item name="android:textColorSecondary">@color/whiteColor4</item>
+        <item name="textColorAlertDialogListItem">@color/blackColor1</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonStyle">
+            @style/AlertDialogCustom.ButtonAlertDialog
+        </item>
+        <item name="android:colorPrimary">@color/wokinPrimaryColor</item>
+        <item name="android:colorAccent">@color/wokinPrimaryColor</item>
+
+        <item name="colorPrimaryDark">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="AlertDialogCustomWokin.ButtonAlertDialog">
+        <item name="android:textColor">@color/wokinAccentColor</item>
+    </style>
+
+    <style name="NegativeButtonStyleWokin" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="PositiveButtonStyleWokin" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="NeutralButtonStyleWokin" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="EditTextStyleCustomWokin" parent="AlertDialogCustomWokin">
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="android:textColorHint">@color/grayPerfect</item>
+        <item name="android:backgroundTint">@color/wokinAccentColor</item>
+    </style>
+
+    <style name="ProgressDialogCustomWokin" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/wokinAccentColor</item>
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:background">@color/whiteColor3</item>
+    </style>
+
+    <style name="NavigationViewCustomWokin">
+        <item name="android:background">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="BasicStyleRadioButtonWokin" parent="Base.Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="colorControlNormal">@color/blackColor4</item>
+        <item name="colorControlActivated">@color/wokinAccentColor</item>
+        <item name="colorAccent">@color/wokinAccentColor</item>
+        <item name="android:tint">#ffffff</item>
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="buttonTint">@color/wokinAccentColor</item>
+    </style>
+
+    <style name="BackgroundAuxRecicleViewWokin" parent="AppThemeWokin">
+        <item name="android:background">@color/whiteColor4</item>
+    </style>
+
+    <style name="TextColorAuxExistenciaWokin" parent="AppThemeWokin">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="BackgroundAuxTableWokin" parent="AppThemeWokin">
+        <item name="android:background">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="BackgroundAuxElementCXC1Wokin" parent="AppThemeWokin">
+        <item name="android:background">#BBDEFB</item>
+        <item name="android:textColor">@color/blackColor1</item>
+    </style>
+
+    <style name="BackgroundAuxElementCXC2Wokin" parent="AppThemeWokin">
+        <item name="android:background">@color/wokinPrimaryDarkColor</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+    </style>
+
+    <style name="StyleTextInputLayoutAutoCompleteWokin" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="colorOnSurface">@color/blackColor3</item>
+        <item name="colorPrimary">@color/wokinPrimaryColor</item>
+        <item name="android:textColorPrimary">@color/blackColor2</item>
+    </style>
+
+    <style name="AutoCompleteWokin">
+        <item name="android:popupBackground">@color/whiteColor1</item>
+        <item name="android:dropDownSelector">#40424242</item>
+
+    </style>
+
+    <style name="StyleTextInputLayoutEditTextWokin" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="colorOnSurface">@color/blackColor3</item>
+        <item name="colorPrimary">@color/wokinPrimaryColor</item>
+        <item name="android:textColorPrimary">@color/blackColor2</item>
+    </style>
+
+    <style name="StyleTextInputLayoutEditTextCXCTasaWokin" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="colorOnSurface">@color/whiteColor4</item>
+        <item name="colorPrimary">@color/whiteColor1</item>
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+        <item name="boxBackgroundColor">#D9E2F3</item>
+    </style>
+
+    <style name="StyleTextInputLayoutEditTextTasaWokin" parent="StyleTextInputLayoutEditTextWokin">
+        <item name="boxBackgroundColor">@color/blackColor1</item>
+        <item name="colorControlNormal">@color/blackColor1</item>
+        <item name="colorControlActivated">@color/blackColor1</item>
+        <item name="colorControlHighlight">@color/blackColor1</item>
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="android:textColorHint">@color/blackColor1</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
+    <style name="Base_ToolbarStyleWokin">
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:background">@color/wokinPrimaryColor</item>
+        <item name="android:theme">@style/Base_ToolbarTheme</item>
+        <item name="titleTextAppearance">@style/CustomTitleTextAppearance</item>
+        <item name="subtitleTextAppearance">@style/CustomSubTitleTextAppearance</item>
+    </style>
+
+    <style name="Base_ToolbarThemeWokin">
+        <!-- Color used for the title of the Toolbar - as long as not overridden -->
+        <item name="android:textColorPrimary">@color/whiteColor1</item>
+        <!-- Used to color back button and three dots -->
+        <item name="android:textColorSecondary">@color/whiteColor4</item>
+
+        <item name="colorAccent">@color/wokinAccentColor</item>
+    </style>
+
+    <style name="CustomTitleTextAppearanceWokin" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <!--<item name="android:fontFamily">@string/ff_roboto_condensed</item>-->
+        <item name="android:title">CXC</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+    </style>
+
+    <style name="CustomSubTitleTextAppearanceWokin" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <!--<item name="android:fontFamily">@string/ff_roboto_condensed</item>-->
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/whiteColor1</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="TabLayoutStyleWokin">
+        <item name="android:background">@color/wokinPrimaryColor</item>
+        <item name="tabIndicatorColor">@color/redColor</item>
+        <item name="tabSelectedTextColor">@color/whiteColor1</item>
+        <item name="tabTextColor">@color/secondaryDarkColor</item>
+    </style>
+
+    <style name="ElementModuloCXCWokin">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="BackgroundAuxWokin" parent="AppThemeWokin">
+        <item name="android:background">@color/whiteColor1</item>
+    </style>
+
+    <style name="BackgroundAuxCXCWokin" parent="AppThemeWokin">
+        <item name="android:background">@color/wokinPrimaryDarkColor</item>
+    </style>
+
+    <style name="ButtonRetenWokin" parent="AppThemeWokin">
+        <item name="android:background">@drawable/custom_menu_button</item>
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="EditTextStyleCustom2Wokin" parent="AppThemeWokin">
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="colorAccent">@color/blackColor1</item>
+        <item name="backgroundTint">@color/blackColor4</item>
+    </style>
+
+    <style name="TextViewCustomWokin" parent="AppThemeWokin">
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
+    <style name="NavMenuCustomWokin" parent="AppThemeWokin">
+        <item name="android:backgroundTint">@color/whiteColor1</item>
+
+        <item name="itemTextColor">@color/blackColor4</item>
+        <item name="android:textColor">@color/blackColor4</item>
+        <item name="itemIconTint">@color/blackColor4</item>
+        <item name="subheaderColor">@color/blackColor4</item>
+    </style>
+
+    <style name="BackgroundDividerWokin" parent="AppThemeWokin">
+        <item name="android:background">@color/blackColor4</item>
+    </style>
+
+    <style name="ColorDescuentoWokin" parent="AppThemeWokin">
+        <item name="android:textColor">#05534C</item>
+    </style>
+
+    <style name="BasicStyleCheckBoxWokin" parent="AppThemeWokin">
+        <item name="colorControlNormal">@color/blackColor4</item>
+        <item name="colorControlActivated">@color/wokinAccentColor</item>
+        <item name="colorAccent">@color/wokinAccentColor</item>
+        <item name="android:tint">#ffffff</item>
+        <item name="android:textColor">@color/blackColor1</item>
+        <item name="buttonTint">@color/wokinAccentColor</item>
+        <item name="android:textColorPrimary">@color/blackColor1</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="SincProgressBarStyleWokin" parent="AppThemeWokin">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:indeterminateTint">@color/wokinPrimaryColor</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="SincTextViewStyleWokin" parent="AppThemeWokin">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="SplashThemeWokin" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/wokinPrimaryColor</item>
+        <item name="android:navigationBarColor">@color/wokinColor3</item>
+    </style>
+
+    <style name="AlertDialogCustomLayoutWokin" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/whiteColor1</item>
+        <item name="android:textColor">@color/blackColor1</item>
+    </style>
+
+    <style name="AlertDialogCustomLayoutButtonWokin" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">#00000000</item>
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="SubtitleClientesMainWokin" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/wokinPrimaryColor</item>
+    </style>
+
 
 </resources>

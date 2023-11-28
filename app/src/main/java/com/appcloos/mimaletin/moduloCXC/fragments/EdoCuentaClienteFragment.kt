@@ -1,14 +1,18 @@
 package com.appcloos.mimaletin.moduloCXC.fragments
 
 
-import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -17,22 +21,20 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.AdminSQLiteOpenHelper
+import com.appcloos.mimaletin.Constantes
+import com.appcloos.mimaletin.CxcReportActivity
 import com.appcloos.mimaletin.Documentos
 import com.appcloos.mimaletin.R
-import com.appcloos.mimaletin.CxcReportActivity
+import com.appcloos.mimaletin.colorButtonAgencia
+import com.appcloos.mimaletin.colorTextAgencia
 import com.appcloos.mimaletin.databinding.FragmentEdoCuentaClienteBinding
-import com.appcloos.mimaletin.RetencionesActivity
-import org.json.JSONObject
+import com.appcloos.mimaletin.setDrawableHeadAgencia
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
+import java.util.Locale
 
 
 class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityListener {
@@ -50,7 +52,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
     lateinit var codigoSucursal: String
     private var fechaAuxiliar: String = "0001-01-01T00:00:00"
 
-    var listaDocsSeleccionados: ArrayList<String> = ArrayList()
+    private var listaDocsSeleccionados: ArrayList<String> = ArrayList()
 
     lateinit var preferences: SharedPreferences
     private var cod_usuario: String? = ""
@@ -76,7 +78,6 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
             .getSharedPreferences("Preferences", AppCompatActivity.MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
-
     }
 
     override fun onCreateView(
@@ -94,14 +95,15 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
         //cargarDocumentos("https://$enlaceEmpresa/webservice/documentos.php?fecha_sinc=${fechaAuxiliar.trim()}&codigo_cli=${cliente.trim()}&agencia=${codigoSucursal.trim()}")
         buscarDocumentosCliente(cliente)
 
+        setColors()
+
         binding.tvNombreCliente.text = nomCliente
 
         binding.btnMain.setOnClickListener { irAPrecobranza(listaDocsSeleccionados) }
 
         //binding.btnReten.setOnClickListener { irARetencion(listaDocsSeleccionados) }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     findNavController().navigate(
@@ -110,6 +112,13 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
                 }
             })
 
+    }
+
+    private fun setColors() {
+        binding.apply {
+            tvNombreCliente.setDrawableHeadAgencia(Constantes.AGENCIA)
+            btnMain.setBackgroundColor(btnMain.colorButtonAgencia(Constantes.AGENCIA))
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -123,13 +132,9 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
     }
 
     private fun validarSalida(): AlertDialog {
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Salir")
-            .setMessage("¿Está seguro de desear salir?")
-            .setCancelable(true)
-            .setPositiveButton("Si", null)
-            .setNegativeButton("No", null)
-            .show()
+        val dialog = AlertDialog.Builder(requireContext()).setTitle("Salir")
+            .setMessage("¿Está seguro de desear salir?").setCancelable(true)
+            .setPositiveButton("Si", null).setNegativeButton("No", null).show()
 
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener { v: View? ->
             dialog.dismiss()
@@ -142,7 +147,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
     }
 
     private fun irAPrecobranza(listaDocsSeleccionados: ArrayList<String>) {
-        var listaAux = listaDocsSeleccionados
+        val listaAux = listaDocsSeleccionados
         println(listaDocsSeleccionados)
         //2023-06-08 Variables que cuentan los documentos vencidos (numerico) y los documentos no vencidos (novencidos).
         var numerico = 0
@@ -180,7 +185,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
 
     }
 
-    private fun irARetencion(listaDocsSeleccionados: ArrayList<String>) {
+    /*private fun irARetencion(listaDocsSeleccionados: ArrayList<String>) {
 
         val listatiposret: ArrayList<String> = arrayListOf("iva", "flete")
         val listaDocs: ArrayList<String> = arrayListOf()
@@ -226,9 +231,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
 
             if ((bsretencioniva > 0.00) && (bsretencionFlete > 0.00)) {
                 Toast.makeText(
-                    requireContext(),
-                    "El documento $documento ya fue pagado",
-                    Toast.LENGTH_SHORT
+                    requireContext(), "El documento $documento ya fue pagado", Toast.LENGTH_SHORT
                 ).show()
                 return
             }
@@ -262,13 +265,12 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
         intent.putStringArrayListExtra("listaDocsQuery", listaDocsSeleccionados)
         intent.putStringArrayListExtra("listatiposret", listatiposret)
         startActivity(intent)
-    }
+    }*/
 
-    private fun cargarDocumentos(URL: String) {//<-------------------------------------te quedaste bajando los documentos para luego hacer el recycle como el de crear cobranza de pablo
+    /*private fun cargarDocumentos(URL: String) {//<-------------------------------------te quedaste bajando los documentos para luego hacer el recycle como el de crear cobranza de pablo
         ke_android = conn.readableDatabase
 
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET, // method
+        val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, // method
             URL, // url
             null, // json request
             { response -> // response listener
@@ -419,10 +421,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
                         fechaActualizada = sdf.format(fechaModif.time)
                         qfechaDocs.put("fchhn_ultmod", fechaActualizada)
                         ke_android.update(
-                            "tabla_aux",
-                            qfechaDocs,
-                            "tabla = ?",
-                            arrayOf("ke_doccti")
+                            "tabla_aux", qfechaDocs, "tabla = ?", arrayOf("ke_doccti")
                         )
                         //consulto los documentos ya con la data actualizada
                         buscarDocumentosCliente(cliente)
@@ -432,22 +431,20 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
                     }
 
                 }
-            },
-            { error -> // error listener
+            }, { error -> // error listener
                 //
-            }
-        )
+            })
 
         val requestQueue: RequestQueue = Volley.newRequestQueue(requireContext())
         requestQueue.add(jsonArrayRequest)
-    }
+    }*/
 
     private fun buscarDocumentosCliente(codigoCliente: String?) {
         ke_android = conn.writableDatabase
         listadocs = ArrayList()
         docsViejos = ArrayList()
         val cursorDocs = ke_android.rawQuery(
-            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred FROM ke_doccti WHERE codcliente ='$codigoCliente' AND estatusdoc != '2' AND (dtotalfinal - dtotpagos) > 0.00",
+            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev FROM ke_doccti WHERE codcliente ='$codigoCliente' AND estatusdoc != '2' AND (dtotalfinal - (dtotpagos + dtotdev)) > 0.00",
             null
         )
 
@@ -470,6 +467,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
             documentos.bsflete = cursorDocs.getDouble(14)
             documentos.dtotpagos = cursorDocs.getDouble(15)
             documentos.diascred = cursorDocs.getDouble(16)
+            documentos.dtotdev = cursorDocs.getDouble(17)
             listadocs.add(documentos)
 
             //2023-06-07 IF para guardar un documento viejo en otro array
@@ -544,7 +542,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    fun compararFecha(fechaVencimiento: String): Int {
+    private fun compararFecha(fechaVencimiento: String): Int {
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val current = LocalDateTime.now().format(formatter)

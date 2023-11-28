@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:theme="@style/AppTheme">
+
+    <TextView
+        android:id="@+id/tvEstadisticas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Estadisticas del Cliente:"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCodigoCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:text="J123456789"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/tvEstadisticas"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvNombreCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JOAO ROBERTO FERREIRA PINTO (FERRETERIA LAS VEGAS DE TARIBA)"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCodigoCliente" />
+
+    <TextView
+        android:id="@+id/tvFchcrea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Creado el:"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente" />
+
+    <TextView
+        android:id="@+id/tvFchcreaCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/tvFchcrea"
+        app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente"
+        tools:text="0000-00-00" />
+
+    <TextView
+        android:id="@+id/tvDireccionCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CALLE 115 CON AVE 23 EDIF. PINO MUGO 3 PISO 01 APT. 1 C CONJUNTO RESIDENCIAL EL PINAR SECTOR POMONA , MARACAIBO"
+        android:textColor="@color/grayPerfect"
+        android:textSize="11sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFchcrea" />
+
+    <FrameLayout
+        android:id="@+id/mcvContactoCliente"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_datos_cliente"
+        android:padding="6dp"
+        app:layout_constraintEnd_toStartOf="@+id/mcvInfoCliente"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDireccionCliente">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvTelefono"
+                style="@style/SubtitleClientesMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="5dp"
+                android:text="Teléfono:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTelefonoCliente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTelefono"
+                tools:text="04120000000" />
+
+            <TextView
+                android:id="@+id/tvCorreo"
+                style="@style/SubtitleClientesMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:text="Correo:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTelefonoCliente" />
+
+            <TextView
+                android:id="@+id/tvCorreoCliente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCorreo"
+                tools:text="holacomoestas@algomail.com" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mcvInfoCliente"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/border_datos_cliente_b"
+        android:padding="6dp"
+        app:layout_constraintBottom_toBottomOf="@+id/mcvContactoCliente"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/mcvContactoCliente"
+        app:layout_constraintTop_toTopOf="@+id/mcvContactoCliente">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvPerscont"
+                style="@style/SubtitleClientesMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="5dp"
+                android:text="Persona Contacto:"
+                app:layout_constraintBottom_toTopOf="@+id/tvPerscontCliente"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/tvPerscontCliente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvContribespecial"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPerscont"
+                tools:text="Dulce Aguado de Maduro" />
+
+            <TextView
+                android:id="@+id/tvContribespecial"
+                style="@style/SubtitleClientesMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:text="Cont. Especial:"
+                app:layout_constraintBottom_toTopOf="@+id/tvContribespecialCliente"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPerscontCliente" />
+
+            <TextView
+                android:id="@+id/tvContribespecialCliente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvContribespecial"
+                tools:text="No es Contribuyente" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mcvBlock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_datos_cliente_combinado"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mcvContactoCliente">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/llMain"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_datos_cliente_combinado"
+                android:orientation="vertical"
+                android:padding="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvDiasultvta"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="5dp"
+                    android:text="Última venta:"
+                    app:layout_constraintEnd_toStartOf="@+id/tvCreacion"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvDiasultvtaCliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvCreacion"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLimcred"
+                    tools:text="0.00" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llVentas"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toStartOf="@+id/divisor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llMain">
+
+                <TextView
+                    android:id="@+id/tvPromdiasvta"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginTop="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Promedio días entre venta:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llMain" />
+
+                <TextView
+                    android:id="@+id/tvPromdiasvtaCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPromdiasvta"
+                    tools:text="0.00" />
+
+                <TextView
+                    android:id="@+id/tvPrommtodoc"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Promedio montos docs:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPromdiasvtaCliente" />
+
+                <TextView
+                    android:id="@+id/tvPrommtodocCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPrommtodoc"
+                    tools:text="0.00" />
+
+                <TextView
+                    android:id="@+id/tvTotmtodocs"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Suma docs emitidos:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPrommtodocCliente" />
+
+                <TextView
+                    android:id="@+id/tvTotmtodocsCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTotmtodocs"
+                    tools:text="0.00" />
+
+                <TextView
+                    android:id="@+id/tvLimcred"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Límite de Crédito:"
+                    android:visibility="invisible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTotmtodocsCliente" />
+
+                <TextView
+                    android:id="@+id/tvLimcredCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:paddingBottom="6dp"
+                    android:visibility="invisible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLimcred"
+                    tools:text="0.00" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divisor"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grayPerfect"
+                app:layout_constraintBottom_toBottomOf="@+id/llCobranzas"
+                app:layout_constraintEnd_toStartOf="@+id/llCobranzas"
+                app:layout_constraintStart_toEndOf="@+id/llVentas"
+                app:layout_constraintTop_toBottomOf="@+id/llMain" />
+
+            <LinearLayout
+                android:id="@+id/llCobranzas"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/divisor"
+                app:layout_constraintTop_toBottomOf="@+id/llMain">
+
+                <TextView
+                    android:id="@+id/tvCantdocs"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginTop="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Cantidad docs venta emitidos:"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llMain" />
+
+                <TextView
+                    android:id="@+id/tvCantdocsCLiente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCantdocs"
+                    tools:text="0.00" />
+
+                <TextView
+                    android:id="@+id/tvPrcdpagdia"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Doc pagados al dia %:"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCantdocsCLiente" />
+
+                <TextView
+                    android:id="@+id/tvPrcdpagdiaCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPrcdpagdia"
+                    tools:text="0.00" />
+
+                <TextView
+                    android:id="@+id/tvPromdiasp"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Promedio Días de pago:"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPrcdpagdiaCliente" />
+
+                <TextView
+                    android:id="@+id/tvPromdiaspCLiente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPromdiasp"
+                    tools:text="0.00" />
+
+                <TextView
+                    android:id="@+id/tvRiesgocrd"
+                    style="@style/SubtitleClientesMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="Riesgo de crédito en días:"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPromdiaspCLiente" />
+
+                <TextView
+                    android:id="@+id/tvRiesgocrdCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingHorizontal="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvRiesgocrd"
+                    tools:text="0.00" />
+
+            </LinearLayout>
+
+
+            <!--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            -->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/btnVerDocs"
+        style="@style/AlertDialogCustomLayoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver documentos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mcvBlock" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

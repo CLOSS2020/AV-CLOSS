@@ -22,6 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TableRow
+            android:id="@+id/trTableRow1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             style="@style/BackgroundAuxTable"
@@ -155,6 +156,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/trTableRow2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             style="@style/BackgroundAuxTable">

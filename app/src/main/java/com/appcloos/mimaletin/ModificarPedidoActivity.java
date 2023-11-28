@@ -14,6 +14,7 @@ import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -31,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,18 +42,16 @@ import java.util.Objects;
 
 public class ModificarPedidoActivity extends AppCompatActivity {
 
-    private int APP_ITEMS_FACTURAS;
-    private int APP_ITEMS_NOTAS_ENTREGA;
     public static String codigoPedido, n_cliente;
-    private RadioButton Factura, NotaEntrega, Credito, Prepago;
     public static String documento, formaPago, tipoDoc = "PED", tipoDePrecioaMostrar, codigoCliente, negociacionActivaMod, negociacionEstado;
+    public static int seleccion, indexposicion, nroCorrelativo, enteroPrecio;
+    public static Double precioTotalporArticulo, preciocliente, montoMinimoMod, montoNetoConDescuento, descuentoTotal;
     ArrayAdapter adapter;
     ArrayAdapter<CharSequence> adapterSpinner;
     ListView listaLineasMod;
     ArrayList<String> listainfo = null, listapedido = null;
     ArrayList<Carrito> listacarritoMod;
     BottomNavigationView menunav;
-    public static int seleccion, indexposicion, nroCorrelativo, enteroPrecio;
     Spinner spinner;
     AdminSQLiteOpenHelper conn;
     TextView tv_subtotal, tv_nombrecliente, tv_montominMod;
@@ -63,13 +63,60 @@ public class ModificarPedidoActivity extends AppCompatActivity {
     TextView tv_neto;
     ImageButton ibt_modificar;
     CarritoAdapter carritoAdapter;
-    public static Double precioTotalporArticulo, preciocliente, montoMinimoMod, montoNetoConDescuento, descuentoTotal;
     String enpreventa = "0";
     Switch sw_negoespemod;
     TextView tv_bloqueado;
-
     String cod_usuario;
+    DecimalFormat formato = new DecimalFormat("#,###.00");
+    private int APP_ITEMS_FACTURAS;
+    private int APP_ITEMS_NOTAS_ENTREGA;
+    private RadioButton Factura, NotaEntrega, Credito, Prepago;
+    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+            switch (menuItem.getItemId()) {
+                case R.id.ic_agregarart:
+
+                    if (codigoCliente == null || (!Factura.isChecked() && !NotaEntrega.isChecked()) || (!Prepago.isChecked() && !Credito.isChecked())) {
+                        Toast.makeText(ModificarPedidoActivity.this, "Debes Seleccionar un cliente, factura o nota de entrega y credito o prepago", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        if ((Factura.isChecked() && listacarritoMod.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarritoMod.size() > APP_ITEMS_NOTAS_ENTREGA)) {
+                            if (Factura.isChecked()) {
+                                Toast.makeText(ModificarPedidoActivity.this, "Para facturas debe tener un maximo de " + APP_ITEMS_FACTURAS + " lineas de articulos", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(ModificarPedidoActivity.this, "Para notas de entrega debe tener un maximo de " + APP_ITEMS_NOTAS_ENTREGA + " lineas de articulos", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            //Asignacion de precio para saber si es negociacion especial
+                            //asignarTipodePrecio();
+                            iraCatalogo();
+                        }
+
+
+                    }
+                    return true;
+                case R.id.ic_procesarpedido:
+                    if (!negociacionIsActiva() && montoNetoConDescuento < montoMinimoTotal) {
+                        Toast.makeText(ModificarPedidoActivity.this, "Para procesar el pedido, debe cumplir con el monto mínimo de $" + montoMinimoTotal, Toast.LENGTH_LONG).show();
+                    } else if (montoNetoConDescuento >= montoMinimoTotal) {
+                        if ((Factura.isChecked() && listacarritoMod.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarritoMod.size() > APP_ITEMS_NOTAS_ENTREGA)) {
+                            if (Factura.isChecked()) {
+                                Toast.makeText(ModificarPedidoActivity.this, "Para facturas debe tener un maximo de " + APP_ITEMS_FACTURAS + " lineas de articulos", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(ModificarPedidoActivity.this, "Para notas de entrega debe tener un maximo de " + APP_ITEMS_NOTAS_ENTREGA + " lineas de articulos", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            ProcesarPedido();
+                        }
+                    }
+                    return true;
+            }
+
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,7 +242,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
             final String codigo = listacarritoMod.get(position).getCodigo();
             final Double dctolin = listacarritoMod.get(position).getDctolin();
 
-            final EditText cajatexto = new EditText(new ContextThemeWrapper(ModificarPedidoActivity.this,R.style.EditTextStyleCustom));
+            final EditText cajatexto = new EditText(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.EditTextStyleCustom));
             cajatexto.setInputType(InputType.TYPE_CLASS_NUMBER);
 
             conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
@@ -210,7 +257,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
             AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.AlertDialogCustom));
             ventana.setTitle("Modificar Linea");
             ventana.setMessage("Porfavor, elige la cantidad");
-            if (vta_minenx == 1) {
+            /*if (vta_minenx == 1) {
                 LinearLayout layout_h = new LinearLayout(ModificarPedidoActivity.this);
                 layout_h.setOrientation(LinearLayout.HORIZONTAL);
                 final TextView mensajeCantidadMultiplo = new TextView(ModificarPedidoActivity.this);
@@ -227,12 +274,58 @@ public class ModificarPedidoActivity extends AppCompatActivity {
                 ventana.setView(layout_h);
             } else {
                 ventana.setView(cajatexto);
+            }*/
+
+
+            LinearLayout layout_h = new LinearLayout(ModificarPedidoActivity.this);
+            layout_h.setOrientation(LinearLayout.VERTICAL);
+
+            final CheckBox darDescuento = new CheckBox(ModificarPedidoActivity.this);
+
+            double descuentoBool = conn.getCampoDouble("articulo", "dctotope", "codigo", codigo);
+            //2023-09-14 Verificando que el articulo permita descuento
+            if (descuentoBool > 0.0) {
+                //final CheckBox darDescuento = new CheckBox(CreacionPedidoActivity.this);
+                darDescuento.setText("Dar Descuento del Articulo");
+                //2023-09-14 Checkeo el boton si se chekeo en catalogo
+                if (dctolin > 0.0) {
+                    darDescuento.setChecked(true);
+                }
+                layout_h.addView(darDescuento);
             }
+
+            if (vta_minenx == 1) {
+
+                LinearLayout layout_vta_minenx = new LinearLayout(ModificarPedidoActivity.this);
+                layout_vta_minenx.setOrientation(LinearLayout.HORIZONTAL);
+
+                final TextView mensajeCantidadMultiplo = new TextView(ModificarPedidoActivity.this);
+
+                mensajeCantidadMultiplo.setTextSize(20);
+                mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD);
+                mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
+                mensajeCantidadMultiplo.setText(((int) Math.round(vta_Min)) + " x ");
+                //mensajeCantidadMultiplo.setLayoutParams(params);
+                cajatexto.setWidth(1000);
+                cajatexto.setHint("Cantidad de paquetes a pedir");
+                layout_vta_minenx.addView(mensajeCantidadMultiplo);
+                //cajatexto.setLayoutParams(params2);
+                layout_vta_minenx.addView(cajatexto);
+
+                layout_h.addView(layout_vta_minenx);
+
+            } else {
+                cajatexto.setHint("Cantidad a pedir");
+                layout_h.addView(cajatexto);
+            }
+
+            ventana.setView(layout_h);
+
             ventana.setPositiveButton("Aceptar", (dialogInterface, i) -> {
 
 
                 String cantidad_nueva = cajatexto.getText().toString();
-
+                boolean aprobarDescuento = darDescuento.isChecked();
 
                 int cantidad = Integer.parseInt(cantidad_nueva);
 
@@ -240,7 +333,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
 
                     Cursor cursor = ke_android.rawQuery("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
                     cursor.moveToNext();
-                    double precio = cursor.getDouble(0);
+                    double precio = ObjetoUtils.Companion.valorReal(cursor.getDouble(0));
                     double existencia = cursor.getDouble(1);
                     Double ventaMax = cursor.getDouble(3);
                     double ventaMin = cursor.getDouble(2);
@@ -272,11 +365,21 @@ public class ModificarPedidoActivity extends AppCompatActivity {
                                         double precioNuevo = precioTotal;
                                         precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
-                                        double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
-                                        mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+                                        //2023-09-14 If para saber si se guarda el descuento o no
+                                        double mtoDctoNuevo;
+                                        double descuento;
+
+                                        if (aprobarDescuento) {
+                                            mtoDctoNuevo = precioNuevo - (precioNuevo * (descuentoBool / 100));
+                                            mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+                                            descuento = descuentoBool;
+                                        } else {
+                                            mtoDctoNuevo = precioTotal;
+                                            descuento = 0.0;
+                                        }
 
 
-                                        ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad_new + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
+                                        ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad_new + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + ", kmv_dctolin =" + descuento + " WHERE kmv_codart ='" + codigo + "'");
 
 
                                         ke_android.setTransactionSuccessful();
@@ -305,11 +408,21 @@ public class ModificarPedidoActivity extends AppCompatActivity {
                                         double precioNuevo = precio * (double) cantidad;
                                         precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
-                                        double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
-                                        mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+                                        //2023-09-14 If para saber si se guarda el descuento o no
+                                        double mtoDctoNuevo;
+                                        double descuento;
+
+                                        if (aprobarDescuento) {
+                                            mtoDctoNuevo = precioNuevo - (precioNuevo * (descuentoBool / 100));
+                                            mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+                                            descuento = descuentoBool;
+                                        } else {
+                                            mtoDctoNuevo = precioTotal;
+                                            descuento = 0.0;
+                                        }
 
 
-                                        ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
+                                        ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + ", kmv_dctolin =" + descuento + " WHERE kmv_codart ='" + codigo + "'");
 
 
                                         ke_android.setTransactionSuccessful();
@@ -337,11 +450,21 @@ public class ModificarPedidoActivity extends AppCompatActivity {
                                 double precioNuevo = precio * (double) cantidad;
                                 precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
-                                double mtoDctoNuevo = precioNuevo - (precioNuevo * (dctolin / 100));
-                                mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+                                //2023-09-14 If para saber si se guarda el descuento o no
+                                double mtoDctoNuevo;
+                                double descuento;
+
+                                if (aprobarDescuento) {
+                                    mtoDctoNuevo = precioNuevo - (precioNuevo * (descuentoBool / 100));
+                                    mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
+                                    descuento = descuentoBool;
+                                } else {
+                                    mtoDctoNuevo = precioTotal;
+                                    descuento = 0.0;
+                                }
 
 
-                                ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
+                                ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + ", kmv_dctolin =" + descuento + " WHERE kmv_codart ='" + codigo + "'");
 
 
                                 ke_android.setTransactionSuccessful();
@@ -495,7 +618,6 @@ public class ModificarPedidoActivity extends AppCompatActivity {
 
     }
 
-
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemid = item.getItemId();
 
@@ -513,13 +635,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
 
     private void ValidarSalida() {
 
-        AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.AlertDialogCustom))
-                .setTitle("Salir")
-                .setMessage("¿Está seguro de desear salir?")
-                .setCancelable(true)
-                .setPositiveButton("Si", null)
-                .setNegativeButton("No", null)
-                .show();
+        AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.AlertDialogCustom)).setTitle("Salir").setMessage("¿Está seguro de desear salir?").setCancelable(true).setPositiveButton("Si", null).setNegativeButton("No", null).show();
 
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
             dialog.dismiss();
@@ -542,54 +658,6 @@ public class ModificarPedidoActivity extends AppCompatActivity {
             enpreventa = "1";
         }
     }
-
-    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-            switch (menuItem.getItemId()) {
-                case R.id.ic_agregarart:
-
-                    if (codigoCliente == null || (!Factura.isChecked() && !NotaEntrega.isChecked()) || (!Prepago.isChecked() && !Credito.isChecked())) {
-                        Toast.makeText(ModificarPedidoActivity.this, "Debes Seleccionar un cliente, factura o nota de entrega y credito o prepago", Toast.LENGTH_SHORT).show();
-
-                    } else {
-                        if ((Factura.isChecked() && listacarritoMod.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarritoMod.size() > APP_ITEMS_NOTAS_ENTREGA)) {
-                            if (Factura.isChecked()) {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para facturas debe tener un maximo de " + APP_ITEMS_FACTURAS + " lineas de articulos", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para notas de entrega debe tener un maximo de " + APP_ITEMS_NOTAS_ENTREGA + " lineas de articulos", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            //Asignacion de precio para saber si es negociacion especial
-                            //asignarTipodePrecio();
-                            iraCatalogo();
-                        }
-
-
-                    }
-                    return true;
-                case R.id.ic_procesarpedido:
-                    if (!negociacionIsActiva() && montoNetoConDescuento < montoMinimoTotal) {
-                        Toast.makeText(ModificarPedidoActivity.this, "Para procesar el pedido, debe cumplir con el monto mínimo de $" + montoMinimoTotal, Toast.LENGTH_LONG).show();
-                    } else if (montoNetoConDescuento >= montoMinimoTotal) {
-                        if ((Factura.isChecked() && listacarritoMod.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarritoMod.size() > APP_ITEMS_NOTAS_ENTREGA)) {
-                            if (Factura.isChecked()) {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para facturas debe tener un maximo de " + APP_ITEMS_FACTURAS + " lineas de articulos", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para notas de entrega debe tener un maximo de " + APP_ITEMS_NOTAS_ENTREGA + " lineas de articulos", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            ProcesarPedido();
-                        }
-                    }
-                    return true;
-            }
-
-            return false;
-        }
-    };
-
 
     public void obtenerCondicionesEspeciales() {
         //CON ESTA FUNCION IDENTIFICO SI EL CLIENTE POSEE O NO LA POSIBLIDAD DE LLEVAR A CABO UNA NEGOCIACIÓN ESPECIAL
@@ -671,13 +739,13 @@ public class ModificarPedidoActivity extends AppCompatActivity {
             descuentoTotal = cursor.getDouble(1);
 
             montoNetoConDescuento = cursor.getDouble(2);
-            tv_neto.setText("$" + precioTotalporArticulo.toString());
+            tv_neto.setText("$" + formato.format(precioTotalporArticulo));
 
             if (descuentoTotal > 0.0) {
                 tv_subcondcto.setVisibility(View.VISIBLE);
                 tv_netocondescuento.setVisibility(View.VISIBLE);
                 montoNetoConDescuento = Math.round(montoNetoConDescuento * 100.00) / 100.00;
-                tv_netocondescuento.setText("$" + montoNetoConDescuento);
+                tv_netocondescuento.setText("$" + formato.format(montoNetoConDescuento));
             } else {
 
                 tv_netocondescuento.setText("$0.00");
@@ -743,7 +811,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
                 actualizarCabecera.put("kti_totneto", kti_totneto);
                 actualizarCabecera.put("kti_fchdoc", kti_fchdoc);
                 actualizarCabecera.put("kti_negesp", kti_negesp);
-                actualizarCabecera.put("kti_totnetodcto", montoNetoConDescuento);
+                actualizarCabecera.put("kti_totnetodcto", ObjetoUtils.Companion.valorReal(montoNetoConDescuento));
                 ke_android.update("ke_opti", actualizarCabecera, "kti_ndoc='" + codigoPedido + "'", null);
 
                 //borramos las lineas actuales para incluir las nuevas

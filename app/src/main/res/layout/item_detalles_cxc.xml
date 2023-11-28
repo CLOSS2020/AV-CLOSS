@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/BasicStyleElementRecicleView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/tvDoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="E00123456"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mto Cob:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDoc" />
+
+    <TextView
+        android:id="@+id/tvNeto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Neto:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTotal" />
+
+    <TextView
+        android:id="@+id/tvIva"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IVA:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDoc" />
+
+    <TextView
+        android:id="@+id/tvFlete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Flete:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvNeto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvIva" />
+
+    <TextView
+        android:id="@+id/tvRetIva"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ret IVA:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDoc" />
+
+    <TextView
+        android:id="@+id/tvRetFlete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ret Flete:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRetIva" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

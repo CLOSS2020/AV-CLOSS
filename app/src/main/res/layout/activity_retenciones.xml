@@ -18,7 +18,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.Angel.Light"
+        android:theme="@style/AppTheme.Basic.Light"
         tools:context=".RetencionesActivity">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -27,12 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
             android:clickable="false"
             android:theme="@style/StyleTextInputLayoutEditText"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilTipoRet"
             app:startIconDrawable="@drawable/ic_baseline_calendar_today_24">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -62,7 +62,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
+            app:layout_constraintTop_toBottomOf="@+id/tilDoc"
             app:startIconDrawable="@drawable/ic_baseline_article_24">
 
             <AutoCompleteTextView
@@ -87,12 +87,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
             android:theme="@style/StyleTextInputLayoutAutoComplete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilTipoRet"
+            app:layout_constraintTop_toTopOf="parent"
             app:startIconDrawable="@drawable/ic_baseline_article_24">
 
             <AutoCompleteTextView
@@ -118,10 +119,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:hint="Monto (En Bss)"
             android:theme="@style/StyleTextInputLayoutEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilDoc"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
             app:startIconDrawable="@drawable/cash_stack">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -168,9 +170,10 @@
                 app:layout_constraintTop_toBottomOf="@+id/til_cxc_monto_main" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/bt_agregarret"
-            style="@style/ButtonReten"
+            style="@style/BasicStyleButtomMaterialReten"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -229,16 +232,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rv_retenciones" />-->
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/bt_aceptar"
+            style="@style/BasicStyleButtomMaterial"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/bordes_redondos"
             android:text="ACEPTAR"
-            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

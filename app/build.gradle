@@ -1,7 +1,8 @@
-plugins{
+plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'io.gitlab.arturbosch.detekt'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 
@@ -14,7 +15,7 @@ android {
         applicationId "com.appcloos.mimaletin"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 88
+        versionCode 132
         compileSdk 33
         versionName "2.3.4"
 
@@ -38,16 +39,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     namespace 'com.appcloos.mimaletin'
 }
-
-
 
 
 dependencies {
@@ -68,13 +67,12 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.firebase:firebase-firestore:24.7.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.itextpdf:itextg:5.5.10'
@@ -91,7 +89,6 @@ dependencies {
     //actualizaciones de google
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
-
 
 
     //enviado de datos automatico
@@ -117,6 +114,14 @@ dependencies {
     // Circle Indicator (To fix the xml preview "Missing classes" error)
     implementation 'me.relex:circleindicator:2.1.6'
 
+    //Carousel
     implementation 'org.imaginativeworld.whynotimagecarousel:whynotimagecarousel:2.1.0'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //Corutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
 }

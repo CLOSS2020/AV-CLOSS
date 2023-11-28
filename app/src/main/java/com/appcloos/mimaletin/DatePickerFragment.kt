@@ -37,7 +37,14 @@ class DatePickerFragment(
         val month = calen.get(Calendar.MONTH)
         val year = calen.get(Calendar.YEAR)
         val picker =
-            DatePickerDialog(activity as Context, R.style.MyDatePickerStyle, this, year, month, day)
+            DatePickerDialog(
+                activity as Context,
+                setThemeDateFragment(Constantes.AGENCIA),
+                this,
+                year,
+                month,
+                day
+            )
 
         println(" fecha que es interna por variable:  $day, $month, $year")
 
@@ -78,7 +85,7 @@ class DatePickerFragment(
                         dismiss()
                         Toast.makeText(
                             contexto,
-                            "El documento seleccionado No posee feha de emision",
+                            "El documento seleccionado No posee fecha de emision",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -92,5 +99,6 @@ class DatePickerFragment(
 
         return picker
     }
+
 
 }

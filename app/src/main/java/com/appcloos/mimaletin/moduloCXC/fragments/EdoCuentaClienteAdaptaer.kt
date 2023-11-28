@@ -3,15 +3,21 @@ package com.appcloos.mimaletin.moduloCXC.fragments
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.appcloos.mimaletin.Constantes
 import com.appcloos.mimaletin.Documentos
 import com.appcloos.mimaletin.R
+import com.appcloos.mimaletin.colorAgencia
 import com.appcloos.mimaletin.databinding.ItemCheckDocsCxcBinding
+import com.appcloos.mimaletin.setDrawableAgencia
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import kotlin.math.ceil
 
 
@@ -23,8 +29,7 @@ class EdoCuentaClienteAdapter(
     private var numViejo: Int = 0,
     private var numNuevo: Int = 0,
     private var DIAS_VALIDOS_BOLIVARES: Int
-) :
-    RecyclerView.Adapter<EdoCuentaClienteAdapter.EdoCuentaClienteHolder>() {
+) : RecyclerView.Adapter<EdoCuentaClienteAdapter.EdoCuentaClienteHolder>() {
 
     var listaSelec: ArrayList<String> = ArrayList()
 
@@ -33,6 +38,8 @@ class EdoCuentaClienteAdapter(
         private val binding = ItemCheckDocsCxcBinding.bind(view)
 
         fun render(documento: Documentos) {
+
+            setColors()
 
             //2023-06-08 if que verifica que los documentos que fueron seleccionados previamente permanescan chequeados y agregados a la nueva lista
             if (listaDocsSeleccionados.indexOf("\'${documento.documento}\'") != -1) {
@@ -43,23 +50,26 @@ class EdoCuentaClienteAdapter(
             //2023-06-08 if que valida que si fueron chequeados todos los documentos vencidos todos los doscumentos van a estar desbloqueados para ser chequeados
             if (numViejo == docsViejos.size) {
                 binding.cbSelDoc.isEnabled = true
+                binding.cbSelDoc.isVisible = true
             } else {
                 //2023-06-08 if que inavilita y deschequea los CheckBox de los documentos no vencidos en caso de que todos los documentos vencidos no este chequeada
                 if (docsViejos.indexOf(documento.documento) == -1) {
                     listaSelec.remove("\'${documento.documento}\'")
                     binding.cbSelDoc.isChecked = false
                     binding.cbSelDoc.isEnabled = false
+                    binding.cbSelDoc.isVisible = false
                 }
             }
 
             //2023-06-08 if que habilita los CheckBox de los documentos vencidos sin importar el caso
             if (docsViejos.indexOf(documento.documento) != -1) {
                 binding.cbSelDoc.isEnabled = true
+                binding.cbSelDoc.isVisible = true
             }
 
             binding.tvMontototal.text = "Total: ${(ceil((documento.dtotalfinal) * 100) / 100)} $"
             binding.tvMontodebe.text =
-                "Deuda: ${(ceil((documento.dtotalfinal - documento.dtotpagos) * 100) / 100)} $"
+                "Deuda: ${(ceil((documento.dtotalfinal - (documento.dtotpagos + documento.dtotdev)) * 100) / 100)} $"
             binding.tvNrodoc.text = documento.documento
 
             //2023-07-14 se comento ya que ahora notas y facturas pueden llevar bolivares y dolares
@@ -108,7 +118,7 @@ class EdoCuentaClienteAdapter(
 
             binding.tvTipodocC.text = if (documento.documento.indexOf('E') != -1) {
                 "NOTA DE ENTREGA"
-            }else{
+            } else {
                 "FACTURA"
             }
 
@@ -126,7 +136,9 @@ class EdoCuentaClienteAdapter(
                 }
             }
 
-            binding.cbSelDoc.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.tvReclamo.isVisible = documento.dtotdev > 0.0
+
+            binding.cbSelDoc.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     listaSelec.add("\'${documento.documento}\'")
                     if (docsViejos.indexOf(documento.documento) != -1) {
@@ -148,9 +160,9 @@ class EdoCuentaClienteAdapter(
                         var i = 0
                         while (i < listaSelec.size) {
                             val lValue: String = listaSelec[i]
-                            var MyString = StringBuilder(lValue)
-                            MyString = MyString.deleteCharAt(0).deleteCharAt(MyString.length - 1)
-                            if (docsViejos.indexOf(MyString.toString()) == -1) {
+                            var myString = StringBuilder(lValue)
+                            myString = myString.deleteCharAt(0).deleteCharAt(myString.length - 1)
+                            if (docsViejos.indexOf(myString.toString()) == -1) {
                                 listaSelec.remove(lValue)
                                 i--
                             }
@@ -160,6 +172,11 @@ class EdoCuentaClienteAdapter(
                 }
                 quantityListener.onQuantityChange(listaSelec, numViejo, numNuevo)
             }
+        }
+
+        private fun setColors() {
+            binding.clParent.setDrawableAgencia(Constantes.AGENCIA)
+            binding.tvMontodebe.setTextColor(binding.tvMontodebe.colorAgencia(Constantes.AGENCIA))
         }
 
     }
@@ -179,9 +196,7 @@ class EdoCuentaClienteAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return EdoCuentaClienteHolder(
             layoutInflater.inflate(
-                R.layout.item_check_docs_cxc,
-                parent,
-                false
+                R.layout.item_check_docs_cxc, parent, false
             )
         )
     }

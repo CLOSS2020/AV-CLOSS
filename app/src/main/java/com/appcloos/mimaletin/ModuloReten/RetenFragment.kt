@@ -41,8 +41,8 @@ import com.appcloos.mimaletin.databinding.FragmentRetenBinding
 import com.appcloos.mimaletin.retencion.DetalleRetencion
 import com.appcloos.mimaletin.retencion.DetalleRetencionAdapter
 import com.appcloos.mimaletin.RetencionesAdapter
-import com.appcloos.mimaletin.viewmodel.CXC.ke_precobradocs
-import com.appcloos.mimaletin.viewmodel.CXC.ke_precobranza
+import com.appcloos.mimaletin.model.CXC.ke_precobradocs
+import com.appcloos.mimaletin.model.CXC.ke_precobranza
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate

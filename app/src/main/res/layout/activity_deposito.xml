@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvNombreCliente"
-        app:layout_constraintBottom_toTopOf="@+id/bt_sigte"/>
+        app:layout_constraintBottom_toTopOf="@+id/bt_sigte" />
 
     <Button
         android:id="@+id/bt_sigte"

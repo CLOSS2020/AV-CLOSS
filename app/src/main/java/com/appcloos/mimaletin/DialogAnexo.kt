@@ -82,7 +82,7 @@ class DialogAnexo {
 
 
         val buscarDocs: Cursor = keAndroid.rawQuery(
-            "SELECT ke_precobradocs.documento, nombrecli FROM ke_precobradocs LEFT JOIN ke_doccti ON ke_doccti.documento = ke_precobradocs.documento WHERE cxcndoc = '${rid}'",
+            "SELECT documento, nombrecli FROM ke_precobradocs WHERE cxcndoc = '${rid}'",
             null
         )
 

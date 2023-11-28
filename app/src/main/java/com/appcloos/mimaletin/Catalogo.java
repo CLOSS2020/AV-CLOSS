@@ -40,9 +40,7 @@ public class Catalogo {
     Double vta_min;
     String enpreventa;
     int multiplo;
-
     int vta_solofac;
-
     int vta_solone;
     Double dctotope;
     Double vta_max;

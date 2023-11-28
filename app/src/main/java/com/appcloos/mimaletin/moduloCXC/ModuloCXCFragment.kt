@@ -5,6 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.appcloos.mimaletin.Constantes
+import com.appcloos.mimaletin.colorAccentAgencia
+import com.appcloos.mimaletin.colorAgencia
+import com.appcloos.mimaletin.colorToolBarAux
 import com.appcloos.mimaletin.databinding.FragmentModuloCxcBinding
 import com.appcloos.mimaletin.moduloCXC.fragments.EdoGenCuentaFragment
 import com.appcloos.mimaletin.moduloCXC.fragments.PlanificadorCXCFragment
@@ -12,11 +16,6 @@ import com.appcloos.mimaletin.moduloCXC.fragments.PlanificadorCXCFragment
 
 class ModuloCXCFragment : Fragment() {
     private lateinit var binding: FragmentModuloCxcBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +32,10 @@ class ModuloCXCFragment : Fragment() {
         adapter.addFragment(PlanificadorCXCFragment(), "Planificador")
         adapter.addFragment(EdoGenCuentaFragment(), "Edo. General Cuenta")
         binding.viewPager.adapter = adapter
-        binding.tbLayout.setupWithViewPager(binding.viewPager)
+        binding.tbLayout.apply {
+            setupWithViewPager(binding.viewPager)
+            setBackgroundColor(colorToolBarAux(Constantes.AGENCIA))
+            setSelectedTabIndicatorColor(colorAccentAgencia(Constantes.AGENCIA))
+        }
     }
 }

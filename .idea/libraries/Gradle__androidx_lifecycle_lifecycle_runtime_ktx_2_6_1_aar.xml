@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.lifecycle:lifecycle-runtime-ktx:2.6.1@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/260fd2ccd1638e9ed6013f38fecfd24c/transformed/jetified-lifecycle-runtime-ktx-2.6.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/260fd2ccd1638e9ed6013f38fecfd24c/transformed/jetified-lifecycle-runtime-ktx-2.6.1/res" />
-      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/260fd2ccd1638e9ed6013f38fecfd24c/transformed/jetified-lifecycle-runtime-ktx-2.6.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/9dab24af2c4c098a91c86026ae376842/transformed/jetified-lifecycle-runtime-ktx-2.6.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/9dab24af2c4c098a91c86026ae376842/transformed/jetified-lifecycle-runtime-ktx-2.6.1/res" />
+      <root url="file://$USER_HOME$/AppData/Local/Android/Sdk/caches/transforms-3/9dab24af2c4c098a91c86026ae376842/transformed/jetified-lifecycle-runtime-ktx-2.6.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="5dp"
-    tools:context=".DetalleCXCActivity"
     android:theme="@style/AppTheme"
-    style="@style/BackgroundAux">
+    tools:context=".DetalleCXCActivity">
 
     <TextView
         android:id="@+id/tvCod"
@@ -70,12 +70,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvReferencia" />
 
+    <TextView
+        android:id="@+id/tvFavor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tile_divider" />
+
+    <View
+        android:id="@+id/tile_divider"
+        style="@style/BackgroundDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/rvDocumentos"
+        app:layout_constraintTop_toBottomOf="@+id/tvMonto" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDocumentos"
+        style="@style/BackgroundAuxRecicleView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/codCliente"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tile_divider" />
+
+    <View
+        android:id="@+id/tile_dividerBottom"
+        style="@style/BackgroundDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintTop_toBottomOf="@+id/rvDocumentos" />
+
+    <TextView
+        android:id="@+id/codCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/nomCliente"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="J12346789" />
+
+    <TextView
+        android:id="@+id/nomCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMonto" />
+        tools:text="Comercializadora La Occidental" />
+
+    <TextView
+        android:id="@+id/tvClave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/nomCliente"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="J12346789" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,12 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".PromocionesActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
+        android:id="@+id/lv_articulosPromo"
+        android:theme="@style/AppTheme"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#E1E1E1"
+        android:textSize="8sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
