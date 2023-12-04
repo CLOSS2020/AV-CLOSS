@@ -17,6 +17,7 @@ import com.appcloos.mimaletin.MainActivity
 import com.appcloos.mimaletin.ObjetoAux
 import com.appcloos.mimaletin.databinding.DialogAddAccountBinding
 import com.appcloos.mimaletin.dialogChangeAccount.model.keDataconex
+import com.appcloos.mimaletin.toast
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -53,7 +54,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
         this.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
-        conn = AdminSQLiteOpenHelper(context, "ke_android", null, 46)
+        conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         preferences = context.getSharedPreferences("Preferences", AppCompatActivity.MODE_PRIVATE)
         objetoAux = ObjetoAux(context)
 
@@ -67,6 +68,19 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
     }
 
     private fun validarEmpresa(codigoEmpresa: String) {
+
+        if (binding.etCodigo.text.isNullOrEmpty()) {
+            Toast.makeText(context, "Falta codigo de la empresa", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val flag = conn.validarExistencia("ke_enlace", "kee_codigo", codigoEmpresa)
+
+        if (flag){
+            Toast.makeText(context, "Ya posee una sesion iniciada con esa empresa", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val url = "https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigoEmpresa"
         val keAndroid = conn.writableDatabase
         val jsonArrayRequest = JsonArrayRequest(url, { response ->
@@ -345,6 +359,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             usuarioDatos.put("ualterprec", ualterprec)
                             usuarioDatos.put("sesionactiva", sesionactiva)
                             usuarioDatos.put("superves", superves)
+                            usuarioDatos.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("usuarios", null, usuarioDatos)
                             keAndroid.setTransactionSuccessful()
                         } catch (e: Exception) {

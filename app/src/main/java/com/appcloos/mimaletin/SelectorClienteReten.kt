@@ -35,7 +35,7 @@ class SelectorClienteReten : AppCompatActivity() {
 
         supportActionBar!!.title = "Selecione un Cliente"
 
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 24)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
         keAndroid = conn.writableDatabase
 

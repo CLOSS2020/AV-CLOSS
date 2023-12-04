@@ -64,7 +64,7 @@ class creacionCobranzaActivity : AppCompatActivity(), SelecDocAdapter.DocHolder.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_creacion_cobranza)
         //inicialización de elementos
-        conn         = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 13)
+        conn         = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         ke_android   = conn.writableDatabase
         preferences  = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario  = preferences.getString("cod_usuario", null)

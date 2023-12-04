@@ -93,7 +93,7 @@ public class VerRecibos extends Fragment {
 
             ventana.setPositiveButton("Generar y compartir PDF", (dialogInterface, i) -> {
 
-                conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null, 8);
+                conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null);
                 SQLiteDatabase ke_android = conn.getWritableDatabase();
                 cargarEnlace();
                 Cursor cursor = ke_android.rawQuery("SELECT nombre FROM listvend WHERE codigo ='" + vendedorRecibo + "'", null);
@@ -148,7 +148,7 @@ public class VerRecibos extends Fragment {
     private void cargarRecibos() {
 
         listarecibos = new ArrayList<>();
-        AdminSQLiteOpenHelper conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null, 10);
+        AdminSQLiteOpenHelper conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
 
 

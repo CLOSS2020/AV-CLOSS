@@ -21,7 +21,7 @@ class DialogDescuento {
 
 
     fun DialogDescuento(contexto: Context, datos: ArrayList<Descuentos>) {
-        conn = AdminSQLiteOpenHelper(contexto, "ke_android", null, 19)
+        conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
 
         //conf basica del dialogo

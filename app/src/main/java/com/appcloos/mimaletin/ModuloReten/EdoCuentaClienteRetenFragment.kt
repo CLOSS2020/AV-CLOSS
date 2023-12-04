@@ -73,7 +73,7 @@ class EdoCuentaClienteRetenFragment : Fragment(), EdoCuentaClienteRetenAdapter.Q
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        conn = AdminSQLiteOpenHelper(context, "ke_android", null, 13)
+        conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
         buscarDocumentosCliente(cliente)
 

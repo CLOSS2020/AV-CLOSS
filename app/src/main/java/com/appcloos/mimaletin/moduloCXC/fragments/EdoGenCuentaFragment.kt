@@ -116,7 +116,7 @@ class EdoGenCuentaFragment : Fragment() {
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
 
-        conn = AdminSQLiteOpenHelper(context, "ke_android", null, 13)
+        conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         ke_android = conn.writableDatabase
         cargarEnlace()
 

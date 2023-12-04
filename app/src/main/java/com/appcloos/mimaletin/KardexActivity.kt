@@ -25,7 +25,7 @@ class KardexActivity : AppCompatActivity() {
         setContentView(R.layout.activity_kardex)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         val codUsuario = preferences.getString("cod_usuario", null)
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         listaKardex = findViewById(R.id.lv_kardex)
         cargarEnlace()
 

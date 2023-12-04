@@ -29,7 +29,6 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
-import com.appcloos.mimaletin.Constantes.AGENCIA
 import com.appcloos.mimaletin.databinding.ActivityCreacionDepositoBinding
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -79,15 +78,17 @@ class CreacionDepositoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
-        windowsColor(AGENCIA)
-        setColors()
 
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 18)
+
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.writableDatabase
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
+
+        windowsColor(Constantes.AGENCIA)
+        setColors()
 
         cargarEnlace()
 
@@ -179,13 +180,13 @@ class CreacionDepositoActivity : AppCompatActivity() {
     private fun setColors() {
 
         binding.apply {
-            tvDepMontot.setDrawableCobranzaAgencia(AGENCIA)
-            btDepProc.setBackgroundColor(btDepProc.colorButtonAgencia(AGENCIA))
+            tvDepMontot.setDrawableCobranzaAgencia(Constantes.AGENCIA)
+            btDepProc.setBackgroundColor(btDepProc.colorButtonAgencia(Constantes.AGENCIA))
 
-            btnFoto.setColorModelVariant(AGENCIA)
+            btnFoto.setColorModelVariant(Constantes.AGENCIA)
 
-            tilDepSpbanco.setColorModel(AGENCIA)
-            tilDepRef.setColorModel(AGENCIA)
+            tilDepSpbanco.setColorModel(Constantes.AGENCIA)
+            tilDepRef.setColorModel(Constantes.AGENCIA)
 
         }
     }
@@ -624,7 +625,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
         var inactiva = 0.00
         var fechamodifiBan = ""
 
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 14)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.readableDatabase
 
         // println("hasta aca todo bien")
@@ -824,7 +825,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
         val creacion = builder.create()
         creacion.show()
-        btnAceptar.setBackgroundColor(btnAceptar.colorAgencia(AGENCIA))
+        btnAceptar.setBackgroundColor(btnAceptar.colorAgencia(Constantes.AGENCIA))
         btnAceptar.setOnClickListener { _: View? -> creacion.dismiss() }
 
     }
@@ -855,7 +856,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeAgencia(AGENCIA), true)
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

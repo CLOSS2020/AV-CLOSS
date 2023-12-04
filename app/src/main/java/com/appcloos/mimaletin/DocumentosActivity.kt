@@ -50,7 +50,7 @@ class DocumentosActivity : AppCompatActivity() {
         setContentView(binding.root)
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         conn!!.writableDatabase
         cargarEnlace()
         val intent = intent
@@ -349,7 +349,7 @@ class DocumentosActivity : AppCompatActivity() {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     llCommit = false
@@ -504,7 +504,7 @@ class DocumentosActivity : AppCompatActivity() {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     llCommit = false

@@ -90,7 +90,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        conn = AdminSQLiteOpenHelper(context, "ke_android", null, 13)
+        conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         cargarEnlace()
         //cargarDocumentos("https://$enlaceEmpresa/webservice/documentos.php?fecha_sinc=${fechaAuxiliar.trim()}&codigo_cli=${cliente.trim()}&agencia=${codigoSucursal.trim()}")
         buscarDocumentosCliente(cliente)

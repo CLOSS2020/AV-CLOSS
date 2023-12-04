@@ -44,7 +44,7 @@ class EstadisticasActivity : AppCompatActivity() {
         setContentView(binding.root)
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 4)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         listavendedores = findViewById(R.id.listaVendedores)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)

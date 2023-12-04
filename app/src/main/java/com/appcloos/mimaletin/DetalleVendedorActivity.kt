@@ -34,7 +34,7 @@ class DetalleVendedorActivity : AppCompatActivity() {
         //Locale es = new Locale("es");
 
         //NumberFormat formatoMoneda     = NumberFormat.getCurrencyInstance();
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 4)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT cntpedidos, mtopedidos, cntfacturas, mtofacturas, metavend, prcmeta, cntclientes, clivisit, prcvisitas, lom_montovtas, lom_prcvtas, lom_prcvisit, rlom_montovtas, rlom_prcvtas, rlom_prcvisit, ppgdol_totneto, devdol_totneto, defdol_totneto, totdolcob FROM ke_estadc01 WHERE vendedor ='$codigoVendedor'",

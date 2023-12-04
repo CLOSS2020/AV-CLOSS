@@ -1,13 +1,9 @@
 package com.appcloos.mimaletin.moduloCXC
 
 
-import android.app.Activity
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -15,11 +11,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.appcloos.mimaletin.Constantes
 import com.appcloos.mimaletin.ObjetoAux
 import com.appcloos.mimaletin.R
-import com.appcloos.mimaletin.colorAgencia
 import com.appcloos.mimaletin.colorToolBarAux
 import com.appcloos.mimaletin.databinding.ActivityModuloCxcBinding
-import com.appcloos.mimaletin.setThemeAgencia
-import com.appcloos.mimaletin.setThemeNoBarAgencia
 import com.appcloos.mimaletin.setThemeNoBarCXCAgencia
 import com.appcloos.mimaletin.windowsColor
 
@@ -27,6 +20,7 @@ import com.appcloos.mimaletin.windowsColor
 class ModuloCXCActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityModuloCxcBinding
+    private var codEmpresa: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityModuloCxcBinding.inflate(layoutInflater)
@@ -34,6 +28,7 @@ class ModuloCXCActivity : AppCompatActivity() {
 
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         val codUsuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
 
         setSupportActionBar(binding.toolBar)
         binding.toolBar.title = "Modulo Cobranza"

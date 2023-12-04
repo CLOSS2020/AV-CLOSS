@@ -1,5 +1,6 @@
 package com.appcloos.mimaletin
 
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
@@ -13,15 +14,20 @@ class PedidosArchivadosActivity : AppCompatActivity() {
     var keAndroid: SQLiteDatabase? = null
     private var listapedidos: ArrayList<Pedidos>? = null
     private var pedidosArchivadosAdapter: PedidosArchivadosAdapter? = null
+
+    private lateinit var preferences: SharedPreferences
+    private var codEmpresa: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pedidos_archivados)
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn!!.writableDatabase
         lvArchivados = findViewById(R.id.lv_archivados)
-        val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
         val codUsuario = preferences.getString("cod_usuario", null)
         cargarPedidosArchivados(codUsuario)
     }

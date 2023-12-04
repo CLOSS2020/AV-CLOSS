@@ -120,7 +120,7 @@ public class ReciboCobranza extends Fragment {
         et_montopago = v.findViewById(R.id.et_montopago);
 
 
-        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 10);
+        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null);
         ke_android = conn.getWritableDatabase();
         cargarEnlace();
         preferences = requireActivity().getSharedPreferences("Preferences", MODE_PRIVATE);
@@ -165,7 +165,7 @@ public class ReciboCobranza extends Fragment {
 
     //asi obtengo el correlativo correspondiente; tambien me sirve para actualizar el correlativo mientras el usuario se mantiene en el fragment.
     private void obtenerCorrelativo() {
-        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 6);
+        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
         Cursor cursor = ke_android.rawQuery("SELECT MAX(kcc_numero) FROM ke_correlacxc WHERE kcc_vendedor ='" + cod_usuario + "'", null);
 
@@ -239,7 +239,7 @@ public class ReciboCobranza extends Fragment {
                         String kcx_status = "0";
 
 
-                        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 7);
+                        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null);
                         SQLiteDatabase ke_android = conn.getWritableDatabase();
 
                         try {
@@ -302,7 +302,7 @@ public class ReciboCobranza extends Fragment {
         bt_procesarpago.setEnabled(false);
         bt_procesarpago.setBackgroundColor(Color.rgb(220, 220, 220));
 
-        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null, 7);
+        conn = new AdminSQLiteOpenHelper(getActivity(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
         Cursor cursor = ke_android.rawQuery("SELECT kcx_nrorecibo, kcx_codcli, kcx_codven, kcx_fechamodifi, kcx_monto FROM ke_cxc WHERE kcx_status = '0' and kcx_nrorecibo='" + nroRecibo + "'", null);
 
@@ -424,7 +424,7 @@ public class ReciboCobranza extends Fragment {
 
 
     private void CargarClientes() {
-        conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null, 4);
+        conn = new AdminSQLiteOpenHelper(requireActivity().getApplicationContext(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getReadableDatabase();
         Cliente cliente;
         listacliente = new ArrayList<>();

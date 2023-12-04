@@ -128,7 +128,7 @@ class RetenFragment : Fragment(), RetencionesAdapter.RetHolder.QuantityListener 
             .getSharedPreferences("Preferences", AppCompatActivity.MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null).toString()
 
-        conn = AdminSQLiteOpenHelper(requireContext(), "ke_android", null, 24)
+        conn = AdminSQLiteOpenHelper(requireContext(), "ke_android", null)
 
         ke_android = conn.writableDatabase
 

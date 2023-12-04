@@ -74,7 +74,8 @@ class PedidosActivity : AppCompatActivity() {
         sharpref = getSharedPreferences("sharpref", MODE_PRIVATE)
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         lineasPedidos() //cargar las lineas del item donde se visualizan los pedidos.
         // sesion();
         // ValidezDeSesion("https://www.cloccidental.com/webservice/sesionactiva.php?cod_usuario=" +cod_usuario.trim());
@@ -205,7 +206,7 @@ class PedidosActivity : AppCompatActivity() {
     }
 
     private fun limpiarCarrito() {
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
         keAndroid.delete("ke_carrito", "1", null)
     }
@@ -232,7 +233,7 @@ class PedidosActivity : AppCompatActivity() {
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
                     //preparo los datos para la conexion a la base de datos
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val ke_android = conn.writableDatabase
                     var jsonObject: JSONObject
                     //mientras la respuesta sea mayor a 0
@@ -338,7 +339,7 @@ class PedidosActivity : AppCompatActivity() {
 
     private fun cargarPedidos() {
         listapedidos = ArrayList()
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             """SELECT kti_codcli, kti_ndoc, kti_nombrecli, kti_fchdoc, kti_totneto, kti_status, kti_nroped, kti_totnetodcto, datetime('now','start of month') as principiomes,
@@ -427,7 +428,7 @@ class PedidosActivity : AppCompatActivity() {
         listalineas = ArrayList()
         listalineasdoc = ArrayList()
         // System.out.println(cod_usuario);
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val ke_android = conn.writableDatabase
         val cursor = ke_android.rawQuery(
             "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec " +
@@ -1055,6 +1056,7 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
 
     companion object {
         var cod_usuario: String? = null
+        var codEmpresa: String? = null
         var codigoPedido: String? = null
         var pedido_estatus: String? = null
         var statusPedido: String? = null

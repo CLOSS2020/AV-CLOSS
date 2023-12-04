@@ -123,7 +123,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modificar_pedido);
 
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
+        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
 
         Intent intent = getIntent();
         codigoPedido = intent.getStringExtra("codigopedido");
@@ -245,7 +245,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
             final EditText cajatexto = new EditText(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.EditTextStyleCustom));
             cajatexto.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
+            conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
             final SQLiteDatabase ke_android = conn.getWritableDatabase();
             Cursor cursor_mul = ke_android.rawQuery("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
             System.out.println("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
@@ -646,7 +646,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
     }
 
     private void validarSiHayPreventa() {
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
+        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
         Cursor cursor = ke_android.rawQuery("SELECT count(ke_opmv.kmv_codart) FROM ke_opmv " + "LEFT JOIN articulo ON articulo.codigo = ke_opmv.kmv_codart WHERE articulo.enpreventa = '1' AND kti_ndoc ='" + codigoPedido + "'", null);
         int conteo = 0;
@@ -884,7 +884,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
     private void CarritoCompras() {
         listacarritoMod = new ArrayList<>();
 
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
+        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
         final SQLiteDatabase ke_android = conn.getWritableDatabase();
 
         Cursor cursor = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito WHERE 1", null);
@@ -922,7 +922,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
     }
 
     public void lineasDelPedido() {
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 12);
+        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
         Cursor cursor = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_opmv WHERE kti_ndoc='" + codigoPedido + "'", null);
 
@@ -976,7 +976,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
 
     //este metodo evalua la cabecera del pedido y marca los radiobuttons segun la condicion que encuentre
     public void CargarCondiciones() {
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 1);
+        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
         SQLiteDatabase ke_android = conn.getWritableDatabase();
         Cursor cursor = ke_android.rawQuery("SELECT kti_docsol, kti_condicion, kti_negesp FROM ke_opti WHERE kti_ndoc='" + codigoPedido + "'", null);
 

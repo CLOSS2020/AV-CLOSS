@@ -53,7 +53,7 @@ class DialogRecibo {
 
 
     fun DialogRecibo(contexto: Context, datos: ArrayList<CXC>) {
-        conn = AdminSQLiteOpenHelper(contexto, "ke_android", null, 19)
+        conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
 
 

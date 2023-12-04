@@ -12,7 +12,7 @@ import org.json.JSONObject
 
 
 class ObjetoAux(val context: Context) {
-    private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null, 13)
+    private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null)
 
     fun login(codUsuario: String, sesion: Int) {
         val url = "http://cloccidental.com:5001/login"

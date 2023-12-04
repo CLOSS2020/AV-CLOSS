@@ -3,6 +3,7 @@ package com.appcloos.mimaletin
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -297,12 +298,18 @@ class ReclamosActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityReclamosBinding
 
+    private lateinit var preferences: SharedPreferences
+    private var codEmpresa: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityReclamosBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
 
         //de la actividad de documentos, traigo los datos necesarios
         val intent = intent
@@ -319,7 +326,7 @@ class ReclamosActivity : AppCompatActivity() {
         setColors()
 
         //instancia del objeto de conexion a base de datos
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 10)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
         //valido el numero de la dev para obtener el nuevo correlativo
         val cursor = keAndroid.rawQuery(
@@ -479,7 +486,7 @@ class ReclamosActivity : AppCompatActivity() {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 10)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     ll_commit = false
@@ -1063,7 +1070,7 @@ class ReclamosActivity : AppCompatActivity() {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 10)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     ll_commit = false

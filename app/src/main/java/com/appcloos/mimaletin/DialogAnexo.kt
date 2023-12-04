@@ -32,7 +32,7 @@ class DialogAnexo {
 
 
     fun DialogAnexo(contexto: Context, datos: ArrayList<CXC>) {
-        conn = AdminSQLiteOpenHelper(contexto, "ke_android", null, 19)
+        conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
 
         val dialogo = Dialog(contexto, android.R.style.Theme_Black_NoTitleBar_Fullscreen)

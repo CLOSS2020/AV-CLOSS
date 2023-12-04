@@ -15,7 +15,7 @@ class SimpleDocsRetAdapter(
     private val kePrecobradocs: ArrayList<ke_precobradocs>
 ) : RecyclerView.Adapter<SimpleDocsRetAdapter.SimpleDocsRetHolder>() {
 
-    private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null, 28)
+    private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null)
     var keAndroid: SQLiteDatabase = conn.writableDatabase
 
     inner class SimpleDocsRetHolder(val view: View) : RecyclerView.ViewHolder(view) {

@@ -129,7 +129,7 @@ class PlanificadorCXCFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        conn = AdminSQLiteOpenHelper(context, "ke_android", null, 13)
+        conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         ke_android = conn.writableDatabase
         cargarEnlace()
 

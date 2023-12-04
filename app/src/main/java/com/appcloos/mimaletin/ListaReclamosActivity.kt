@@ -51,7 +51,7 @@ class ListaReclamosActivity : AppCompatActivity() {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
 
         //establecemos los detalles de la conexion a la base de datos
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 10)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         cargarEnlace()
         //enlazo la parte logica a la grafica del recyclerview
         listaReclamos = findViewById(R.id.lv_reclamoslist)
@@ -60,12 +60,15 @@ class ListaReclamosActivity : AppCompatActivity() {
         //PREFERENCIAS PARA TRAER POR EJEMPLO,EL CODIGO DEL USUARIO ACTUAL
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("cod_usuario", null)
+
         println(cod_usuario)
         //llamo al metodo para consultar si hay reclamos creados (seran mostrados en recycleview)
         consultarReclamos()
 
         //preparamos el adapter pasandole la lista que usará luego de la consulta y el contexto
-        reclamosAdapter = ReclamosAdapter(listareclamo) { position -> onItemClick(position) }
+        reclamosAdapter =
+            ReclamosAdapter(listareclamo) { position -> onItemClick(position) }
         listaReclamos.adapter = reclamosAdapter
         reclamosAdapter!!.notifyDataSetChanged() //para refrescar el RecyclerView
         getfechaSinc()
@@ -180,7 +183,7 @@ class ListaReclamosActivity : AppCompatActivity() {
             url,
             { response: JSONArray? ->  //a traves de un json array request, traemos la informacion que viene del webservice
                 if (response != null) { // si la respuesta no viene vacia
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 10)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
                     var jsonObjecthead: JSONObject //creamos un objeto json vacio para la cabecera
                     var jsonObjectlineas: JSONObject //creamos un objeto json vacio para las lineas
@@ -749,6 +752,7 @@ class ListaReclamosActivity : AppCompatActivity() {
 
     companion object {
         var cod_usuario: String? = null
+        var codEmpresa: String? = null
         var krti_ndoc: String? = null
         var krti_status: String? = null
         var krti_codcli: String? = null

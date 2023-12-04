@@ -44,7 +44,7 @@ class DetalleCXCActivity : AppCompatActivity() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cxcndoc = preferences.getString("recibo", null).toString()
 
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 26)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.writableDatabase
 
         //val cursor =

@@ -8,7 +8,7 @@ import com.appcloos.mimaletin.R
 class ClienteAlertauseCase {
 
     fun comparar(codCliente: String, context: Context): Boolean {
-        val conn = AdminSQLiteOpenHelper(context, "ke_android", null, 1)
+        val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         val cliente = conn.getCliente(codCliente)
 
         return (cliente.diasultvta > cliente.promdiasvta) ||
@@ -21,7 +21,7 @@ class ClienteAlertauseCase {
     }
 
     fun compararIcon(codCliente: String, context: Context): Int {
-        val conn = AdminSQLiteOpenHelper(context, "ke_android", null, 1)
+        val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         val cliente = conn.getCliente(codCliente)
 
         return if ((cliente.diasultvta > cliente.promdiasvta) ||

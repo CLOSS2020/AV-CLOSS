@@ -18,6 +18,7 @@ package com.appcloos.mimaletin
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.database.Cursor
@@ -66,6 +67,9 @@ class CatalogoActivity : AppCompatActivity() {
     private var catalogoAdapter: CatalogoAdapter? = null
     private var APP_DESCUENTOS_PEDIDOS = false
 
+    private lateinit var preferences: SharedPreferences
+    private lateinit var codigoEmpresa:String
+
     private lateinit var binding: ActivityCatalogoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +82,9 @@ class CatalogoActivity : AppCompatActivity() {
         //Creacion del BackButton
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        codigoEmpresa = preferences.getString("codigoEmpresa", null).toString()
+
         /* este intent es para obtener la seleccion, tipo de precio, nro del pedido y codigo del cliente*/
         seleccionado = intent.getIntExtra("Seleccion", 0)
         tipoDePrecioaMostrar = intent.getStringExtra("tipoDePrecioaMostrar")
@@ -86,7 +93,7 @@ class CatalogoActivity : AppCompatActivity() {
         nroPedido = intent.getStringExtra("nroPedido")
         factura = intent.getBooleanExtra("factura", false)
         /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
-          el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+          el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         APP_ITEMS_FACTURAS = conn!!.getConfigNum("APP_ITEMS_FACTURAS").toInt()
         APP_ITEMS_NOTAS_ENTREGA = conn!!.getConfigNum("APP_ITEMS_NOTAS_ENTREGA").toInt()
         APP_DESCUENTOS_PEDIDOS = conn!!.getConfigBool("APP_DESCUENTOS_PEDIDOS")
@@ -198,7 +205,7 @@ class CatalogoActivity : AppCompatActivity() {
                     val ventaMax = listacatalogo!![position].getVta_max()
                     val ventaMin = listacatalogo!![position].getVta_min()
                     val dctotope = listacatalogo!![position].getDctotope()
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
+                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
                     val cursorMul = keAndroid.rawQuery(
                         "SELECT vta_minenx, vta_solofac, vta_solone FROM articulo WHERE codigo ='$codArticulo'",
@@ -240,13 +247,13 @@ class CatalogoActivity : AppCompatActivity() {
                         val cajaDescuento = EditText(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setEditTextTheme(Constantes.AGENCIA)
+                                setEditTextTheme(codigoEmpresa)
                             )
                         )
                         val cajatexto = EditText(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setEditTextTheme(Constantes.AGENCIA)
+                                setEditTextTheme(codigoEmpresa)
                             )
                         )
                         cajaDescuento.inputType = InputType.TYPE_CLASS_NUMBER
@@ -257,7 +264,7 @@ class CatalogoActivity : AppCompatActivity() {
                         val ventana = AlertDialog.Builder(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setAlertDialogTheme(Constantes.AGENCIA)
+                                setAlertDialogTheme(codigoEmpresa)
                             )
                         )
                         //declaramos textviews porque vamos a usar layout
@@ -268,7 +275,7 @@ class CatalogoActivity : AppCompatActivity() {
                         val darDescuento = CheckBox(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setCheckBoxTheme(Constantes.AGENCIA)
+                                setCheckBoxTheme(codigoEmpresa)
                             )
                         )
                         //final TextView mensajeCantidadMultiplo = new TextView(CatalogoActivity.this);
@@ -690,7 +697,7 @@ class CatalogoActivity : AppCompatActivity() {
 
                         val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
                         pbutton.apply {
-                            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+                            setTextColor(colorTextAgencia(codigoEmpresa))
                         }
 
 
@@ -712,7 +719,7 @@ class CatalogoActivity : AppCompatActivity() {
                     val ventana = AlertDialog.Builder(
                         ContextThemeWrapper(
                             this@CatalogoActivity,
-                            setAlertDialogTheme(Constantes.AGENCIA)
+                            setAlertDialogTheme(codigoEmpresa)
                         )
                     )
                     ventana.setTitle("Imagen del articulo")
@@ -723,7 +730,7 @@ class CatalogoActivity : AppCompatActivity() {
 
                     val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
                     pbutton.apply {
-                        setTextColor(colorTextAgencia(Constantes.AGENCIA))
+                        setTextColor(colorTextAgencia(codigoEmpresa))
                     }
 
                 }
@@ -962,7 +969,7 @@ class CatalogoActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
+        theme.applyStyle(setThemeAgencia(codigoEmpresa), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

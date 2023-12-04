@@ -33,7 +33,7 @@ class ClientesActivity : AppCompatActivity() {
         setContentView(binding.root)
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
@@ -147,7 +147,7 @@ class ClientesActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
+        theme.applyStyle(setThemeAgencia(codigoEmpresa), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

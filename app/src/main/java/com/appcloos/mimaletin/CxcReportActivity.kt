@@ -209,13 +209,8 @@ class CxcReportActivity : AppCompatActivity() {
 
         //System.out.println("ENLACE " + enlaceEmpresa);
 
-
-        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
-        windowsColor(Constantes.AGENCIA)
-        setColors()
-
         //inst. conexion
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 18)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
         APP_NOTA_ENTREGA_BS = conn.getConfigBool("APP_NOTA_ENTREGA_BS")
         APP_PORCENTAJE_COMPLEMENTO = conn.getConfigNum("APP_PORCENTAJE_COMPLEMENTO")
@@ -234,6 +229,10 @@ class CxcReportActivity : AppCompatActivity() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
+
+        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        windowsColor(Constantes.AGENCIA)
+        setColors()
         //cargar datos
         cargarEnlace()
         fechaActual = getFechaHoy()
@@ -6246,7 +6245,7 @@ class CxcReportActivity : AppCompatActivity() {
     }
 
     private fun descargarTasas(url: String) {
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 14)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.readableDatabase
 
         val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, // method

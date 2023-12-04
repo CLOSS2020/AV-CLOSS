@@ -2,9 +2,10 @@ package com.appcloos.mimaletin.dialogChangeAccount
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.res.Configuration
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Window
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.appcloos.mimaletin.AdminSQLiteOpenHelper
 import com.appcloos.mimaletin.Constantes
@@ -32,13 +33,10 @@ class DialogChangeAccount(context: Context, private val onClick: () -> Unit) :
         binding = DialogChangeAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        conn = AdminSQLiteOpenHelper(context, "ke_android", null, 46)
+        conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
         listaEmpresas = conn.getEmpresas(Constantes.AGENCIA)
 
-
-        val nightModeFlags = context.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK
 
 
         binding.rvEmpresa.apply {
@@ -86,8 +84,45 @@ class DialogChangeAccount(context: Context, private val onClick: () -> Unit) :
     }
 
     private fun cambiarEmpresa(position: Int) {
-        val empresa = listaEmpresas[position].kedCodigo
-        Constantes.AGENCIA = empresa
+        val preferences: SharedPreferences =
+            context.getSharedPreferences("Preferences", AppCompatActivity.MODE_PRIVATE)
+
+        val user = conn.getCampoString(
+            "usuarios",
+            "username",
+            "empresa",
+            listaEmpresas[position].kedCodigo
+        )
+        val codUsuario = conn.getCampoString(
+            "usuarios",
+            "vendedor",
+            "empresa",
+            listaEmpresas[position].kedCodigo
+        )
+        val nUsuario = conn.getCampoString(
+            "usuarios",
+            "nombre",
+            "empresa",
+            listaEmpresas[position].kedCodigo
+        )
+        val superves = conn.getCampoString(
+            "usuarios",
+            "superves",
+            "empresa",
+            listaEmpresas[position].kedCodigo
+        )
+
+        val editor = preferences.edit()
+        editor.putString("nick_usuario", user)
+        editor.putString("cod_usuario", codUsuario)
+        editor.putString("nombre_usuario", nUsuario)
+        editor.putString("superves", superves)
+        editor.putString("codigoEmpresa", listaEmpresas[position].kedCodigo)
+        editor.putString("codigoSucursal", listaEmpresas[position].kedAgen)
+        editor.apply()
+
+        Constantes.AGENCIA = listaEmpresas[position].kedCodigo
+
         this.dismiss()
         onClick()
     }

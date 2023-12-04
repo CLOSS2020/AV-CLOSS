@@ -103,7 +103,7 @@ class CXCActivity : AppCompatActivity() {
         setColors()
 
         //instanciamiento del conector a la bdd
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 13)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
         //APP_W_VIGENCIA_EFECTIVO = conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO")
 

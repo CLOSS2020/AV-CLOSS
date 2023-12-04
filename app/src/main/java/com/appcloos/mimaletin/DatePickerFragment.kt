@@ -63,7 +63,7 @@ class DatePickerFragment(
                     dismiss()
                     Toast.makeText(contexto, "Selecione un documento", Toast.LENGTH_SHORT).show()
                 } else {
-                    val conn = AdminSQLiteOpenHelper(contexto, "ke_android", null, 25)
+                    val conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
                     val keAndroid: SQLiteDatabase = conn.writableDatabase
 
                     val cursor = keAndroid.rawQuery(

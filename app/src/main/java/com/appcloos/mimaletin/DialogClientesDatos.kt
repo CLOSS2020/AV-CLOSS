@@ -26,7 +26,7 @@ class DialogClientesDatos(
         binding = DialogDatosClientesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setColors()
-        val conn = AdminSQLiteOpenHelper(context, "ke_android", null, 44)
+        val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
         val clientes = conn.getCliente(codigoCliente)
 

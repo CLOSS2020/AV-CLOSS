@@ -27,7 +27,7 @@ class SeleccionarClientePedidoAdapter(
     inner class SeleccionarClientePedidoHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         private var conn: AdminSQLiteOpenHelper =
-            AdminSQLiteOpenHelper(context, "ke_android", null, 24)
+            AdminSQLiteOpenHelper(context, "ke_android", null)
         var keAndroid: SQLiteDatabase = conn.writableDatabase
 
         val binding = ItemClientePedidoBinding.bind(view)
@@ -95,7 +95,7 @@ class SeleccionarClientePedidoAdapter(
 
             if (cliente.status == null) {
 
-                val conn = AdminSQLiteOpenHelper(context, "ke_android", null, 1)
+                val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
                 val diasPedidos =
                     conn.getCampoInt("cliempre", "diasultvta", "codigo", cliente.codigo)

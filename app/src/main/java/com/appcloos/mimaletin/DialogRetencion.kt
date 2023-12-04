@@ -44,7 +44,7 @@ class DialogRetencion {
         kePrecobradocs: ArrayList<ke_precobradocs>,
     ) {
 
-        val conn = AdminSQLiteOpenHelper(contexto, "ke_android", null, 28)
+        val conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         val keAndroid: SQLiteDatabase = conn.writableDatabase
 
         val dialogo = Dialog(contexto, android.R.style.Theme_Black_NoTitleBar_Fullscreen)

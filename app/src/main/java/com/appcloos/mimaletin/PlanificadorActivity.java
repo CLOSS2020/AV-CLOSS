@@ -54,7 +54,7 @@ public class PlanificadorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_planificador);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//mantener la activity en vertical
 
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 11);
+        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
         //identifico en el layout el listview
         cargarEnlace();
         listaplanificador = findViewById(R.id.listaPlanificador);
@@ -167,7 +167,7 @@ public class PlanificadorActivity extends AppCompatActivity {
             public void onResponse(JSONArray response) {
 
                 if( response != null){
-                    conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 8);
+                    conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
                     SQLiteDatabase ke_android = conn.getWritableDatabase();
 
                     JSONObject jsonObject = null; //creamos un objeto json vacio

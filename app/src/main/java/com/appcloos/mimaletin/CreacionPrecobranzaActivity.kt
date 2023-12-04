@@ -176,7 +176,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_creacion_precobranza)
-        conn = AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null, 18)
+        conn = AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null)
         preferences  = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario  = preferences.getString("cod_usuario", null)
         codEmpresa   = preferences.getString("codigoEmpresa", null)
@@ -2066,7 +2066,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
     }
 
     private fun descargarTasas(URL: String) {
-            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 14)
+            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
             ke_android = conn.readableDatabase
 
             val jsonArrayRequest: JsonArrayRequest
@@ -2180,7 +2180,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
     }
 
     private fun descargarBancos(URL:String, monedaBanco: String){
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 14)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         ke_android = conn.readableDatabase
 
         val jsonArrayRequest: JsonArrayRequest

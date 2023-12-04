@@ -62,6 +62,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private var montoMinimoTotal = 0.00
     var codigoCliente: String? = null
     private var codUsuario1: String? = null
+    private var codEmpresa: String? = null
 
     //CheckBox cb_negoespecial;
     var formato = DecimalFormat("#,###.00")
@@ -147,11 +148,12 @@ class CreacionPedidoActivity : AppCompatActivity() {
         // getSupportActionBar().hide(); //metodo para esconder la actionbar
         var preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario1 = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
         enpreventa = "0"
         binding.menuCreacion.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         codigoCliente = intent.extras!!.getString("cod_cliente")
         n_cliente = intent.extras!!.getString("nombre_cliente")
-        conn = AdminSQLiteOpenHelper(this@CreacionPedidoActivity, "ke_android", null, 12)
+        conn = AdminSQLiteOpenHelper(this@CreacionPedidoActivity, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
         APP_ITEMS_FACTURAS = conn!!.getConfigNum("APP_ITEMS_FACTURAS").roundToInt()
         APP_ITEMS_NOTAS_ENTREGA = conn!!.getConfigNum("APP_ITEMS_NOTAS_ENTREGA").roundToInt()
@@ -270,7 +272,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             ventana.setMessage("¿Desea eliminar este artículo?")
             ventana.setPositiveButton("Aceptar") { _: DialogInterface?, _: Int ->
                 conn = AdminSQLiteOpenHelper(
-                    applicationContext, "ke_android", null, 8
+                    applicationContext, "ke_android", null
                 )
                 val keAndroid1 = conn!!.writableDatabase
                 keAndroid1.execSQL("DELETE FROM ke_carrito WHERE kmv_codart ='$codigo'")
@@ -306,7 +308,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 )
             )
             cajatexto.inputType = InputType.TYPE_CLASS_NUMBER
-            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
             val keAndroid12 = conn!!.writableDatabase
             val cursorMul = keAndroid12.rawQuery(
                 "SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='$codigo'",
@@ -917,7 +919,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun cargarClientes() {
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn!!.readableDatabase
         var cliente: Cliente
         listacliente = ArrayList()
@@ -978,7 +980,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun carritoCompras() {
         listacarrito = ArrayList()
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito WHERE 1",

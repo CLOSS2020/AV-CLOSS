@@ -37,6 +37,7 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.databinding.ActivityMainBinding
+import com.appcloos.mimaletin.dialogChangeAccount.model.keDataconex
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -53,8 +54,6 @@ import java.util.Locale
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity(), Serializable {
-    private lateinit var et_empresa: EditText //objetos de texto
-    private lateinit var bt_validar: Button //objeto boton
     private lateinit var preferences: SharedPreferences
     lateinit var objetoAux: ObjetoAux
     lateinit var conn: AdminSQLiteOpenHelper
@@ -62,6 +61,8 @@ class MainActivity : AppCompatActivity(), Serializable {
     private lateinit var appUpdateManager: AppUpdateManager
 
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var newEmpresa: keDataconex
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
@@ -70,23 +71,18 @@ class MainActivity : AppCompatActivity(), Serializable {
         setContentView(binding.root)
         supportActionBar!!.hide() //metodo para esconder la actionbar
         //checkForAppUpdate();
-        et_empresa = findViewById(R.id.txt_empresa) //codigo validador de la empresa
-        bt_validar = findViewById(R.id.bt_validarempresa) //validar la empresa segun el codigo
 
         binding.tvversion.text = "Ver. " + Constantes.VERSION_NAME
         enlace = ""
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
-        conn = AdminSQLiteOpenHelper(this@MainActivity, "ke_android", null, 12)
+        conn = AdminSQLiteOpenHelper(this@MainActivity, "ke_android", null)
         objetoAux = ObjetoAux(this)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         delegate.applyDayNight()
         validarSesion()
-        enlace = ""
-        bt_validar.visibility = View.INVISIBLE
-        codigo_empresa = "081196"
-        validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
-        binding.txtUsuario.isEnabled = true
-        binding.txtPassword.isEnabled = true
+
+        //validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
+        setListener()
 
         //checkForAppUpdate();
         //obtenerVersion("https://cloccidental.com/webservice/versionapp.php?version_usuario=" + versionApp);
@@ -115,7 +111,7 @@ class MainActivity : AppCompatActivity(), Serializable {
 
             }
         });*/
-        binding.btIniciar.setOnClickListener {     //le indicamos al boton que usara un metodo on click listener
+        /*binding.btIniciar.setOnClickListener {     //le indicamos al boton que usara un metodo on click listener
             binding.txtUsuario.isEnabled = true
             binding.txtPassword.isEnabled = true
             binding.btIniciar.text = "Iniciar Sesion"
@@ -137,10 +133,10 @@ class MainActivity : AppCompatActivity(), Serializable {
                 ).show() // si esta vacio,
                 //le decimos al usuario que no se permiten campos en blanco.
             }
-        }
+        }*/
     }
 
-    private fun validarEmpresaLicencia(url: String) {
+    /*private fun validarEmpresaLicencia(url: String) {
         val keAndroid = conn.writableDatabase
         println(url)
         val jsonArrayRequest: JsonArrayRequest =
@@ -148,8 +144,8 @@ class MainActivity : AppCompatActivity(), Serializable {
                 if (response != null) {
                     val jsonObject: JSONObject //creamos un objeto json vacio
                     keAndroid.beginTransaction()
-                    keAndroid.execSQL("DELETE FROM ke_enlace")
-                    keAndroid.execSQL("DELETE FROM ke_modulos")
+                    //keAndroid.execSQL("DELETE FROM ke_enlace")
+                    //keAndroid.execSQL("DELETE FROM ke_modulos")
                     try {
                         //bajamos los datos de la empresa/sucursal
                         jsonObject = response.getJSONObject(0)
@@ -259,6 +255,348 @@ class MainActivity : AppCompatActivity(), Serializable {
             }
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+    }*/
+
+    private fun setListener() {
+        binding.btValidarempresa.setOnClickListener { validarEmpresa(binding.txtEmpresa.text.toString()) }
+        binding.btIniciar.setOnClickListener { ingresarEmpresa() }
+    }
+
+    private fun ingresarEmpresa() {
+        val user = binding.txtUsuario.text.toString()
+        val pass = binding.txtPassword.text.toString()
+
+        if (newEmpresa.kedCodigo.isEmpty()) {
+            toast("Falta codigo de la empresa")
+            return
+        }
+
+        if (user.isEmpty()) {
+            toast("Falta el usuario de vendedor")
+            return
+        }
+
+        if (pass.isEmpty()) {
+            toast("Falta la contraseña")
+            return
+        }
+
+        validarUsuario(
+            "https://${newEmpresa.kedEnlace}/webservice/validar_usuario_actualizadoV_5.php?nick_usuario=$user&pass_usuario=$pass",
+            user,
+            pass
+        )
+    }
+
+    private fun validarUsuario(url: String, user: String, pass: String) {
+        val jsonArrayRequest = JsonArrayRequest(url, { response ->
+            if (response != null) { // si la respuesta no viene vacia
+                var sesion =
+                    0 //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
+                var codUsuario = ""
+                var nUsuario = ""
+                var nombreUsuario = ""
+                var almacen = ""
+                var desactivo = 0.0
+                var fechamodifi = ""
+                var ualterprec = 0.0
+                var ultimoped = ""
+                var sesionactiva = ""
+                var superves = ""
+                var vendedor = ""
+                var ultimorec = ""
+                var ultimorcl = ""
+                var ultimorcxc = ""
+
+                var jsonObject: JSONObject //creamos un objeto json vacio
+                for (i in 0 until response.length()) { /*pongo todo en el objeto segun lo que venga */
+                    try {
+                        jsonObject = response.getJSONObject(i)
+                        nUsuario = jsonObject.getString("nombre") //el nombre del vendedor
+                        codUsuario = jsonObject.getString("vendedor") //el codigo
+                        nombreUsuario =
+                            jsonObject.getString("username") //almacenamos el nombre de usuario
+                        almacen = jsonObject.getString("almacen").trim { it <= ' ' }
+                        desactivo =
+                            jsonObject.getDouble("desactivo") //este campo nos indicara si el usuario se encuentra bloqueado o no.
+                        fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
+                        ualterprec = jsonObject.getDouble("ualterprec")
+                        ultimoped =
+                            jsonObject.getString("correlativo") //obtenemos el ultimo correlativo
+                        sesionactiva =
+                            jsonObject.getString("sesionactiva") //traemos la fecha de la sesion que estamos iniciando.
+                        superves = jsonObject.getString("superves")
+                        vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
+                        ultimorec = jsonObject.getString("recibocobro").trim { it <= ' ' }
+                        ultimorcl =
+                            jsonObject.getString("correlativoreclamo").trim { it <= ' ' }
+                        ultimorcxc =
+                            jsonObject.getString("correlativoprecobranza").trim { it <= ' ' }
+                        sesion = jsonObject.getInt("sesion")
+                    } catch (e: JSONException) {
+                        println("--Error--")
+                        e.printStackTrace()
+                        println("--Error--")
+                        Toast.makeText(this, "No se logro ingresar", Toast.LENGTH_LONG).show()
+                    }
+                }
+                if (codUsuario.isEmpty()) {
+                    println("LLEGO AQUI $codUsuario")
+                    Toast.makeText(
+                        this,
+                        "Usuario o password incorrecto",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    if (sesion == 1) {
+                        Toast.makeText(
+                            this,
+                            "Previamente Logueado",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    if (desactivo == 0.0 || desactivo == 1.0) {
+                        if (ultimoped.isEmpty()) {
+                            ultimoped = "0000"
+                        }
+                        if (ultimorec.isEmpty()) {
+                            ultimorec = "0000"
+                        }
+                        if (ultimorcl.isEmpty()) {
+                            ultimorcl = "0000"
+                        }
+                        if (ultimorcxc.isEmpty()) {
+                            ultimorcxc = "0000"
+                        }
+                        val keAndroid = conn.writableDatabase
+                        keAndroid.beginTransaction()
+                        try {
+                            //preparacion e inserción del correlativo de pedidos
+                            val correlativoTexto = MainActivity.right(ultimoped, 4)
+                            var nroCorrelativo = correlativoTexto.toInt()
+                            nroCorrelativo += 1
+                            val insertar = ContentValues()
+                            insertar.put("kco_numero", nroCorrelativo)
+                            insertar.put(
+                                "kco_vendedor",
+                                codUsuario.trim { it <= ' ' })
+                            keAndroid.insert("ke_correla", null, insertar)
+                            //--------------------------------------------------------------------
+
+                            //preparacion e inserción del correlativo de recibos
+                            val reciboTexto = MainActivity.right(ultimorec, 4)
+                            var nroRecibo = reciboTexto.toInt()
+                            nroRecibo += 1
+                            val insertarRec = ContentValues()
+                            insertarRec.put("kcc_numero", nroRecibo)
+                            insertarRec.put(
+                                "kcc_vendedor",
+                                codUsuario.trim { it <= ' ' })
+                            keAndroid.insert("ke_correlacxc", null, insertarRec)
+                            //-------------------------------------------------------
+
+                            //preparacion e inserción del correlativo de reclamos
+                            val reclamoTexto = MainActivity.right(ultimorcl, 4)
+                            var nroReclamo = reclamoTexto.toInt()
+                            nroReclamo += 1
+                            val insertarRcl = ContentValues()
+                            insertarRcl.put("kdev_numero", nroReclamo)
+                            insertarRcl.put(
+                                "kdev_vendedor",
+                                codUsuario.trim { it <= ' ' })
+                            keAndroid.insert("ke_correladev", null, insertarRcl)
+                            //---------------------------------------------------------------------------
+
+                            //preparacion e inserción del correlativo de precobranza
+                            val correlaCXC = MainActivity.right(ultimorcxc, 4)
+                            var nroCXC = correlaCXC.toInt()
+                            nroCXC += 1
+                            val insertarCXC = ContentValues()
+                            insertarCXC.put("kcor_numero", nroCXC)
+                            insertarCXC.put(
+                                "kcor_vendedor",
+                                codUsuario.trim { it <= ' ' })
+                            keAndroid.insert("ke_corprec", null, insertarCXC)
+                            //---------------------------------------------------------------------------
+                            /*keAndroid.delete(
+                                "usuarios",
+                                "username = ?",
+                                arrayOf(user)
+                            )*/
+
+                            val guardarEnlaces = ContentValues()
+                            guardarEnlaces.put("kee_codigo", newEmpresa.kedCodigo)
+                            guardarEnlaces.put("kee_nombre", newEmpresa.kedNombre)
+                            guardarEnlaces.put("kee_url", newEmpresa.kedEnlace)
+                            guardarEnlaces.put("kee_status", newEmpresa.kedStatus)
+                            guardarEnlaces.put("kee_sucursal", newEmpresa.kedAgen)
+
+                            keAndroid.insert("ke_enlace", null, guardarEnlaces)
+
+                            //agrego la fecha en la cual inició sesión
+                            val hoy = Calendar.getInstance().time
+                            val sdf =
+                                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            val fechaSync = sdf.format(hoy)
+                            val usuarioDatos = ContentValues()
+                            usuarioDatos.put("nombre", nUsuario)
+                            usuarioDatos.put("username", nombreUsuario)
+                            usuarioDatos.put("password", pass)
+                            usuarioDatos.put("vendedor", vendedor)
+                            usuarioDatos.put("almacen", almacen)
+                            usuarioDatos.put("desactivo", desactivo)
+                            usuarioDatos.put("fechamodifi", fechaSync)
+                            usuarioDatos.put("ualterprec", ualterprec)
+                            usuarioDatos.put("sesionactiva", sesionactiva)
+                            usuarioDatos.put("superves", superves)
+                            println(newEmpresa.kedCodigo)
+                            usuarioDatos.put("empresa", newEmpresa.kedCodigo)
+                            keAndroid.insert("usuarios", null, usuarioDatos)
+                            keAndroid.setTransactionSuccessful()
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this,
+                                "Error insertando correlativo $e",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            keAndroid.endTransaction()
+                        } finally {
+                            keAndroid.endTransaction()
+                        }
+
+                        objetoAux.login(codUsuario, 1)
+
+                        val editor = preferences.edit()
+                        editor.putString("nick_usuario", user)
+                        editor.putString("cod_usuario", codUsuario)
+                        editor.putString("nombre_usuario", nUsuario)
+                        editor.putString("superves", superves)
+                        editor.putString("codigoEmpresa", newEmpresa.kedCodigo)
+                        editor.putString("codigoSucursal", newEmpresa.kedAgen)
+                        editor.apply()
+
+                        iraPrincipal()
+
+                    } else if (desactivo == 2.0) {
+                        Toast.makeText(
+                            this,
+                            "Este usuario se encuentra desactivado",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            } else {
+                Toast.makeText(
+                    this,
+                    "Usuario o password incorrecto",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }, { error ->
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
+            Toast.makeText(this, "No se logró el inicio de sesión", Toast.LENGTH_LONG)
+                .show()
+        })
+
+        val requestQueue = Volley.newRequestQueue(this)
+        requestQueue.add(jsonArrayRequest)
+    }
+
+    private fun validarEmpresa(codigoEmpresa: String) {
+
+        if (binding.txtEmpresa.text.isEmpty()) {
+            toast("Falta codigo de la empresa")
+            return
+        }
+
+        val url = "https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigoEmpresa"
+        val keAndroid = conn.writableDatabase
+        val jsonArrayRequest = JsonArrayRequest(url, { response ->
+            if (response != null) {
+                val jsonObject: JSONObject //creamos un objeto json vacio
+                keAndroid.beginTransaction()
+
+                try {
+                    //bajamos los datos de la empresa/sucursal
+                    jsonObject = response.getJSONObject(0)
+
+                    val codigoEmp = jsonObject.getString("codigoEmpresa")
+                    val enlace = jsonObject.getString("enlaceEmpresa")
+                    val nombreEmp = jsonObject.getString("nombreEmpresa")
+                    val statusEmp = jsonObject.getString("statusEmpresa")
+                    val codigoSuc = jsonObject.getString("agenciaEmpresa")
+
+                    newEmpresa = keDataconex(
+                        codigoEmp,
+                        nombreEmp,
+                        statusEmp,
+                        enlace,
+                        codigoSuc
+                    )
+
+                    //en este proceso vamos a cargar los permisos
+                    var permisosJson: JSONObject
+                    for (i in 0 until response.length()) {
+                        permisosJson = response.getJSONObject(i)
+                        val codigoModulo = permisosJson.getString("codigoModulo")
+                        //System.out.println("CODIGO DEL MODULO " + codigoModulo);
+                        val activoModulo = permisosJson.getString("estadoModulo")
+
+                        val guardarPermisos = ContentValues()
+                        guardarPermisos.put("ked_codigo", codigoEmp)
+                        guardarPermisos.put("kmo_codigo", codigoModulo)
+                        guardarPermisos.put("kmo_status", activoModulo)
+                        guardarPermisos.put("kee_sucursal", codigoSuc)
+                        keAndroid.insert("ke_modulos", null, guardarPermisos)
+                    }
+                    keAndroid.setTransactionSuccessful()
+                    keAndroid.endTransaction()
+                    if (enlace != "") {
+                        binding.apply {
+                            txtUsuario.isEnabled = true
+                            txtPassword.isEnabled = true
+                            btIniciar.isEnabled = true
+
+                            txtUsuario.visibility = View.VISIBLE
+                            txtPassword.visibility = View.VISIBLE
+                            btIniciar.visibility = View.VISIBLE
+                        }
+                    } else {
+                        binding.apply {
+                            txtUsuario.isEnabled = true
+                            txtPassword.isEnabled = true
+                            btIniciar.isEnabled = true
+
+                            txtUsuario.visibility = View.INVISIBLE
+                            txtPassword.visibility = View.INVISIBLE
+                            btIniciar.visibility = View.INVISIBLE
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(
+                        this,
+                        "No se pudo validar el codigo",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    keAndroid.endTransaction()
+                }
+            }
+        }, { error ->
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
+            Toast.makeText(
+                this,
+                "No se pudo validar el codigo, intente más tarde",
+                Toast.LENGTH_LONG
+            ).show()
+        })
+
+        val requestQueue = Volley.newRequestQueue(this)
+        requestQueue.add(jsonArrayRequest)
     }
 
     fun obtenerVersion(url: String?) {
@@ -325,7 +663,7 @@ class MainActivity : AppCompatActivity(), Serializable {
     }
 
     //metodo de validacion
-    private fun validarUsuario(url: String) {
+    /*private fun validarUsuario(url: String) {
         println(url)
         val jsonArrayRequest: JsonArrayRequest = object : JsonArrayRequest(
             url,
@@ -335,7 +673,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                         0 //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
                     println(response)
                     var jsonObject: JSONObject //creamos un objeto json vacio
-                    for (i in 0 until response.length()) { /*pongo todo en el objeto segun lo que venga */
+                    for (i in 0 until response.length()) { *//*pongo todo en el objeto segun lo que venga *//*
                         try {
                             conn.deleteAll("usuarios")
                             jsonObject = response.getJSONObject(i)
@@ -516,7 +854,7 @@ class MainActivity : AppCompatActivity(), Serializable {
         }
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
-    }
+    }*/
 
     /*private void login() {
         String URL = "https://8135-45-186-202-166.ngrok.io/login";
@@ -561,13 +899,14 @@ class MainActivity : AppCompatActivity(), Serializable {
     private fun validarSesion() {
         nick_usuario = preferences.getString("nick_usuario", null)
         cod_usuario = preferences.getString("cod_usuario", null)
-        val keAndroid = conn.writableDatabase
+        desactivo = conn.getCampoDouble("usuarios", "desactivo", "vendedor", cod_usuario?:"0")
+        /*val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery("SELECT desactivo FROM usuarios  WHERE 1", null)
         while (cursor.moveToNext()) {
             desactivo = cursor.getDouble(0)
             println(desactivo)
         }
-        cursor.close()
+        cursor.close()*/
         if (nick_usuario != null && desactivo != 2.0) {
             iraPrincipal()
         }
@@ -585,7 +924,7 @@ class MainActivity : AppCompatActivity(), Serializable {
     override fun onResume() {
         codigo_empresa = "081196"
         super.onResume()
-        validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
+        //validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
 
         /*appUpdateManager
                 .getAppUpdateInfo()

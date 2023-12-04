@@ -13,7 +13,7 @@ class DetalleCXCAdapter(
 ) : RecyclerView.Adapter<DetalleCXCAdapter.DetalleCXCHolder>() {
     inner class DetalleCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private var conn = AdminSQLiteOpenHelper(context, "ke_android", null, 26)
+        private var conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         private val binding = ItemDetallesCxcBinding.bind(view)
 
         fun render(kePrecobradocs: ke_precobradocs) {

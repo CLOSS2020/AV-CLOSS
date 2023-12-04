@@ -43,7 +43,7 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
 
         println(codUsuario)
 
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 18)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         cargarRecibos()
 
         binding.btSigte.setOnClickListener {

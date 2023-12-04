@@ -40,7 +40,6 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
-import com.appcloos.mimaletin.Constantes.AGENCIA
 import com.appcloos.mimaletin.ModuloReten.ModuloRetenActivity
 import com.appcloos.mimaletin.databinding.ActivityPrincipalBinding
 import com.appcloos.mimaletin.dialogChangeAccount.DialogChangeAccount
@@ -90,7 +89,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     var filas = 0
     var REQUEST_CODE = 200
     var objetoAux: ObjetoAux? = null
-    var conn: AdminSQLiteOpenHelper? = null
+    lateinit var conn: AdminSQLiteOpenHelper
     var sesionObsoleta = false
     private var toolbar: Toolbar? = null
     private var fechaAuxiliar = "0001-01-01"
@@ -110,12 +109,13 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
         super.onCreate(savedInstanceState)
 
+
+
         binding = ActivityPrincipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
         instance = this
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         objetoAux = ObjetoAux(this)
-        val keAndroid = conn!!.writableDatabase
         permisos = ArrayList()
         navView = findViewById(R.id.nav_view)
         navView.setNavigationItemSelectedListener(this)
@@ -124,20 +124,26 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         codigoEmpresa = preferences.getString("codigoEmpresa", null)
         codigoSucursal = preferences.getString("codigoSucursal", null)
         val nombreUsuario = preferences.getString("nombre_usuario", null)
+        val nombreEmpresa = conn.getCampoString(
+            "ke_enlace",
+            "kee_nombre",
+            "kee_codigo",
+            codigoEmpresa ?: Constantes.CLO
+        )
         objetoAux!!.descargaDesactivo(cod_usuario!!)
-        SINCRONIZO = conn!!.sincronizoPriVez(cod_usuario!!)
-        DESACTIVADO = conn!!.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
-        APP_DESCUENTOS_PEDIDOS = conn!!.getConfigBool("APP_DESCUENTOS_PEDIDOS")
+        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!)
+        DESACTIVADO = conn.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
+        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS")
         checkForAppUpdate()
         cargarModulosActivos()
         cargarEnlace()
 
-        windowsColor(AGENCIA)
+        windowsColor(Constantes.AGENCIA)
 
         carousel()
 
         toolbar = findViewById(R.id.toolbar_main)
-        toolbar!!.setBackgroundColor(toolbar!!.colorToolBarAux(AGENCIA))
+        toolbar!!.setBackgroundColor(toolbar!!.colorToolBarAux(Constantes.AGENCIA))
 
         setSupportActionBar(toolbar)
         binding.apply {
@@ -158,8 +164,10 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         navView.setNavigationItemSelectedListener(this)
         val headerView = navView.getHeaderView(0)
         tvNombreu = headerView.findViewById(R.id.tv_nombreu)
+        val tvNomEmpresa: TextView= headerView.findViewById(R.id.tvNomEmpresa)
         llHeaderNavMenu = headerView.findViewById(R.id.llHeaderNavMenu)
         tvNombreu.text = "Bienvenid@, $nombreUsuario"
+        tvNomEmpresa.text = "Empresa: $nombreEmpresa"
         descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fechaAuxiliar.trim { it <= ' ' } + "&&agencia=" + codigoSucursal!!.trim { it <= ' ' })
         binding.imgSyncTasa.setOnClickListener {
             descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fechaAuxiliar.trim { it <= ' ' } + "&&agencia=" + codigoSucursal!!.trim { it <= ' ' })
@@ -192,11 +200,11 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     private fun setColors() {
         binding.apply {
-            constraintLayout.setDrawableAgencia(AGENCIA)
-            imgSyncTasa.setDrawableVariantAgencia(AGENCIA)
-            imgSyncTasa.imageTintList = imgSyncTasa.colorIconReclamo(AGENCIA)
+            constraintLayout.setDrawableAgencia(Constantes.AGENCIA)
+            imgSyncTasa.setDrawableVariantAgencia(Constantes.AGENCIA)
+            imgSyncTasa.imageTintList = imgSyncTasa.colorIconReclamo(Constantes.AGENCIA)
 
-            llHeaderNavMenu.setBackgroundResource(llHeaderNavMenu.backgroundNavMenu(AGENCIA))
+            llHeaderNavMenu.setBackgroundResource(llHeaderNavMenu.backgroundNavMenu(Constantes.AGENCIA))
         }
 
     }
@@ -1018,7 +1026,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     override fun getTheme(): Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeNoBarAgencia(AGENCIA), true)
+        theme.applyStyle(setThemeNoBarAgencia(Constantes.AGENCIA), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

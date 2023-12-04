@@ -190,7 +190,7 @@ fun Bitmap.convertirUriToBase64(): String? {
     return Base64.encodeToString(bytes, Base64.DEFAULT)
 }
 
-fun Activity.windowsColor(agencia: String) {
+fun Activity.windowsColor(agencia: String?) {
     val window = this.window
     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -208,55 +208,97 @@ fun Activity.windowsColor(agencia: String) {
     }
 }
 
-fun View.setDrawableAgencia(agencia: String) {
-    if (agencia == CLO) {
-        this.setBackgroundResource(R.drawable.bordes_redondos)
-    } else if (agencia == WOKIN) {
-        this.setBackgroundResource(R.drawable.wokin_bordes_redondos)
+fun View.setDrawableAgencia(agencia: String?) {
+    when (agencia) {
+        CLO -> {
+            this.setBackgroundResource(R.drawable.bordes_redondos)
+        }
+
+        WOKIN -> {
+            this.setBackgroundResource(R.drawable.wokin_bordes_redondos)
+        }
+
+        else -> {
+            this.setBackgroundResource(R.drawable.bordes_redondos)
+        }
     }
 }
 
-fun View.setDrawableHeadAgencia(agencia: String) {
-    if (agencia == CLO) {
-        this.setBackgroundResource(R.drawable.border_radius_botr_botl)
-    } else if (agencia == WOKIN) {
-        this.setBackgroundResource(R.drawable.wokin_border_radius_botr_botl)
+fun View.setDrawableHeadAgencia(agencia: String?) {
+    when (agencia) {
+        CLO -> {
+            this.setBackgroundResource(R.drawable.border_radius_botr_botl)
+        }
+
+        WOKIN -> {
+            this.setBackgroundResource(R.drawable.wokin_border_radius_botr_botl)
+        }
+
+        else -> {
+            this.setBackgroundResource(R.drawable.border_radius_botr_botl)
+        }
     }
 }
 
-fun View.setDrawableHeadVariantAgencia(agencia: String) {
-    if (agencia == CLO) {
-        this.setBackgroundResource(R.drawable.border_item_edo_general_cxc)
-    } else if (agencia == WOKIN) {
-        this.setBackgroundResource(R.drawable.wokin_border_item_edo_general_cxc)
+fun View.setDrawableHeadVariantAgencia(agencia: String?) {
+    when (agencia) {
+        CLO -> {
+            this.setBackgroundResource(R.drawable.border_item_edo_general_cxc)
+        }
+
+        WOKIN -> {
+            this.setBackgroundResource(R.drawable.wokin_border_item_edo_general_cxc)
+        }
+
+        else -> {
+            this.setBackgroundResource(R.drawable.border_item_edo_general_cxc)
+        }
     }
 }
 
-fun View.setDrawableVariantAgencia(agencia: String) {
-    if (agencia == CLO) {
-        this.setBackgroundResource(R.drawable.border_radius_secondary_color)
-    } else if (agencia == WOKIN) {
-        this.setBackgroundResource(R.drawable.wokin_border_radius_secondary_color)
+fun View.setDrawableVariantAgencia(agencia: String?) {
+    when (agencia) {
+        CLO -> {
+            this.setBackgroundResource(R.drawable.border_radius_secondary_color)
+        }
+
+        WOKIN -> {
+            this.setBackgroundResource(R.drawable.wokin_border_radius_secondary_color)
+        }
+
+        else -> {
+            this.setBackgroundResource(R.drawable.border_radius_secondary_color)
+        }
     }
 }
 
-fun View.setDrawableCobranzaAgencia(agencia: String) {
-    if (agencia == CLO) {
-        this.setBackgroundResource(R.drawable.fondoamarillo)
-    } else if (agencia == WOKIN) {
-        this.setBackgroundResource(R.drawable.wokin_fondoamarillo)
+fun View.setDrawableCobranzaAgencia(agencia: String?) {
+    when (agencia) {
+        CLO -> {
+            this.setBackgroundResource(R.drawable.fondoamarillo)
+        }
+
+        WOKIN -> {
+            this.setBackgroundResource(R.drawable.wokin_fondoamarillo)
+        }
+
+        else -> {
+            this.setBackgroundResource(R.drawable.fondoamarillo)
+        }
     }
 }
 
-fun View.setDrawableCobranzaVariantAgencia(agencia: String) {
+fun View.setDrawableCobranzaVariantAgencia(agencia: String?) {
     if (agencia == CLO) {
         this.setBackgroundResource(R.drawable.fondototal)
     } else if (agencia == WOKIN) {
         this.setBackgroundResource(R.drawable.wokin_fondototal)
+    } else {
+        this.setBackgroundResource(R.drawable.fondototal)
     }
 }
 
-fun View.colorAgencia(agencia: String): Int {
+fun View.colorAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -270,35 +312,41 @@ fun View.colorAgencia(agencia: String): Int {
     return retorno
 }
 
-fun View.colorVariantAgencia(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        ContextCompat.getColor(context, R.color.colorVariantLite)
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        ContextCompat.getColor(context, R.color.wokinColorVariantLite)
-    } else {
-        ContextCompat.getColor(context, R.color.blackColor2)
+fun View.colorVariantAgencia(agencia: String?): Int {
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            ContextCompat.getColor(context, R.color.colorVariantLite)
+        }
+
+        WOKIN -> {
+            ContextCompat.getColor(context, R.color.wokinColorVariantLite)
+        }
+
+        else -> {
+            ContextCompat.getColor(context, R.color.blackColor2)
+        }
     }
 
     return retorno
 }
 
-fun View.colorAccentAgencia(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        ContextCompat.getColor(context, R.color.rojologo)
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        ContextCompat.getColor(context, R.color.wokinAccentColor)
-    } else {
-        ContextCompat.getColor(context, R.color.whiteColor4)
+fun View.colorAccentAgencia(agencia: String?): Int {
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            ContextCompat.getColor(context, R.color.rojologo)
+        }
+        WOKIN -> {
+            ContextCompat.getColor(context, R.color.wokinAccentColor)
+        }
+        else -> {
+            ContextCompat.getColor(context, R.color.whiteColor4)
+        }
     }
 
     return retorno
 }
 
-fun View.colorTextAgencia(agencia: String): Int {
+fun View.colorTextAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -310,7 +358,7 @@ fun View.colorTextAgencia(agencia: String): Int {
     } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == WOKIN) {
         ContextCompat.getColor(context, R.color.md_theme_dark_primary_wokin)
     } else {
-        ContextCompat.getColor(context, R.color.whiteColor4)
+        ContextCompat.getColor(context, R.color.primaryColor)
     }
 
     return retorno
@@ -331,7 +379,7 @@ fun View.setColorCheckBox(agencia: String): ColorStateList {
     return retorno
 }
 
-fun View.setColorRadioButon(agencia: String): ColorStateList? {
+fun View.setColorRadioButon(agencia: String?): ColorStateList? {
     //Estos ya tienen su modo oscuro por xml
 
 
@@ -360,63 +408,76 @@ fun Resources.Theme.getTheme(agencia: String) {
     }
 }
 
-fun Activity.setProgressDialogTheme(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+fun Activity.setProgressDialogTheme(agencia: String?): Int {
 
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        R.style.ProgressDialogCustom
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        R.style.ProgressDialogCustomWokin
-    } else {
-        R.style.ProgressDialogCustom
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            R.style.ProgressDialogCustom
+        }
+        WOKIN -> {
+            R.style.ProgressDialogCustomWokin
+        }
+        else -> {
+            R.style.ProgressDialogCustom
+        }
     }
     return retorno
 }
 
-fun Activity.setAlertDialogTheme(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+fun Activity.setAlertDialogTheme(agencia: String?): Int {
 
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        R.style.AlertDialogCustom
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        R.style.AlertDialogCustomWokin
-    } else {
-        R.style.AlertDialogCustom
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            R.style.AlertDialogCustom
+        }
+
+        WOKIN -> {
+            R.style.AlertDialogCustomWokin
+        }
+
+        else -> {
+            R.style.AlertDialogCustom
+        }
     }
     return retorno
 }
 
-fun Activity.setEditTextTheme(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+fun Activity.setEditTextTheme(agencia: String?): Int {
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            R.style.EditTextStyleCustom
+        }
 
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        R.style.EditTextStyleCustom
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        R.style.EditTextStyleCustomWokin
-    } else {
-        R.style.EditTextStyleCustom
+        WOKIN -> {
+            R.style.EditTextStyleCustomWokin
+        }
+
+        else -> {
+            R.style.EditTextStyleCustom
+        }
     }
     return retorno
 }
 
-fun Activity.setCheckBoxTheme(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+fun Activity.setCheckBoxTheme(agencia: String?): Int {
 
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        R.style.BasicStyleCheckBox
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        R.style.BasicStyleCheckBoxWokin
-    } else {
-        R.style.BasicStyleCheckBox
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            R.style.BasicStyleCheckBox
+        }
+
+        WOKIN -> {
+            R.style.BasicStyleCheckBoxWokin
+        }
+
+        else -> {
+            R.style.BasicStyleCheckBox
+        }
     }
     return retorno
 }
 
-fun Activity.setThemeAgencia(agencia: String): Int {
+fun Activity.setThemeAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
 
@@ -430,21 +491,24 @@ fun Activity.setThemeAgencia(agencia: String): Int {
     return retorno
 }
 
-fun Activity.setThemeNoBarAgencia(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+fun Activity.setThemeNoBarAgencia(agencia: String?): Int {
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            R.style.BasicThemeBasic
+        }
 
-    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
-        R.style.BasicThemeBasic
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
-        R.style.BasicThemeBasicWokin
-    } else {
-        R.style.BasicThemeBasic
+        WOKIN -> {
+            R.style.BasicThemeBasicWokin
+        }
+
+        else -> {
+            R.style.BasicThemeBasic
+        }
     }
     return retorno
 }
 
-fun Activity.setThemeNoBarCXCAgencia(agencia: String): Int {
+fun Activity.setThemeNoBarCXCAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
 
@@ -458,7 +522,7 @@ fun Activity.setThemeNoBarCXCAgencia(agencia: String): Int {
     return retorno
 }
 
-fun View.setBoxStrokeColorInputText(agencia: String): ColorStateList? {
+fun View.setBoxStrokeColorInputText(agencia: String?): ColorStateList? {
 
     val retorno: ColorStateList? =
         when (agencia) {
@@ -478,7 +542,7 @@ fun View.setBoxStrokeColorInputText(agencia: String): ColorStateList? {
     return retorno
 }
 
-fun MaterialButton.setColorModelVariant(agencia: String) {
+fun MaterialButton.setColorModelVariant(agencia: String?) {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
 
@@ -494,7 +558,7 @@ fun MaterialButton.setColorModelVariant(agencia: String) {
     }
 }
 
-fun TextInputLayout.setColorModel(agencia: String) {
+fun TextInputLayout.setColorModel(agencia: String?) {
     this.apply {
         setBoxStrokeColorStateList(setBoxStrokeColorInputText(agencia)!!)
         hintTextColor = ColorStateList.valueOf(colorTextInputLayoutAgencia(agencia))
@@ -522,9 +586,7 @@ fun Fragment.setThemeDateFragment(agencia: String): Int {
     return retorno
 }
 
-fun View.changeColorMarco(agencia: String): Int {
-    val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+fun View.changeColorMarco(agencia: String?): Int {
 
     val retorno: Int = when (agencia) {
         CLO -> {
@@ -542,7 +604,7 @@ fun View.changeColorMarco(agencia: String): Int {
     return retorno
 }
 
-fun View.colorToolBarAux(agencia: String): Int {
+fun View.colorToolBarAux(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
 
@@ -560,7 +622,7 @@ fun View.colorToolBarAux(agencia: String): Int {
     return retorno
 }
 
-fun View.colorButtonAgencia(agencia: String): Int {
+fun View.colorButtonAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -578,7 +640,7 @@ fun View.colorButtonAgencia(agencia: String): Int {
     return retorno
 }
 
-fun View.colorLabelAgencia(agencia: String): Int {
+fun View.colorLabelAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -596,7 +658,7 @@ fun View.colorLabelAgencia(agencia: String): Int {
     return retorno
 }
 
-fun View.colorTextInputLayoutAgencia(agencia: String): Int {
+fun View.colorTextInputLayoutAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -614,7 +676,7 @@ fun View.colorTextInputLayoutAgencia(agencia: String): Int {
     return retorno
 }
 
-fun View.colorListaReclamo(agencia: String): Int {
+fun View.colorListaReclamo(agencia: String?): Int {
     val retorno = when (agencia) {
         CLO -> {
             R.drawable.fondo_listas
@@ -631,7 +693,7 @@ fun View.colorListaReclamo(agencia: String): Int {
     return retorno
 }
 
-fun View.colorIconReclamo(agencia: String): ColorStateList? {
+fun View.colorIconReclamo(agencia: String?): ColorStateList? {
 
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
@@ -652,7 +714,7 @@ fun View.colorIconReclamo(agencia: String): ColorStateList? {
 
 }
 
-fun View.backgroundNavMenu(agencia: String): Int {
+fun View.backgroundNavMenu(agencia: String?): Int {
 
     val retorno: Int =
         when (agencia) {

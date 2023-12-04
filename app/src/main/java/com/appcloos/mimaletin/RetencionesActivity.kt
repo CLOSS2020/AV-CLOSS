@@ -56,6 +56,8 @@ class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.Qu
 
     var valor = 0.0
 
+    private var codEmpresa: String? = null
+
     /*private lateinit var imageUri: Uri
 
     var listaImagenes: ArrayList<Uri> = ArrayList()
@@ -73,7 +75,7 @@ class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.Qu
         setColors()
         setContentView(binding.root)
 
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 18)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.writableDatabase/* //EditTexts de iva
          et_nroretiva     = findViewById(R.id.et_nroretiva)*/
 
@@ -89,7 +91,7 @@ class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.Qu
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         //cod_usuario   = preferences.getString("cod_usuario", null)
-        //codEmpresa    = preferences.getString("codigoEmpresa", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
 
 
         //listaTiposRet.add(0, "Seleccione un tipo de retención")

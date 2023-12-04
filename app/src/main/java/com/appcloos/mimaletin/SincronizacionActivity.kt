@@ -44,7 +44,7 @@ import java.util.Locale
 import kotlin.system.exitProcess
 
 class SincronizacionActivity : AppCompatActivity(), Serializable {
-    private var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
     private var listapedido: ArrayList<Pedidos>? = null
     private var listalineas: ArrayList<Carrito>? = null
     private var appUpdateManager = AppUpdateManagerFactory.create(this)
@@ -61,16 +61,19 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null) ?: Constantes.CLO
         //String nombre_usuario = preferences.getString("nombre_usuario", null);
         //nivelUsuario = preferences.getString("superves", "0");
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 12)
-        val keAndroid = conn!!.writableDatabase
-        cargarEnlace()
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        val keAndroid = conn.writableDatabase
+        //cargarEnlace()
+
+        enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
+
         checkForAppUpdate()
         setColors()
         val cursorsupervisor = keAndroid.rawQuery(
-            "SELECT superves FROM usuarios WHERE vendedor ='$cod_usuario'",
-            null
+            "SELECT superves FROM usuarios WHERE vendedor ='$cod_usuario'", null
         )
         while (cursorsupervisor.moveToNext()) {
             nivelUsuario = cursorsupervisor.getString(0)
@@ -139,14 +142,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //bt_subirprecob.setVisibility(View.INVISIBLE);
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!)
-        SINCRONIZO = conn!!.sincronizoPriVez(cod_usuario!!)
-        DESACTIVADO = conn!!.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
-        if (!conn!!.getConfigBoolUsuario(
+        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!)
+        DESACTIVADO = conn.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
+        if (!conn.getConfigBoolUsuario(
                 "APP_MODULO_CXC_USER",
                 cod_usuario!!
             ) && SINCRONIZO && DESACTIVADO
         ) {
-            binding.btnSubirprecob.setVisibility(View.VISIBLE)
+            binding.btnSubirprecob.visibility = View.VISIBLE
         }
     }
 
@@ -158,7 +161,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun analisisError() {
         println("La variable -> $varAuxError")
         if (varAuxError) {
-            val keAndroid = conn!!.writableDatabase
+            val keAndroid = conn.writableDatabase
             try {
                 val contenedor = ContentValues()
                 contenedor.put("ult_sinc", "0001-01-01")
@@ -201,7 +204,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun analisisError2() {
 
         //System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         try {
             val contenedor = ContentValues()
             contenedor.put("ult_sinc", "0001-01-01")
@@ -230,7 +233,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf("kee_nombre," + "kee_url," + "kee_sucursal")
         val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
         while (cursor.moveToNext()) {
@@ -242,8 +245,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun cargarRecibo() {
-        conn = AdminSQLiteOpenHelper(this@SincronizacionActivity, "ke_android", null, 10)
-        val keAndroid = conn!!.writableDatabase
+        //conn = AdminSQLiteOpenHelper(this@SincronizacionActivity, "ke_android", null)
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT kcx_nrorecibo, kcx_codcli, kcx_codven, kcx_fechamodifi, kcx_monto FROM ke_cxc WHERE kcx_status = '0'",
             null
@@ -269,7 +272,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 e.printStackTrace()
                 Toast.makeText(
                     this@SincronizacionActivity,
-                    "Error al cargar el recibo$e",
+                    "Evento inesperado al cargar el recibo$e",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -311,7 +314,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 error.printStackTrace()
                 println("--Error-")
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 val params: MutableMap<String, String> = HashMap()
                 params["jsonrec"] = jsonrec
                 params["agencia"] = codigoSucursal
@@ -322,7 +325,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun cambiarEstadoRecibo() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         //System.out.println(arrayRec);
         for (i in 0 until arrayRec!!.length()) {
             try {
@@ -337,15 +340,15 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     fun sincronizacionVendedor() {
         when (varAux) {
-            0 -> bajarUsuario("https://" + enlaceEmpresa + "/" + ambienteJob + "/usuarios_V3.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            1 -> bajarVendedor("https://" + enlaceEmpresa + "/" + ambienteJob + "/listvend_V2.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            2 -> bajarGrupos("https://" + enlaceEmpresa + "/" + ambienteJob + "/grupos_V3.php?fecha_sinc=" + fecha_sinc_grupos!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            3 -> bajarConfig("https://" + enlaceEmpresa + "/" + ambienteJob + "/config_V3.php?agencia=" + codigoSucursal.trim { it <= ' ' })
-            4 -> bajarSubGrupos("https://" + enlaceEmpresa + "/" + ambienteJob + "/subgrupos_V2.php?fecha_sinc=" + fecha_sinc_subgrupos!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            5 -> bajarSectores("https://" + enlaceEmpresa + "/" + ambienteJob + "/sectores_V2.php?fecha_sinc=" + fecha_sinc_sectores!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            6 -> bajarSubSectores("https://" + enlaceEmpresa + "/" + ambienteJob + "/subsectores_V2.php?fecha_sinc=" + fecha_sinc_subsectores + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            7 -> bajarClientes("https://" + enlaceEmpresa + "/" + ambienteJob + "/clientes_V4.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            8 -> bajarInfoPedidos("https://" + enlaceEmpresa + "/" + ambienteJob + "/obtenerdatospedidos_V3.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+            0 -> bajarUsuario("https://$enlaceEmpresa/$ambienteJob/usuarios_V4.php?cod_usuario=$cod_usuario")
+            1 -> bajarVendedor("https://$enlaceEmpresa/$ambienteJob/listvend_V3.php?cod_usuario=$cod_usuario")
+            2 -> bajarGrupos("https://$enlaceEmpresa/$ambienteJob/grupos_V4.php?fecha_sinc=$fecha_sinc_grupos")
+            3 -> bajarConfig("https://$enlaceEmpresa/$ambienteJob/config_V4.php")
+            4 -> bajarSubGrupos("https://$enlaceEmpresa/$ambienteJob/subgrupos_V3.php?fecha_sinc=$fecha_sinc_subgrupos")
+            5 -> bajarSectores("https://$enlaceEmpresa/$ambienteJob/sectores_V3.php?fecha_sinc=$fecha_sinc_sectores")
+            6 -> bajarSubSectores("https://$enlaceEmpresa/$ambienteJob/subsectores_V3.php?fecha_sinc=$fecha_sinc_subsectores")
+            7 -> bajarClientes("https://$enlaceEmpresa/$ambienteJob/clientes_V5.php?cod_usuario=$cod_usuario")
+            8 -> bajarInfoPedidos("https://$enlaceEmpresa/$ambienteJob/obtenerdatospedidos_V3.php?cod_usuario=$cod_usuario")
             9 -> bajarArticulos3("https://" + enlaceEmpresa + "/" + ambienteJob + "/articulos_V26.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
             10 -> bajarKardex("https://" + enlaceEmpresa + "/" + ambienteJob + "/kardex_V2.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
             11 -> subirLimite()
@@ -379,7 +382,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun bajarDescuentosBancos(url: String) {
         println(url)
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val descuentoBancoNube = ArrayList<String>()
         val descuentoBancoNube2 = ArrayList<String>()
         val jsonObjectRequest =
@@ -398,14 +401,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("dcob_id", dcobId)
                             cv.put("bco_codigo", bcoCodigo)
                             cv.put("fechamodifi", fechamodifi)
-                            if (conn!!.validarExistenciaCamposVarios(
+                            if (conn.validarExistenciaCamposVarios(
                                     "ke_tabdctosbcos", ArrayList(
                                         mutableListOf("dcob_id", "bco_codigo")
                                     ), ArrayList(listOf(dcobId, bcoCodigo))
                                 )
                             ) {
                                 //System.out.println("UPDATE " + documento);
-                                conn!!.updateJSONCamposVarios(
+                                conn.updateJSONCamposVarios(
                                     "ke_tabdctosbcos",
                                     cv,
                                     "dcob_id = ? AND bco_codigo = ?",
@@ -413,10 +416,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 )
                             } else {
                                 //System.out.println("INSERT " + documento);
-                                conn!!.insertJSON("ke_tabdctosbcos", cv)
+                                conn.insertJSON("ke_tabdctosbcos", cv)
                             }
                         }
-                        conn!!.updateTablaAux("ke_tabdctosbcos")
+                        conn.updateTablaAux("ke_tabdctosbcos", codEmpresa!!)
                     }
                     eliminarRegistrosViejos(
                         descuentoBancoNube,
@@ -454,7 +457,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun bajarDescuentos(url: String) {
         println(url)
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val descuentoNube = ArrayList<String?>()
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
@@ -487,15 +490,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("dcob_valesiempre", dcobValesiempre)
                             cv.put("dcob_valemon", dcobValemon)
-                            if (conn!!.validarExistencia("ke_tabdctos", "dcob_id", dcobId)) {
+                            if (conn.validarExistencia("ke_tabdctos", "dcob_id", dcobId)) {
                                 //System.out.println("UPDATE " + documento);
-                                conn!!.updateJSON("ke_tabdctos", cv, "dcob_id", dcobId)
+                                conn.updateJSON("ke_tabdctos", cv, "dcob_id", dcobId)
                             } else {
                                 //System.out.println("INSERT " + documento);
-                                conn!!.insertJSON("ke_tabdctos", cv)
+                                conn.insertJSON("ke_tabdctos", cv)
                             }
                         }
-                        conn!!.updateTablaAux("ke_tabdctos")
+                        conn.updateTablaAux("ke_tabdctos", codEmpresa!!)
+
                     }
                     eliminarDocViejos(descuentoNube, keAndroid, "ke_tabdctos", "dcob_id")
                     varAux++
@@ -526,7 +530,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun bajarPromociones(url: String) {
         println(url)
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val imgNube = ArrayList<String?>()
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
@@ -547,12 +551,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("ancho", ancho)
                             cv.put("alto", alto)
-                            if (conn!!.validarExistencia("img_carousel", "nombre", nombre)) {
+                            if (conn.validarExistencia("img_carousel", "nombre", nombre)) {
                                 //System.out.println("UPDATE " + documento);
-                                conn!!.updateJSON("img_carousel", cv, "nombre= ?", nombre)
+                                conn.updateJSON("img_carousel", cv, "nombre= ?", nombre)
                             } else {
                                 //System.out.println("INSERT " + documento);
-                                conn!!.insertJSON("img_carousel", cv)
+                                conn.insertJSON("img_carousel", cv)
                             }
                         }
                         varAux++
@@ -587,7 +591,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarBancos(url: String) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val bancosNube = ArrayList<String?>()
         println(url)
         val jsonObjectRequest =
@@ -629,9 +633,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         keAndroid.delete("listbanc", "inactiva = ?", arrayOf("1"))
                         eliminarDocViejos(bancosNube, keAndroid, "listbanc", "codbanco")
                         try {
-                            val fecha_limites = Calendar.getInstance()
+                            val fechaLimites1 = Calendar.getInstance()
                             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                            val fechaLimites = sdf.format(fecha_limites.time)
+                            val fechaLimites = sdf.format(fechaLimites1.time)
                             val cv = ContentValues()
                             cv.put("fchhn_ultmod", fechaLimites)
                             keAndroid.update("tabla_aux", cv, "tabla= ?", arrayOf("listbanc"))
@@ -669,12 +673,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarConfigExtra(url: String) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         println("Config -->$url")
 
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         //String fecha_error = ObtenerFechaPreError("fchhn_ultmod");
-        val ConfigNube = ArrayList<String?>()
+        val configNube = ArrayList<String?>()
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -695,7 +699,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val cnfgTipo = configDatos.getString("cnfg_tipo")
                             val cnfgValfch = configDatos.getString("cnfg_valfch")
                             val username = configDatos.getString("username")
-                            ConfigNube.add(cnfgIdconfig)
+                            configNube.add(cnfgIdconfig)
                             val cv = ContentValues()
                             cv.put("cnfg_valtxt", cnfgValtxt)
                             cv.put("cnfg_ttip", cnfgTtip)
@@ -741,12 +745,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             keAndroid.update("tabla_aux", cv, "tabla= ?", arrayOf("ke_wcnf_conf"))
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            Toast.makeText(this, "Ocurrio algo en Config 1", Toast.LENGTH_LONG)
+                            Toast.makeText(this, "Evento en Config 1", Toast.LENGTH_LONG)
                                 .show()
                         }
                     }
                     keAndroid.delete("ke_wcnf_conf", "cnfg_activa= ?", arrayOf("0"))
-                    eliminarDocViejos(ConfigNube, keAndroid, "ke_wcnf_conf", "cnfg_idconfig ")
+                    eliminarDocViejos(configNube, keAndroid, "ke_wcnf_conf", "cnfg_idconfig ")
                     varAux++
                     sincronizacionVendedor()
                 } catch (e: JSONException) {
@@ -775,7 +779,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun fechaSincronizar(tabla: String): String {
         var resultado = "0001-01-01T01:01:01"
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla';", null)
         if (fechaUltmod.moveToFirst()) {
@@ -788,7 +792,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun bajarDatosExtra(url: String) {
         //System.out.println("Referencias -> " + URL);
         val refNube = ArrayList<String?>()
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -870,7 +874,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.tvDocumentos.text = "Documentos: Sincronizando"
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         //String fecha_error = ObtenerFechaPreError("limites");
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -1060,7 +1064,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun arrayDocumento(tabla: String, campo: String): ArrayList<String> {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val documentos = ArrayList<String>()
         val cursor = keAndroid.rawQuery("SELECT $campo FROM $tabla;", null)
         while (cursor.moveToNext()) {
@@ -1107,11 +1111,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             { response: JSONObject ->
                 try {
                     if (response.getString("limites") != "null") {
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
-                        var keAndroid = conn!!.writableDatabase
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        var keAndroid = conn.writableDatabase
                         val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "ke_limitart"
+                            keAndroid, "ke_limitart"
                         ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
                         val limites = response.getJSONArray("limites")
                         if (filas > 0) {
@@ -1291,7 +1294,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                             sincronizacionVendedor()
                         } else {
-                            keAndroid = conn!!.writableDatabase
+                            keAndroid = conn.writableDatabase
                             var jsonObject: JSONObject //creamos un objeto json vacio
                             for (i in 0 until limites.length()) {
                                 try {
@@ -1387,7 +1390,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun subirLimite() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         cursorLim =
             keAndroid.rawQuery("SELECT " + "kli_track, " + "kli_codven, " + "kli_codcli, " + "kli_codart, " + "kli_cant, " + "kli_fechahizo, " + "kli_fechavence " + "FROM ke_limitart" + " WHERE status = '1'  " + "AND kli_fechahizo >'" + fecha_sinc_limites + "'" + "AND kli_codven = '" + cod_usuario!!.trim { it <= ' ' } + "'",
                 null)
@@ -1424,11 +1427,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 try {
                     if (response.getString("pedidos") != "null") { // si la respuesta no viene vacia
                         //System.out.println("NO VINO NULA");
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        val keAndroid = conn!!.writableDatabase
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        val keAndroid = conn.writableDatabase
                         val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "ke_opti"
+                            keAndroid, "ke_opti"
                         ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
                         val pedidos = response.getJSONArray("pedidos")
 
@@ -1439,21 +1441,17 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 try {
                                     keAndroid.beginTransaction()
                                     jsonObject = pedidos.getJSONObject(i)
-                                    nropedido =
-                                        jsonObject.getString("kti_nroped").trim { it <= ' ' }
-                                    fechamodifi =
-                                        jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                                    numinterno = jsonObject.getString("kti_ndoc").trim { it <= ' ' }
-                                    kti_status =
-                                        jsonObject.getString("kti_status").trim { it <= ' ' }
-                                    ke_pedstatus =
-                                        jsonObject.getString("ke_pedstatus").trim { it <= ' ' }
+                                    val nropedido = jsonObject.getString("kti_nroped")
+                                    val fechamodifi = jsonObject.getString("fechamodifi")
+                                    val numinterno = jsonObject.getString("kti_ndoc")
+                                    val ktiStatus = jsonObject.getString("kti_status")
+                                    val kePedstatus = jsonObject.getString("ke_pedstatus")
                                     //System.out.println(nropedido);
                                     val actualizar = ContentValues()
                                     actualizar.put("kti_nroped", nropedido)
                                     actualizar.put("fechamodifi", fechamodifi)
-                                    actualizar.put("kti_status", kti_status)
-                                    actualizar.put("ke_pedstatus", ke_pedstatus)
+                                    actualizar.put("kti_status", ktiStatus)
+                                    actualizar.put("ke_pedstatus", kePedstatus)
                                     keAndroid.update(
                                         "ke_opti", actualizar, "kti_ndoc = ?", arrayOf(
                                             numinterno
@@ -1464,7 +1462,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 } catch (e: JSONException) {
                                     Toast.makeText(
                                         this@SincronizacionActivity,
-                                        "Error 2",
+                                        "Evento 2",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } finally {
@@ -1474,7 +1472,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             keAndroid.close()
                             binding.tvPedidosact.setTextColor(Color.rgb(62, 197, 58))
                             binding.tvPedidosact.text =
-                                "Pedidos Act: " + contadorpedidosactualizados
+                                "Pedidos Act: $contadorpedidosactualizados"
                             varAux++
                             progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                             progressDialog!!.setMessage("Pedidos act.$contadorpedidosactualizados")
@@ -1513,7 +1511,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados las fechas
                 // parametros.put("fecha_sinc", fecha_sinc);
                 return HashMap()
@@ -1534,234 +1532,65 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
                 try {
                     if (response.getString("usuario") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+                        //var keAndroid = conn.writableDatabase
+                        /*val filas = DatabaseUtils.queryNumEntries(
                             keAndroid,
                             "usuarios"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros*/
                         val usuario = response.getJSONArray("usuario")
 
                         //aqui valido las filas de la tabla de articulos en el telefono
-                        if (filas > 0) {
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until usuario.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = usuario.getJSONObject(i)
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    username = jsonObject.getString("username").trim { it <= ' ' }
-                                    password = jsonObject.getString("password").trim { it <= ' ' }
-                                    vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                                    almacen = jsonObject.getString("almacen").trim { it <= ' ' }
-                                    desactivo = jsonObject.getDouble("desactivo")
-                                    fechamodifi =
-                                        jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                                    ualterprec = jsonObject.getDouble("ualterprec")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("nombre", nombre)
-                                    actualizar.put("username", username)
-                                    actualizar.put("password", password)
-                                    actualizar.put("vendedor", vendedor)
-                                    actualizar.put("almacen", almacen)
-                                    actualizar.put("desactivo", desactivo)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    actualizar.put("ualterprec", ualterprec)
-                                    keAndroid.update("usuarios", actualizar, null, null)
 
+                        var jsonObject: JSONObject //creamos un objeto json vacio
+                        for (i in 0 until usuario.length()) { /*pongo todo en el objeto segun lo que venga */
+                            try {
+                                jsonObject = usuario.getJSONObject(i)
+                                val nombre = jsonObject.getString("nombre")
+                                val username = jsonObject.getString("username")
+                                val password = jsonObject.getString("password")
+                                val vendedor = jsonObject.getString("vendedor")
+                                val almacen = jsonObject.getString("almacen")
+                                val desactivo = jsonObject.getDouble("desactivo")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
+                                val ualterprec = jsonObject.getDouble("ualterprec")
 
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaUsuarios = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechausuarios = sdf.format(fechaUsuarios.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechausuarios)
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(applicationContext, "Error 3", Toast.LENGTH_LONG)
-                                        .show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(nombre) FROM usuarios WHERE vendedor = '$vendedor'",
-                                    null
+                                val cv = ContentValues()
+                                cv.put("nombre", nombre)
+                                cv.put("username", username)
+                                cv.put("password", password)
+                                cv.put("vendedor", vendedor)
+                                cv.put("almacen", almacen)
+                                cv.put("desactivo", desactivo)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("ualterprec", ualterprec)
+                                cv.put("empresa", codEmpresa)
+
+                                conn.updateJSONCamposVarios(
+                                    "usuarios",
+                                    cv,
+                                    "vendedor = ? AND empresa = ?",
+                                    arrayOf(vendedor, codEmpresa)
                                 )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = usuario.getJSONObject(i)
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        username =
-                                            jsonObject.getString("username").trim { it <= ' ' }
-                                        password =
-                                            jsonObject.getString("password").trim { it <= ' ' }
-                                        vendedor =
-                                            jsonObject.getString("vendedor").trim { it <= ' ' }
-                                        almacen = jsonObject.getString("almacen").trim { it <= ' ' }
-                                        desactivo = jsonObject.getDouble("desactivo")
-                                        fechamodifi =
-                                            jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                                        ualterprec = jsonObject.getDouble("ualterprec")
-                                        val actualizar = ContentValues()
-                                        actualizar.put("nombre", nombre)
-                                        actualizar.put("username", username)
-                                        actualizar.put("password", password)
-                                        actualizar.put("vendedor", vendedor)
-                                        actualizar.put("almacen", almacen)
-                                        actualizar.put("desactivo", desactivo)
-                                        actualizar.put("fechamodifi", fechamodifi)
-                                        actualizar.put("ualterprec", ualterprec)
-                                        keAndroid.update("usuarios", actualizar, null, null)
 
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaUsuarios = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechausuarios = sdf.format(fechaUsuarios.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechausuarios)
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 4",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
-                                } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = usuario.getJSONObject(i)
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        username =
-                                            jsonObject.getString("username").trim { it <= ' ' }
-                                        password =
-                                            jsonObject.getString("password").trim { it <= ' ' }
-                                        vendedor =
-                                            jsonObject.getString("vendedor").trim { it <= ' ' }
-                                        almacen = jsonObject.getString("almacen").trim { it <= ' ' }
-                                        desactivo = jsonObject.getDouble("desactivo")
-                                        fechamodifi =
-                                            jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                                        ualterprec = jsonObject.getDouble("ualterprec")
-                                        val insertar = ContentValues()
-                                        insertar.put("nombre", nombre)
-                                        insertar.put("username", username)
-                                        insertar.put("password", password)
-                                        insertar.put("vendedor", vendedor)
-                                        insertar.put("almacen", almacen)
-                                        insertar.put("desactivo", desactivo)
-                                        insertar.put("fechamodifi", fechamodifi)
-                                        insertar.put("ualterprec", ualterprec)
-                                        keAndroid.insert("usuarios", null, insertar)
+                                conn.updateTablaAux("usuarios", codEmpresa!!)
 
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaUsuarios = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechausuarios = sdf.format(fechaUsuarios.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechausuarios)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'usuarios'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 5",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
-                                }
+                                progressDialog!!.setMessage("Usuario: actualizado.")
+                                varAux++
+                                progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                                sincronizacionVendedor()
+
+                            } catch (e: JSONException) {
+                                Toast.makeText(applicationContext, "Error 3", Toast.LENGTH_LONG)
+                                    .show()
+                                progressDialog!!.setMessage("Usuario: No ha logrado sincronizar.")
+                                varAux++
+                                progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                                sincronizacionVendedor()
                             }
-                            keAndroid.close()
 
-                            // tv_estadosync.setTextColor(Color.rgb(62,197,58));
-                            //   tv_estadosync.setText("Subsectores Sincronizado");
-                            progressDialog!!.setMessage("Usuario actualizado")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
-
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until usuario.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = usuario.getJSONObject(i)
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    username = jsonObject.getString("username").trim { it <= ' ' }
-                                    password = jsonObject.getString("password").trim { it <= ' ' }
-                                    vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                                    almacen = jsonObject.getString("almacen").trim { it <= ' ' }
-                                    desactivo = jsonObject.getDouble("desactivo")
-                                    fechamodifi =
-                                        jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                                    ualterprec = jsonObject.getDouble("ualterprec")
-                                    val insertar = ContentValues()
-                                    insertar.put("nombre", nombre)
-                                    insertar.put("username", username)
-                                    insertar.put("password", password)
-                                    insertar.put("vendedor", vendedor)
-                                    insertar.put("almacen", almacen)
-                                    insertar.put("desactivo", desactivo)
-                                    insertar.put("fechamodifi", fechamodifi)
-                                    insertar.put("ualterprec", ualterprec)
-                                    keAndroid.insert("usuarios", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaUsuarios = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechausuarios = sdf.format(fechaUsuarios.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechausuarios)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'usuarios'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(applicationContext, "Error 6", Toast.LENGTH_LONG)
-                                        .show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                            }
-                            //    Toast.makeText(PrincipalActivity.this, "Subsectores descargados", Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            progressDialog!!.setMessage("Usuario: actualizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
                         }
+
                     } else if (response.getString("usuario") == "null") {
                         progressDialog!!.setMessage("Usuario: sin actualizar.")
                         varAux++
@@ -1769,7 +1598,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         sincronizacionVendedor()
                     }
                 } catch (e: JSONException) {
-                    e.printStackTrace()
+                    progressDialog!!.setMessage("Usuario: No ha logrado sincronizar.")
+                    varAux++
+                    progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                    sincronizacionVendedor()
                 }
             },
             Response.ErrorListener { error: VolleyError? ->
@@ -1798,8 +1630,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun bajarConfig(url: String) {
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         val fechaError = obtenerFechaPreError("config2")
-
-
         // tv_estadosync.setTextColor(Color.rgb(41,184,214));
         // tv_estadosync.setText("Sincronizando Co");
         val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
@@ -1809,259 +1639,63 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
                 try {
                     if (response.getString("config") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "config2"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                         val config = response.getJSONArray("config")
 
                         //aqui valido las filas de la tabla de articulos en el telefono
-                        if (filas > 0) {
                             var jsonObject: JSONObject //creamos un objeto json vacio
                             for (i in 0 until config.length()) { /*pongo todo en el objeto segun lo que venga */
                                 try {
-                                    keAndroid.beginTransaction()
+
                                     jsonObject = config.getJSONObject(i)
-                                    id_precio1 =
-                                        jsonObject.getString("id_precio1").trim { it <= ' ' }
-                                    id_precio2 =
-                                        jsonObject.getString("id_precio2").trim { it <= ' ' }
-                                    id_precio3 =
-                                        jsonObject.getString("id_precio3").trim { it <= ' ' }
-                                    id_precio4 =
-                                        jsonObject.getString("id_precio4").trim { it <= ' ' }
-                                    id_precio5 =
-                                        jsonObject.getString("id_precio5").trim { it <= ' ' }
-                                    id_precio6 =
-                                        jsonObject.getString("id_precio6").trim { it <= ' ' }
-                                    id_precio7 =
-                                        jsonObject.getString("id_precio7").trim { it <= ' ' }
-                                    val actualizar = ContentValues()
-                                    actualizar.put("id_precio1", id_precio1)
-                                    actualizar.put("id_precio2", id_precio2)
-                                    actualizar.put("id_precio3", id_precio3)
-                                    actualizar.put("id_precio4", id_precio4)
-                                    actualizar.put("id_precio5", id_precio5)
-                                    actualizar.put("id_precio6", id_precio6)
-                                    actualizar.put("id_precio7", id_precio7)
-                                    keAndroid.update("config2", actualizar, null, null)
+                                    val idPrecio1 = jsonObject.getString("id_precio1")
+                                    val idPrecio2 = jsonObject.getString("id_precio2")
+                                    val idPrecio3 = jsonObject.getString("id_precio3")
+                                    val idPrecio4 = jsonObject.getString("id_precio4")
+                                    val idPrecio5 = jsonObject.getString("id_precio5")
+                                    val idPrecio6 = jsonObject.getString("id_precio6")
+                                    val idPrecio7 = jsonObject.getString("id_precio7")
 
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaConfig = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechaconfig = sdf.format(fechaConfig.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechaconfig)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'config2'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(applicationContext, "Error 7", Toast.LENGTH_LONG)
-                                        .show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(id_precio1) FROM config2 WHERE id_precio1 = '$id_precio1'",
-                                    null
-                                )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = config.getJSONObject(i)
-                                        id_precio1 =
-                                            jsonObject.getString("id_precio1").trim { it <= ' ' }
-                                        id_precio2 =
-                                            jsonObject.getString("id_precio2").trim { it <= ' ' }
-                                        id_precio3 =
-                                            jsonObject.getString("id_precio3").trim { it <= ' ' }
-                                        id_precio4 =
-                                            jsonObject.getString("id_precio4").trim { it <= ' ' }
-                                        id_precio5 =
-                                            jsonObject.getString("id_precio5").trim { it <= ' ' }
-                                        id_precio6 =
-                                            jsonObject.getString("id_precio6").trim { it <= ' ' }
-                                        id_precio7 =
-                                            jsonObject.getString("id_precio7").trim { it <= ' ' }
-                                        val actualizar = ContentValues()
-                                        actualizar.put("id_precio1", id_precio1)
-                                        actualizar.put("id_precio2", id_precio2)
-                                        actualizar.put("id_precio3", id_precio3)
-                                        actualizar.put("id_precio4", id_precio4)
-                                        actualizar.put("id_precio5", id_precio5)
-                                        actualizar.put("id_precio6", id_precio6)
-                                        actualizar.put("id_precio7", id_precio7)
-                                        keAndroid.update("config2", actualizar, null, null)
+                                    val cv = ContentValues()
+                                    cv.put("id_precio1", idPrecio1)
+                                    cv.put("id_precio2", idPrecio2)
+                                    cv.put("id_precio3", idPrecio3)
+                                    cv.put("id_precio4", idPrecio4)
+                                    cv.put("id_precio5", idPrecio5)
+                                    cv.put("id_precio6", idPrecio6)
+                                    cv.put("id_precio7", idPrecio7)
+                                    cv.put("empresa", codEmpresa)
 
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaConfig = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
+                                    if (conn.validarExistenciaCamposVarios(
+                                            "config2", ArrayList(
+                                                mutableListOf("id_precio1", "empresa")
+                                            ), arrayListOf(idPrecio1, codEmpresa!!)
                                         )
-                                        val fechaconfig = sdf.format(fechaConfig.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechaconfig)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'config2'",
-                                            null
+                                    ) {
+                                        conn.updateJSONCamposVarios(
+                                            "config2",
+                                            cv,
+                                            "id_precio1 = ? AND empresa = ?",
+                                            arrayOf(idPrecio1, codEmpresa!!)
                                         )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 8",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
+                                    } else {
+                                        conn.insertJSON("config2", cv)
                                     }
-                                } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = config.getJSONObject(i)
-                                        id_precio1 =
-                                            jsonObject.getString("id_precio1").trim { it <= ' ' }
-                                        id_precio2 =
-                                            jsonObject.getString("id_precio2").trim { it <= ' ' }
-                                        id_precio3 =
-                                            jsonObject.getString("id_precio3").trim { it <= ' ' }
-                                        id_precio4 =
-                                            jsonObject.getString("id_precio4").trim { it <= ' ' }
-                                        id_precio5 =
-                                            jsonObject.getString("id_precio5").trim { it <= ' ' }
-                                        id_precio6 =
-                                            jsonObject.getString("id_precio6").trim { it <= ' ' }
-                                        id_precio7 =
-                                            jsonObject.getString("id_precio7").trim { it <= ' ' }
-                                        val insertar = ContentValues()
-                                        insertar.put("id_precio1", id_precio1)
-                                        insertar.put("id_precio2", id_precio2)
-                                        insertar.put("id_precio3", id_precio3)
-                                        insertar.put("id_precio4", id_precio4)
-                                        insertar.put("id_precio5", id_precio5)
-                                        insertar.put("id_precio6", id_precio6)
-                                        insertar.put("id_precio7", id_precio7)
-                                        keAndroid.insert("config2", null, insertar)
 
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaConfig = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechaconfig = sdf.format(fechaConfig.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechaconfig)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'config2'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 9",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
-                                }
-                            }
-                            keAndroid.close()
-                            progressDialog!!.setMessage("config. actualizada")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
-
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until config.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = config.getJSONObject(i)
-                                    id_precio1 =
-                                        jsonObject.getString("id_precio1").trim { it <= ' ' }
-                                    id_precio2 =
-                                        jsonObject.getString("id_precio2").trim { it <= ' ' }
-                                    id_precio3 =
-                                        jsonObject.getString("id_precio3").trim { it <= ' ' }
-                                    id_precio4 =
-                                        jsonObject.getString("id_precio4").trim { it <= ' ' }
-                                    id_precio5 =
-                                        jsonObject.getString("id_precio5").trim { it <= ' ' }
-                                    id_precio6 =
-                                        jsonObject.getString("id_precio6").trim { it <= ' ' }
-                                    id_precio7 =
-                                        jsonObject.getString("id_precio7").trim { it <= ' ' }
-                                    val insertar = ContentValues()
-                                    insertar.put("id_precio1", id_precio1)
-                                    insertar.put("id_precio2", id_precio2)
-                                    insertar.put("id_precio3", id_precio3)
-                                    insertar.put("id_precio4", id_precio4)
-                                    insertar.put("id_precio5", id_precio5)
-                                    insertar.put("id_precio6", id_precio6)
-                                    insertar.put("id_precio7", id_precio7)
-                                    keAndroid.insert("config2", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaConfig = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechaconfig = sdf.format(fechaConfig.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechaconfig)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'config2'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
                                 } catch (e: JSONException) {
                                     Toast.makeText(
-                                        applicationContext,
-                                        "Error 10",
-                                        Toast.LENGTH_LONG
+                                        applicationContext, "Evento 7", Toast.LENGTH_LONG
                                     ).show()
-                                    println("Error 10 -> $e")
-                                } finally {
-                                    keAndroid.endTransaction()
                                 }
                             }
-                            //    Toast.makeText(PrincipalActivity.this, "Subsectores descargados", Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
 
-                            // tv_estadosync.setTextColor(Color.rgb(62,197,58));
-                            // tv_estadosync.setText("Subsectores Sincronizado");
-                            progressDialog!!.setMessage("Configuración: Actualizando.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        }
+                        conn.updateTablaAux("config2", codEmpresa!!)
+
+                        progressDialog!!.setMessage("config. actualizada")
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        sincronizacionVendedor()
+
                     } else if (response.getString("config") == "null") {
                         progressDialog!!.setMessage("Configuración: Sin Actualizar.")
                         varAux++
@@ -2086,7 +1720,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados las fechas
                 // parametros.put("fecha_sinc", fecha_sinc);
                 return HashMap()
@@ -2110,294 +1744,79 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
                 try {
                     if (response.getString("vendedor") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
+                        //var keAndroid = conn.writableDatabase
+                        /*val filas = DatabaseUtils.queryNumEntries(
                             keAndroid,
                             "listvend"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        )*/ //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
                         val vendedorArray = response.getJSONArray("vendedor")
 
                         //aqui valido las filas de la tabla de articulos en el telefono
-                        if (filas > 0) {
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until vendedorArray.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = vendedorArray.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    telefonos = jsonObject.getString("telefonos").trim { it <= ' ' }
-                                    telefono_movil =
-                                        jsonObject.getString("telefono_movil").trim { it <= ' ' }
-                                    status = jsonObject.getDouble("status")
-                                    superves = jsonObject.getDouble("superves")
-                                    supervpor = jsonObject.getString("supervpor").trim { it <= ' ' }
-                                    sector = jsonObject.getString("sector").trim { it <= ' ' }
-                                    subcodigo = jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                    nivgcial = jsonObject.getDouble("nivgcial")
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("codigo", codigo)
-                                    actualizar.put("nombre", nombre)
-                                    actualizar.put("telefonos", telefonos)
-                                    actualizar.put("telefono_movil", telefono_movil)
-                                    actualizar.put("status", status)
-                                    actualizar.put("superves", superves)
-                                    actualizar.put("supervpor", supervpor)
-                                    actualizar.put("sector", sector)
-                                    actualizar.put("subcodigo", subcodigo)
-                                    actualizar.put("nivgcial", nivgcial)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    keAndroid.update(
+
+                        var jsonObject: JSONObject //creamos un objeto json vacio
+                        for (i in 0 until vendedorArray.length()) { /*pongo todo en el objeto segun lo que venga */
+                            try {
+                                jsonObject = vendedorArray.getJSONObject(i)
+                                val codigo = jsonObject.getString("codigo")
+                                val nombre = jsonObject.getString("nombre")
+                                val telefonos = jsonObject.getString("telefonos")
+                                val telefonoMovil = jsonObject.getString("telefono_movil")
+                                val status = jsonObject.getDouble("status")
+                                val superves = jsonObject.getDouble("superves")
+                                val supervpor = jsonObject.getString("supervpor")
+                                val sector = jsonObject.getString("sector")
+                                val subcodigo = jsonObject.getString("subcodigo")
+                                val nivgcial = jsonObject.getDouble("nivgcial")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
+
+                                val cv = ContentValues()
+                                cv.put("codigo", codigo)
+                                cv.put("nombre", nombre)
+                                cv.put("telefonos", telefonos)
+                                cv.put("telefono_movil", telefonoMovil)
+                                cv.put("status", status)
+                                cv.put("superves", superves)
+                                cv.put("supervpor", supervpor)
+                                cv.put("sector", sector)
+                                cv.put("subcodigo", subcodigo)
+                                cv.put("nivgcial", nivgcial)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("empresa", codEmpresa)
+
+                                if (conn.validarExistenciaCamposVarios(
+                                        "listvend", ArrayList(
+                                            mutableListOf("codigo", "empresa")
+                                        ), arrayListOf(codigo, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
                                         "listvend",
-                                        actualizar,
-                                        "codigo = '$codigo'",
-                                        null
+                                        cv,
+                                        "codigo = ? AND empresa = ?",
+                                        arrayOf(codigo, codEmpresa!!)
                                     )
-
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaListvend1 = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechaListvend = sdf.format(fechaListvend1.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechaListvend)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'listvend'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 11",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM listvend WHERE codigo = '$codigo'",
-                                    null
-                                )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = vendedorArray.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        telefonos =
-                                            jsonObject.getString("telefonos").trim { it <= ' ' }
-                                        telefono_movil = jsonObject.getString("telefono_movil")
-                                            .trim { it <= ' ' }
-                                        status = jsonObject.getDouble("status")
-                                        superves = jsonObject.getDouble("superves")
-                                        supervpor =
-                                            jsonObject.getString("supervpor").trim { it <= ' ' }
-                                        sector = jsonObject.getString("sector").trim { it <= ' ' }
-                                        subcodigo =
-                                            jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                        nivgcial = jsonObject.getDouble("nivgcial")
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val actualizar = ContentValues()
-                                        actualizar.put("codigo", codigo)
-                                        actualizar.put("nombre", nombre)
-                                        actualizar.put("telefonos", telefonos)
-                                        actualizar.put("telefono_movil", telefono_movil)
-                                        actualizar.put("status", status)
-                                        actualizar.put("superves", superves)
-                                        actualizar.put("supervpor", supervpor)
-                                        actualizar.put("sector", sector)
-                                        actualizar.put("subcodigo", subcodigo)
-                                        actualizar.put("nivgcial", nivgcial)
-                                        actualizar.put("fechamodifi", fechamodifi)
-                                        keAndroid.update(
-                                            "listvend",
-                                            actualizar,
-                                            "codigo = '$codigo'",
-                                            null
-                                        )
-
-
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaListvend1 = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechaListvend = sdf.format(fechaListvend1.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechaListvend)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'listvend'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                        contadorvend++
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 12",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
                                 } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = vendedorArray.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        telefonos =
-                                            jsonObject.getString("telefonos").trim { it <= ' ' }
-                                        telefono_movil = jsonObject.getString("telefono_movil")
-                                            .trim { it <= ' ' }
-                                        status = jsonObject.getDouble("status")
-                                        superves = jsonObject.getDouble("superves")
-                                        supervpor =
-                                            jsonObject.getString("supervpor").trim { it <= ' ' }
-                                        sector = jsonObject.getString("sector").trim { it <= ' ' }
-                                        subcodigo =
-                                            jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                        nivgcial = jsonObject.getDouble("nivgcial")
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val insertar = ContentValues()
-                                        insertar.put("codigo", codigo)
-                                        insertar.put("nombre", nombre)
-                                        insertar.put("telefonos", telefonos)
-                                        insertar.put("telefono_movil", telefono_movil)
-                                        insertar.put("status", status)
-                                        insertar.put("superves", superves)
-                                        insertar.put("supervpor", supervpor)
-                                        insertar.put("sector", sector)
-                                        insertar.put("subcodigo", subcodigo)
-                                        insertar.put("nivgcial", nivgcial)
-                                        insertar.put("fechamodifi", fechamodifi)
-                                        keAndroid.insert("listvend", null, insertar)
-
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaListvend1 = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechaListvend = sdf.format(fechaListvend1.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechaListvend)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'listvend'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                        contadorvend++
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 13",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
+                                    conn.insertJSON("listvend", cv)
                                 }
+                            } catch (e: JSONException) {
+                                Toast.makeText(
+                                    applicationContext, "Evento 11", Toast.LENGTH_LONG
+                                ).show()
                             }
-                            //Toast.makeText(PrincipalActivity.this, "vendedor Descargado", Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            // Clientes.setEnabled(true);
-                            binding.tvVendedor.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvVendedor.text = "Vendedor: " + contadorvend
-                            progressDialog!!.setMessage("Vendedor: $contadorvend")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
-
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until vendedorArray.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = vendedorArray.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    telefonos = jsonObject.getString("telefonos").trim { it <= ' ' }
-                                    telefono_movil =
-                                        jsonObject.getString("telefono_movil").trim { it <= ' ' }
-                                    status = jsonObject.getDouble("status")
-                                    superves = jsonObject.getDouble("superves")
-                                    supervpor = jsonObject.getString("supervpor").trim { it <= ' ' }
-                                    sector = jsonObject.getString("sector").trim { it <= ' ' }
-                                    subcodigo = jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                    nivgcial = jsonObject.getDouble("nivgcial")
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val insertar = ContentValues()
-                                    insertar.put("codigo", codigo)
-                                    insertar.put("nombre", nombre)
-                                    insertar.put("telefonos", telefonos)
-                                    insertar.put("telefono_movil", telefono_movil)
-                                    insertar.put("status", status)
-                                    insertar.put("superves", superves)
-                                    insertar.put("supervpor", supervpor)
-                                    insertar.put("sector", sector)
-                                    insertar.put("subcodigo", subcodigo)
-                                    insertar.put("nivgcial", nivgcial)
-                                    insertar.put("fechamodifi", fechamodifi)
-                                    keAndroid.insert("listvend", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de la tabla
-                                    val fechaListvend1 = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechaListvend = sdf.format(fechaListvend1.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechaListvend)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'listvend'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                    contadorvend++
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 14",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                            }
-                            // Toast.makeText(PrincipalActivity.this, "vendedor Descargado", Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            //  Clientes.setEnabled(true);
-                            binding.tvVendedor.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvVendedor.text = "Vendedor: " + contadorvend
-                            progressDialog!!.setMessage("Vendedor: $contadorvend")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
                         }
+
+                        conn.updateTablaAux("listvend", codEmpresa!!)
+
+                        //Toast.makeText(PrincipalActivity.this, "vendedor Descargado", Toast.LENGTH_SHORT).show();
+                        // Clientes.setEnabled(true);
+                        binding.tvVendedor.setTextColor(Color.rgb(62, 197, 58))
+                        binding.tvVendedor.text = "Vendedor: $contadorvend"
+                        progressDialog!!.setMessage("Vendedor: $contadorvend")
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        sincronizacionVendedor()
+
                     } else if (response.getString("vendedor") == "null") {
 
                         // Toast.makeText(getApplicationContext(), "No se recibieron mas datos", LENGTH_LONG).show(); /* si en la consulta no ncuentra nada
@@ -2432,7 +1851,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados las fechas
                 val parametros: MutableMap<String, String> = HashMap()
                 parametros["cod_usuario"] = cod_usuario!!
@@ -2457,7 +1876,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaArticulo() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'articulo'", null)
         fechaUltmod.moveToFirst()
@@ -2466,7 +1885,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaCliempre() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'cliempre'", null)
         fechaUltmod.moveToFirst()
@@ -2475,7 +1894,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaListvend() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'listvend'", null)
         fechaUltmod.moveToFirst()
@@ -2484,7 +1903,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaGrupos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'grupos'", null)
         fechaUltmod.moveToFirst()
@@ -2493,7 +1912,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaSubGrupos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod = keAndroid.rawQuery(
             "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'subgrupos'",
             null
@@ -2504,7 +1923,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaSectores() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'sectores'", null)
         fechaUltmod.moveToFirst()
@@ -2513,7 +1932,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaSubgrupos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod = keAndroid.rawQuery(
             "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'subgrupos'",
             null
@@ -2524,7 +1943,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaSubsectores() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod = keAndroid.rawQuery(
             "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'subsectores'",
             null
@@ -2535,7 +1954,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun getFechaLimites() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'limites'", null)
         fechaUltmod.moveToFirst()
@@ -2545,7 +1964,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     //-------------------------------
     private fun getFecha(tabla: String): String {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla';", null)
         var fecha = "0001-01-01T01:01:01"
@@ -2573,11 +1992,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
                 try {
                     if (response.getString("articulo") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
-                        var keAndroid = conn!!.writableDatabase
+                        //(applicationContext, "ke_android", null)
+                        var keAndroid = conn.writableDatabase
                         val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "articulo"
+                            keAndroid, "articulo"
                         ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
                         val articulo = response.getJSONArray("articulo")
 
@@ -2588,14 +2006,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 try {
                                     keAndroid.beginTransaction()
                                     jsonObject = articulo.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    grupo = jsonObject.getString("grupo").trim { it <= ' ' }
-                                    subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    marca = jsonObject.getString("marca").trim { it <= ' ' }
+                                    codigo = jsonObject.getString("codigo")
+                                    grupo = jsonObject.getString("grupo")
+                                    subgrupo = jsonObject.getString("subgrupo")
+                                    nombre = jsonObject.getString("nombre")
+                                    marca = jsonObject.getString("marca")
                                     referencia =
-                                        jsonObject.getString("referencia").trim { it <= ' ' }
-                                    unidad = jsonObject.getString("unidad").trim { it <= ' ' }
+                                        jsonObject.getString("referencia")
+                                    unidad = jsonObject.getString("unidad")
                                     precio1 = jsonObject.getDouble("precio1")
                                     precio2 = jsonObject.getDouble("precio2")
                                     precio3 = jsonObject.getDouble("precio3")
@@ -2610,7 +2028,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     vta_min = jsonObject.getDouble("vta_min")
                                     dctotope = jsonObject.getDouble("dctotope")
                                     enpreventa =
-                                        jsonObject.getString("enpreventa").trim { it <= ' ' }
+                                        jsonObject.getString("enpreventa")
                                     comprometido = jsonObject.getString("comprometido")
                                     vta_minenx = jsonObject.getString("vta_minenx")
                                     val vtaSolofac = jsonObject.getInt("vta_solofac")
@@ -2768,7 +2186,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         keAndroid.endTransaction()
                                     }
                                     binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
-                                    binding.tvArticulos.text = "Articulos:" + contadorart
+                                    binding.tvArticulos.text = "Articulos:$contadorart"
                                     progressDialog!!.setMessage("Articulos:$contadorart")
                                 } else {
                                     try {
@@ -2849,7 +2267,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         contadorart++
                                         keAndroid.setTransactionSuccessful()
                                         binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
-                                        binding.tvArticulos.text = "Articulos:" + contadorart
+                                        binding.tvArticulos.text = "Articulos:$contadorart"
                                         progressDialog!!.setMessage("Articulos:$contadorart")
                                     } catch (e: JSONException) {
                                         e.printStackTrace()
@@ -2865,8 +2283,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         } else {
 
                             //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 3)
+                            val conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                             keAndroid = conn.writableDatabase
                             var jsonObject: JSONObject //creamos un objeto json vacio
                             for (i in 0 until articulo.length()) { /*pongo todo en el objeto segun lo que venga */
@@ -2960,7 +2377,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             // Toast.makeText(PrincipalActivity.this, "Articulos descargados", Toast.LENGTH_SHORT).show();
                             keAndroid.close()
                             binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvArticulos.text = "Articulos: " + contadorart
+                            binding.tvArticulos.text = "Articulos: $contadorart"
                             progressDialog!!.setMessage("Articulos:$contadorart")
                             varAux++
                             progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
@@ -2999,7 +2416,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //-----
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados las fechas
                 val parametros: MutableMap<String, String> = HashMap()
                 parametros["fecha_sinc"] = fecha_sinc_articulo!!
@@ -3013,14 +2430,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun actualizarFechaError(fechaError: String) {
         val actualizarFecha = ContentValues()
         actualizarFecha.put("fchhn_ultmod", fechaError)
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         keAndroid.update("tabla_aux", actualizarFecha, "tabla = 'articulo'", null)
         keAndroid.close()
     }
 
     private fun obtenerFechaPreError(tabla: String): String {
-        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
-        val keAndroid = conn!!.writableDatabase
+        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        val keAndroid = conn.writableDatabase
         val cursor =
             keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla'", null)
         cursor.moveToFirst()
@@ -3079,7 +2496,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             //System.out.println("Sincronizacion Exitosa");
 
                             //Guardado de la ultima sincronnizaion en la base de datos
-                            val keAndroid = conn!!.writableDatabase
+                            val keAndroid = conn.writableDatabase
                             try {
                                 keAndroid.beginTransaction()
                                 val fechaBdd =
@@ -3122,7 +2539,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         sincronizacionVendedor()
     }
 
-    private fun bajarArticulos3(URL: String) {
+    private fun bajarArticulos3(url: String) {
         //System.out.println("Este es el URL -> " + URL);
         progressDialog!!.setMessage("Sincronizando articulos")
         //OJO AQUI QUE HAY 2 UPDATE Y SI SE ELIMINA 1 SE JODE TODA LA VAINA
@@ -3134,7 +2551,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         contadorart = 0
         //Objeto que baja los articulos
         val jsonObjectRequest =
-            JsonObjectRequest(Request.Method.GET, URL, null, { response: JSONObject ->
+            JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
                     if (response.getString("articulo") != "null") {
                         val articulo = response.getJSONArray("articulo")
@@ -3192,19 +2609,19 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("vta_minenx", vta_minenx)
                             cv.put("vta_solofac", vtaSolofac)
                             cv.put("vta_solone", vtaSolone)
-                            if (!conn!!.validarExistencia("articulo", "codigo", codigo!!)) {
-                                conn!!.insertJSON("articulo", cv)
+                            if (!conn.validarExistencia("articulo", "codigo", codigo!!)) {
+                                conn.insertJSON("articulo", cv)
                                 //System.out.println("INSERT ->" + codigo);
                             } else {
-                                conn!!.updateJSON("articulo", cv, "codigo", codigo!!)
+                                conn.updateJSON("articulo", cv, "codigo", codigo!!)
                                 //System.out.println("UPDATE ->" + codigo);
                             }
                             contadorart++
                         }
-                        conn!!.updateTablaAux("articulo")
+                        conn.updateTablaAux("articulo", codEmpresa!!)
                         binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
-                        binding.tvArticulos.text = "Articulos: " + contadorart
-                        progressDialog!!.setMessage("Articulos:" + contadorart)
+                        binding.tvArticulos.text = "Articulos: $contadorart"
+                        progressDialog!!.setMessage("Articulos:$contadorart")
                         varAux++
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
@@ -3268,9 +2685,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //Verificacion de que la repuesta de la API no sea nula
                 if (response != null) {
                     //Variable que guarda la coexion
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+                    //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     //Objeto que creara las sentencias SQL
-                    val keAndroid = conn!!.writableDatabase
+                    val keAndroid = conn.writableDatabase
                     //Creacion del objeto JSON que contendra la descomposicion del array JSON enviada por el servidor
                     var jsonObject: JSONObject
                     //Descomposicion del array JSON enviada por el servidor
@@ -3384,8 +2801,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     }
                     keAndroid.close()
                     binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
-                    binding.tvArticulos.text = "Articulos: " + contadorart
-                    progressDialog!!.setMessage("Articulos:" + contadorart)
+                    binding.tvArticulos.text = "Articulos: $contadorart"
+                    progressDialog!!.setMessage("Articulos:$contadorart")
                     varAux++
                     progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                     sincronizacionVendedor()
@@ -3407,7 +2824,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 //finalmente, estos son los parametros que le enviaremos al webservice, partiendo
                 // de las variables
                 //donde estan guardados las fechas
@@ -3432,7 +2849,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarClientes(url: String) {
-        println("Cliente -> $url")
         //final ArrayList<String> documentosBDD = arrayDocumento();
         val clientesNube = ArrayList<String?>()
         progressDialog!!.setMessage("Sincronizando Documentos")
@@ -3440,7 +2856,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.tvDocumentos.text = "Documentos: Sincronizando"
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         //String fecha_error = ObtenerFechaPreError("limites");
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -3450,21 +2866,20 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         for (i in 0 until clientes.length()) {
                             val jsonObject = clientes.getJSONObject(i)
                             try {
-                                keAndroid.beginTransaction()
-                                codigo = jsonObject.getString("codigo")
-                                nombre = jsonObject.getString("nombre")
-                                direccion = jsonObject.getString("direccion")
-                                telefonos = jsonObject.getString("telefonos")
-                                perscont = jsonObject.getString("perscont")
-                                vendedor = jsonObject.getString("vendedor")
-                                contribespecial = jsonObject.getDouble("contribespecial")
-                                status = jsonObject.getDouble("status")
-                                sector = jsonObject.getString("sector")
-                                subcodigo = jsonObject.getString("subcodigo")
-                                fechamodifi = jsonObject.getString("fechamodifi")
-                                precio = jsonObject.getDouble("precio")
-                                kne_activa = jsonObject.getString("kne_activa")
-                                kne_mtomin = jsonObject.getDouble("kne_mtomin")
+                                val codigo = jsonObject.getString("codigo")
+                                val nombre = jsonObject.getString("nombre")
+                                val direccion = jsonObject.getString("direccion")
+                                val telefonos = jsonObject.getString("telefonos")
+                                val perscont = jsonObject.getString("perscont")
+                                val vendedor = jsonObject.getString("vendedor")
+                                val contribespecial = jsonObject.getDouble("contribespecial")
+                                val status = jsonObject.getDouble("status")
+                                val sector = jsonObject.getString("sector")
+                                val subcodigo = jsonObject.getString("subcodigo")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
+                                val precio = jsonObject.getDouble("precio")
+                                val kneActiva = jsonObject.getString("kne_activa")
+                                val kneMtomin = jsonObject.getDouble("kne_mtomin")
                                 val noemifac = jsonObject.getInt("noemifac")
                                 val noeminota = jsonObject.getInt("noeminota")
                                 val fchultvta = jsonObject.getString("fchultvta")
@@ -3480,70 +2895,68 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val limcred = jsonObject.getDouble("limcred")
                                 val fchcrea = jsonObject.getString("fchcrea")
                                 val email = jsonObject.getString("email")
+
                                 clientesNube.add(codigo)
-                                val contenedor = ContentValues()
-                                contenedor.put("codigo", codigo)
-                                contenedor.put("nombre", nombre)
-                                contenedor.put("direccion", direccion)
-                                contenedor.put("telefonos", telefonos)
-                                contenedor.put("perscont", perscont)
-                                contenedor.put("vendedor", vendedor)
-                                contenedor.put("contribespecial", contribespecial)
-                                contenedor.put("status", status)
-                                contenedor.put("sector", sector)
-                                contenedor.put("subcodigo", subcodigo)
-                                contenedor.put("fechamodifi", fechamodifi)
-                                contenedor.put("precio", precio)
-                                contenedor.put("kne_activa", kne_activa)
-                                contenedor.put("kne_mtomin", kne_mtomin)
-                                contenedor.put("noemifac", noemifac)
-                                contenedor.put("noeminota", noeminota)
-                                contenedor.put("fchultvta", fchultvta)
-                                contenedor.put("mtoultvta", mtoultvta)
-                                contenedor.put("prcdpagdia", prcdpagdia)
-                                contenedor.put("promdiasp", promdiasp)
-                                contenedor.put("riesgocrd", riesgocrd)
-                                contenedor.put("cantdocs", cantdocs)
-                                contenedor.put("totmtodocs", totmtodocs)
-                                contenedor.put("prommtodoc", prommtodoc)
-                                contenedor.put("diasultvta", diasultvta)
-                                contenedor.put("promdiasvta", promdiasvta)
-                                contenedor.put("limcred", limcred)
-                                contenedor.put("fchcrea", fchcrea)
-                                contenedor.put("email", email)
-                                val qcodigoLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM cliempre WHERE codigo = '$codigo';",
-                                    null
-                                )
-                                var codigoExistente = 0
-                                if (qcodigoLocal.moveToFirst()) {
-                                    codigoExistente = qcodigoLocal.getInt(0)
-                                }
-                                qcodigoLocal.close()
-                                if (codigoExistente > 0) {
-                                    //System.out.println("UPDATE " + documento);
-                                    keAndroid.update(
-                                        "cliempre",
-                                        contenedor,
-                                        "codigo= ?",
-                                        arrayOf(codigo)
+
+                                val cv = ContentValues()
+                                cv.put("codigo", codigo)
+                                cv.put("nombre", nombre)
+                                cv.put("direccion", direccion)
+                                cv.put("telefonos", telefonos)
+                                cv.put("perscont", perscont)
+                                cv.put("vendedor", vendedor)
+                                cv.put("contribespecial", contribespecial)
+                                cv.put("status", status)
+                                cv.put("sector", sector)
+                                cv.put("subcodigo", subcodigo)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("precio", precio)
+                                cv.put("kne_activa", kneActiva)
+                                cv.put("kne_mtomin", kneMtomin)
+                                cv.put("noemifac", noemifac)
+                                cv.put("noeminota", noeminota)
+                                cv.put("fchultvta", fchultvta)
+                                cv.put("mtoultvta", mtoultvta)
+                                cv.put("prcdpagdia", prcdpagdia)
+                                cv.put("promdiasp", promdiasp)
+                                cv.put("riesgocrd", riesgocrd)
+                                cv.put("cantdocs", cantdocs)
+                                cv.put("totmtodocs", totmtodocs)
+                                cv.put("prommtodoc", prommtodoc)
+                                cv.put("diasultvta", diasultvta)
+                                cv.put("promdiasvta", promdiasvta)
+                                cv.put("limcred", limcred)
+                                cv.put("fchcrea", fchcrea)
+                                cv.put("email", email)
+                                cv.put("empresa", codEmpresa)
+
+                                if (conn.validarExistenciaCamposVarios(
+                                        "cliempre", ArrayList(
+                                            mutableListOf("codigo", "empresa")
+                                        ), arrayListOf(codigo, codEmpresa!!)
                                     )
-                                } else if (codigoExistente == 0) {
-                                    //System.out.println("INSERT " + documento);
-                                    keAndroid.insert("cliempre", null, contenedor)
+                                ) {
+                                    conn.updateJSONCamposVarios(
+                                        "cliempre",
+                                        cv,
+                                        "codigo = ? AND empresa = ?",
+                                        arrayOf(codigo, codEmpresa!!)
+                                    )
+                                } else {
+                                    conn.insertJSON("cliempre", cv)
                                 }
+
                                 countDoc++
-                                keAndroid.setTransactionSuccessful()
                             } catch (e: JSONException) {
-                                Toast.makeText(applicationContext, "Error 16", Toast.LENGTH_LONG)
+                                Toast.makeText(applicationContext, "Evento 16", Toast.LENGTH_LONG)
                                     .show()
                                 e.printStackTrace()
-                            } finally {
-                                keAndroid.endTransaction()
                             }
                         }
                         keAndroid.delete("cliempre", "status= ?", arrayOf("2"))
                         eliminarDocViejos(clientesNube, keAndroid, "cliempre", "codigo")
+                        conn.updateTablaAux("cliempre", codEmpresa!!)
+
                         binding.tvCliente.setTextColor(Color.rgb(62, 197, 58))
                         binding.tvCliente.text = "Clientes: $countDoc"
                         progressDialog!!.setMessage("Clientes: $countDoc")
@@ -3949,217 +3362,62 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             Method.GET,
             url,
             null,
-            { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
+            { response: JSONObject ->  //a traves de un json array request, traemos la informacion
+                // que viene del webservice
                 try {
                     if (response.getString("grupos") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "grupos"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                         val grupos = response.getJSONArray("grupos")
 
                         //aqui valido las filas de la tabla de sectores en el telefono
-                        if (filas > 0) {
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until grupos.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = grupos.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("codigo", codigo)
-                                    actualizar.put("nombre", nombre)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    keAndroid.update(
+                        var jsonObject: JSONObject //creamos un objeto json vacio
+                        for (i in 0 until grupos.length()) { /*pongo todo en el objeto segun lo que venga */
+                            try {
+
+                                jsonObject = grupos.getJSONObject(i)
+                                val codigo = jsonObject.getString("codigo")
+                                val nombre = jsonObject.getString("nombre")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
+
+                                val cv = ContentValues()
+                                cv.put("codigo", codigo)
+                                cv.put("nombre", nombre)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("empresa", codEmpresa)
+
+                                if (conn.validarExistenciaCamposVarios(
+                                        "grupos", ArrayList(
+                                            mutableListOf("codigo", "empresa")
+                                        ), arrayListOf(codigo, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
                                         "grupos",
-                                        actualizar,
-                                        "codigo = '$codigo'",
-                                        null
+                                        cv,
+                                        "codigo = ? AND empresa = ?",
+                                        arrayOf(codigo, codEmpresa!!)
                                     )
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaGrupos = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechagrupos = sdf.format(fechaGrupos.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechagrupos)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'grupos'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 19",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM grupos WHERE codigo = '$codigo'",
-                                    null
-                                )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = grupos.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val actualizar = ContentValues()
-                                        actualizar.put("codigo", codigo)
-                                        actualizar.put("nombre", nombre)
-                                        actualizar.put("fechamodifi", fechamodifi)
-                                        keAndroid.update(
-                                            "grupos",
-                                            actualizar,
-                                            "codigo = '$codigo'",
-                                            null
-                                        )
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaGrupos = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechagrupos = sdf.format(fechaGrupos.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechagrupos)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'grupos'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            e.message,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
                                 } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = grupos.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val insertar = ContentValues()
-                                        insertar.put("codigo", codigo)
-                                        insertar.put("nombre", nombre)
-                                        insertar.put("fechamodifi", fechamodifi)
-                                        keAndroid.insert("grupos", null, insertar)
-
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaGrupos = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechagrupos = sdf.format(fechaGrupos.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechagrupos)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'grupos'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 20",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
+                                    conn.insertJSON("grupos", cv)
                                 }
+                            } catch (e: JSONException) {
+                                Toast.makeText(
+                                    applicationContext, "Evento 19", Toast.LENGTH_LONG
+                                ).show()
                             }
-                            /// Toast.makeText(PrincipalActivity.this, "grupos Descargados", Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            //  Clientes.setEnabled(true);
-                            binding.tvGrupos.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvGrupos.text = "Grupos: Sincronizado"
-                            progressDialog!!.setMessage("Grupos act.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
-
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until grupos.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = grupos.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val insertar = ContentValues()
-                                    insertar.put("codigo", codigo)
-                                    insertar.put("nombre", nombre)
-                                    insertar.put("fechamodifi", fechamodifi)
-                                    keAndroid.insert("grupos", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaGrupos = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechagrupos = sdf.format(fechaGrupos.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechagrupos)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'grupos'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 21",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                            }
-                            //   Toast.makeText(PrincipalActivity.this, "grupos Descargados",
-                            //   Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            // Clientes.setEnabled(true);
-                            binding.tvGrupos.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvGrupos.text = "Grupos: Sincronizado"
-                            progressDialog!!.setMessage("Grupos act.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
                         }
+
+                        conn.updateTablaAux("grupos", codEmpresa!!)
+
+                        /// Toast.makeText(PrincipalActivity.this, "grupos Descargados", Toast.LENGTH_SHORT).show();
+                        //  Clientes.setEnabled(true);
+                        binding.tvGrupos.setTextColor(Color.rgb(62, 197, 58))
+                        binding.tvGrupos.text = "Grupos: Sincronizado"
+                        progressDialog!!.setMessage("Grupos act.")
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        sincronizacionVendedor()
+
                     } else if (response.getString("grupos") == "null") {
 
                         //Toast.makeText(getApplicationContext(), "No se recibieron mas datos", LENGTH_LONG).show();
@@ -4195,7 +3453,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 //finalmente, estos son los parametros que le enviaremos al webservice,
                 // partiendo de las variables
                 //donde estan guardados las fechas
@@ -4221,227 +3479,57 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
                 try {
                     if (response.getString("subgrupo") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "subgrupos"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                         val subgrupoArray = response.getJSONArray("subgrupo")
 
                         //aqui valido las filas de la tabla de articulos en el telefono
-                        if (filas > 0) {
                             var jsonObject: JSONObject //creamos un objeto json vacio
                             for (i in 0 until subgrupoArray.length()) { /*pongo todo en el objeto segun lo que venga */
                                 try {
-                                    keAndroid.beginTransaction()
                                     jsonObject = subgrupoArray.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    subcodigo = jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("codigo", codigo)
-                                    actualizar.put("nombre", nombre)
-                                    actualizar.put("subcodigo", subcodigo)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    keAndroid.update(
-                                        "subgrupos",
-                                        actualizar,
-                                        "codigo = '$codigo'",
-                                        null
-                                    )
+                                    val codigo = jsonObject.getString("codigo")
+                                    val subcodigo = jsonObject.getString("subcodigo")
+                                    val nombre = jsonObject.getString("nombre")
+                                    val fechamodifi = jsonObject.getString("fechamodifi")
 
+                                    val cv = ContentValues()
+                                    cv.put("codigo", codigo)
+                                    cv.put("nombre", nombre)
+                                    cv.put("subcodigo", subcodigo)
+                                    cv.put("fechamodifi", fechamodifi)
+                                    cv.put("empresa", codEmpresa)
 
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaSubgrupos = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechasubgrupos = sdf.format(fechaSubgrupos.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechasubgrupos)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'subgrupos'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 22",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM subgrupos WHERE codigo = '$codigo'",
-                                    null
-                                )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = subgrupoArray.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        subcodigo =
-                                            jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val actualizar = ContentValues()
-                                        actualizar.put("codigo", codigo)
-                                        actualizar.put("nombre", nombre)
-                                        actualizar.put("subcodigo", subcodigo)
-                                        actualizar.put("fechamodifi", fechamodifi)
-                                        keAndroid.update(
+                                    if (conn.validarExistenciaCamposVarios(
+                                            "subgrupos", ArrayList(
+                                                mutableListOf("codigo", "subcodigo", "empresa")
+                                            ), arrayListOf(codigo, subcodigo, codEmpresa!!)
+                                        )
+                                    ) {
+                                        conn.updateJSONCamposVarios(
                                             "subgrupos",
-                                            actualizar,
-                                            "codigo = '$codigo'",
-                                            null
+                                            cv,
+                                            "codigo = ? AND subcodigo = ? AND empresa = ?",
+                                            arrayOf(codigo, subcodigo, codEmpresa!!)
                                         )
-
-
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaSubgrupos = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechasubgrupos = sdf.format(fechaSubgrupos.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechasubgrupos)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'subgrupos'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 23",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
+                                    } else {
+                                        conn.insertJSON("subgrupos", cv)
                                     }
-                                } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = subgrupoArray.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        subcodigo =
-                                            jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                        nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val insertar = ContentValues()
-                                        insertar.put("codigo", codigo)
-                                        insertar.put("subcodigo", subcodigo)
-                                        insertar.put("nombre", nombre)
-                                        insertar.put("fechamodifi", fechamodifi)
-                                        keAndroid.insert("subgrupos", null, insertar)
 
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaSubgrupos = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechasubgrupos = sdf.format(fechaSubgrupos.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechasubgrupos)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'subgrupos'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 24",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
-                                }
-                            }
-                            keAndroid.close()
-                            //  Catalogo.setEnabled(true);
-                            binding.tvSubgrupos.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvSubgrupos.text = "Info. Adicional: Sincronizado."
-                            progressDialog!!.setMessage("Info. Adicional: Sincronizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
-
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until subgrupoArray.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = subgrupoArray.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    subcodigo = jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                    nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val insertar = ContentValues()
-                                    insertar.put("codigo", codigo)
-                                    insertar.put("subcodigo", subcodigo)
-                                    insertar.put("nombre", nombre)
-                                    insertar.put("fechamodifi", fechamodifi)
-                                    keAndroid.insert("subgrupos", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaSubgrupos = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechasubgrupos = sdf.format(fechaSubgrupos.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechasubgrupos)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'subgrupos'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
                                 } catch (e: JSONException) {
                                     Toast.makeText(
-                                        applicationContext,
-                                        "Error 25",
-                                        Toast.LENGTH_LONG
+                                        applicationContext, "Evento 22", Toast.LENGTH_LONG
                                     ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
                                 }
                             }
-                            //   Toast.makeText(PrincipalActivity.this, "SubGrupos descargados",
-                            //   Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            // Catalogo.setEnabled(true);
-                            binding.tvSubgrupos.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvSubgrupos.text = "Info. Adicional: Sincronizado."
-                            progressDialog!!.setMessage("Info. Adicional: Sincronizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        }
+                        conn.updateTablaAux("subgrupos", codEmpresa!!)
+
+                        //  Catalogo.setEnabled(true);
+                        binding.tvSubgrupos.setTextColor(Color.rgb(62, 197, 58))
+                        binding.tvSubgrupos.text = "Info. Adicional: Sincronizado."
+                        progressDialog!!.setMessage("Info. Adicional: Sincronizado.")
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        sincronizacionVendedor()
                     } else if (response.getString("subgrupo") == "null") {
 
                         //Toast.makeText(getApplicationContext(), "No se recibieron mas datos", LENGTH_LONG).show();
@@ -4461,9 +3549,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 }
             },
             Response.ErrorListener { error: VolleyError? ->
-                if (error != null) {
-                    error.printStackTrace()
-                }
+                error?.printStackTrace()
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -4479,7 +3565,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 //finalmente, estos son los parametros que le enviaremos al webservice,
                 // partiendo de las variables
                 //donde estan guardados las fechas
@@ -4507,212 +3593,59 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 // que viene del webservice
                 try {
                     if (response.getString("sector") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "sectores"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+
                         val sector = response.getJSONArray("sector")
 
                         //aqui valido las filas de la tabla de sectores en el telefono
-                        if (filas > 0) {
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until sector.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = sector.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    zona = jsonObject.getString("zona").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("codigo", codigo)
-                                    actualizar.put("zona", zona)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    keAndroid.update(
+                        var jsonObject: JSONObject //creamos un objeto json vacio
+                        for (i in 0 until sector.length()) { /*pongo todo en el objeto segun lo que venga */
+                            try {
+                                jsonObject = sector.getJSONObject(i)
+                                val codigo = jsonObject.getString("codigo")
+                                val zona = jsonObject.getString("zona")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
+
+                                val cv = ContentValues()
+                                cv.put("codigo", codigo)
+                                cv.put("zona", zona)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("empresa", codEmpresa)
+
+                                if (conn.validarExistenciaCamposVarios(
+                                        "sectores", ArrayList(
+                                            mutableListOf("codigo", "empresa")
+                                        ), arrayListOf(codigo, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
                                         "sectores",
-                                        actualizar,
-                                        "codigo = '$codigo'",
-                                        null
+                                        cv,
+                                        "codigo = ? AND empresa = ?",
+                                        arrayOf(codigo, codEmpresa!!)
                                     )
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaSectores1 = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechaSectores = sdf.format(fechaSectores1.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechaSectores)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'sectores'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 26",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM sectores WHERE codigo = '$codigo'",
-                                    null
-                                )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = sector.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        zona = jsonObject.getString("zona").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val actualizar = ContentValues()
-                                        actualizar.put("codigo", codigo)
-                                        actualizar.put("zona", zona)
-                                        actualizar.put("fechamodifi", fechamodifi)
-                                        keAndroid.update(
-                                            "sectores",
-                                            actualizar,
-                                            "codigo = '$codigo'",
-                                            null
-                                        )
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaSectores1 = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechaSectores = sdf.format(fechaSectores1.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechaSectores)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'sectores'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 27",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
                                 } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = sector.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        zona = jsonObject.getString("zona").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val insertar = ContentValues()
-                                        insertar.put("codigo", codigo)
-                                        insertar.put("zona", zona)
-                                        insertar.put("fechamodifi", fechamodifi)
-                                        keAndroid.insert("sectores", null, insertar)
-
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaSectores1 = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechaSectores = sdf.format(fechaSectores1.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechaSectores)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'sectores'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 28",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
+                                    conn.insertJSON("sectores", cv)
                                 }
-                            }
-                            // Toast.makeText(PrincipalActivity.this, "Sectores Descargados",
-                            // Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            binding.tvSector.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvSector.text = "Zona: Sincronizado."
-                            progressDialog!!.setMessage("Zona: Sincronizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
 
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 3)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until sector.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = sector.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    zona = jsonObject.getString("zona").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val insertar = ContentValues()
-                                    insertar.put("codigo", codigo)
-                                    insertar.put("zona", zona)
-                                    insertar.put("fechamodifi", fechamodifi)
-                                    keAndroid.insert("sectores", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaSectores1 = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechaSectores = sdf.format(fechaSectores1.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechaSectores)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'sectores'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 29",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
+                            } catch (e: JSONException) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Evento 26",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
-                            // Toast.makeText(PrincipalActivity.this, "Sectores Descargados", Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            binding.tvSector.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvSector.text = "Zona: Sincronizado."
-                            progressDialog!!.setMessage("Zona: Sincronizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
                         }
+                        conn.updateTablaAux("sectores", codEmpresa!!)
+
+                        // Toast.makeText(PrincipalActivity.this, "Sectores Descargados",
+                        // Toast.LENGTH_SHORT).show();
+                        binding.tvSector.setTextColor(Color.rgb(62, 197, 58))
+                        binding.tvSector.text = "Zona: Sincronizado."
+                        progressDialog!!.setMessage("Zona: Sincronizado.")
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        sincronizacionVendedor()
                     } else if (response.getString("sector") == "null") {
 
                         //Toast.makeText(getApplicationContext(), "No se recibieron mas datos", LENGTH_LONG).show(); /* si en la consulta no ncuentra nada
@@ -4744,7 +3677,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 //finalmente, estos son los parametros que le enviaremos al webservice, partiendo
                 // de las variables
                 //donde estan guardados las fechas
@@ -4772,223 +3705,60 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 // que viene del webservice
                 try {
                     if (response.getString("subsector") != "null") { // si la respuesta no viene vacia
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        var keAndroid = conn!!.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid,
-                            "subsectores"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+
                         val subsectorArray = response.getJSONArray("subsector")
 
                         //aqui valido las filas de la tabla de articulos en el telefono
-                        if (filas > 0) {
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until subsectorArray.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = subsectorArray.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    subcodigo = jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                    subsector = jsonObject.getString("subsector").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("codigo", codigo)
-                                    actualizar.put("subsector", subsector)
-                                    actualizar.put("subcodigo", subcodigo)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    keAndroid.update(
+                        var jsonObject: JSONObject //creamos un objeto json vacio
+                        for (i in 0 until subsectorArray.length()) { /*pongo todo en el objeto segun lo que venga */
+                            try {
+                                jsonObject = subsectorArray.getJSONObject(i)
+                                val codigo = jsonObject.getString("codigo")
+                                val subcodigo = jsonObject.getString("subcodigo")
+                                val subsector = jsonObject.getString("subsector")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
+
+                                val cv = ContentValues()
+                                cv.put("codigo", codigo)
+                                cv.put("subsector", subsector)
+                                cv.put("subcodigo", subcodigo)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("empresa", codEmpresa)
+
+                                if (conn.validarExistenciaCamposVarios(
+                                        "subsectores", ArrayList(
+                                            mutableListOf("codigo", "empresa")
+                                        ), arrayListOf(codigo, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
                                         "subsectores",
-                                        actualizar,
-                                        "codigo = '$codigo'",
-                                        null
+                                        cv,
+                                        "codigo = ? AND empresa = ?",
+                                        arrayOf(codigo, codEmpresa!!)
                                     )
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaSubsectores = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechasubsectores = sdf.format(fechaSubsectores.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechasubsectores)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'subsectores'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 30",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                                val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM subsectores WHERE codigo = '$codigo'",
-                                    null
-                                )
-                                codigoEnLocal.moveToFirst()
-                                val codigoExistente = codigoEnLocal.getInt(0)
-                                codigoEnLocal.close()
-                                if (codigoExistente > 0) {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = subsectorArray.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        subcodigo =
-                                            jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                        subsector =
-                                            jsonObject.getString("subsector").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val actualizar = ContentValues()
-                                        actualizar.put("codigo", codigo)
-                                        actualizar.put("subsector", subsector)
-                                        actualizar.put("subcodigo", subcodigo)
-                                        actualizar.put("fechamodifi", fechamodifi)
-                                        keAndroid.update(
-                                            "subsectores",
-                                            actualizar,
-                                            "codigo = '$codigo'",
-                                            null
-                                        )
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaSubsectores = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechasubsectores = sdf.format(fechaSubsectores.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechasubsectores)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'subsectores'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error 31",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
                                 } else {
-                                    try {
-                                        keAndroid.beginTransaction()
-                                        jsonObject = subsectorArray.getJSONObject(i)
-                                        codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                        subcodigo =
-                                            jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                        subsector =
-                                            jsonObject.getString("subsector").trim { it <= ' ' }
-                                        fechamodifi = jsonObject.getString("fechamodifi")
-                                        val insertar = ContentValues()
-                                        insertar.put("codigo", codigo)
-                                        insertar.put("subsector", subsector)
-                                        insertar.put("subcodigo", subcodigo)
-                                        insertar.put("fechamodifi", fechamodifi)
-                                        keAndroid.insert("subsectores", null, insertar)
-
-                                        //actualizamos la fecha de la tabla de
-                                        val fechaSubsectores = Calendar.getInstance()
-                                        val sdf = SimpleDateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss",
-                                            Locale.getDefault()
-                                        )
-                                        val fechasubsectores = sdf.format(fechaSubsectores.time)
-                                        val actualizarFecha = ContentValues()
-                                        actualizarFecha.put("fchhn_ultmod", fechasubsectores)
-                                        keAndroid.update(
-                                            "tabla_aux",
-                                            actualizarFecha,
-                                            "tabla = 'subsectores'",
-                                            null
-                                        )
-                                        keAndroid.setTransactionSuccessful()
-                                    } catch (e: JSONException) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            e.message,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } finally {
-                                        keAndroid.endTransaction()
-                                    }
+                                    conn.insertJSON("subsectores", cv)
                                 }
+                            } catch (e: JSONException) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Evento 30",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
-                            keAndroid.close()
-                            binding.tvSubsector.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvSubsector.text = "Ruta: Sincronizado."
-                            progressDialog!!.setMessage("Ruta: Sincronizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                        } else {
-
-                            //si no hay nada, hago un insert
-                            val conn =
-                                AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                            keAndroid = conn.writableDatabase
-                            var jsonObject: JSONObject //creamos un objeto json vacio
-                            for (i in 0 until subsectorArray.length()) { /*pongo todo en el objeto segun lo que venga */
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = subsectorArray.getJSONObject(i)
-                                    codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                                    subcodigo = jsonObject.getString("subcodigo").trim { it <= ' ' }
-                                    subsector = jsonObject.getString("subsector").trim { it <= ' ' }
-                                    fechamodifi = jsonObject.getString("fechamodifi")
-                                    val insertar = ContentValues()
-                                    insertar.put("codigo", codigo)
-                                    insertar.put("subsector", subsector)
-                                    insertar.put("subcodigo", subcodigo)
-                                    insertar.put("fechamodifi", fechamodifi)
-                                    keAndroid.insert("subsectores", null, insertar)
-
-                                    //actualizamos la fecha de la tabla de
-                                    val fechaSubsectores = Calendar.getInstance()
-                                    val sdf = SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss",
-                                        Locale.getDefault()
-                                    )
-                                    val fechasubsectores = sdf.format(fechaSubsectores.time)
-                                    val actualizarFecha = ContentValues()
-                                    actualizarFecha.put("fchhn_ultmod", fechasubsectores)
-                                    keAndroid.update(
-                                        "tabla_aux",
-                                        actualizarFecha,
-                                        "tabla = 'subsectores'",
-                                        null
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Error 32",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
-                            }
-                            //Toast.makeText(PrincipalActivity.this, "Subsectores descargados",
-                            // Toast.LENGTH_SHORT).show();
-                            keAndroid.close()
-                            binding.tvSubsector.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvSubsector.text = "Ruta: Sincronizado."
-                            progressDialog!!.setMessage("Ruta: Sincronizado.")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
                         }
+
+                        conn.updateTablaAux("subsectores", codEmpresa!!)
+
+                        binding.tvSubsector.setTextColor(Color.rgb(62, 197, 58))
+                        binding.tvSubsector.text = "Ruta: Sincronizado."
+                        progressDialog!!.setMessage("Ruta: Sincronizado.")
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        sincronizacionVendedor()
+
                     } else if (response.getString("subsector") == "null") {
 
                         //Toast.makeText(getApplicationContext(), "No se recibieron mas datos", LENGTH_LONG).show();
@@ -5006,9 +3776,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 }
             },
             Response.ErrorListener { error: VolleyError? ->
-                if (error != null) {
-                    error.printStackTrace()
-                }
+                error?.printStackTrace()
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -5023,7 +3791,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 //finalmente, estos son los parametros que le enviaremos al webservice,
                 // partiendo de las variables
                 //donde estan guardados las fechas
@@ -5038,8 +3806,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         // armado arriba)
     }
 
-    private fun InsertarCorrelativo() {
-        val keAndroid = conn!!.writableDatabase
+    private fun insertarCorrelativo() {
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT * FROM ke_correla WHERE kco_vendedor ='$cod_usuario'",
             null
@@ -5055,9 +3823,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         cursor.close()
     }
 
-    fun subirPedidos() {
+    private fun subirPedidos() {
         //Inicializacion de la conexion
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         //Ejecucion del query que busca los pedidos que no se hayan subido
         cursorti =
             keAndroid.rawQuery("SELECT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi FROM ke_opti WHERE kti_status = '0'  AND kti_codven ='" + cod_usuario!!.trim { it <= ' ' } + "'",
@@ -5078,7 +3846,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun subirPrecob() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         //Busqueda de datos en la base de datos del tlf para validar la existencia de nuevas cobranzas por subir
         val cursorpc =
             keAndroid.rawQuery("SELECT cxcndoc FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='" + cod_usuario!!.trim { it <= ' ' } + "'",
@@ -5104,7 +3872,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //Boton para subir la precobranza
         binding.btnSubirprecob.isEnabled = false
         binding.btnSubirprecob.setBackgroundColor(Color.rgb(242, 238, 238))
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         //Creacion del ursor y la sentencia SQL que ejecutara la busqueda de cada una de las abeeras de los documentos por cobrar
         val cursorRc: Cursor =
             keAndroid.rawQuery("SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='" + cod_usuario!!.trim { it <= ' ' } + "'",
@@ -5345,7 +4113,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.btnSubir.isEnabled = false
         binding.btnSubir.setBackgroundColor(Color.rgb(242, 238, 238))
         //Inicializacion de la conexion y ejecucion del query
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         cursorti =
             keAndroid.rawQuery("SELECT DISTINCT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi, kti_negesp FROM ke_opti WHERE kti_status = '0'  AND kti_codven ='" + cod_usuario!!.trim { it <= ' ' } + "'",
                 null)
@@ -5441,7 +4209,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             //Suma de pedidos procesados y muestra en pantalla
             contadorPedidos++
             binding.tvSubidospedidos.text =
-                "Cargando pedido: " + contadorPedidos + " de " + cursorti.getCount()
+                "Cargando pedido: " + contadorPedidos + " de " + cursorti.count
         }
         //System.out.println(arrayTi);
         //  System.out.println(arrayMV);
@@ -5454,7 +4222,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             e.printStackTrace()
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el pedido" + e, Toast.LENGTH_SHORT).show();
         }
-        val jsonStrPE = jsonPE.toString()
         try {
             //Envio de pedidos
             insertarPedido(jsonPE)
@@ -5466,7 +4233,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun cargarLimites() {
         arrayLimite = JSONArray()
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         cursorLim =
             keAndroid.rawQuery("SELECT " + "kli_track, " + "kli_codven, " + "kli_codcli, " + "kli_codart, " + "kli_cant, " + "kli_fechahizo, " + "kli_fechavence " + "FROM ke_limitart" + " WHERE status = '1'  " + "AND kli_fechahizo >'" + fecha_sinc_limites + "'" + "AND kli_codven = '" + cod_usuario!!.trim { it <= ' ' } + "'",
                 null)
@@ -5535,7 +4302,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //varAuxError = true;
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String> {
                 val params: MutableMap<String, String> = HashMap()
                 params["jsonlim"] = jsonlim
                 params["agencia"] = codigoSucursal
@@ -5547,13 +4314,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun cambiarEstadoPedido(correlativo: String) {
         //Actualizacion del status del pedido
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         keAndroid.execSQL("UPDATE ke_opti SET kti_status = '1' WHERE kti_ndoc = '$correlativo'")
     }
 
     private fun cambiarEstadoPrecob(correlativo: String) {
         //Actualizacion del status del pedido
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT edorec, tiporecibo FROM ke_precobranza WHERE cxcndoc = '$correlativo';",
             null
@@ -5576,7 +4343,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun subirImgRet(correlativo: String, edorec: String) {
         var i = 0
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT * FROM ke_retimg WHERE ke_retimg.cxcndoc = '$correlativo';",
             null
@@ -5608,7 +4375,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun enviarImgRet(imgs: JSONObject, correlativo: String, edorec: String) {
         //System.out.println(imgs);
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         //System.out.println("Imagen -->" + imgs);
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
@@ -5883,8 +4650,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     if (response.getString("articulo") != "null") {
                         var jsonObject: JSONObject //creamos un objeto json vacio
                         val articulo = response.getJSONArray("articulo")
-                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 1)
-                        val keAndroid = conn!!.writableDatabase
+                        //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        val keAndroid = conn.writableDatabase
                         keAndroid.delete("ke_kardex", "1", null)
                         for (i in 0 until articulo.length()) {
                             try {
@@ -5925,9 +4692,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     e.printStackTrace()
                 }
             }, Response.ErrorListener { error: VolleyError? ->
-                if (error != null) {
-                    error.printStackTrace()
-                }
+                error?.printStackTrace()
                 //--Manejo visual que indica al usuario del error--
                 progressDialog!!.setMessage("Kard: No ha logrado sincronizar.")
                 varAux++
@@ -5937,7 +4702,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //------
                 sincronizacionVendedor()
             }) {
-            override fun getParams(): Map<String, String>? {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+            override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
                 //donde estan guardados las fechas
                 // parametros.put("fecha_sinc", fecha_sinc);
                 return HashMap()
@@ -6050,6 +4815,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         var fecha_sinc: String? = null
         var fechamodifi: String? = null
         var cod_usuario: String? = null
+        var codEmpresa: String? = null
         var direccion: String? = null
         var perscont: String? = null
         var telefonos: String? = null

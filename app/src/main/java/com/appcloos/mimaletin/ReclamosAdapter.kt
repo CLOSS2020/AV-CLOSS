@@ -23,7 +23,7 @@ class ReclamosAdapter(
         return listareclamo.size
     }
 
-    class ViewHolderDatos(itemView: View, var onClickListener: (Int) -> Unit) :
+    inner class ViewHolderDatos(itemView: View, var onClickListener: (Int) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
 
         private val binding = ItemReclamoBinding.bind(itemView)

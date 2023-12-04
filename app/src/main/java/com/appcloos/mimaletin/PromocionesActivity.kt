@@ -1,5 +1,6 @@
 package com.appcloos.mimaletin
 
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.database.Cursor
@@ -28,6 +29,10 @@ class PromocionesActivity : AppCompatActivity() {
     private val APP_ITEMS_NOTAS_ENTREGA = 0
     private var catalogoAdapter: CatalogoAdapter? = null
     private var APP_DESCUENTOS_PEDIDOS = false
+
+    private lateinit var preferences: SharedPreferences
+    private var codEmpresa: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_promociones)
@@ -38,6 +43,9 @@ class PromocionesActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = "Promociones"
 
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
+
         /* este intent es para obtener la seleccion, tipo de precio, nro del pedido y codigo del cliente*/
         seleccionado = intent.getIntExtra("Seleccion", 0)
         tipoDePrecioaMostrar = intent.getStringExtra("tipoDePrecioaMostrar")
@@ -46,7 +54,7 @@ class PromocionesActivity : AppCompatActivity() {
         nroPedido = intent.getStringExtra("nroPedido")
         factura = intent.getBooleanExtra("factura", false)
         /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
-          el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null, 8)
+          el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         APP_DESCUENTOS_PEDIDOS = conn!!.getConfigBool("APP_DESCUENTOS_PEDIDOS")
 
         //APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));

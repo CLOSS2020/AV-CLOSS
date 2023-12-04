@@ -25,7 +25,7 @@ class SincronizarActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySincronizarBinding
 
     private val conn: AdminSQLiteOpenHelper =
-        AdminSQLiteOpenHelper(this, "ke_android", null, 12)
+        AdminSQLiteOpenHelper(this, "ke_android", null)
 
     val context: Context = this
     private val fechaArticulos = ObjetoUtils.getDateNow()
