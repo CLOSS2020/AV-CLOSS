@@ -43,7 +43,7 @@ import java.util.Locale
 class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
 //CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
     (val context: Context?, val name: String?, val factory: CursorFactory?) :
-    SQLiteOpenHelper(context, name, factory, 48) {
+    SQLiteOpenHelper(context, name, factory, 49) {
 
     //private lateinit var dataBase: SQLiteDatabase
     //aqui se define la estructura de la base de datos al instalar la app (no cambia, solo se le agrega)
@@ -66,6 +66,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
   ('listbanc',    '0001-01-01T01:01:01'),
   ('ke_tabdctos', '0001-01-01T01:01:01'),
   ('ke_tabdctosbcos', '0001-01-01T01:01:01'),
+  ('ke_opti', '0001-01-01T01:01:01'),
   ('ke_doccti',   '0001-01-01 01:01:01')"""
         )
         keAndroid.execSQL(
@@ -773,9 +774,6 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             }
         }
 
-        println()
-
-
         if (oldVersion < 48) {
             try {
                 keAndroid.beginTransaction()
@@ -829,6 +827,15 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                 e.printStackTrace()
             } finally {
                 keAndroid.endTransaction()
+            }
+
+        }
+
+        if (oldVersion < 49) {
+            try {
+                keAndroid.execSQL("INSERT INTO tabla_aux VALUES ('ke_opti', '0001-01-01 01:01:01', '081196')")
+            } catch (e: SQLException) {
+                e.printStackTrace()
             }
 
         }
@@ -1185,6 +1192,22 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         try {
             db.beginTransaction()
             db.update(table, cv, whereClause, whereArgs)
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.endTransaction()
+        }
+        cerarDB(db)
+    }
+
+    fun deleteJSONCamposVarios(
+        table: String?, whereClause: String?, whereArgs: Array<String?>?
+    ) {
+        val db = this.writableDatabase
+        try {
+            db.beginTransaction()
+            db.delete(table, whereClause, whereArgs)
             db.setTransactionSuccessful()
         } catch (e: Exception) {
             e.printStackTrace()

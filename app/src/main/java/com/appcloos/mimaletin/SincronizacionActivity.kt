@@ -348,13 +348,20 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             5 -> bajarSectores("https://$enlaceEmpresa/$ambienteJob/sectores_V3.php?fecha_sinc=$fecha_sinc_sectores")
             6 -> bajarSubSectores("https://$enlaceEmpresa/$ambienteJob/subsectores_V3.php?fecha_sinc=$fecha_sinc_subsectores")
             7 -> bajarClientes("https://$enlaceEmpresa/$ambienteJob/clientes_V5.php?cod_usuario=$cod_usuario")
-            8 -> bajarInfoPedidos("https://$enlaceEmpresa/$ambienteJob/obtenerdatospedidos_V3.php?cod_usuario=$cod_usuario")
-            9 -> bajarArticulos3("https://" + enlaceEmpresa + "/" + ambienteJob + "/articulos_V26.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            10 -> bajarKardex("https://" + enlaceEmpresa + "/" + ambienteJob + "/kardex_V2.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+            8 -> bajarInfoPedidos(
+                "https://$enlaceEmpresa/$ambienteJob/obtenerdatospedidos_V3.php?cod_usuario=$cod_usuario&fecha_sinc=${
+                    getFecha(
+                        "ke_opti"
+                    )
+                }"
+            )
+
+            9 -> bajarArticulos3("https://$enlaceEmpresa/$ambienteJob/articulos_V26.php?fecha_sinc=$fecha_sinc_articulo")
+            10 -> bajarKardex("https://$enlaceEmpresa/$ambienteJob/kardex_V3.php?fecha_sinc=$fecha_sinc_articulo")
             11 -> subirLimite()
             12 -> actualizarLimites("https://" + enlaceEmpresa + "/" + ambienteJob + "/obtenerlimites_V3.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-            13 -> bajarDocumentos("https://" + enlaceEmpresa + "/" + ambienteJob + "/planificador_V3.php?vendedor=" + cod_usuario!!.trim { it <= ' ' })
-            14 -> bajarDatosExtra("https://" + enlaceEmpresa + "/" + ambienteJob + "/descarga_referencias.php?vendedor=" + cod_usuario!!.trim { it <= ' ' })
+            13 -> bajarDocumentos("https://$enlaceEmpresa/$ambienteJob/planificador_V3.php?vendedor=$cod_usuario")
+            14 -> bajarDatosExtra("https://$enlaceEmpresa/$ambienteJob/descarga_referencias.php?vendedor=$cod_usuario")
             15 ->  //BajarConfigExtra("https://" + enlaceEmpresa + "/" + ambienteJob + "/config_gen2.php?vendedor=" + cod_usuario.trim() + "&fecha_sinc=" + fechaSincronizar("ke_wcnf_conf"));
                 bajarConfigExtra("https://" + enlaceEmpresa + "/" + ambienteJob + "/config_gen2.php?vendedor=" + cod_usuario!!.trim { it <= ' ' } + "&fecha_sinc=" + fechaSincronizar(
                     "ke_wcnf_conf"
@@ -934,81 +941,87 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val cdretflete = jsonObject.getDouble("cdretflete")
                             val retmunMto = jsonObject.getDouble("retmun_mto")
                             val ktiNegesp = jsonObject.getInt("kti_negesp")
+
                             documentosNube.add(documento)
-                            val qDocumentosCab = ContentValues()
-                            qDocumentosCab.put("agencia", agencia)
-                            qDocumentosCab.put("tipodoc", tipodoc)
-                            qDocumentosCab.put("documento", documento)
-                            qDocumentosCab.put("tipodocv", tipodocv)
-                            qDocumentosCab.put("codcliente", codigoCliente)
-                            qDocumentosCab.put("nombrecli", nombreCliente)
-                            qDocumentosCab.put("contribesp", contribesp)
-                            qDocumentosCab.put("ruta_parme", rutaParme)
-                            qDocumentosCab.put("tipoprecio", tipoprecio)
-                            qDocumentosCab.put("emision", emision)
-                            qDocumentosCab.put("recepcion", recepcion)
-                            qDocumentosCab.put("vence", vence)
-                            qDocumentosCab.put("diascred", diascred)
-                            qDocumentosCab.put("estatusdoc", estatusdoc)
-                            qDocumentosCab.put("dtotneto", dtotneto)
-                            qDocumentosCab.put("dretencion", dretencion)
-                            qDocumentosCab.put("dretencioniva", dretencioniva)
-                            qDocumentosCab.put("dtotimpuest", dtotimpuest)
-                            qDocumentosCab.put("dtotalfinal", dtotalfinal)
-                            qDocumentosCab.put("dtotpagos", dtotpagos)
-                            qDocumentosCab.put("dtotdescuen", dtotdescuen)
-                            qDocumentosCab.put("dFlete", dFlete)
-                            qDocumentosCab.put("dtotdev", dtotdev)
-                            qDocumentosCab.put("dvndmtototal", dvndmtototal)
-                            qDocumentosCab.put("vendedor", vendedor)
-                            qDocumentosCab.put("codcoord", codcoord)
-                            qDocumentosCab.put("fechamodifi", fechamodifi)
-                            qDocumentosCab.put("aceptadev", aceptadev)
-                            qDocumentosCab.put("bsiva", bsiva)
-                            qDocumentosCab.put("bsflete", bsflete)
-                            qDocumentosCab.put("bsretencion", bsretencion)
-                            qDocumentosCab.put("bsretencioniva", bsretencioniva)
-                            qDocumentosCab.put("tasadoc", tasadoc)
-                            qDocumentosCab.put("mtodcto", montodcto)
-                            qDocumentosCab.put("fchvencedcto", fechavencedcto)
-                            qDocumentosCab.put("tienedcto", tienedcto)
-                            qDocumentosCab.put("cbsret", cbsret)
-                            qDocumentosCab.put("cdret", cdret)
-                            qDocumentosCab.put("cbsretiva", cbsretiva)
-                            qDocumentosCab.put("cdretiva", cdretiva)
-                            qDocumentosCab.put("cbsrparme", cbsrparme)
-                            qDocumentosCab.put("bsmtoiva", bsmtoiva)
-                            qDocumentosCab.put("bsmtofte", bsmtofte)
-                            qDocumentosCab.put("cbsretflete", cbsretflete)
-                            qDocumentosCab.put("cdretflete", cdretflete)
-                            qDocumentosCab.put("retmun_mto", retmunMto)
-                            qDocumentosCab.put("kti_negesp", ktiNegesp)
-                            qDocumentosCab.put("cdrparme", cdrparme)
-                            val qcodigoLocal = keAndroid.rawQuery(
-                                "SELECT count(documento) FROM ke_doccti WHERE documento = '$documento';",
-                                null
-                            )
-                            var codigoExistente = 0
-                            if (qcodigoLocal.moveToFirst()) {
-                                codigoExistente = qcodigoLocal.getInt(0)
-                            }
-                            qcodigoLocal.close()
-                            if (codigoExistente > 0) {
-                                //System.out.println("UPDATE " + documento);
-                                keAndroid.update(
-                                    "ke_doccti",
-                                    qDocumentosCab,
-                                    "documento= ?",
-                                    arrayOf(documento)
+
+                            val cv = ContentValues()
+                            cv.put("agencia", agencia)
+                            cv.put("tipodoc", tipodoc)
+                            cv.put("documento", documento)
+                            cv.put("tipodocv", tipodocv)
+                            cv.put("codcliente", codigoCliente)
+                            cv.put("nombrecli", nombreCliente)
+                            cv.put("contribesp", contribesp)
+                            cv.put("ruta_parme", rutaParme)
+                            cv.put("tipoprecio", tipoprecio)
+                            cv.put("emision", emision)
+                            cv.put("recepcion", recepcion)
+                            cv.put("vence", vence)
+                            cv.put("diascred", diascred)
+                            cv.put("estatusdoc", estatusdoc)
+                            cv.put("dtotneto", dtotneto)
+                            cv.put("dretencion", dretencion)
+                            cv.put("dretencioniva", dretencioniva)
+                            cv.put("dtotimpuest", dtotimpuest)
+                            cv.put("dtotalfinal", dtotalfinal)
+                            cv.put("dtotpagos", dtotpagos)
+                            cv.put("dtotdescuen", dtotdescuen)
+                            cv.put("dFlete", dFlete)
+                            cv.put("dtotdev", dtotdev)
+                            cv.put("dvndmtototal", dvndmtototal)
+                            cv.put("vendedor", vendedor)
+                            cv.put("codcoord", codcoord)
+                            cv.put("fechamodifi", fechamodifi)
+                            cv.put("aceptadev", aceptadev)
+                            cv.put("bsiva", bsiva)
+                            cv.put("bsflete", bsflete)
+                            cv.put("bsretencion", bsretencion)
+                            cv.put("bsretencioniva", bsretencioniva)
+                            cv.put("tasadoc", tasadoc)
+                            cv.put("mtodcto", montodcto)
+                            cv.put("fchvencedcto", fechavencedcto)
+                            cv.put("tienedcto", tienedcto)
+                            cv.put("cbsret", cbsret)
+                            cv.put("cdret", cdret)
+                            cv.put("cbsretiva", cbsretiva)
+                            cv.put("cdretiva", cdretiva)
+                            cv.put("cbsrparme", cbsrparme)
+                            cv.put("bsmtoiva", bsmtoiva)
+                            cv.put("bsmtofte", bsmtofte)
+                            cv.put("cbsretflete", cbsretflete)
+                            cv.put("cdretflete", cdretflete)
+                            cv.put("retmun_mto", retmunMto)
+                            cv.put("kti_negesp", ktiNegesp)
+                            cv.put("cdrparme", cdrparme)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_doccti", ArrayList(
+                                        mutableListOf("documento", "empresa")
+                                    ), arrayListOf(documento, codEmpresa!!)
                                 )
-                            } else if (codigoExistente == 0) {
-                                //System.out.println("INSERT " + documento);
-                                keAndroid.insert("ke_doccti", null, qDocumentosCab)
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_doccti",
+                                    cv,
+                                    "documento = ? AND empresa = ?",
+                                    arrayOf(documento, codEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("ke_doccti", cv)
                             }
+
                             countDoc++
                         }
-                        keAndroid.delete("ke_doccti", "estatusdoc= ?", arrayOf("2"))
+
+                        //keAndroid.delete("ke_doccti", "estatusdoc= ?", arrayOf("2"))
+                        conn.deleteJSONCamposVarios(
+                            "ke_doccti",
+                            "estatusdoc= ? AND empresa = ?",
+                            arrayOf("2", codEmpresa)
+                        )
                         eliminarDocViejos(documentosNube, keAndroid, "ke_doccti", "documento")
+
                         binding.tvDocumentos.setTextColor(Color.rgb(62, 197, 58))
                         binding.tvDocumentos.text = "Documentos: $countDoc"
                         progressDialog!!.setMessage("Documentos:$countDoc")
@@ -1058,7 +1071,11 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         for (i in documentosBDD.indices) {
             if (!documentosNube.contains(documentosBDD[i])) {
                 //System.out.println("DELETE " + documentosBDD.get(i));
-                keAndroid.delete(tabla, "$campo = ?", arrayOf(documentosBDD[i]))
+                keAndroid.delete(
+                    tabla,
+                    "$campo = ? AND empresa = ?",
+                    arrayOf(documentosBDD[i], codEmpresa)
+                )
             }
         }
     }
@@ -1428,18 +1445,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     if (response.getString("pedidos") != "null") { // si la respuesta no viene vacia
                         //System.out.println("NO VINO NULA");
                         //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                        val keAndroid = conn.writableDatabase
-                        val filas = DatabaseUtils.queryNumEntries(
-                            keAndroid, "ke_opti"
-                        ) //obtenemos las filas de la tabla articulos para comprobar si hay o no registros
+
                         val pedidos = response.getJSONArray("pedidos")
 
                         //aqui valido las filas de la tabla de articulos en el telefono
-                        if (filas > 0) {
                             var jsonObject: JSONObject //creamos un objeto json vacio
                             for (i in 0 until pedidos.length()) { /*pongo todo en el objeto segun lo que venga */
                                 try {
-                                    keAndroid.beginTransaction()
+
                                     jsonObject = pedidos.getJSONObject(i)
                                     val nropedido = jsonObject.getString("kti_nroped")
                                     val fechamodifi = jsonObject.getString("fechamodifi")
@@ -1447,17 +1460,30 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     val ktiStatus = jsonObject.getString("kti_status")
                                     val kePedstatus = jsonObject.getString("ke_pedstatus")
                                     //System.out.println(nropedido);
-                                    val actualizar = ContentValues()
-                                    actualizar.put("kti_nroped", nropedido)
-                                    actualizar.put("fechamodifi", fechamodifi)
-                                    actualizar.put("kti_status", ktiStatus)
-                                    actualizar.put("ke_pedstatus", kePedstatus)
-                                    keAndroid.update(
-                                        "ke_opti", actualizar, "kti_ndoc = ?", arrayOf(
-                                            numinterno
+                                    val cv = ContentValues()
+                                    cv.put("kti_ndoc", numinterno)
+                                    cv.put("kti_nroped", nropedido)
+                                    cv.put("fechamodifi", fechamodifi)
+                                    cv.put("kti_status", ktiStatus)
+                                    cv.put("ke_pedstatus", kePedstatus)
+                                    cv.put("empresa", codEmpresa)
+
+                                    //Si emcuentra el elemento lo actualiza, sino no lo encuentra no
+                                    // hara nada
+                                    if (conn.validarExistenciaCamposVarios(
+                                            "ke_opti", ArrayList(
+                                                mutableListOf("kti_ndoc", "empresa")
+                                            ), arrayListOf(numinterno, codEmpresa!!)
                                         )
-                                    )
-                                    keAndroid.setTransactionSuccessful()
+                                    ) {
+                                        conn.updateJSONCamposVarios(
+                                            "ke_opti",
+                                            cv,
+                                            "kti_ndoc = ? AND empresa = ?",
+                                            arrayOf(numinterno, codEmpresa!!)
+                                        )
+                                    }
+
                                     contadorpedidosactualizados++
                                 } catch (e: JSONException) {
                                     Toast.makeText(
@@ -1465,27 +1491,18 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         "Evento 2",
                                         Toast.LENGTH_LONG
                                     ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
                                 }
                             }
-                            keAndroid.close()
-                            binding.tvPedidosact.setTextColor(Color.rgb(62, 197, 58))
-                            binding.tvPedidosact.text =
-                                "Pedidos Act: $contadorpedidosactualizados"
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            progressDialog!!.setMessage("Pedidos act.$contadorpedidosactualizados")
-                            sincronizacionVendedor()
-                        } else {
-                            binding.tvPedidosact.setTextColor(Color.rgb(98, 117, 141))
-                            binding.tvPedidosact.text = "Pedidos Act: Sin actualización"
-                            progressDialog!!.setMessage("Pedidos Act: Sin actualización")
-                            varAux++
-                            progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
-                            sincronizacionVendedor()
-                            // Toast.makeText(SincronizacionActivity.this,"Nada en el if del long", LENGTH_LONG).show();
-                        }
+
+                        conn.updateTablaAux("ke_opti", codEmpresa!!)
+
+                        binding.tvPedidosact.setTextColor(Color.rgb(62, 197, 58))
+                        binding.tvPedidosact.text =
+                            "Pedidos Act: $contadorpedidosactualizados"
+                        varAux++
+                        progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
+                        progressDialog!!.setMessage("Pedidos act.$contadorpedidosactualizados")
+                        sincronizacionVendedor()
                     } else if (response.getString("pedidos") == "null") {
                         binding.tvPedidosact.setTextColor(Color.rgb(98, 117, 141))
                         binding.tvPedidosact.text = "Pedidos Act: Sin actualización"
@@ -2557,31 +2574,32 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         val articulo = response.getJSONArray("articulo")
                         for (i in 0 until articulo.length()) {
                             val jsonObject = articulo.getJSONObject(i)
-                            codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                            grupo = jsonObject.getString("grupo").trim { it <= ' ' }
-                            subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
-                            nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                            marca = jsonObject.getString("marca").trim { it <= ' ' }
-                            referencia = jsonObject.getString("referencia").trim { it <= ' ' }
-                            unidad = jsonObject.getString("unidad").trim { it <= ' ' }
-                            precio1 = jsonObject.getDouble("precio1")
-                            precio2 = jsonObject.getDouble("precio2")
-                            precio3 = jsonObject.getDouble("precio3")
-                            precio4 = jsonObject.getDouble("precio4")
-                            precio5 = jsonObject.getDouble("precio5")
-                            precio6 = jsonObject.getDouble("precio6")
-                            precio7 = jsonObject.getDouble("precio7")
-                            existencia = jsonObject.getDouble("existencia")
-                            fechamodifi = jsonObject.getString("fechamodifi")
-                            discont = jsonObject.getDouble("discont")
-                            vta_max = jsonObject.getDouble("vta_max")
-                            vta_min = jsonObject.getDouble("vta_min")
-                            dctotope = jsonObject.getDouble("dctotope")
-                            enpreventa = jsonObject.getString("enpreventa").trim { it <= ' ' }
-                            comprometido = jsonObject.getString("comprometido")
-                            vta_minenx = jsonObject.getString("vta_minenx")
+                            val codigo = jsonObject.getString("codigo")
+                            val grupo = jsonObject.getString("grupo")
+                            val subgrupo = jsonObject.getString("subgrupo")
+                            val nombre = jsonObject.getString("nombre")
+                            val marca = jsonObject.getString("marca")
+                            val referencia = jsonObject.getString("referencia")
+                            val unidad = jsonObject.getString("unidad")
+                            val precio1 = jsonObject.getDouble("precio1")
+                            val precio2 = jsonObject.getDouble("precio2")
+                            val precio3 = jsonObject.getDouble("precio3")
+                            val precio4 = jsonObject.getDouble("precio4")
+                            val precio5 = jsonObject.getDouble("precio5")
+                            val precio6 = jsonObject.getDouble("precio6")
+                            val precio7 = jsonObject.getDouble("precio7")
+                            val existencia = jsonObject.getDouble("existencia")
+                            val fechamodifi = jsonObject.getString("fechamodifi")
+                            val discont = jsonObject.getDouble("discont")
+                            val vtaMax = jsonObject.getDouble("vta_max")
+                            val vtaMin = jsonObject.getDouble("vta_min")
+                            val dctotope = jsonObject.getDouble("dctotope")
+                            val enpreventa = jsonObject.getString("enpreventa")
+                            val comprometido = jsonObject.getString("comprometido")
+                            val vtaMinenx = jsonObject.getString("vta_minenx")
                             val vtaSolofac = jsonObject.getInt("vta_solofac")
                             val vtaSolone = jsonObject.getInt("vta_solone")
+
                             val cv = ContentValues()
                             cv.put("codigo", codigo)
                             cv.put("grupo", grupo)
@@ -2601,24 +2619,37 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("existencia", existencia)
                             cv.put("discont", discont)
-                            cv.put("vta_max", vta_max)
-                            cv.put("vta_min", vta_min)
+                            cv.put("vta_max", vtaMax)
+                            cv.put("vta_min", vtaMin)
                             cv.put("dctotope", dctotope)
                             cv.put("enpreventa", enpreventa)
                             cv.put("comprometido", comprometido)
-                            cv.put("vta_minenx", vta_minenx)
+                            cv.put("vta_minenx", vtaMinenx)
                             cv.put("vta_solofac", vtaSolofac)
                             cv.put("vta_solone", vtaSolone)
-                            if (!conn.validarExistencia("articulo", "codigo", codigo!!)) {
-                                conn.insertJSON("articulo", cv)
-                                //System.out.println("INSERT ->" + codigo);
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "articulo", ArrayList(
+                                        mutableListOf("codigo", "empresa")
+                                    ), arrayListOf(codigo, codEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "articulo",
+                                    cv,
+                                    "codigo = ? AND empresa = ?",
+                                    arrayOf(codigo, codEmpresa!!)
+                                )
                             } else {
-                                conn.updateJSON("articulo", cv, "codigo", codigo!!)
-                                //System.out.println("UPDATE ->" + codigo);
+                                conn.insertJSON("articulo", cv)
                             }
+
                             contadorart++
                         }
+
                         conn.updateTablaAux("articulo", codEmpresa!!)
+
                         binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
                         binding.tvArticulos.text = "Articulos: $contadorart"
                         progressDialog!!.setMessage("Articulos:$contadorart")
@@ -4647,32 +4678,44 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val jsonObjectRequest: JsonObjectRequest = object :
             JsonObjectRequest(Method.GET, url, null, Response.Listener { response: JSONObject ->
                 try {
-                    if (response.getString("articulo") != "null") {
+                    if (response.getString("kardex") != "null") {
                         var jsonObject: JSONObject //creamos un objeto json vacio
-                        val articulo = response.getJSONArray("articulo")
+                        val articulo = response.getJSONArray("kardex")
                         //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                         val keAndroid = conn.writableDatabase
                         keAndroid.delete("ke_kardex", "1", null)
                         for (i in 0 until articulo.length()) {
                             try {
-                                keAndroid.beginTransaction()
                                 jsonObject = articulo.getJSONObject(i)
-                                codigoKardex = jsonObject.getString("codigo").trim { it <= ' ' }
-                                cantidadKardex = jsonObject.getDouble("cantidad")
-                                fechaKardex = jsonObject.getString("fecha")
-                                val insertar = ContentValues()
-                                insertar.put("kde_codart", codigoKardex)
-                                insertar.put("kde_cantidad", cantidadKardex)
-                                insertar.put("ke_fecha", fechaKardex)
-                                keAndroid.insert("ke_kardex", null, insertar)
-                                keAndroid.setTransactionSuccessful()
+                                val codigoKardex = jsonObject.getString("codigo")
+                                val cantidadKardex = jsonObject.getDouble("cantidad")
+                                val fechaKardex = jsonObject.getString("fecha")
+
+                                val cv = ContentValues()
+                                cv.put("kde_codart", codigoKardex)
+                                cv.put("kde_cantidad", cantidadKardex)
+                                cv.put("ke_fecha", fechaKardex)
+                                cv.put("empresa", codEmpresa)
+
+                                //If para solo ingreso
+                                if (!conn.validarExistenciaCamposVarios(
+                                        "ke_kardex", ArrayList(
+                                            mutableListOf("kde_codart", "empresa")
+                                        ), arrayListOf(codigoKardex, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.insertJSON("ke_kardex", cv)
+                                }
+
                             } catch (e: Exception) {
-                                Toast.makeText(applicationContext, "Error 33", Toast.LENGTH_LONG)
+                                Toast.makeText(applicationContext, "Evento 33", Toast.LENGTH_LONG)
                                     .show()
-                            } finally {
-                                keAndroid.endTransaction()
                             }
                         }
+
+                        // No requiere de actualizar por que bajarArticulos ya lo actualiza
+                        //conn.updateTablaAux("articulo", codEmpresa!!)
+
                         Toast.makeText(
                             applicationContext,
                             "Hay artículos nuevos/actualizados",
@@ -4682,7 +4725,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         varAux++
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
-                    } else if (response.getString("articulo") == "null") {
+                    } else if (response.getString("kardex") == "null") {
                         progressDialog!!.setMessage("Kard: Sin Actualización.")
                         varAux++
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
