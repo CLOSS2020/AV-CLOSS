@@ -43,7 +43,7 @@ import java.util.Locale
 class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
 //CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
     (val context: Context?, val name: String?, val factory: CursorFactory?) :
-    SQLiteOpenHelper(context, name, factory, 49) {
+    SQLiteOpenHelper(context, name, factory, 54) {//<-- 46 para pruebas
 
     //private lateinit var dataBase: SQLiteDatabase
     //aqui se define la estructura de la base de datos al instalar la app (no cambia, solo se le agrega)
@@ -78,7 +78,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         keAndroid.execSQL("CREATE TABLE IF NOT EXISTS subsectores(codigo TEXT, subcodigo TEXT , subsector TEXT, fechamodifi NUMERIC)")
         keAndroid.execSQL("CREATE TABLE IF NOT EXISTS subgrupos(codigo TEXT , subcodigo TEXT  , nombre TEXT , fechamodifi NUMERIC)")
         keAndroid.execSQL("CREATE TABLE IF NOT EXISTS grupos(codigo TEXT PRIMARY KEY, nombre TEXT, fechamodifi NUMERIC)")
-        keAndroid.execSQL("CREATE TABLE IF NOT EXISTS usuarios(nombre TEXT, username TEXT, password TEXT, vendedor TEXT, almacen TEXT, desactivo REAL, fechamodifi NUMERIC, ualterprec REAL, sesionactiva NUMERIC, superves TEXT, ult_sinc NUMERIC DEFAULT '0001-01-01', sinc_primera NUMERIC NOT NULL DEFAULT 0,empresa TEXT NOT NULL DEFAULT '', PRIMARY KEY(empresa));")
+        keAndroid.execSQL("CREATE TABLE IF NOT EXISTS usuarios(nombre TEXT, username TEXT, password TEXT, vendedor TEXT, almacen TEXT, desactivo REAL, fechamodifi NUMERIC, ualterprec REAL, sesionactiva NUMERIC, superves TEXT, ult_sinc NUMERIC DEFAULT '0001-01-01', sinc_primera NUMERIC NOT NULL DEFAULT 0/*,empresa TEXT NOT NULL DEFAULT '', PRIMARY KEY(empresa)*/);")
         keAndroid.execSQL("CREATE TABLE IF NOT EXISTS ke_opti(kti_ndoc TEXT, kti_tdoc TEXT, kti_codcli TEXT, kti_nombrecli TEXT, kti_codven TEXT, kti_docsol TEXT, kti_condicion TEXT, kti_tipprec REAL, kti_totneto REAL, kti_status TEXT, kti_nroped TEXT, kti_fchdoc NUMERIC, fechamodifi NUMERIC, kti_negesp TEXT, kti_totnetodcto REAL NOT NULL DEFAULT 0, ke_pedstatus TEXT NOT NULL DEFAULT '00')")
         keAndroid.execSQL("CREATE TABLE IF NOT EXISTS ke_opmv(kti_tdoc TEXT, kti_ndoc TEXT, kti_tipprec REAL, kmv_codart TEXT, kmv_nombre TEXT, kmv_cant REAL, kmv_artprec REAL, kmv_stot REAL, kmv_dctolin REAL NOT NULL DEFAULT 0, kmv_stotdcto REAL NOT NULL DEFAULT 0)")
         keAndroid.execSQL("CREATE TABLE IF NOT EXISTS ke_carrito(kmv_codart TEXT, kmv_nombre TEXT, kmv_cant REAL,  kmv_artprec REAL, kmv_stot REAL, kmv_dctolin REAL NOT NULL DEFAULT 0, kmv_stotdcto REAL NOT NULL DEFAULT 0)")
@@ -741,7 +741,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         if (oldVersion < 47) {
             try {
                 keAndroid.beginTransaction()
-                keAndroid.execSQL("ALTER TABLE usuarios ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE usuarios ADD empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}';")
                 keAndroid.execSQL("ALTER TABLE usuarios RENAME TO old_usuarios;")
                 keAndroid.execSQL(
                     "CREATE TABLE IF NOT EXISTS usuarios(" +
@@ -840,6 +840,162 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
 
         }
 
+        if (oldVersion < 50) {
+            try {
+                keAndroid.beginTransaction()
+                //keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE tabla_aux RENAME TO old_tabla_aux;")
+                keAndroid.execSQL(
+                    "CREATE TABLE IF NOT EXISTS tabla_aux(" +
+                            "tabla TEXT NOT NULL DEFAULT ''," +
+                            "fchhn_ultmod TEXT NOT NULL DEFAULT ''," +
+                            "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
+                            "PRIMARY KEY(tabla, empresa));"
+                )
+                keAndroid.execSQL(
+                    "INSERT INTO tabla_aux \n" +
+                            "SELECT * FROM old_tabla_aux;"
+                )
+                keAndroid.execSQL("DROP TABLE old_tabla_aux;")
+                keAndroid.setTransactionSuccessful()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 51) {
+            try {
+                keAndroid.beginTransaction()
+                //keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE grupos RENAME TO old_grupos;")
+                keAndroid.execSQL(
+                    "CREATE TABLE IF NOT EXISTS grupos(" +
+                            "codigo TEXT NOT NULL DEFAULT ''," +
+                            "nombre TEXT NOT NULL DEFAULT ''," +
+                            "fechamodifi TEXT NOT NULL DEFAULT ''," +
+                            "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
+                            "PRIMARY KEY(codigo, empresa));"
+                )
+                keAndroid.execSQL(
+                    "INSERT INTO grupos \n" +
+                            "SELECT * FROM old_grupos;"
+                )
+                keAndroid.execSQL("DROP TABLE old_grupos;")
+                keAndroid.setTransactionSuccessful()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 52) {
+            try {
+                keAndroid.beginTransaction()
+                //keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE sectores RENAME TO old_sectores;")
+                keAndroid.execSQL(
+                    "CREATE TABLE IF NOT EXISTS sectores(" +
+                            "codigo TEXT NOT NULL DEFAULT ''," +
+                            "zona TEXT NOT NULL DEFAULT ''," +
+                            "fechamodifi TEXT NOT NULL DEFAULT ''," +
+                            "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
+                            "PRIMARY KEY(codigo, empresa));"
+                )
+                keAndroid.execSQL(
+                    "INSERT INTO sectores \n" +
+                            "SELECT * FROM old_sectores;"
+                )
+                keAndroid.execSQL("DROP TABLE old_sectores;")
+                keAndroid.setTransactionSuccessful()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 53) {
+            try {
+                keAndroid.beginTransaction()
+                //keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE articulo RENAME TO old_articulo;")
+                keAndroid.execSQL(
+                    "CREATE TABLE IF NOT EXISTS articulo(" +
+                            "codigo varchar(25) NOT NULL DEFAULT '',\n" +
+                            "subgrupo varchar(6) NOT NULL DEFAULT '',\n" +
+                            "grupo varchar(6) NOT NULL DEFAULT '',\n" +
+                            "nombre char(150) NOT NULL DEFAULT '',\n" +
+                            "referencia varchar(20) NOT NULL DEFAULT '',\n" +
+                            "marca varchar(20) NOT NULL DEFAULT '',\n" +
+                            "unidad varchar(15) NOT NULL DEFAULT '',\n" +
+                            "existencia double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio1 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio2 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio3 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio4 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio5 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio6 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "precio7 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" +
+                            "discont double(4,0) NOT NULL DEFAULT '0',\n" +
+                            "vta_min double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "vta_max double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "dctotope double(4,2) NOT NULL DEFAULT '0.00',\n" +
+                            "enpreventa char(1) NOT NULL DEFAULT '0',\n" +
+                            "comprometido double(24,7) NOT NULL DEFAULT '0.0000000',\n" +
+                            "vta_minenx double(15,3) NOT NULL DEFAULT '0.000',\n" +
+                            "vta_solofac int NOT NULL DEFAULT '0',\n" +
+                            "vta_solone int NOT NULL DEFAULT '0'," +
+                            "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
+                            "PRIMARY KEY(codigo, empresa));"
+                )
+                keAndroid.execSQL(
+                    "INSERT INTO articulo \n" +
+                            "SELECT * FROM old_articulo;"
+                )
+                keAndroid.execSQL("DROP TABLE old_articulo;")
+                keAndroid.setTransactionSuccessful()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 54) {
+            try {
+                keAndroid.beginTransaction()
+                //keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE ke_kardex RENAME TO old_ke_kardex;")
+                keAndroid.execSQL(
+                    "CREATE TABLE IF NOT EXISTS ke_kardex(" +
+                            "kde_codart TEXT NOT NULL DEFAULT ''," +
+                            "kde_cantidad TEXT NOT NULL DEFAULT ''," +
+                            "ke_fecha TEXT NOT NULL DEFAULT ''," +
+                            "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
+                            "PRIMARY KEY(kde_codart, empresa));"
+                )
+                keAndroid.execSQL(
+                    "INSERT INTO ke_kardex \n" +
+                            "SELECT * FROM old_ke_kardex;"
+                )
+                keAndroid.execSQL("DROP TABLE old_ke_kardex;")
+                keAndroid.setTransactionSuccessful()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
         println()
 
 
@@ -848,7 +1004,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
     }
 
     private fun alterarTablas(keAndroid: SQLiteDatabase, table: String) {
-        keAndroid.execSQL("ALTER TABLE $table ADD empresa TEXT NOT NULL DEFAULT '081196';")
+        keAndroid.execSQL("ALTER TABLE $table ADD empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}';")
     }
 
     private fun cerarDB(db: SQLiteDatabase) {
@@ -1224,9 +1380,29 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             val cv = ContentValues()
             cv.put("tabla", table)
             cv.put("fchhn_ultmod", fechaHoy(true))
+            cv.put("empresa", codEmpresa)
+
             db.beginTransaction()
-            db.update("tabla_aux", cv, "tabla = ? AND empresa = ?", arrayOf(table, codEmpresa))
+
+            //Se coloca un if para saber si se actualiza el registro o se crea
+            if (this.validarExistenciaCamposVarios(
+                    "tabla_aux",
+                    ArrayList(mutableListOf("tabla", "empresa")),
+                    arrayListOf(table, codEmpresa)
+                )
+            ) {
+                db.update("tabla_aux", cv, "tabla = ? AND empresa = ?", arrayOf(table, codEmpresa))
+            } else {
+                db.execSQL("INSERT INTO tabla_aux VALUES ('$table', '${fechaHoy(true)}', '$codEmpresa')") //<-- Colocandolo asi funciona, con las demas formas no
+
+                //db.insert(table, null, cv)
+
+                //db.setTransactionSuccessful()
+                //this.insertJSON("tabla_aux", cv)
+            }
+
             db.setTransactionSuccessful()
+
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {

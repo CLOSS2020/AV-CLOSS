@@ -52,6 +52,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private var SINCRONIZO = false
     private var DESACTIVADO = false
 
+    private lateinit var fechaSincGrupos: String
+    private lateinit var fechaSincSubGrupos: String
+    private lateinit var fechaSincSectores: String
+    private lateinit var fechaSincSubSectores: String
+    private lateinit var fechaKeOpti: String
+    private lateinit var fechaSincArticulo: String
+    private lateinit var fechaSincKeWcnfConf: String
+
     private lateinit var binding: ActivitySincronizacionBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -342,39 +350,31 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         when (varAux) {
             0 -> bajarUsuario("https://$enlaceEmpresa/$ambienteJob/usuarios_V4.php?cod_usuario=$cod_usuario")
             1 -> bajarVendedor("https://$enlaceEmpresa/$ambienteJob/listvend_V3.php?cod_usuario=$cod_usuario")
-            2 -> bajarGrupos("https://$enlaceEmpresa/$ambienteJob/grupos_V4.php?fecha_sinc=$fecha_sinc_grupos")
+            2 -> bajarGrupos("https://$enlaceEmpresa/$ambienteJob/grupos_V4.php?fecha_sinc=$fechaSincGrupos")
             3 -> bajarConfig("https://$enlaceEmpresa/$ambienteJob/config_V4.php")
-            4 -> bajarSubGrupos("https://$enlaceEmpresa/$ambienteJob/subgrupos_V3.php?fecha_sinc=$fecha_sinc_subgrupos")
-            5 -> bajarSectores("https://$enlaceEmpresa/$ambienteJob/sectores_V3.php?fecha_sinc=$fecha_sinc_sectores")
-            6 -> bajarSubSectores("https://$enlaceEmpresa/$ambienteJob/subsectores_V3.php?fecha_sinc=$fecha_sinc_subsectores")
+            4 -> bajarSubGrupos("https://$enlaceEmpresa/$ambienteJob/subgrupos_V3.php?fecha_sinc=$fechaSincSubGrupos")
+            5 -> bajarSectores("https://$enlaceEmpresa/$ambienteJob/sectores_V3.php?fecha_sinc=$fechaSincSectores")
+            6 -> bajarSubSectores("https://$enlaceEmpresa/$ambienteJob/subsectores_V3.php?fecha_sinc=$fechaSincSubSectores")
             7 -> bajarClientes("https://$enlaceEmpresa/$ambienteJob/clientes_V5.php?cod_usuario=$cod_usuario")
             8 -> bajarInfoPedidos(
-                "https://$enlaceEmpresa/$ambienteJob/obtenerdatospedidos_V3.php?cod_usuario=$cod_usuario&fecha_sinc=${
-                    getFecha(
-                        "ke_opti"
-                    )
-                }"
+                "https://$enlaceEmpresa/$ambienteJob/obtenerdatospedidos_V3.php?cod_usuario=$cod_usuario&fecha_sinc=$fechaKeOpti"
             )
 
-            9 -> bajarArticulos3("https://$enlaceEmpresa/$ambienteJob/articulos_V26.php?fecha_sinc=$fecha_sinc_articulo")
-            10 -> bajarKardex("https://$enlaceEmpresa/$ambienteJob/kardex_V3.php?fecha_sinc=$fecha_sinc_articulo")
+            9 -> bajarArticulos3("https://$enlaceEmpresa/$ambienteJob/articulos_V26.php?fecha_sinc=$fechaSincArticulo")
+            10 -> bajarKardex("https://$enlaceEmpresa/$ambienteJob/kardex_V3.php?fecha_sinc=$fechaSincArticulo")
             11 -> subirLimite()
             12 -> actualizarLimites("https://" + enlaceEmpresa + "/" + ambienteJob + "/obtenerlimites_V3.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
             13 -> bajarDocumentos("https://$enlaceEmpresa/$ambienteJob/planificador_V3.php?vendedor=$cod_usuario")
             14 -> bajarDatosExtra("https://$enlaceEmpresa/$ambienteJob/descarga_referencias.php?vendedor=$cod_usuario")
             15 ->  //BajarConfigExtra("https://" + enlaceEmpresa + "/" + ambienteJob + "/config_gen2.php?vendedor=" + cod_usuario.trim() + "&fecha_sinc=" + fechaSincronizar("ke_wcnf_conf"));
-                bajarConfigExtra("https://" + enlaceEmpresa + "/" + ambienteJob + "/config_gen2.php?vendedor=" + cod_usuario!!.trim { it <= ' ' } + "&fecha_sinc=" + fechaSincronizar(
-                    "ke_wcnf_conf"
-                ))
+                bajarConfigExtra(//<-- TE QUEDASTE AQUI
+                    "https://$enlaceEmpresa/$ambienteJob/config_gen2.php?vendedor=$cod_usuario"
+                )
 
-            16 -> bajarBancos(
-                "https://$enlaceEmpresa/webservice/bancos_V2.php?fecha_sinc=" + getFecha(
-                    "listbanc"
-                ) + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-
-            17 -> bajarPromociones("https://$enlaceEmpresa/webservice/promociones_V2.php")
-            18 -> bajarDescuentos("https://$enlaceEmpresa/webservice/descuentos.php" /*+"?fechamodifi=" + GetFecha("ke_tabdctos")*/)
-            19 -> bajarDescuentosBancos("https://$enlaceEmpresa/webservice/descuento_bancos.php" /*+"fechamodifi=" + GetFecha("ke_tabdctosbcos")*/)
+            //16 -> bajarBancos("https://$enlaceEmpresa/webservice/bancos_V3.php")
+            //17 -> bajarPromociones("https://$enlaceEmpresa/webservice/promociones_V2.php")
+            //18 -> bajarDescuentos("https://$enlaceEmpresa/webservice/descuentos.php" /*+"?fechamodifi=" + GetFecha("ke_tabdctos")*/)
+            //19 -> bajarDescuentosBancos("https://$enlaceEmpresa/webservice/descuento_bancos.php" /*+"fechamodifi=" + GetFecha("ke_tabdctosbcos")*/)
             20 -> {
                 //IF que valida si hasta el momento no hay errores en la sincronizacion, en caso de haber no enviara la ultima sincronizacion
                 if (!varAuxError) {
@@ -484,7 +484,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val fechamodifi = descuento.getString("fechamodifi")
                             val dcobValesiempre = descuento.getString("dcob_valesiempre")
                             val dcobValemon = descuento.getString("dcob_valemon")
+
                             descuentoNube.add(dcobId)
+
                             val cv = ContentValues()
                             cv.put("dcob_id", dcobId)
                             cv.put("dcob_prc", dcobPrc)
@@ -497,18 +499,27 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("dcob_valesiempre", dcobValesiempre)
                             cv.put("dcob_valemon", dcobValemon)
-                            if (conn.validarExistencia("ke_tabdctos", "dcob_id", dcobId)) {
-                                //System.out.println("UPDATE " + documento);
-                                conn.updateJSON("ke_tabdctos", cv, "dcob_id", dcobId)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_tabdctos", ArrayList(
+                                        mutableListOf("dcob_id", "empresa")
+                                    ), arrayListOf(dcobId, codEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_tabdctos",
+                                    cv,
+                                    "dcob_id = ? AND empresa = ?",
+                                    arrayOf(dcobId, codEmpresa!!)
+                                )
                             } else {
-                                //System.out.println("INSERT " + documento);
                                 conn.insertJSON("ke_tabdctos", cv)
                             }
                         }
-                        conn.updateTablaAux("ke_tabdctos", codEmpresa!!)
-
+                        //conn.updateTablaAux("ke_tabdctos", codEmpresa!!)
+                        eliminarDocViejos(descuentoNube, keAndroid, "ke_tabdctos", "dcob_id")
                     }
-                    eliminarDocViejos(descuentoNube, keAndroid, "ke_tabdctos", "dcob_id")
                     varAux++
                     sincronizacionVendedor()
                 } catch (e: Exception) {
@@ -551,28 +562,42 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val fechamodifi = img.getString("fechamodifi")
                             val ancho = img.getString("ancho")
                             val alto = img.getString("alto")
+
                             imgNube.add(nombre)
+
                             val cv = ContentValues()
                             cv.put("nombre", nombre)
                             cv.put("enlace", enlace)
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("ancho", ancho)
                             cv.put("alto", alto)
-                            if (conn.validarExistencia("img_carousel", "nombre", nombre)) {
-                                //System.out.println("UPDATE " + documento);
-                                conn.updateJSON("img_carousel", cv, "nombre= ?", nombre)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "img_carousel", ArrayList(
+                                        mutableListOf("nombre", "empresa")
+                                    ), arrayListOf(nombre, codEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "img_carousel",
+                                    cv,
+                                    "nombre = ? AND empresa = ?",
+                                    arrayOf(nombre, codEmpresa!!)
+                                )
                             } else {
-                                //System.out.println("INSERT " + documento);
                                 conn.insertJSON("img_carousel", cv)
                             }
                         }
+
+                        eliminarDocViejos(imgNube, keAndroid, "img_carousel", "nombre")
+
                         varAux++
                         sincronizacionVendedor()
                     } else {
                         varAux++
                         sincronizacionVendedor()
                     }
-                    eliminarDocViejos(imgNube, keAndroid, "img_carousel", "nombre")
                 } catch (e: Exception) {
                     println("--Error--")
                     e.printStackTrace()
@@ -613,42 +638,43 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val nombanco = banco.getString("nombanco")
                             val codbanco = banco.getString("codbanco")
                             val inactiva = banco.getString("inactiva")
+
                             bancosNube.add(codbanco)
+
                             val cv = ContentValues()
                             cv.put("cuentanac", cuentanac)
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("nombanco", nombanco)
                             cv.put("codbanco", codbanco)
                             cv.put("inactiva", inactiva)
-                            val qcodigoLocal = keAndroid.rawQuery(
-                                "SELECT count(codbanco) FROM listbanc WHERE codbanco = '$codbanco';",
-                                null
-                            )
-                            var codigoExistente = 0
-                            if (qcodigoLocal.moveToFirst()) {
-                                codigoExistente = qcodigoLocal.getInt(0)
-                            }
-                            qcodigoLocal.close()
-                            if (codigoExistente > 0) {
-                                //System.out.println("UPDATE " + documento);
-                                keAndroid.update("listbanc", cv, "codbanco= ?", arrayOf(codbanco))
-                            } else if (codigoExistente == 0) {
-                                //System.out.println("INSERT " + documento);
-                                keAndroid.insert("listbanc", null, cv)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "listbanc", ArrayList(
+                                        mutableListOf("codbanco", "empresa")
+                                    ), arrayListOf(codbanco, codEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "listbanc",
+                                    cv,
+                                    "codbanco = ? AND empresa = ?",
+                                    arrayOf(codbanco, codEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("listbanc", cv)
                             }
                         }
-                        keAndroid.delete("listbanc", "inactiva = ?", arrayOf("1"))
+
+                        conn.deleteJSONCamposVarios(
+                            "listbanc",
+                            "inactiva= ? AND empresa = ?",
+                            arrayOf("1", codEmpresa)
+                        )
+
                         eliminarDocViejos(bancosNube, keAndroid, "listbanc", "codbanco")
-                        try {
-                            val fechaLimites1 = Calendar.getInstance()
-                            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                            val fechaLimites = sdf.format(fechaLimites1.time)
-                            val cv = ContentValues()
-                            cv.put("fchhn_ultmod", fechaLimites)
-                            keAndroid.update("tabla_aux", cv, "tabla= ?", arrayOf("listbanc"))
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+
+                        //conn.updateTablaAux("listbanc", codEmpresa!!)
                         varAux++
                         sincronizacionVendedor()
                     } else {
@@ -721,43 +747,35 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("cnfg_tipo", cnfgTipo)
                             cv.put("cnfg_valfch", cnfgValfch)
                             cv.put("username", username)
-                            val qcodigoLocal = keAndroid.rawQuery(
-                                "SELECT count(cnfg_valtxt) FROM ke_wcnf_conf WHERE cnfg_idconfig = '$cnfgIdconfig';",
-                                null
-                            )
-                            var codigoExistente = 0
-                            if (qcodigoLocal.moveToFirst()) {
-                                codigoExistente = qcodigoLocal.getInt(0)
-                            }
-                            qcodigoLocal.close()
-                            if (codigoExistente > 0) {
-                                //System.out.println("UPDATE " + documento);
-                                keAndroid.update(
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_wcnf_conf", ArrayList(
+                                        mutableListOf("cnfg_idconfig", "empresa")
+                                    ), arrayListOf(cnfgIdconfig, codEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
                                     "ke_wcnf_conf",
                                     cv,
-                                    "cnfg_idconfig= ?",
-                                    arrayOf(cnfgIdconfig)
+                                    "cnfg_idconfig = ? AND empresa = ?",
+                                    arrayOf(cnfgIdconfig, codEmpresa!!)
                                 )
-                            } else if (codigoExistente == 0) {
-                                //System.out.println("INSERT " + documento);
-                                keAndroid.insert("ke_wcnf_conf", null, cv)
+                            } else {
+                                conn.insertJSON("ke_wcnf_conf", cv)
                             }
                         }
-                        try {
-                            val fechaLimites1 = Calendar.getInstance()
-                            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                            val fechaLimites = sdf.format(fechaLimites1.time)
-                            val cv = ContentValues()
-                            cv.put("fchhn_ultmod", fechaLimites)
-                            keAndroid.update("tabla_aux", cv, "tabla= ?", arrayOf("ke_wcnf_conf"))
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            Toast.makeText(this, "Evento en Config 1", Toast.LENGTH_LONG)
-                                .show()
-                        }
+
+                        //conn.updateTablaAux("ke_wcnf_conf", codEmpresa!!)
+                        eliminarDocViejos(configNube, keAndroid, "ke_wcnf_conf", "cnfg_idconfig")
+
                     }
-                    keAndroid.delete("ke_wcnf_conf", "cnfg_activa= ?", arrayOf("0"))
-                    eliminarDocViejos(configNube, keAndroid, "ke_wcnf_conf", "cnfg_idconfig ")
+                    conn.deleteJSONCamposVarios(
+                        "ke_wcnf_conf",
+                        "cnfg_activa= ? AND empresa = ?",
+                        arrayOf("0", codEmpresa)
+                    )
+                    //keAndroid.delete("ke_wcnf_conf", "cnfg_activa= ?", arrayOf("0"))
                     varAux++
                     sincronizacionVendedor()
                 } catch (e: JSONException) {
@@ -806,36 +824,37 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     if (response.getString("referencias") != "null") {
                         var countRef = 0
                         val referencias = response.getJSONArray("referencias")
+
                         for (i in 0 until referencias.length()) {
                             val jsonObject = referencias.getJSONObject(i)
                             val bcoref = jsonObject.getString("bcoref")
                             val bcocod = jsonObject.getString("bcocod")
+
                             refNube.add(bcoref)
-                            val qReferencias = ContentValues()
-                            qReferencias.put("bcoref", bcoref)
-                            qReferencias.put("bcocod", bcocod)
-                            qReferencias.put("tiporef", "banc")
-                            val qcodigoRef = keAndroid.rawQuery(
-                                "SELECT count(bcoref) FROM ke_referencias WHERE bcoref = '$bcoref';",
-                                null
-                            )
-                            var refExistente = 0
-                            if (qcodigoRef.moveToFirst()) {
-                                refExistente = qcodigoRef.getInt(0)
-                            }
-                            qcodigoRef.close()
-                            if (refExistente > 0) {
-                                //System.out.println("UPDATE " + bcoref);
-                                keAndroid.update(
-                                    "ke_referencias",
-                                    qReferencias,
-                                    "bcoref= ?",
-                                    arrayOf(bcoref)
+
+                            val cv = ContentValues()
+                            cv.put("bcoref", bcoref)
+                            cv.put("bcocod", bcocod)
+                            cv.put("tiporef", "banc")
+                            cv.put("empresa", codEmpresa)
+
+                            //Creo que solo deberia de estar el insertar
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_referencias", ArrayList(
+                                        mutableListOf("bcoref", "empresa")
+                                    ), arrayListOf(bcoref, codEmpresa!!)
                                 )
-                            } else if (refExistente == 0) {
-                                //System.out.println("INSERT " + bcoref);
-                                keAndroid.insert("ke_referencias", null, qReferencias)
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_referencias",
+                                    cv,
+                                    "bcoref = ? AND empresa = ?",
+                                    arrayOf(bcoref, codEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("ke_referencias", cv)
                             }
+
                             countRef++
                         }
                         //progressDialog.setMessage("Referencias:" + countRef);
@@ -1083,7 +1102,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun arrayDocumento(tabla: String, campo: String): ArrayList<String> {
         val keAndroid = conn.writableDatabase
         val documentos = ArrayList<String>()
-        val cursor = keAndroid.rawQuery("SELECT $campo FROM $tabla;", null)
+        val cursor = keAndroid.rawQuery("SELECT $campo FROM $tabla WHERE empresa = $codEmpresa;", null)
         while (cursor.moveToNext()) {
             documentos.add(cursor.getString(0))
         }
@@ -1881,7 +1900,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     //------------------------------ METODO PARA OBTENER FECHA -------------------------------------
     private fun getFechas() {
-        getFechaArticulo()
+        fechaSincGrupos = getFecha("grupos")
+        fechaSincSubGrupos = getFecha("subgrupos")
+        fechaSincSectores = getFecha("sectores")
+        fechaSincSubSectores = getFecha("subsectores")
+        fechaKeOpti = getFecha("ke_opti")
+        fechaSincArticulo = getFecha("articulo")
+        fechaSincKeWcnfConf = getFecha("ke_wcnf_conf")
+
+
+        /*getFechaArticulo()
         getFechaCliempre()
         getFechaListvend()
         getFechaGrupos()
@@ -1889,7 +1917,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         getFechaSectores()
         getFechaSubgrupos()
         getFechaSubsectores()
-        getFechaLimites()
+        getFechaLimites()*/
     }
 
     private fun getFechaArticulo() {
@@ -1983,7 +2011,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun getFecha(tabla: String): String {
         val keAndroid = conn.writableDatabase
         val fechaUltmod =
-            keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla';", null)
+            keAndroid.rawQuery(
+                "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa';",
+                null
+            )
         var fecha = "0001-01-01T01:01:01"
         if (fechaUltmod.moveToFirst()) {
             fecha = fechaUltmod.getString(0)
@@ -2984,7 +3015,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 e.printStackTrace()
                             }
                         }
-                        keAndroid.delete("cliempre", "status= ?", arrayOf("2"))
+                        conn.deleteJSONCamposVarios(
+                            "cliempre",
+                            "status= ? AND empresa = ?",
+                            arrayOf("2", codEmpresa)
+                        )
+                        //keAndroid.delete("cliempre", "status= ?", arrayOf("2"))
                         eliminarDocViejos(clientesNube, keAndroid, "cliempre", "codigo")
                         conn.updateTablaAux("cliempre", codEmpresa!!)
 
@@ -4675,6 +4711,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     /*******************tabla kardex */
     private fun bajarKardex(url: String) {
+        val articulosNube = ArrayList<String?>()
         val jsonObjectRequest: JsonObjectRequest = object :
             JsonObjectRequest(Method.GET, url, null, Response.Listener { response: JSONObject ->
                 try {
@@ -4683,13 +4720,15 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         val articulo = response.getJSONArray("kardex")
                         //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                         val keAndroid = conn.writableDatabase
-                        keAndroid.delete("ke_kardex", "1", null)
+                        //keAndroid.delete("ke_kardex", "1", null)
                         for (i in 0 until articulo.length()) {
                             try {
                                 jsonObject = articulo.getJSONObject(i)
                                 val codigoKardex = jsonObject.getString("codigo")
                                 val cantidadKardex = jsonObject.getDouble("cantidad")
                                 val fechaKardex = jsonObject.getString("fecha")
+
+                                articulosNube.add(codigoKardex)
 
                                 val cv = ContentValues()
                                 cv.put("kde_codart", codigoKardex)
@@ -4712,6 +4751,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     .show()
                             }
                         }
+
+                        eliminarDocViejos(articulosNube, keAndroid, "ke_kardex", "kde_codart")
+
 
                         // No requiere de actualizar por que bajarArticulos ya lo actualiza
                         //conn.updateTablaAux("articulo", codEmpresa!!)
