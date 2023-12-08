@@ -39,6 +39,7 @@ import androidx.viewbinding.ViewBinding
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.ModuloReten.ModuloRetenActivity
 import com.appcloos.mimaletin.databinding.ActivityPrincipalBinding
@@ -87,7 +88,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     var btNuevosArticulos: Button? = null
     private var permisos: ArrayList<String>? = null
     var filas = 0
-    var REQUEST_CODE = 200
+    private var REQUEST_CODE = 200
     var objetoAux: ObjetoAux? = null
     lateinit var conn: AdminSQLiteOpenHelper
     var sesionObsoleta = false
@@ -130,8 +131,11 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             "kee_codigo",
             codigoEmpresa ?: Constantes.CLO
         )
+
+        fechaAuxiliar = conn.getFecha("kecxc_tasas", codigoEmpresa!!)
+
         objetoAux!!.descargaDesactivo(cod_usuario!!)
-        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!)
+        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codigoEmpresa!!)
         DESACTIVADO = conn.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS")
         checkForAppUpdate()
@@ -168,9 +172,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         llHeaderNavMenu = headerView.findViewById(R.id.llHeaderNavMenu)
         tvNombreu.text = "Bienvenid@, $nombreUsuario"
         tvNomEmpresa.text = "Empresa: $nombreEmpresa"
-        descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fechaAuxiliar.trim { it <= ' ' } + "&&agencia=" + codigoSucursal!!.trim { it <= ' ' })
+        descargarTasas("https://$enlaceEmpresa/webservice/tasas_V2.php?fecha_sinc=$fechaAuxiliar")
         binding.imgSyncTasa.setOnClickListener {
-            descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fechaAuxiliar.trim { it <= ' ' } + "&&agencia=" + codigoSucursal!!.trim { it <= ' ' })
+            descargarTasas("https://$enlaceEmpresa/webservice/tasas_V2.php?fecha_sinc=$fechaAuxiliar")
             Toast.makeText(this@PrincipalActivity, "Actualizando tasa...", Toast.LENGTH_SHORT)
                 .show()
         }
@@ -212,7 +216,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     private fun carousel() {
         val carousel = findViewById<ImageCarousel>(R.id.carousel)
         carousel.registerLifecycle(this.lifecycle)
-        val list = conn!!.imgCarousel
+        val list = conn.imgCarousel(codigoEmpresa!!)
         carousel.carouselListener = object : CarouselListener {
             override fun onCreateViewHolder(
                 layoutInflater: LayoutInflater,
@@ -295,9 +299,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     private fun cargarUtilmaTasa() {
         //descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim());
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kecxc_tasa, kecxc_fchyhora FROM kecxc_tasas ORDER BY kecxc_fchyhora DESC LIMIT 1",
+            "SELECT kecxc_tasa, kecxc_fchyhora FROM kecxc_tasas WHERE empresa = '$codigoEmpresa' ORDER BY kecxc_fchyhora DESC LIMIT 1",
             null
         )
         var fechaTasa: String? = ""
@@ -334,43 +338,51 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     private fun descargarTasas(url: String) {
-        val keAndroid = conn!!.writableDatabase
-        val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
-                if (response != null) {
-                    var jsonObject: JSONObject
+        val keAndroid = conn.writableDatabase
+        val jsonArrayRequest: JsonObjectRequest =
+            object : JsonObjectRequest(url, Response.Listener { response: JSONObject ->
+                if (response.getString("tasas") != "null") {
                     keAndroid.beginTransaction()
                     try {
-                        for (i in 0 until response.length()) {
-                            jsonObject = response.getJSONObject(i)
-                            val id = jsonObject.getString("id").trim { it <= ' ' }
-                            val fecha = jsonObject.getString("fecha").trim { it <= ' ' }
+                        val tasas = response.getJSONArray("tasas")
+                        for (i in 0 until tasas.length()) {
+                            val jsonObject = tasas.getJSONObject(i)
+
+                            val id = jsonObject.getString("id")
+                            val fecha = jsonObject.getString("fecha")
                             val tasa = jsonObject.getDouble("tasa")
-                            val ip = jsonObject.getString("ip").trim { it <= ' ' }
-                            val fchyhora = jsonObject.getString("fechayhora").trim { it <= ' ' }
-                            val fechamod = jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                            val qtasas = ContentValues()
-                            qtasas.put("kecxc_id", id)
-                            qtasas.put("kecxc_fecha", fecha)
-                            qtasas.put("kecxc_tasa", tasa)
-                            qtasas.put("kecxc_ip", ip)
-                            qtasas.put("kecxc_fchyhora", fchyhora)
-                            qtasas.put("fechamodifi", fechamod)
-                            val qcodigolocal = keAndroid.rawQuery(
-                                "SELECT count(kecxc_id) FROM kecxc_tasas WHERE kecxc_id ='$id'",
-                                null
-                            )
-                            qcodigolocal.moveToFirst()
-                            val codigoExistente = qcodigolocal.getInt(0)
-                            qcodigolocal.close()
-                            if (codigoExistente > 0) {
-                                val args = arrayOf("" + id + "")
-                                keAndroid.update("kecxc_tasas", qtasas, "kecxc_id= ?", args)
-                            } else if (codigoExistente == 0) {
-                                keAndroid.insert("kecxc_tasas", null, qtasas)
+                            val ip = jsonObject.getString("ip")
+                            val fchyhora = jsonObject.getString("fechayhora")
+                            val fechamod = jsonObject.getString("fechamodifi")
+
+                            val cv = ContentValues()
+                            cv.put("kecxc_id", id)
+                            cv.put("kecxc_fecha", fecha)
+                            cv.put("kecxc_tasa", tasa)
+                            cv.put("kecxc_ip", ip)
+                            cv.put("kecxc_fchyhora", fchyhora)
+                            cv.put("fechamodifi", fechamod)
+                            cv.put("empresa", codigoEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "kecxc_tasas", ArrayList(
+                                        mutableListOf("kecxc_id", "empresa")
+                                    ), arrayListOf(id, codigoEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "kecxc_tasas",
+                                    cv,
+                                    "kecxc_id = ? AND empresa = ?",
+                                    arrayOf(id, codigoEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("kecxc_tasas", cv)
                             }
-                            llCommit = true
+
                         }
+                        conn.updateTablaAux("kecxc_tasas", codigoEmpresa!!)
+                        llCommit = true
                         cargarUtilmaTasa()
                     } catch (exception: Exception) {
                         cargarUtilmaTasa()
@@ -384,6 +396,8 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     } else if (!llCommit) {
                         keAndroid.endTransaction()
                     }
+                }else{
+                    cargarUtilmaTasa()
                 }
             }, Response.ErrorListener { error: VolleyError ->
                 cargarUtilmaTasa()
@@ -409,11 +423,11 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         String enlaceCom = "https://" + enlaceEmpresa + "/img/app_img_com.jpg";
         Picasso.get().load(enlaceCom).resize(500,400).centerCrop().into(img_comunicados);
     }*/
-    fun cargarModulosActivos() {
-        val keAndroid = conn!!.writableDatabase
+    private fun cargarModulosActivos() {
+        val keAndroid = conn.writableDatabase
         //Cursor cursor = ke_android.rawQuery("SELECT kmo_codigo FROM ke_modulos WHERE kmo_status = '1' AND ked_codigo='" + codigoEmpresa + "'", null);
         val cursor = keAndroid.rawQuery(
-            "SELECT cnfg_idconfig FROM ke_wcnf_conf WHERE cnfg_clase = 'M' AND cnfg_valsino = '1';",
+            "SELECT cnfg_idconfig FROM ke_wcnf_conf WHERE cnfg_clase = 'M' AND cnfg_valsino = '1' AND empresa = '$codigoEmpresa';",
             null
         )
         while (cursor.moveToNext()) {
@@ -421,17 +435,19 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         }
         for (i in permisos!!.indices) {
             when (permisos!![i]) {
-                "APP_MODULO_CLIENTES" -> if (!conn!!.getConfigBoolUsuario(
+                "APP_MODULO_CLIENTES" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_CLIENTES_USER",
-                        cod_usuario!!
+                        cod_usuario!!,
+                        codigoEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(0).isVisible = true
                 }
 
-                "APP_MODULO_CATALOGO" -> if (!conn!!.getConfigBoolUsuario(
+                "APP_MODULO_CATALOGO" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_CATALOGO_USER",
-                        cod_usuario!!
+                        cod_usuario!!,
+                        codigoEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(1).isVisible = true
@@ -439,18 +455,20 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     navView.menu.getItem(3).isVisible = true
                 }
 
-                "APP_MODULO_PEDIDO" -> if (!conn!!.getConfigBoolUsuario(
+                "APP_MODULO_PEDIDO" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_PEDIDO_USER",
-                        cod_usuario!!
+                        cod_usuario!!,
+                        codigoEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(4).isVisible = true
                 }
 
                 "APP_MODULO_CXC_OLD" ->                     //cobranzas viejas
-                    if (!conn!!.getConfigBoolUsuario(
+                    if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_CXC_OLD_USER",
-                            cod_usuario!!
+                            cod_usuario!!,
+                            codigoEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(7).isVisible = true
@@ -459,9 +477,10 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 "APP_MODULO_CXC" ->                     //navView.getMenu().getItem(4).setVisible(true);
 
                     //cobranzas nuevas
-                    if (!conn!!.getConfigBoolUsuario(
+                    if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_CXC_USER",
-                            cod_usuario!!
+                            cod_usuario!!,
+                            codigoEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(8).isVisible = true
@@ -469,33 +488,37 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     }
 
                 "APP_MODULO_RETEN" -> {
-                    if (!conn!!.getConfigBoolUsuario(
+                    if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_RETEN_USER",
-                            cod_usuario!!
+                            cod_usuario!!,
+                            codigoEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(10).isVisible = true
                     }
-                    if (!conn!!.getConfigBoolUsuario(
+                    if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_ESTADISTICA_USER",
-                            cod_usuario!!
+                            cod_usuario!!,
+                            codigoEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(5).isVisible = true
                     }
                 }
 
-                "APP_MODULO_ESTADISTICA" -> if (!conn!!.getConfigBoolUsuario(
+                "APP_MODULO_ESTADISTICA" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_ESTADISTICA_USER",
-                        cod_usuario!!
+                        cod_usuario!!,
+                        codigoEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(5).isVisible = true
                 }
 
-                "APP_MODULO_RECLAMO" -> if (!conn!!.getConfigBoolUsuario(
+                "APP_MODULO_RECLAMO" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_RECLAMO_USER",
-                        cod_usuario!!
+                        cod_usuario!!,
+                        codigoEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(6).isVisible = true
@@ -506,7 +529,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf("kee_nombre," + "kee_url," + "kee_sucursal")
         val cursor = keAndroid.query(
             "ke_enlace",
@@ -672,7 +695,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     //este es el metodo para cerrar sesion
     private fun cerrarsesion() {
-        conn!!.deleteAll("usuarios")
+        conn.deleteAll("usuarios")
         objetoAux!!.login(cod_usuario!!, 0)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         preferences.edit().clear().apply()
@@ -690,9 +713,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     private fun obtenerPermisos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT desactivo FROM usuarios  WHERE vendedor = '$cod_usuario'",
+            "SELECT desactivo FROM usuarios  WHERE vendedor = '$cod_usuario' AND empresa = '$codigoEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -703,9 +726,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     @Throws(ParseException::class)
     private fun validarSesionActiva() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT desactivo FROM usuarios  WHERE vendedor ='$cod_usuario'",
+            "SELECT desactivo FROM usuarios  WHERE vendedor ='$cod_usuario' AND empresa = '$codigoEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -860,7 +883,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     private fun recargarEmpresa() {
         finish()
-        startActivity(getIntent())
+        startActivity(intent)
     }
 
     private fun irAPromo() {
@@ -903,9 +926,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     //Funcion que valida el tiempo que lleva el vendedor sin sincroonizar
     private fun pedidoBloq(): Boolean {
         //Ejecucion de la seleccion de la fechas mas actual dentro de articulo
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT ult_sinc FROM usuarios WHERE vendedor = '$cod_usuario'",
+            "SELECT ult_sinc FROM usuarios WHERE vendedor = '$cod_usuario' AND empresa = '$codigoEmpresa'",
             null
         )
 

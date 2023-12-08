@@ -49,8 +49,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private var listalineas: ArrayList<Carrito>? = null
     private var appUpdateManager = AppUpdateManagerFactory.create(this)
     private var progressDialog: ProgressDialog? = null
-    private var SINCRONIZO = false
-    private var DESACTIVADO = false
+    private var SINCRONIZO = false //<-- Variable que indica si sincronizo por primera vez
+    private var DESACTIVADO = false //<-- Varialb que indica si el usuario esta desactivado
 
     private lateinit var fechaSincGrupos: String
     private lateinit var fechaSincSubGrupos: String
@@ -81,7 +81,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         checkForAppUpdate()
         setColors()
         val cursorsupervisor = keAndroid.rawQuery(
-            "SELECT superves FROM usuarios WHERE vendedor ='$cod_usuario'", null
+            "SELECT superves FROM usuarios WHERE vendedor ='$cod_usuario' AND empresa = '$codEmpresa'",
+            null
         )
         while (cursorsupervisor.moveToNext()) {
             nivelUsuario = cursorsupervisor.getString(0)
@@ -150,12 +151,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //bt_subirprecob.setVisibility(View.INVISIBLE);
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!)
-        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!)
-        DESACTIVADO = conn.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
+        SINCRONIZO = conn.sincronizoPriVez(
+            cod_usuario!!,
+            codEmpresa!!
+        ) //<-- Verificando si sincronizo por primera vez
+        DESACTIVADO = conn.getCampoIntCamposVarios(
+            "usuarios",
+            "desactivo",
+            listOf("vendedor", "empresa"),
+            listOf(cod_usuario!!, codEmpresa!!)
+        ) == 0 //<-- Buscando y comparando el estatus de desactivacion del usuario, 1 = Desactivo, 0 = Activo
         if (!conn.getConfigBoolUsuario(
-                "APP_MODULO_CXC_USER",
-                cod_usuario!!
-            ) && SINCRONIZO && DESACTIVADO
+                "APP_MODULO_CXC_USER",//<-- Buscando si el usuario tiene acceso al modulo de cobranzas
+                cod_usuario!!,
+                codEmpresa!!
+            ) && SINCRONIZO && DESACTIVADO //<-- Comparando acceso al modulo CXC, sincronizacion por primera vez y el status de desactivacion
         ) {
             binding.btnSubirprecob.visibility = View.VISIBLE
         }
@@ -174,7 +184,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 val contenedor = ContentValues()
                 contenedor.put("ult_sinc", "0001-01-01")
                 keAndroid.beginTransaction()
-                keAndroid.update("usuarios", contenedor, "vendedor = ?", arrayOf(cod_usuario))
+                keAndroid.update(
+                    "usuarios",
+                    contenedor,
+                    "vendedor = ? AND empresa = ?",
+                    arrayOf(cod_usuario, codEmpresa)
+                )
                 //ke_android.rawQuery("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'", null);
                 //System.out.println("LLEGUE " + varAuxError);
                 //System.out.println("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'");
@@ -217,7 +232,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             val contenedor = ContentValues()
             contenedor.put("ult_sinc", "0001-01-01")
             keAndroid.beginTransaction()
-            keAndroid.update("usuarios", contenedor, "vendedor = ?", arrayOf(cod_usuario))
+            keAndroid.update(
+                "usuarios",
+                contenedor,
+                "vendedor = ? AND empresa = ?",
+                arrayOf(cod_usuario, codEmpresa)
+            )
             //ke_android.rawQuery("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'", null);
             //System.out.println("LLEGUE " + varAuxError);
             //System.out.println("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'");
@@ -256,7 +276,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //conn = AdminSQLiteOpenHelper(this@SincronizacionActivity, "ke_android", null)
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kcx_nrorecibo, kcx_codcli, kcx_codven, kcx_fechamodifi, kcx_monto FROM ke_cxc WHERE kcx_status = '0'",
+            "SELECT kcx_nrorecibo, kcx_codcli, kcx_codven, kcx_fechamodifi, kcx_monto FROM ke_cxc WHERE kcx_status = '0' AND empresa = '$codEmpresa'",
             null
         )
         arrayRec = JSONArray()
@@ -280,7 +300,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 e.printStackTrace()
                 Toast.makeText(
                     this@SincronizacionActivity,
-                    "Evento inesperado al cargar el recibo$e",
+                    "Evento inesperado al cargar el recibo $e",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -339,7 +359,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             try {
                 val objetodeRecibo = arrayRec!!.getJSONObject(i)
                 val codigoDelReciboEnArray = objetodeRecibo.getString("kcx_nrorecibo")
-                keAndroid.execSQL("UPDATE ke_cxc SET kcx_status = '1' WHERE kcx_nrorecibo = '$codigoDelReciboEnArray'")
+                keAndroid.execSQL("UPDATE ke_cxc SET kcx_status = '1' WHERE kcx_nrorecibo = '$codigoDelReciboEnArray' AND empresa = '$codEmpresa'")
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
@@ -371,10 +391,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     "https://$enlaceEmpresa/$ambienteJob/config_gen2.php?vendedor=$cod_usuario"
                 )
 
-            //16 -> bajarBancos("https://$enlaceEmpresa/webservice/bancos_V3.php")
-            //17 -> bajarPromociones("https://$enlaceEmpresa/webservice/promociones_V2.php")
-            //18 -> bajarDescuentos("https://$enlaceEmpresa/webservice/descuentos.php" /*+"?fechamodifi=" + GetFecha("ke_tabdctos")*/)
-            //19 -> bajarDescuentosBancos("https://$enlaceEmpresa/webservice/descuento_bancos.php" /*+"fechamodifi=" + GetFecha("ke_tabdctosbcos")*/)
+            16 -> bajarBancos("https://$enlaceEmpresa/webservice/bancos_V3.php")
+            17 -> bajarPromociones("https://$enlaceEmpresa/webservice/promociones_V2.php")
+            18 -> bajarDescuentos("https://$enlaceEmpresa/webservice/descuentos.php" /*+"?fechamodifi=" + GetFecha("ke_tabdctos")*/)
+            19 -> bajarDescuentosBancos("https://$enlaceEmpresa/webservice/descuento_bancos.php" /*+"fechamodifi=" + GetFecha("ke_tabdctosbcos")*/)
             20 -> {
                 //IF que valida si hasta el momento no hay errores en la sincronizacion, en caso de haber no enviara la ultima sincronizacion
                 if (!varAuxError) {
@@ -402,12 +422,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val dcobId = descuentoBanco.getString("dcob_id")
                             val bcoCodigo = descuentoBanco.getString("bco_codigo")
                             val fechamodifi = descuentoBanco.getString("fechamodifi")
+
                             descuentoBancoNube.add(dcobId)
                             descuentoBancoNube2.add(bcoCodigo)
+
                             val cv = ContentValues()
                             cv.put("dcob_id", dcobId)
                             cv.put("bco_codigo", bcoCodigo)
                             cv.put("fechamodifi", fechamodifi)
+                            cv.put("empresa", codEmpresa)
+
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_tabdctosbcos", ArrayList(
                                         mutableListOf("dcob_id", "bco_codigo")
@@ -418,8 +442,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 conn.updateJSONCamposVarios(
                                     "ke_tabdctosbcos",
                                     cv,
-                                    "dcob_id = ? AND bco_codigo = ?",
-                                    arrayOf(dcobId, bcoCodigo)
+                                    "dcob_id = ? AND bco_codigo = ? AND empresa = ?",
+                                    arrayOf(dcobId, bcoCodigo, codEmpresa)
                                 )
                             } else {
                                 //System.out.println("INSERT " + documento);
@@ -1127,8 +1151,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             ) {
                 //System.out.println("DELETE " + documentosBDD.get(i));
                 keAndroid.delete(
-                    tabla, "$campo = ? AND $campo2 = ?", arrayOf(
-                        documentosBDD[i], documentosBDD2[i]
+                    tabla, "$campo = ? AND $campo2 = ? AND empresa = ?", arrayOf(
+                        documentosBDD[i], documentosBDD2[i], codEmpresa
                     )
                 )
 
@@ -1179,6 +1203,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     actualizar.put("kli_fechahizo", lfhizo)
                                     actualizar.put("kli_fechavence", lfvence)
                                     actualizar.put("status", "1")
+                                    actualizar.put("empresa", codEmpresa)
                                     val hoy = LocalDateTime.now()
                                     val formatter =
                                         DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
@@ -1189,7 +1214,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     // ke_android.update("ke_limitart", actualizar, "kli_fechahizo > ?", new String[]{fechaVal});
 
                                     //actualizamos la fecha de la tabla de
-                                    val fechaLimites1 = Calendar.getInstance()
+                                    /*val fechaLimites1 = Calendar.getInstance()
                                     val sdf = SimpleDateFormat(
                                         "yyyy-MM-dd'T'HH:mm:ss",
                                         Locale.getDefault()
@@ -1202,7 +1227,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         actualizarFecha,
                                         "tabla = ?",
                                         arrayOf("limites")
-                                    )
+                                    )*/
+                                    conn.updateTablaAux("limites", codEmpresa!!)
                                     keAndroid.setTransactionSuccessful()
                                 } catch (exception: Exception) {
                                     exception.printStackTrace()
@@ -1210,7 +1236,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     keAndroid.endTransaction()
                                 }
                                 val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(kli_track), count(kli_codart) FROM ke_limitart WHERE kli_codart = '$larticulo' AND kli_track ='$ltrack'",
+                                    "SELECT count(kli_track), count(kli_codart) FROM ke_limitart WHERE kli_codart = '$larticulo' AND kli_track ='$ltrack' AND empresa = '$codEmpresa'",
                                     null
                                 )
                                 codigoEnLocal.moveToFirst()
@@ -1243,6 +1269,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         actualizar.put("kli_fechahizo", lfhizo)
                                         actualizar.put("kli_fechavence", lfvence)
                                         actualizar.put("status", "1")
+                                        actualizar.put("empresa", codEmpresa)
                                         val hoy = LocalDateTime.now()
                                         val formatter =
                                             DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
@@ -1294,6 +1321,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         insertar.put("kli_fechahizo", lfhizo)
                                         insertar.put("kli_fechavence", lfvence)
                                         insertar.put("status", "1")
+                                        insertar.put("empresa", codEmpresa)
                                         val hoy = LocalDateTime.now()
                                         val formatter =
                                             DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
@@ -1304,7 +1332,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         keAndroid.insert("ke_limitart", null, insertar)
 
                                         //actualizamos la fecha de la tabla de
-                                        val fechaLimites1 = Calendar.getInstance()
+                                        /*val fechaLimites1 = Calendar.getInstance()
                                         val sdf = SimpleDateFormat(
                                             "yyyy-MM-dd'T'HH:mm:ss",
                                             Locale.getDefault()
@@ -1317,7 +1345,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                             actualizarFecha,
                                             "tabla = ?",
                                             arrayOf("limites")
-                                        )
+                                        )*/
+                                        conn.updateTablaAux("limites", codEmpresa!!)
                                         keAndroid.setTransactionSuccessful()
                                     } catch (exception: Exception) {
                                         exception.printStackTrace()
@@ -1356,6 +1385,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     insertar.put("kli_fechahizo", lfhizo)
                                     insertar.put("kli_fechavence", lfvence)
                                     insertar.put("status", "1")
+                                    insertar.put("empresa", codEmpresa)
+
                                     val hoy = LocalDateTime.now()
                                     val formatter =
                                         DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
@@ -1364,7 +1395,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     keAndroid.insert("ke_limitart", null, insertar)
 
                                     //actualizamos la fecha de la tabla de
-                                    val fechaLimites1 = Calendar.getInstance()
+                                    /*val fechaLimites1 = Calendar.getInstance()
                                     val sdf = SimpleDateFormat(
                                         "yyyy-MM-dd'T'HH:mm:ss",
                                         Locale.getDefault()
@@ -1377,7 +1408,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         actualizarFecha,
                                         "tabla = ?",
                                         arrayOf("limites")
-                                    )
+                                    )*/
+                                    conn.updateTablaAux("limites", codEmpresa!!)
                                     keAndroid.setTransactionSuccessful()
                                 } catch (e: JSONException) {
                                     Toast.makeText(
@@ -1428,7 +1460,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun subirLimite() {
         val keAndroid = conn.writableDatabase
         cursorLim =
-            keAndroid.rawQuery("SELECT " + "kli_track, " + "kli_codven, " + "kli_codcli, " + "kli_codart, " + "kli_cant, " + "kli_fechahizo, " + "kli_fechavence " + "FROM ke_limitart" + " WHERE status = '1'  " + "AND kli_fechahizo >'" + fecha_sinc_limites + "'" + "AND kli_codven = '" + cod_usuario!!.trim { it <= ' ' } + "'",
+            keAndroid.rawQuery("SELECT " + "kli_track, " + "kli_codven, " + "kli_codcli, " + "kli_codart, " + "kli_cant, " + "kli_fechahizo, " + "kli_fechavence " + "FROM ke_limitart" + " WHERE status = '1'  " + "AND kli_fechahizo >'" + fecha_sinc_limites + "'" + "AND kli_codven = '" + cod_usuario!!.trim { it <= ' ' } + "' AND empresa = '$codEmpresa'",
                 null)
         if (cursorLim.moveToFirst()) {
             cargarLimites()
@@ -1445,7 +1477,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             "Por favor, espere mientras los datos sincronizan. No abandone esta pantalla hasta que finalice el proceso"
         getFechas()
         bajarVendedor("https://" + enlaceEmpresa + "/" + ambienteJob + "/listvend.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-        bajarArticulos("https://" + enlaceEmpresa + "/" + ambienteJob + "/articulos.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+        //bajarArticulos("https://" + enlaceEmpresa + "/" + ambienteJob + "/articulos.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
         bajarKardex("https://" + enlaceEmpresa + "/" + ambienteJob + "/kardex.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
     }
 
@@ -1900,13 +1932,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     //------------------------------ METODO PARA OBTENER FECHA -------------------------------------
     private fun getFechas() {
-        fechaSincGrupos = getFecha("grupos")
-        fechaSincSubGrupos = getFecha("subgrupos")
-        fechaSincSectores = getFecha("sectores")
-        fechaSincSubSectores = getFecha("subsectores")
-        fechaKeOpti = getFecha("ke_opti")
-        fechaSincArticulo = getFecha("articulo")
-        fechaSincKeWcnfConf = getFecha("ke_wcnf_conf")
+        fechaSincGrupos = conn.getFecha("grupos", codEmpresa!!)
+        fechaSincSubGrupos = conn.getFecha("subgrupos", codEmpresa!!)
+        fechaSincSectores = conn.getFecha("sectores", codEmpresa!!)
+        fechaSincSubSectores = conn.getFecha("subsectores", codEmpresa!!)
+        fechaKeOpti = conn.getFecha("ke_opti", codEmpresa!!)
+        fechaSincArticulo = conn.getFecha("articulo", codEmpresa!!)
+        fechaSincKeWcnfConf = conn.getFecha("ke_wcnf_conf", codEmpresa!!)
 
 
         /*getFechaArticulo()
@@ -2008,7 +2040,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     //-------------------------------
-    private fun getFecha(tabla: String): String {
+    /*private fun getFecha(tabla: String, codEmpresa: String): String {
         val keAndroid = conn.writableDatabase
         val fechaUltmod =
             keAndroid.rawQuery(
@@ -2021,7 +2053,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         }
         fechaUltmod.close()
         return fecha
-    }
+    }*/
 
     private fun bajarArticulos(url: String) {
         //System.out.println("Este es el URL -> " + URL);
@@ -2138,7 +2170,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     keAndroid.endTransaction()
                                 }
                                 val codigoEnLocal = keAndroid.rawQuery(
-                                    "SELECT count(codigo) FROM articulo WHERE codigo = '$codigo'",
+                                    "SELECT count(codigo) FROM articulo WHERE codigo = '$codigo' AND empresa = '$codEmpresa'",
                                     null
                                 )
                                 codigoEnLocal.moveToFirst()
@@ -2479,7 +2511,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val actualizarFecha = ContentValues()
         actualizarFecha.put("fchhn_ultmod", fechaError)
         val keAndroid = conn.writableDatabase
-        keAndroid.update("tabla_aux", actualizarFecha, "tabla = 'articulo'", null)
+        keAndroid.update(
+            "tabla_aux",
+            actualizarFecha,
+            "tabla = 'articulo' AND empresa = '$codEmpresa'",
+            null
+        )
         keAndroid.close()
     }
 
@@ -2487,9 +2524,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
         val cursor =
-            keAndroid.rawQuery("SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla'", null)
-        cursor.moveToFirst()
-        val fechaError = cursor.getString(0)
+            keAndroid.rawQuery(
+                "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa'",
+                null
+            )
+        val fechaError: String = if (cursor.moveToFirst()) {
+            cursor.getString(0)
+        } else {
+            "0001-01-01 01:01:01"
+        }
+
         cursor.close()
         keAndroid.close()
         return fechaError
@@ -2520,7 +2564,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         println("Sincronizacion -> $json")
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "http://cloccidental.com:5001/sincroonizacion",
+            "http://$enlaceEmpresa:5001/sincroonizacion",
             json,
             { response: JSONObject? ->
                 if (response != null) {
@@ -2529,14 +2573,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         if (jsonObject.getString("status") == "404") {
                             Toast.makeText(
                                 this@SincronizacionActivity,
-                                "Error 404",
+                                "Evento 404",
                                 Toast.LENGTH_LONG
                             ).show()
                             varAuxError = true
                         } else if (jsonObject.getString("status") == "200" && jsonObject.getString("usuario") != cod_usuario) {
                             Toast.makeText(
                                 this@SincronizacionActivity,
-                                "Error inesperado al sincronizar",
+                                "Evento inesperado al sincronizar",
                                 Toast.LENGTH_LONG
                             ).show()
                             varAuxError = true
@@ -2555,8 +2599,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 contenedor.put("ult_sinc", strFechaBdd)
                                 contenedor.put("sinc_primera", 1)
                                 keAndroid.update(
-                                    "usuarios", contenedor, "vendedor = ?", arrayOf(
-                                        cod_usuario
+                                    "usuarios", contenedor, "vendedor = ? AND empresa = ?",
+                                    arrayOf(
+                                        cod_usuario, codEmpresa
                                     )
                                 )
                                 keAndroid.setTransactionSuccessful()
@@ -2575,7 +2620,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             error?.printStackTrace()
             Toast.makeText(
                 this@SincronizacionActivity,
-                "No ha logrado sincronizar",
+                "No ha logrado sincronizar, verifique su acceso a internet.",
                 Toast.LENGTH_LONG
             ).show()
             varAuxError = true
@@ -2813,7 +2858,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
                             //Creacion del cursor que ejecutara la sentencia SQL que busca ver si el articulo existe o no en la base de datos, buscandolo por medio de su articulo
                             val codigoEnLocal = keAndroid.rawQuery(
-                                "SELECT count(codigo), fechamodifi FROM articulo WHERE codigo = '$codigo'",
+                                "SELECT count(codigo), fechamodifi FROM articulo WHERE codigo = '$codigo' AND empresa = '$codEmpresa'",
                                 null
                             )
                             //Posicionamiento del cursor sobre su primer resultado
@@ -3895,8 +3940,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val keAndroid = conn.writableDatabase
         //Ejecucion del query que busca los pedidos que no se hayan subido
         cursorti =
-            keAndroid.rawQuery("SELECT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi FROM ke_opti WHERE kti_status = '0'  AND kti_codven ='" + cod_usuario!!.trim { it <= ' ' } + "'",
-                null)
+            keAndroid.rawQuery(
+                "SELECT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi FROM ke_opti WHERE kti_status = '0' AND kti_codven ='$cod_usuario' AND empresa = '$codEmpresa'",
+                null
+            )
         //If que analiza si existen pedidos aun no subidos
         if (cursorti.moveToFirst()) {
             //En el caso que si hayan pedidos por subir
@@ -3916,8 +3963,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val keAndroid = conn.writableDatabase
         //Busqueda de datos en la base de datos del tlf para validar la existencia de nuevas cobranzas por subir
         val cursorpc =
-            keAndroid.rawQuery("SELECT cxcndoc FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='" + cod_usuario!!.trim { it <= ' ' } + "'",
-                null)
+            keAndroid.rawQuery(
+                "SELECT cxcndoc FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='$cod_usuario' AND empresa = '$codEmpresa'",
+                null
+            )
         //IF para que valida la existencia de esas nuevas obranzas con  ayuda del cursor
         if (cursorpc.moveToFirst()) {
             //Funcion para crear el JSON
@@ -3942,8 +3991,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val keAndroid = conn.writableDatabase
         //Creacion del ursor y la sentencia SQL que ejecutara la busqueda de cada una de las abeeras de los documentos por cobrar
         val cursorRc: Cursor =
-            keAndroid.rawQuery("SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='" + cod_usuario!!.trim { it <= ' ' } + "'",
-                null)
+            keAndroid.rawQuery(
+                "SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend = '$cod_usuario' AND empresa = '$codEmpresa'",
+                null
+            )
         //System.out.println("SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='" + cod_usuario.trim() + "'");
         //Creacion del JSON Array que contendra las precobranzas
         arrayCH = JSONArray()
@@ -3955,44 +4006,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             //TRY para la creacion del JSON completo
             try {
                 //Guardado en variables de los valores enontrados en la base de datos
-                /*cxcndoc = cursorRc.getString(0);
-                System.out.println("numero rec: " + cxcndoc);
-                tiporecibo = cursorRc.getString(1);
-                codvend = cursorRc.getString(2);
-                nro_recibo = cursorRc.getString(3);
-                kecxc_id = cursorRc.getString(4);
-                tasadia = cursorRc.getDouble(5);
-                fchrecibo = cursorRc.getString(6);
-                clicontesp = cursorRc.getString(7);
-                bsneto = cursorRc.getDouble(8);
-                bsiva = cursorRc.getDouble(9);
-                bsretiva = cursorRc.getDouble(10);
-                bsflete = cursorRc.getDouble(11);
-                bstotal = cursorRc.getDouble(12);
-                dolneto = cursorRc.getDouble(13);
-                doliva = cursorRc.getDouble(14);
-                dolretiva = cursorRc.getDouble(15);
-                dolflete = cursorRc.getDouble(16);
-                doltotal = cursorRc.getDouble(17);
-                moneda = cursorRc.getString(18);
-                dctoaplic = cursorRc.getDouble(19);
-                netocob = cursorRc.getDouble(20);
-                efectivo = cursorRc.getDouble(21);
-                bcoecod = cursorRc.getString(22);
-                bcocod = cursorRc.getString(23);
-                bconombre = cursorRc.getString(24);
-                fchr_dep = cursorRc.getString(25);
-                bcomonto = cursorRc.getDouble(26);
-                bcoref = cursorRc.getString(27);
-                edorec = cursorRc.getString(28);
-                fchhr = cursorRc.getString(29);
-                fchvigen = cursorRc.getString(30);
-                bsretflete = cursorRc.getDouble(31);
-                diasvigen = cursorRc.getDouble(32);
-                retmun_sbi = cursorRc.getDouble(33);
-                retmun_sbs = cursorRc.getDouble(34);
-                reci_doc = cursorRc.getString(35);
-                fechamodifi = cursorRc.getString(36);*/
                 cxcndoc = cursorRc.getString(0)
                 //Guardado de los valores en el objeto JSON de la Cabecera
                 objetoCabecera.put("cxcndoc", cursorRc.getString(0))
@@ -4057,7 +4070,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
                 //Cursor que ejecuta un SQL para ver las lineas de una cobranza en speifico para armar las lineas del documento
                 val cursorRl = keAndroid.rawQuery(
-                    "SELECT * FROM ke_precobradocs WHERE cxcndoc ='$cxcndoc'",
+                    "SELECT * FROM ke_precobradocs WHERE cxcndoc ='$cxcndoc' AND empresa = '$codEmpresa'",
                     null
                 )
                 //System.out.println("SELECT * FROM ke_precobradocs WHERE cxcndoc ='" + cxcndoc + "'");
@@ -4069,29 +4082,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     //Creacion del Objeto JSON para las lineas del documento
                     val objetoLineas = JSONObject()
                     //Guardado de los valores de la base de datos en las variables
-                    /*cxcndoc = cursorRl.getString(0);
-                    agencia = cursorRl.getString(1);
-                    tipodoc = cursorRl.getString(2);
-                    documento = cursorRl.getString(3);
-                    bscobro = cursorRl.getDouble(4);
-                    prcdsctopp = cursorRl.getDouble(5);
-                    nroret = cursorRl.getString(6);
-                    fchemiret = cursorRl.getString(7);
-                    bsretiva = cursorRl.getDouble(8);
-                    refret = cursorRl.getString(9);
-                    nroretfte = cursorRl.getString(10);
-                    fchemirfte = cursorRl.getString(11);
-                    bsmtofte = cursorRl.getDouble(12);
-                    bsretfte = cursorRl.getDouble(13);
-                    refretfte = cursorRl.getString(14);
-                    bsmtoiva = cursorRl.getDouble(15);
-                    retmun_bi = cursorRl.getDouble(16);
-                    retmun_cod = cursorRl.getString(17);
-                    retmun_nro = cursorRl.getString(18);
-                    retmun_mto = cursorRl.getDouble(19);
-                    retmun_fch = cursorRl.getString(20);
-                    retmun_ref = cursorRl.getString(21);
-                    diascalc = cursorRl.getDouble(22);*/
 
                     //Guardado de los valoes en la estructura del JSON de las lineas del documento
                     objetoLineas.put("cxcndoc", cursorRl.getString(0))
@@ -4182,8 +4172,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //Inicializacion de la conexion y ejecucion del query
         val keAndroid = conn.writableDatabase
         cursorti =
-            keAndroid.rawQuery("SELECT DISTINCT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi, kti_negesp FROM ke_opti WHERE kti_status = '0'  AND kti_codven ='" + cod_usuario!!.trim { it <= ' ' } + "'",
-                null)
+            keAndroid.rawQuery(
+                "SELECT DISTINCT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi, kti_negesp FROM ke_opti WHERE kti_status = '0' AND kti_codven ='$cod_usuario' AND empresa = '$codEmpresa'",
+                null
+            )
         //Creacion del array JSON
         arrayTi = JSONArray()
 
@@ -4226,7 +4218,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 objetoCabecera.put("kti_negesp", kti_negesp)
                 //Query para la solicitud de las lineas del pedido que se esta procesando
                 val cursormv = keAndroid.rawQuery(
-                    "SELECT kmv_codart, kmv_nombre, kti_tipprec, kmv_cant, kti_tdoc, kti_ndoc, kmv_stot, kmv_artprec, kmv_dctolin FROM ke_opmv WHERE kti_ndoc ='$kti_ndoc'",
+                    "SELECT kmv_codart, kmv_nombre, kti_tipprec, kmv_cant, kti_tdoc, kti_ndoc, kmv_stot, kmv_artprec, kmv_dctolin FROM ke_opmv WHERE kti_ndoc ='$kti_ndoc' AND empresa = '$codEmpresa'",
                     null
                 )
                 //Creacion del array JSON que contendra los objetos JSON para las lineas
@@ -4267,7 +4259,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 e.printStackTrace()
                 Toast.makeText(
                     this@SincronizacionActivity,
-                    "Error al cargar el pedido$e",
+                    "Evento inesperado al cargar el pedido $e.",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -4302,7 +4294,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         arrayLimite = JSONArray()
         val keAndroid = conn.writableDatabase
         cursorLim =
-            keAndroid.rawQuery("SELECT " + "kli_track, " + "kli_codven, " + "kli_codcli, " + "kli_codart, " + "kli_cant, " + "kli_fechahizo, " + "kli_fechavence " + "FROM ke_limitart" + " WHERE status = '1'  " + "AND kli_fechahizo >'" + fecha_sinc_limites + "'" + "AND kli_codven = '" + cod_usuario!!.trim { it <= ' ' } + "'",
+            keAndroid.rawQuery("SELECT " + "kli_track, " + "kli_codven, " + "kli_codcli, " + "kli_codart, " + "kli_cant, " + "kli_fechahizo, " + "kli_fechavence " + "FROM ke_limitart" + " WHERE status = '1'  " + "AND kli_fechahizo >'" + fecha_sinc_limites + "'" + "AND kli_codven = '" + cod_usuario!!.trim { it <= ' ' } + "' AND empresa = '$codEmpresa'",
                 null)
         while (cursorLim.moveToNext()) {
             val objetoLimite = JSONObject()
@@ -4382,25 +4374,33 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun cambiarEstadoPedido(correlativo: String) {
         //Actualizacion del status del pedido
         val keAndroid = conn.writableDatabase
-        keAndroid.execSQL("UPDATE ke_opti SET kti_status = '1' WHERE kti_ndoc = '$correlativo'")
+        keAndroid.execSQL("UPDATE ke_opti SET kti_status = '1' WHERE kti_ndoc = '$correlativo' AND empresa = '$codEmpresa'")
     }
 
     private fun cambiarEstadoPrecob(correlativo: String) {
         //Actualizacion del status del pedido
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT edorec, tiporecibo FROM ke_precobranza WHERE cxcndoc = '$correlativo';",
+            "SELECT edorec, tiporecibo FROM ke_precobranza WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';",
             null
         )
         if (cursor.moveToNext()) {
-            if (cursor.getString(0) == "0") {
-                keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '1' WHERE cxcndoc = '$correlativo';")
+            if (cursor.getString(0) == "0") {//<- Recibos creados de cualquier tipo (W, D)
+                //edorec 0, recibo creado
+                //edorec 1, recibo creado y subido
+                //W Recibo de cobro
+                //D Anexo de deposito
+                keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '1' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                 subirImgRet(correlativo, "1")
-            } else if (cursor.getString(0) == "9") {
-                keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '10' WHERE cxcndoc = '$correlativo';")
+            } else if (cursor.getString(0) == "9") {//<- Recibos de cobros que fueron anexados a un deposito
+                //edorec 9, anexado a un deposito
+                //edorec 10, anexado a un deposito y subido
+                keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '10' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                 subirImgRet(correlativo, "10")
-            } else if (cursor.getString(0) == "3") {
-                keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '4' WHERE cxcndoc = '$correlativo';")
+            } else if (cursor.getString(0) == "3") {//<- Esta parte era para recibos anumados
+                //edorec 3 anulado
+                //edorec 4 anulado y subido
+                keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '4' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
             }
         } else {
             Toast.makeText(this, "Error al actualizar estatus", Toast.LENGTH_SHORT).show()
@@ -4412,7 +4412,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         var i = 0
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT * FROM ke_retimg WHERE ke_retimg.cxcndoc = '$correlativo';",
+            "SELECT * FROM ke_retimg WHERE ke_retimg.cxcndoc = '$correlativo' AND empresa = '$codEmpresa';",
             null
         )
         //System.out.println("SELECT * FROM ke_imgret WHERE ke_imgret.cxcndoc = '" + correlativo + "';");
@@ -4427,8 +4427,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 imagen.put("ret_nomimg", cursor.getString(2))
                 imagen.put("cxcndoc", cursor.getString(0))
                 imagen.put("ruta", cursor.getString(1))
-                println(cursor.getString(1))
-                println(imagen)
+
                 enviarImgRet(imagen, correlativo, edorec)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -4446,88 +4445,27 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //System.out.println("Imagen -->" + imgs);
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "https://www.cloccidental.com/webservice/ImagenesRetenciones.php",
+            "https://$enlaceEmpresa/webservice/ImagenesRetenciones.php",
             imgs,
             { response: JSONObject ->
                 try {
                     if (response.getString("status") == "0") {
-                        keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '$edorec' WHERE cxcndoc = '$correlativo';")
-                        keAndroid.execSQL("DELETE FROM ke_retimg WHERE cxcndoc = '$correlativo';")
+                        keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '$edorec' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
+                        keAndroid.execSQL("DELETE FROM ke_retimg WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                     } else {
-                        keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '0' WHERE cxcndoc = '$correlativo';")
+                        keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '${edorec.toInt() - 1}' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '0' WHERE cxcndoc = '$correlativo';")
+                    keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '${edorec.toInt() - 1}' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                 }
             }) { error: VolleyError ->
             //System.out.println("Error -->" + error);
             error.printStackTrace()
-            keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '0' WHERE cxcndoc = '$correlativo';")
+            keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '${edorec.toInt() - 1}' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
         }
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(jsonObjectRequest)
-
-        /*RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://www.cloccidental.com/webservice/ImagenesRetenciones.php",
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            System.out.println(response);
-                            if(response.equals("Subido")) {
-                                System.out.println(response);
-
-                            } else {
-                                Toast.makeText(SincronizacionActivity.this, "Teléfono sin internet adecuada", LENGTH_LONG).show();
-                                ke_android.execSQL("UPDATE ke_precobranza SET edorec = '0' WHERE cxcndoc = '" + correlativo + "';");
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(SincronizacionActivity.this, "Teléfono sin internet adecuada", LENGTH_LONG).show();
-                    ke_android.execSQL("UPDATE ke_precobranza SET edorec = '0' WHERE cxcndoc = '" + correlativo + "';");
-                }
-            }){
-                @Override
-                public Map<String, String> getParams() {
-
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put("Content-Type", "application/json; charset=utf-8");
-                    params.put("Host", "https://www.cloccidental.com/webservice/ImagenesRetenciones.php");
-                    params.put("nombre", imgs.getNombre());
-                    params.put("imagen", imgs.getRutafoto());
-                    params.put("cxcndoc", imgs.getCxcndoc());
-
-                    return params;
-                }
-
-                @Override
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf (response.statusCode);
-                        // can get more details such as response.headers
-                    }
-                    return Response.success (responseString, HttpHeaderParser.parseCacheHeaders (response));
-                }
-
-            };
-
-        stringRequest.setShouldCache(false);
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy (30000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-
-            requestQueue.add(stringRequest);
-
-            try {
-                System.out.println("EL REQUEST --> "+ stringRequest.getBody());
-            }catch (Exception e){
-                e.printStackTrace();
-            }*/
     }
 
     /** */
@@ -4537,7 +4475,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val requestQueue = Volley.newRequestQueue(this@SincronizacionActivity)
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "https://15cc-45-186-203-254.ngrok.io/precobranzas2",
+            "https://$enlaceEmpresa:5001/precobranzas2",
             jsoncxc,
             { response: JSONObject? ->
                 if (response != null) {
@@ -4592,7 +4530,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 //tv_pedidossubidos.setText("Correlativos del pedido" + Correlativo + " no concuerdan");
                                 Toast.makeText(
                                     this@SincronizacionActivity,
-                                    "Error súbito.",
+                                    "Evento inesperado al subir la cobranza.",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -4628,7 +4566,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         //Respuesta positiva del url
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "https://15cc-45-186-203-254.ngrok.io/pedido",
+            "https://$enlaceEmpresa:5001/pedido",
             jsonpe,
             { response: JSONObject? ->
                 if (response != null) {

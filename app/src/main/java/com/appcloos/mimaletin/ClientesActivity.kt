@@ -90,7 +90,7 @@ class ClientesActivity : AppCompatActivity() {
     fun buscarClientes(busqueda: String? = null) {
 
         listacliente.clear()
-        listacliente = conn.getClientes(busqueda)
+        listacliente = conn.getClientes(busqueda, codigoEmpresa!!)
         clienteAdapter.updateAdapter(listacliente)
     }
 

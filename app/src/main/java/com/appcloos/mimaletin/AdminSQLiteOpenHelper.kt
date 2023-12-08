@@ -43,7 +43,7 @@ import java.util.Locale
 class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
 //CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
     (val context: Context?, val name: String?, val factory: CursorFactory?) :
-    SQLiteOpenHelper(context, name, factory, 54) {//<-- 46 para pruebas
+    SQLiteOpenHelper(context, name, factory, 55) {//<-- 46 para pruebas
 
     //private lateinit var dataBase: SQLiteDatabase
     //aqui se define la estructura de la base de datos al instalar la app (no cambia, solo se le agrega)
@@ -996,6 +996,36 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             }
         }
 
+        if (oldVersion < 55) {
+            try {
+                keAndroid.beginTransaction()
+                //keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
+                keAndroid.execSQL("ALTER TABLE listbanc RENAME TO old_listbanc;")
+                keAndroid.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `listbanc`(" +
+                            "codbanco varchar(3) NOT NULL DEFAULT '',\n" +
+                            "nombanco varchar(59) NOT NULL DEFAULT '',\n" +
+                            "cuentanac double(2,0) NOT NULL DEFAULT '0',\n" +
+                            "inactiva double(1,0) NOT NULL DEFAULT '0',\n" +
+                            "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" +
+                            "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}',\n" +
+                            "PRIMARY KEY(codbanco, empresa));"
+
+                )
+                keAndroid.execSQL(
+                    "INSERT INTO listbanc \n" +
+                            "SELECT * FROM old_listbanc;"
+                )
+                keAndroid.execSQL("DROP TABLE old_listbanc;")
+                keAndroid.setTransactionSuccessful()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
         println()
 
 
@@ -1078,11 +1108,11 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return flag
     }
 
-    fun getConfigBoolUsuario(config: String, user: String): Boolean {
+    fun getConfigBoolUsuario(config: String, user: String, codEmpresa: String): Boolean {
         val db = this.writableDatabase
         var flag = false
         val cursor = db.rawQuery(
-            "SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf WHERE cnfg_idconfig = '${config}' AND username = '${user}' AND cnfg_activa = '1.0';",
+            "SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf WHERE cnfg_idconfig = '${config}' AND username = '${user}' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
             null
         )
         //System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
@@ -1208,6 +1238,27 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                     retorno = cursor.getInt(0)
                 }
             }
+        cerarDB(db)
+        return retorno
+    }
+
+    fun getCampoIntCamposVarios(tabla: String, campo: String, campoWhere: List<String>, respuestaWhere: List<String>): Int {
+        var retorno = 0
+        val db = this.writableDatabase
+        val sql = "SELECT $campo FROM $tabla WHERE "
+        var where = ""
+        for (i in campoWhere.indices) {
+            where += campoWhere[i] + " = '" + respuestaWhere[i] + "'"
+            if (i + 1 != campoWhere.size) {
+                where += " AND "
+            }
+        }
+        val query = sql + where
+        db.rawQuery(query, null).use { cursor ->
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getInt(0)
+            }
+        }
         cerarDB(db)
         return retorno
     }
@@ -1413,10 +1464,10 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
 
     //Funcion que sirve para verificar si el vendedor sincronizo alguna vez en la vida de la app
     //Se eligio articulos para la funcion por ser una tabla que se llena sin importar la situacion
-    fun sincronizoPriVez(vendedor: String): Boolean {
+    fun sincronizoPriVez(vendedor: String, codEmpresa: String): Boolean {
         var retorno = false
         val db = this.writableDatabase
-        db.rawQuery("select sinc_primera from usuarios WHERE vendedor = '$vendedor';", null)
+        db.rawQuery("select sinc_primera from usuarios WHERE vendedor = '$vendedor' AND empresa = '$codEmpresa';", null)
             .use { cursor ->
                 if (cursor.moveToFirst()) {
                     retorno = cursor.getInt(0) == 1
@@ -1426,11 +1477,11 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    val imgCarousel: List<CarouselItem>
-        get() {
+    fun imgCarousel(codEmpresa: String): List<CarouselItem>
+         {
             val lista: MutableList<CarouselItem> = ArrayList()
             val db = this.writableDatabase
-            db.rawQuery("SELECT * FROM img_carousel;", null).use { cursor ->
+            db.rawQuery("SELECT * FROM img_carousel WHERE empresa = '$codEmpresa';", null).use { cursor ->
                 while (cursor.moveToNext()) {
                     val nombre = cursor.getString(0)
                     val enlace = cursor.getString(1)
@@ -1783,14 +1834,14 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return item
     }
 
-    fun getClientes(text: String?): ArrayList<ClientesKt> {
+    fun getClientes(text: String?, codEmpresa: String): ArrayList<ClientesKt> {
         val retorno = ArrayList<ClientesKt>()
         val db = this.writableDatabase
 
-        var sql = "SELECT * FROM cliempre"
+        var sql = "SELECT * FROM cliempre WHERE empresa = '$codEmpresa'"
 
         if (!text.isNullOrEmpty()) {
-            sql += " WHERE (nombre LIKE '%$text%' OR codigo LIKE'%$text%');"
+            sql += " AND (nombre LIKE '%$text%' OR codigo LIKE'%$text%');"
         }
 
         db.rawQuery(sql, null).use { cursor ->
@@ -1901,6 +1952,21 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             }
         }
         return retorno
+    }
+
+    fun getFecha(tabla: String, codEmpresa: String): String {
+        val keAndroid = this.writableDatabase
+        val fechaUltmod =
+            keAndroid.rawQuery(
+                "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa';",
+                null
+            )
+        var fecha = "0001-01-01 01:01:01"
+        if (fechaUltmod.moveToFirst()) {
+            fecha = fechaUltmod.getString(0)
+        }
+        fechaUltmod.close()
+        return fecha
     }
 
 
