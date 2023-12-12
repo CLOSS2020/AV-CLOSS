@@ -492,7 +492,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
             this,
             docsViejos = docsViejos,
             listaDocsSeleccionados = listaDocsSeleccionados,
-            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()
+            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt()
         )
         binding.rvEdoCuenta.adapter = adapter
 
@@ -530,7 +530,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
             listaDocsSeleccionados = listaDocsSeleccionados,
             numViejo = numViejo,
             numNuevo = numNuevo,
-            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()
+            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt()
         )
         binding.rvEdoCuenta.adapter = adapter
 

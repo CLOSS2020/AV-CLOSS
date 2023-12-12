@@ -26,7 +26,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
@@ -155,9 +154,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
         n_cliente = intent.extras!!.getString("nombre_cliente")
         conn = AdminSQLiteOpenHelper(this@CreacionPedidoActivity, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
-        APP_ITEMS_FACTURAS = conn!!.getConfigNum("APP_ITEMS_FACTURAS").roundToInt()
-        APP_ITEMS_NOTAS_ENTREGA = conn!!.getConfigNum("APP_ITEMS_NOTAS_ENTREGA").roundToInt()
-        APP_DIAS_PEDIDO_COMPLEMENTO = conn!!.getConfigNum("APP_DIAS_PEDIDO_COMPLEMENTO").toLong()
+        APP_ITEMS_FACTURAS = conn!!.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa!!).roundToInt()
+        APP_ITEMS_NOTAS_ENTREGA =
+            conn!!.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa!!).roundToInt()
+        APP_DIAS_PEDIDO_COMPLEMENTO =
+            conn!!.getConfigNum("APP_DIAS_PEDIDO_COMPLEMENTO", codEmpresa!!).toLong()
         val NOEMIFAC = conn!!.getCampoInt("cliempre", "noemifac", "codigo", codigoCliente!!)
         val NOEMINOTA = conn!!.getCampoInt("cliempre", "noeminota", "codigo", codigoCliente!!)
         cargarEnlace()
@@ -729,9 +730,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun obtenerMontoMinimoTotal(): Double {
         val monto: Double = if (binding.RbFactura.isChecked) {
-            conn!!.getConfigNum("APP_MONTO_MINIMO_FAC")
+            conn!!.getConfigNum("APP_MONTO_MINIMO_FAC", codEmpresa!!)
         } else if (binding.RbNotaEntrega.isChecked) {
-            conn!!.getConfigNum("APP_MONTO_MINIMO_NE")
+            conn!!.getConfigNum("APP_MONTO_MINIMO_NE", codEmpresa!!)
         } else {
             75.00
         }

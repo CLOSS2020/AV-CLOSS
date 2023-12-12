@@ -128,7 +128,7 @@ class ClientesActivity : AppCompatActivity() {
         builder.setView(customView);
 
         builder.create().show();*/
-        val dialog = DialogClientesDatos(this, codigoCliente, nombreCliente)
+        val dialog = DialogClientesDatos(this, codigoCliente, nombreCliente, codigoEmpresa!!)
         dialog.show()
 
         /*AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom));
@@ -147,7 +147,7 @@ class ClientesActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeAgencia(codigoEmpresa), true)
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

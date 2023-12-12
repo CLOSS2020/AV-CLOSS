@@ -13,20 +13,12 @@ import androidx.core.view.MenuItemCompat
 
 class PromocionesActivity : AppCompatActivity() {
     private lateinit var listaArticulos: ListView
-    var seleccionArticulo: ArrayList<*> = ArrayList<Any?>()
-    var listainfo: ArrayList<String>? = null
     private var listacatalogo: ArrayList<Catalogo>? = null
-    var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
     var seleccionado = 0
-    var existenciaGuardar = ""
     var cantidad = 0
-    var mostrarMinimo = 0
-    var mostrarMaximo = 0
     private var cursorca: Cursor? = null
-    var buscadorarticulo: SearchView? = null
     private var factura: Boolean? = null
-    private val APP_ITEMS_FACTURAS = 0
-    private val APP_ITEMS_NOTAS_ENTREGA = 0
     private var catalogoAdapter: CatalogoAdapter? = null
     private var APP_DESCUENTOS_PEDIDOS = false
 
@@ -54,8 +46,10 @@ class PromocionesActivity : AppCompatActivity() {
         nroPedido = intent.getStringExtra("nroPedido")
         factura = intent.getBooleanExtra("factura", false)
         /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
-          el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        APP_DESCUENTOS_PEDIDOS = conn!!.getConfigBool("APP_DESCUENTOS_PEDIDOS")
+          el activyty */
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
+        enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
 
         //APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
         //APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));
@@ -67,8 +61,7 @@ class PromocionesActivity : AppCompatActivity() {
         obtenerArticulosPromo()
 
         //coloco el adaptador personalizado a la lista del elementos que van al listview
-        catalogoAdapter = CatalogoAdapter(this, listacatalogo)
-        //ArrayAdapter adaptador = new ArrayAdapter(CatalogoActivity.this, R.layout.list_catalogo_personalizado, listainfo);
+        catalogoAdapter = CatalogoAdapter(this, listacatalogo, enlaceEmpresa)
         listaArticulos.adapter = catalogoAdapter //refresco el listview
         listaArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
         val objetoAux = ObjetoAux(this)
@@ -76,8 +69,8 @@ class PromocionesActivity : AppCompatActivity() {
     }
 
     private fun obtenerArticulosPromo() {
-        listacatalogo = if (conn!!.getConfigBool("APP_DESCUENTOS_PEDIDOS")) {
-            conn!!.articulosPromo
+        listacatalogo = if (conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)) {
+            conn.articulosPromo(codEmpresa!!)
         } else {
             ArrayList()
         }
@@ -86,7 +79,7 @@ class PromocionesActivity : AppCompatActivity() {
     //busqueda de articulo
     fun buscarArticulo(busqueda: String) {
         listaArticulos.adapter = null
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         if (busqueda == "") {
             //Toast.makeText(CatalogoActivity.this, "Debes introducir una palabra o código", Toast.LENGTH_SHORT).show();
@@ -136,7 +129,7 @@ class PromocionesActivity : AppCompatActivity() {
                 listacatalogo!!.add(catalogo)
             }
             //ke_android.close();
-            catalogoAdapter = CatalogoAdapter(this, listacatalogo)
+            catalogoAdapter = CatalogoAdapter(this, listacatalogo, enlaceEmpresa)
             listaArticulos.adapter = catalogoAdapter
             catalogoAdapter!!.notifyDataSetChanged()
         }
@@ -185,8 +178,6 @@ class PromocionesActivity : AppCompatActivity() {
         var precioTotalporArticulo: Double? = null
         var vtaMin: Double? = null
         var vtaMax: Double? = null
-        var dctonumerico: Double? = null
-        var stotdcto: Double? = null
     }
 
     override fun getTheme(): Resources.Theme {

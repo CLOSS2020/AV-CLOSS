@@ -50,7 +50,7 @@ import java.util.Locale
 
 class ReclamosActivity : AppCompatActivity() {
     //DECLARACION DE TODOS LOS ELEMENTOS USADOS EN EL ACTIVITY Y DE LAS VARIABLES.
-    var conn: AdminSQLiteOpenHelper? = null
+    lateinit var conn: AdminSQLiteOpenHelper
     var codigoCliente: String? = null
     var nombreCliente: String? = null
     var documento: String? = null
@@ -258,9 +258,9 @@ class ReclamosActivity : AppCompatActivity() {
                     listaMotivos = ArrayList()
                     codigosClasif = arrayOf()
                     motivosClasif = arrayOf()
-                    val ke_android = conn!!.writableDatabase
-                    val cursorClasif = ke_android.rawQuery(
-                        "SELECT kdv_codclasif, kdv_nomclaweb FROM ke_tiporecl WHERE 1",
+                    val keAndroid = conn!!.writableDatabase
+                    val cursorClasif = keAndroid.rawQuery(
+                        "SELECT kdv_codclasif, kdv_nomclaweb FROM ke_tiporecl WHERE empresa = '$codEmpresa'",
                         null
                     )
                     listaCodigos.add("0")
@@ -330,7 +330,7 @@ class ReclamosActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         //valido el numero de la dev para obtener el nuevo correlativo
         val cursor = keAndroid.rawQuery(
-            "SELECT MAX(kdev_numero) FROM ke_correladev WHERE kdev_vendedor ='$cod_usuario'",
+            "SELECT MAX(kdev_numero) FROM ke_correladev WHERE kdev_vendedor ='$cod_usuario' AND empresa = '$codEmpresa'",
             null
         )
         if (cursor.moveToFirst()) {
@@ -375,7 +375,7 @@ class ReclamosActivity : AppCompatActivity() {
             builder.setNegativeButton("Borrar articulo") { _: DialogInterface?, _: Int ->
                 keAndroid.beginTransaction()
                 try {
-                    keAndroid.execSQL("DELETE FROM ke_devlmtmp WHERE kdel_pid ='$pid' AND kdel_codart = '$codigo'")
+                    keAndroid.execSQL("DELETE FROM ke_devlmtmp WHERE kdel_pid ='$pid' AND kdel_codart = '$codigo' AND empresa = '$codEmpresa'")
                     keAndroid.setTransactionSuccessful()
                     keAndroid.endTransaction()
                     sumaNeto()
@@ -412,7 +412,7 @@ class ReclamosActivity : AppCompatActivity() {
                             val lnMtolinea = cantidadN * precioFin
                             try {
                                 keAndroid.beginTransaction()
-                                keAndroid.execSQL("UPDATE ke_devlmtmp SET kdel_cantdev = $cantidadN, kdel_mtolinea =$lnMtolinea WHERE kdel_pid ='$pid' and kdel_codart ='$codigo'")
+                                keAndroid.execSQL("UPDATE ke_devlmtmp SET kdel_cantdev = $cantidadN, kdel_mtolinea =$lnMtolinea WHERE kdel_pid ='$pid' and kdel_codart ='$codigo' AND empresa = '$codEmpresa'")
                                 keAndroid.setTransactionSuccessful()
                             } catch (ex: Exception) {
                                 ex.printStackTrace()
@@ -487,11 +487,11 @@ class ReclamosActivity : AppCompatActivity() {
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
                     conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    val keAndroid = conn!!.writableDatabase
+                    val keAndroid = conn.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     ll_commit = false
                     keAndroid.beginTransaction()
-                    keAndroid.delete("ke_tiporecl", "1", null)
+                    keAndroid.delete("ke_tiporecl", "empresa = ?", arrayOf(codEmpresa!!))
                     for (i in 0 until response.length()) {
                         try {
 
@@ -503,13 +503,16 @@ class ReclamosActivity : AppCompatActivity() {
                             nomRecl = jsonObject.getString("kdv_nomclasif").trim { it <= ' ' }
                             helpRec = jsonObject.getString("kdv_hlpclasif").trim { it <= ' ' }
                             fechaMod = jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                            val qtiposRec = ContentValues()
-                            qtiposRec.put("kdv_codclasif", codigoTipo)
-                            qtiposRec.put("kdv_nomclaweb", nomWeb)
-                            qtiposRec.put("kdv_nomclasif", nomRecl)
-                            qtiposRec.put("kdv_hlpclasif", helpRec)
-                            qtiposRec.put("fechamodifi", fechaMod)
-                            keAndroid.insert("ke_tiporecl", null, qtiposRec)
+
+                            val cv = ContentValues()
+                            cv.put("kdv_codclasif", codigoTipo)
+                            cv.put("kdv_nomclaweb", nomWeb)
+                            cv.put("kdv_nomclasif", nomRecl)
+                            cv.put("kdv_hlpclasif", helpRec)
+                            cv.put("fechamodifi", fechaMod)
+                            cv.put("empresa", codEmpresa)
+
+                            keAndroid.insert("ke_tiporecl", null, cv)
                             ll_commit = true
                         } catch (e: Exception) {
                             println("Error de inserción: $e")
@@ -583,11 +586,11 @@ class ReclamosActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         keAndroid.beginTransaction()
         val cursor = keAndroid.rawQuery(
-            "SELECT documento, pid, codigo, cantidad, nombre, dmontoneto, dpreciofin FROM ke_doclmv WHERE documento='$documento'",
+            "SELECT documento, pid, codigo, cantidad, nombre, dmontoneto, dpreciofin FROM ke_doclmv WHERE documento='$documento' AND empresa = '$codEmpresa'",
             null
         )
         try {
-            keAndroid.execSQL("DELETE FROM ke_devlmtmp")
+            keAndroid.execSQL("DELETE FROM ke_devlmtmp WHERE empresa = '$codEmpresa'")
             while (cursor.moveToNext()) {
                 val lcPid = cursor.getString(1)
                 val lcCodigo = cursor.getString(2)
@@ -595,17 +598,19 @@ class ReclamosActivity : AppCompatActivity() {
                 val nombre = cursor.getString(4)
                 val mtonetolinea = cursor.getDouble(5)
                 val preciofinal = cursor.getDouble(6)
-                val guardarDoc = ContentValues()
-                guardarDoc.put("kdel_referencia", nroDev)
-                guardarDoc.put("kdel_documento", documento)
-                guardarDoc.put("kdel_pid", lcPid)
-                guardarDoc.put("kdel_codart", lcCodigo)
-                guardarDoc.put("kdel_cantdev", lnCantidad)
-                guardarDoc.put("kdel_cantped", lnCantidad)
-                guardarDoc.put("kdel_nombre", nombre)
-                guardarDoc.put("kdel_mtolinea", mtonetolinea)
-                guardarDoc.put("kdel_preciofin", preciofinal)
-                keAndroid.insert("ke_devlmtmp", null, guardarDoc)
+                val cv = ContentValues()
+                cv.put("kdel_referencia", nroDev)
+                cv.put("kdel_documento", documento)
+                cv.put("kdel_pid", lcPid)
+                cv.put("kdel_codart", lcCodigo)
+                cv.put("kdel_cantdev", lnCantidad)
+                cv.put("kdel_cantped", lnCantidad)
+                cv.put("kdel_nombre", nombre)
+                cv.put("kdel_mtolinea", mtonetolinea)
+                cv.put("kdel_preciofin", preciofinal)
+                cv.put("empresa", codEmpresa)
+
+                keAndroid.insert("ke_devlmtmp", null, cv)
                 Toast.makeText(
                     this@ReclamosActivity,
                     "¡Articulo(s) agregado(s)!",
@@ -624,8 +629,11 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun sumaNeto() {
-        val keAndroid = conn!!.writableDatabase
-        val cursor = keAndroid.rawQuery("SELECT SUM(kdel_mtolinea) FROM ke_devlmtmp", null)
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT SUM(kdel_mtolinea) FROM ke_devlmtmp WHERE empresa = '$codEmpresa'",
+            null
+        )
         if (cursor.moveToFirst()) {
             montoDev = cursor.getDouble(0)
             montoDev = montoDev.valorReal()
@@ -639,9 +647,9 @@ class ReclamosActivity : AppCompatActivity() {
 
     private fun procesarReclamo(totneto: Double) {
         var llCommit: Boolean
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kdel_preciofin, kdel_mtolinea, kdel_pid, kdel_codart, kdel_cantdev, kdel_cantped, kdel_nombre FROM ke_devlmtmp WHERE 1",
+            "SELECT kdel_preciofin, kdel_mtolinea, kdel_pid, kdel_codart, kdel_cantdev, kdel_cantped, kdel_nombre FROM ke_devlmtmp WHERE empresa = '$codEmpresa'",
             null
         )
         if (totneto <= 15) {
@@ -654,7 +662,9 @@ class ReclamosActivity : AppCompatActivity() {
         }
         if (cursor.count > 0) {
             println("Codigo seleccionado: $codSeleccionado")
-            if (codSeleccionado == null || codSeleccionado!!.trim { it <= ' ' } == "0" || codSeleccionado!!.trim { it <= ' ' } == "") {
+            if (codSeleccionado == null ||
+                codSeleccionado!!.trim { it <= ' ' } == "0" ||
+                codSeleccionado!!.trim { it <= ' ' } == "") {
                 Toast.makeText(
                     this@ReclamosActivity,
                     "Debes elegir el motivo del reclamo",
@@ -671,7 +681,7 @@ class ReclamosActivity : AppCompatActivity() {
                     keAndroid.beginTransaction()
                     try {
                         val cursorti = keAndroid.rawQuery(
-                            "SELECT agencia, tipodoc, codcliente, tipoprecio, vendedor, codcoord, nombrecli FROM ke_doccti WHERE documento = '$documento'",
+                            "SELECT agencia, tipodoc, codcliente, tipoprecio, vendedor, codcoord, nombrecli FROM ke_doccti WHERE documento = '$documento' AND empresa = '$codEmpresa'",
                             null
                         )
                         while (cursorti.moveToNext()) {
@@ -689,61 +699,68 @@ class ReclamosActivity : AppCompatActivity() {
                         val fechaTabla = Date(Calendar.getInstance().timeInMillis)
                         val formatoFechaTabla =
                             SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
-                        val cabeceraReclamos = ContentValues()
-                        cabeceraReclamos.put("krti_ndoc", nroDev)
-                        cabeceraReclamos.put("krti_docfac", documento)
-                        cabeceraReclamos.put("krti_codcli", codigoCliente)
-                        cabeceraReclamos.put("krti_nombrecli", nombreCliente)
-                        cabeceraReclamos.put("krti_status", "0")
-                        cabeceraReclamos.put("krti_tipfac", tipodocv)
-                        cabeceraReclamos.put("krti_totneto", totneto)
-                        cabeceraReclamos.put("krti_agefac", agencia!!.trim { it <= ' ' })
-                        cabeceraReclamos.put("krti_tipfac", tipodoc)
-                        cabeceraReclamos.put("krti_tipprec", tipoprecio)
-                        cabeceraReclamos.put("krti_notas", NotaReclamo.trim { it <= ' ' })
-                        cabeceraReclamos.put("krti_codvend", vendedor!!.trim { it <= ' ' })
-                        cabeceraReclamos.put("krti_codcoor", codcoord!!.trim { it <= ' ' })
-                        cabeceraReclamos.put("krti_fchdoc", formatoFechaTabla.format(fechaTabla))
-                        cabeceraReclamos.put("fechamodifi", formatoFechaTabla.format(fechaTabla))
-                        cabeceraReclamos.put("kdv_codclasif", codSeleccionado)
+
+                        val cvCabecera = ContentValues()
+                        cvCabecera.put("krti_ndoc", nroDev)
+                        cvCabecera.put("krti_docfac", documento)
+                        cvCabecera.put("krti_codcli", codigoCliente)
+                        cvCabecera.put("krti_nombrecli", nombreCliente)
+                        cvCabecera.put("krti_status", "0")
+                        cvCabecera.put("krti_tipfac", tipodocv)
+                        cvCabecera.put("krti_totneto", totneto)
+                        cvCabecera.put("krti_agefac", agencia!!.trim { it <= ' ' })
+                        cvCabecera.put("krti_tipfac", tipodoc)
+                        cvCabecera.put("krti_tipprec", tipoprecio)
+                        cvCabecera.put("krti_notas", NotaReclamo.trim { it <= ' ' })
+                        cvCabecera.put("krti_codvend", vendedor!!.trim { it <= ' ' })
+                        cvCabecera.put("krti_codcoor", codcoord!!.trim { it <= ' ' })
+                        cvCabecera.put("krti_fchdoc", formatoFechaTabla.format(fechaTabla))
+                        cvCabecera.put("fechamodifi", formatoFechaTabla.format(fechaTabla))
+                        cvCabecera.put("kdv_codclasif", codSeleccionado)
+                        cvCabecera.put("empresa", codEmpresa)
+
                         while (cursor.moveToNext()) {
-                            val lineasReclamos = ContentValues()
-                            lineasReclamos.put("krti_ndoc", nroDev)
-                            lineasReclamos.put("krmv_tipprec", tipoprecio)
-                            lineasReclamos.put("krmv_pid", cursor.getString(2).trim { it <= ' ' })
-                            lineasReclamos.put(
+
+                            val cvLineas = ContentValues()
+                            cvLineas.put("krti_ndoc", nroDev)
+                            cvLineas.put("krmv_tipprec", tipoprecio)
+                            cvLineas.put("krmv_pid", cursor.getString(2).trim { it <= ' ' })
+                            cvLineas.put(
                                 "krmv_codart",
                                 cursor.getString(3).trim { it <= ' ' })
-                            lineasReclamos.put("krmv_cant", cursor.getDouble(4))
-                            lineasReclamos.put(
+                            cvLineas.put("krmv_cant", cursor.getDouble(4))
+                            cvLineas.put(
                                 "krmv_nombre",
                                 cursor.getString(6).trim { it <= ' ' })
-                            lineasReclamos.put("krmv_artprec", cursor.getDouble(0))
-                            lineasReclamos.put("krmv_stot", cursor.getDouble(1))
-                            lineasReclamos.put("fechamodifi", formatoFechaTabla.format(fechaTabla))
+                            cvLineas.put("krmv_artprec", cursor.getDouble(0))
+                            cvLineas.put("krmv_stot", cursor.getDouble(1))
+                            cvLineas.put("fechamodifi", formatoFechaTabla.format(fechaTabla))
+                            cvLineas.put("empresa", codEmpresa)
 
                             //insertamos las lineas del reclamo
-                            keAndroid.insert("ke_rcllmv", null, lineasReclamos)
+                            keAndroid.insert("ke_rcllmv", null, cvLineas)
                         }
                         //insertamos la cabercera del reclamo
-                        keAndroid.insert("ke_rclcti", null, cabeceraReclamos)
+                        keAndroid.insert("ke_rclcti", null, cvCabecera)
 
                         //aumentamos el correlativo en la tabla de correlativos de reclamos
                         val aumentarCorrelatiodev = ContentValues()
                         aumentarCorrelatiodev.put("kdev_numero", nroCorrelativo)
                         aumentarCorrelatiodev.put("kdev_vendedor", cod_usuario)
+                        aumentarCorrelatiodev.put("empresa", codEmpresa)
 
                         //insertamos el correlativo
                         keAndroid.insert("ke_correladev", null, aumentarCorrelatiodev)
 
                         //limpiamos la tabla de temporal
-                        keAndroid.delete("ke_devlmtmp", "1", null)
+                        keAndroid.delete("ke_devlmtmp", "empresa = ?", arrayOf(codEmpresa!!))
 
                         //insertamos las imagenes en la tabla de imagenes
                         val imagenesreclamo = ContentValues()
                         for (i in listaImagenes.indices) {
                             imagenesreclamo.put("krti_ndoc", nroDev)
                             imagenesreclamo.put("kircl_rutafoto", listaImagenes[i].toString())
+                            imagenesreclamo.put("empresa", codEmpresa)
                             keAndroid.insert("ke_imgrcl", null, imagenesreclamo)
                         }
 
@@ -755,10 +772,11 @@ class ReclamosActivity : AppCompatActivity() {
                         val fechaModificado = sdf.format(fechaModif.time)
                         bloquearReclamo.put("aceptadev", "0")
                         bloquearReclamo.put("fechamodifi", fechaModificado)
+                        bloquearReclamo.put("empresa", codEmpresa)
                         keAndroid.update(
                             "ke_doccti",
                             bloquearReclamo,
-                            "documento='$documento'",
+                            "documento='$documento' AND empresa = '$codEmpresa'",
                             null
                         )
                         llCommit = true /*si se dió bien, deberia andar correctamente*/
@@ -797,8 +815,8 @@ class ReclamosActivity : AppCompatActivity() {
         cursor.close()
     }
 
-    fun subirReclamo() {
-        val keAndroid = conn!!.writableDatabase
+    private fun subirReclamo() {
+        val keAndroid = conn.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
                     "krti_status, " +
@@ -816,7 +834,7 @@ class ReclamosActivity : AppCompatActivity() {
                     "krti_notas," +
                     "kdv_codclasif"
         )
-        val condicion = "krti_status = '0' AND krti_ndoc = '$nroDev'"
+        val condicion = "krti_status = '0' AND krti_ndoc = '$nroDev' AND empresa = '$codEmpresa'"
         val cursor = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
         if (cursor.count > 0) {
             cargarReclamos()
@@ -847,7 +865,7 @@ class ReclamosActivity : AppCompatActivity() {
                     "krti_notas," +
                     "kdv_codclasif"
         )
-        val condicion = "krti_status = '0' AND krti_ndoc = '$nroDev'"
+        val condicion = "krti_status = '0' AND krti_ndoc = '$nroDev' AND empresa = '$codEmpresa'"
         val cursorti = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
         arrayTi = JSONArray()
         val arrayMV = JSONArray()
@@ -895,7 +913,7 @@ class ReclamosActivity : AppCompatActivity() {
                             "krmv_pid," +
                             "fechamodifi"
                 )
-                val condicionLineas = "krti_ndoc = '$krti_ndoc'"
+                val condicionLineas = "krti_ndoc = '$krti_ndoc' AND empresa = '$codEmpresa'"
                 val cursormv = keAndroid.query(
                     "ke_rcllmv",
                     camposLineas,
@@ -996,7 +1014,7 @@ class ReclamosActivity : AppCompatActivity() {
             try {
                 val objetodeCabeza = arrayTi!!.getJSONObject(i)
                 val codigoDelReclamoenArray = objetodeCabeza.getString("krti_ndoc")
-                keAndroid.execSQL("UPDATE ke_rclcti SET krti_status = '1' WHERE krti_ndoc ='$codigoDelReclamoenArray'")
+                keAndroid.execSQL("UPDATE ke_rclcti SET krti_status = '1' WHERE krti_ndoc ='$codigoDelReclamoenArray' AND empresa = '$codEmpresa'")
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
@@ -1027,6 +1045,8 @@ class ReclamosActivity : AppCompatActivity() {
             guardarlinea.put("kdel_cantped", cantidad)
             guardarlinea.put("kdel_nombre", nombre)
             guardarlinea.put("kdel_preciofin", precioFin)
+            guardarlinea.put("empresa", codEmpresa)
+
             keAndroid.insert("ke_devlmtmp", null, guardarlinea)
             keAndroid.setTransactionSuccessful()
             keAndroid.endTransaction()
@@ -1043,12 +1063,12 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun consultarLineasDoc() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var lineas: Lineas
         listalineasdoc = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='" + documento + "' AND pid NOT IN " +
-                    "(SELECT kdel_pid FROM ke_devlmtmp)", null
+            "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='$documento' AND empresa = '$codEmpresa' AND pid NOT IN " +
+                    "(SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')", null
         )
 
         // Cursor cursor = ke_android.rawQuery("SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='" + documento + "'", null);
@@ -1081,78 +1101,76 @@ class ReclamosActivity : AppCompatActivity() {
                             //obtengo de la respuesta los datos en un json object
                             jsonObject = response.getJSONObject(i)
                             //preparo los campos para las operaciones
-                            agencia = jsonObject.getString("agencia").trim { it <= ' ' }
-                            tipodoc = jsonObject.getString("tipodoc").trim { it <= ' ' }
-                            documento = jsonObject.getString("documento").trim { it <= ' ' }
-                            tipodocv = jsonObject.getString("tipodocv").trim { it <= ' ' }
-                            grupo = jsonObject.getString("grupo").trim { it <= ' ' }
-                            subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
-                            origen = jsonObject.getDouble("origen")
-                            codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                            codhijo = jsonObject.getString("codhijo").trim { it <= ' ' }
-                            pid = jsonObject.getString("pid").trim { it <= ' ' }
-                            nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                            cantidad = jsonObject.getDouble("cantidad")
-                            cntdevuelt = jsonObject.getDouble("cntdevuelt")
-                            vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
-                            dvndmtototal = jsonObject.getDouble("dvndmtototal")
-                            dpreciofin = jsonObject.getDouble("dpreciofin")
-                            dpreciounit = jsonObject.getDouble("dpreciounit")
-                            dmontoneto = jsonObject.getDouble("dmontoneto")
-                            dmontototal = jsonObject.getDouble("dmontototal")
-                            timpueprc = jsonObject.getDouble("timpueprc")
-                            unidevuelt = jsonObject.getDouble("unidevuelt")
-                            fechadoc = jsonObject.getString("fechadoc").trim { it <= ' ' }
-                            vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                            codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                            fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                            val qDocumentosLin = ContentValues()
-                            qDocumentosLin.put("agencia", agencia)
-                            qDocumentosLin.put("tipodoc", tipodoc)
-                            qDocumentosLin.put("documento", documento)
-                            qDocumentosLin.put("tipodocv", tipodocv)
-                            qDocumentosLin.put("grupo", grupo)
-                            qDocumentosLin.put("subgrupo", subgrupo)
-                            qDocumentosLin.put("origen", origen)
-                            qDocumentosLin.put("codigo", codigo)
-                            qDocumentosLin.put("codhijo", codhijo)
-                            qDocumentosLin.put("pid", pid)
-                            qDocumentosLin.put("nombre", nombre)
-                            qDocumentosLin.put("cantidad", cantidad)
-                            qDocumentosLin.put("cntdevuelt", cntdevuelt)
-                            qDocumentosLin.put("vndcntdevuelt", vndcntdevuelt)
-                            qDocumentosLin.put("dvndmtototal", dvndmtototal)
-                            qDocumentosLin.put("dpreciofin", dpreciofin)
-                            qDocumentosLin.put("dpreciounit", dpreciounit)
-                            qDocumentosLin.put("dmontoneto", dmontoneto)
-                            qDocumentosLin.put("dmontototal", dmontototal)
-                            qDocumentosLin.put("timpueprc", timpueprc)
-                            qDocumentosLin.put("unidevuelt", unidevuelt)
-                            qDocumentosLin.put("fechadoc", fechadoc)
-                            qDocumentosLin.put("vendedor", vendedor)
-                            qDocumentosLin.put("codcoord", codcoord)
-                            qDocumentosLin.put("fechamodifi", fechamodifi)
-                            val qcodigoLocal = keAndroid.rawQuery(
-                                "SELECT count(pid) FROM ke_doclmv WHERE pid ='$pid'",
-                                null
-                            )
-                            qcodigoLocal.moveToPosition(0)
-                            println("codigos: $codigo")
-                            val codigoExiste = qcodigoLocal.getInt(0)
-                            qcodigoLocal.close()
-                            println("cantidad del codigo $codigo: $codigoExiste")
-                            if (codigoExiste > 0) {
-                                keAndroid.update(
-                                    "ke_doclmv",
-                                    qDocumentosLin,
-                                    "pid = ?",
-                                    arrayOf(pid)
+                            val agencia = jsonObject.getString("agencia").trim { it <= ' ' }
+                            val tipodoc = jsonObject.getString("tipodoc").trim { it <= ' ' }
+                            val documento = jsonObject.getString("documento").trim { it <= ' ' }
+                            val tipodocv = jsonObject.getString("tipodocv").trim { it <= ' ' }
+                            val grupo = jsonObject.getString("grupo").trim { it <= ' ' }
+                            val subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
+                            val origen = jsonObject.getDouble("origen")
+                            val codigo = jsonObject.getString("codigo").trim { it <= ' ' }
+                            val codhijo = jsonObject.getString("codhijo").trim { it <= ' ' }
+                            val pid = jsonObject.getString("pid").trim { it <= ' ' }
+                            val nombre = jsonObject.getString("nombre").trim { it <= ' ' }
+                            val cantidad = jsonObject.getDouble("cantidad")
+                            val cntdevuelt = jsonObject.getDouble("cntdevuelt")
+                            val vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
+                            val dvndmtototal = jsonObject.getDouble("dvndmtototal")
+                            val dpreciofin = jsonObject.getDouble("dpreciofin")
+                            val dpreciounit = jsonObject.getDouble("dpreciounit")
+                            val dmontoneto = jsonObject.getDouble("dmontoneto")
+                            val dmontototal = jsonObject.getDouble("dmontototal")
+                            val timpueprc = jsonObject.getDouble("timpueprc")
+                            val unidevuelt = jsonObject.getDouble("unidevuelt")
+                            val fechadoc = jsonObject.getString("fechadoc").trim { it <= ' ' }
+                            val vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
+                            val codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
+                            val fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
+
+                            val cv = ContentValues()
+                            cv.put("agencia", agencia)
+                            cv.put("tipodoc", tipodoc)
+                            cv.put("documento", documento)
+                            cv.put("tipodocv", tipodocv)
+                            cv.put("grupo", grupo)
+                            cv.put("subgrupo", subgrupo)
+                            cv.put("origen", origen)
+                            cv.put("codigo", codigo)
+                            cv.put("codhijo", codhijo)
+                            cv.put("pid", pid)
+                            cv.put("nombre", nombre)
+                            cv.put("cantidad", cantidad)
+                            cv.put("cntdevuelt", cntdevuelt)
+                            cv.put("vndcntdevuelt", vndcntdevuelt)
+                            cv.put("dvndmtototal", dvndmtototal)
+                            cv.put("dpreciofin", dpreciofin)
+                            cv.put("dpreciounit", dpreciounit)
+                            cv.put("dmontoneto", dmontoneto)
+                            cv.put("dmontototal", dmontototal)
+                            cv.put("timpueprc", timpueprc)
+                            cv.put("unidevuelt", unidevuelt)
+                            cv.put("fechadoc", fechadoc)
+                            cv.put("vendedor", vendedor)
+                            cv.put("codcoord", codcoord)
+                            cv.put("fechamodifi", fechamodifi)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_doclmv", ArrayList(
+                                        mutableListOf("pid", "empresa")
+                                    ), arrayListOf(pid, codEmpresa!!)
                                 )
-                                println("ACTUALIZO EL: $codigo")
-                            } else if (codigoExiste == 0) {
-                                keAndroid.insert("ke_doclmv", null, qDocumentosLin)
-                                println("INSERTO EL: $codigo")
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_doclmv",
+                                    cv,
+                                    "pid = ? AND empresa = ?",
+                                    arrayOf(pid, codEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("ke_doclmv", cv)
                             }
+
                             ll_commit = true
                         } catch (e: Exception) {
                             println("Error de inserción: $e")
@@ -1184,11 +1202,11 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun consultarLineas() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var lineas: Lineas
         listalineas = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT kdel_pid, kdel_codart, kdel_nombre, kdel_cantped, kdel_mtolinea, kdel_cantdev, kdel_preciofin FROM ke_devlmtmp WHERE kdel_documento='$documento'",
+            "SELECT kdel_pid, kdel_codart, kdel_nombre, kdel_cantped, kdel_mtolinea, kdel_cantdev, kdel_preciofin FROM ke_devlmtmp WHERE kdel_documento='$documento' AND empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -1209,7 +1227,7 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun subirImagenes(nrodev: String?) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var codigoRclImg = ""
         var rutafoto: String
         listaBase64Imagenes.clear()
@@ -1219,7 +1237,7 @@ class ReclamosActivity : AppCompatActivity() {
             "krti_ndoc, " +
                     "kircl_rutafoto"
         )
-        val condicion = "krti_ndoc='$nrodev'"
+        val condicion = "krti_ndoc='$nrodev' AND empresa = '$codEmpresa'"
 
         //genero un cursor en base al query
         val cursor = keAndroid.query(tabla, columnas, condicion, null, null, null, null)

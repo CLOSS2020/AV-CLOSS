@@ -26,13 +26,10 @@ import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.databinding.ActivityDocumentosBinding
 import org.json.JSONArray
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 
 class DocumentosActivity : AppCompatActivity() {
-    var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
     private var llCommit: Boolean? = null
     private lateinit var documentosAdapter: DocumentosAdapter
     var listainfo: ArrayList<String>? = null
@@ -51,20 +48,18 @@ class DocumentosActivity : AppCompatActivity() {
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        conn!!.writableDatabase
         cargarEnlace()
         val intent = intent
         codigoCliente = intent.getStringExtra("codigoCliente")
         nombreCliente = intent.getStringExtra("nombreCliente")
         cod_usuario = intent.getStringExtra("cod_usuario")
-        codigoEmpresa = intent.getStringExtra("codigoEmpresa")
+        codEmpresa = intent.getStringExtra("codigoEmpresa")
         permisos = ArrayList()
         supportActionBar!!.title = nombreCliente
-        getfechaDocs()
-        evaluacionDeCargas()
+        //getfechaDocs()
+        //evaluacionDeCargas()
+        consultarDocs()
         cargarModulos()
-        println("codigo de la empresa: $codigoEmpresa")
-        println("Permisos que estan llegando en la ventana de documentos: $permisos")
         documentosAdapter =
             DocumentosAdapter(this@DocumentosActivity, listadocs) { position -> verDoc(position) }
         binding.lvDocumentos.layoutManager = LinearLayoutManager(this)
@@ -228,9 +223,9 @@ class DocumentosActivity : AppCompatActivity() {
     }
 
     private fun cargarModulos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kmo_codigo FROM ke_modulos WHERE kmo_status = '1' AND ked_codigo='$codigoEmpresa'",
+            "SELECT kmo_codigo FROM ke_modulos WHERE kmo_status = '1' AND ked_codigo='$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -241,13 +236,21 @@ class DocumentosActivity : AppCompatActivity() {
     }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
                     "kee_url," +
                     "kee_sucursal"
         )
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo ='${codEmpresa!!}'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -258,8 +261,8 @@ class DocumentosActivity : AppCompatActivity() {
     }
 
     // metodo para determinar que debo traerme de la nube
-    private fun evaluacionDeCargas() {
-        val keAndroid = conn!!.writableDatabase
+    /*private fun evaluacionDeCargas() {
+        val keAndroid = conn.writableDatabase
         //si el cliente no tiene documentos, por primera vez debo simplemente traerme todo, de lo contrario, debere validad por fecha
         val fechaAuxiliar = "0001-01-01 00:00:00"
         val columnacli = arrayOf("count(documento)")
@@ -270,22 +273,23 @@ class DocumentosActivity : AppCompatActivity() {
             if (cursorcli.getInt(0) > 0) {
                 println("llego al if")
                 println(cursorcli.getString(0))
-                cargarCabeceraDocuemntosCliente("https://" + enlaceEmpresa + "/webservice/documentos.php?fecha_sinc=" + fechaDocs!!.trim { it <= ' ' } + "&&codigo_cli=" + codigoCliente!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+                //cargarCabeceraDocuemntosCliente("https://" + enlaceEmpresa + "/webservice/documentos.php?fecha_sinc=" + fechaDocs!!.trim { it <= ' ' } + "&&codigo_cli=" + codigoCliente!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
                 consultarDocs()
             } else if (cursorcli.getInt(0) == 0) {
                 println("llego al else del principio")
-                cargarCabeceraDocuemntosCliente("https://" + enlaceEmpresa + "/webservice/documentos.php?fecha_sinc=" + fechaAuxiliar.trim { it <= ' ' } + "&&codigo_cli=" + codigoCliente!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+                //cargarCabeceraDocuemntosCliente("https://" + enlaceEmpresa + "/webservice/documentos.php?fecha_sinc=" + fechaAuxiliar.trim { it <= ' ' } + "&&codigo_cli=" + codigoCliente!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
                 consultarDocs()
             }
         }
         cursorcli.close()
-    }
+    }*/
 
     private fun vaciarTmp() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         keAndroid.beginTransaction()
         try {
-            keAndroid.execSQL("DELETE FROM ke_devlmtmp")
+            keAndroid.execSQL("DELETE FROM ke_devlmtmp") //<-- se deja sin codigo de la empresa
+            // por que es una tabla temporal auxiliar
             keAndroid.setTransactionSuccessful()
             keAndroid.endTransaction()
         } catch (e: Exception) {
@@ -308,7 +312,7 @@ class DocumentosActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
         builder.setTitle("Detalle del Doc. $documentoP")
         val lvDetalledoc = ListView(this@DocumentosActivity)
-        verLineasDocumento(documentoP)
+        //verLineasDocumento(documentoP)
         lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc)
         lvDetalledoc.adapter = lineasAdapter
         lineasAdapter!!.notifyDataSetChanged()
@@ -318,17 +322,20 @@ class DocumentosActivity : AppCompatActivity() {
     }
 
     private fun verLineasDocumento(documentoP: String) {
-        cargarLineasDocumento("https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documentoP.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-        consultarLineasDoc()
+        /*cargarLineasDocumento("https://$enlaceEmpresa/webservice/lineasdocs_V2.php?documento=$documentoP")
+        consultarLineasDoc()*/
     }
 
-    private fun consultarLineasDoc() {
-        val keAndroid = conn!!.writableDatabase
+   /* private fun consultarLineasDoc() {
+        val keAndroid = conn.writableDatabase
         var lineas: Lineas
         listalineasdoc = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='" + documento + "' AND pid NOT IN " +
-                    "(SELECT kdel_pid FROM ke_devlmtmp)", null
+            "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin FROM ke_doclmv " +
+                    "WHERE documento = '$documento' AND " +
+                    "empresa = '$codEmpresa' AND " +
+                    "pid NOT IN (SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')",
+            null
         )
         while (cursor.moveToNext()) {
             lineas = Lineas()
@@ -343,92 +350,92 @@ class DocumentosActivity : AppCompatActivity() {
         lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc)
         lineasAdapter!!.notifyDataSetChanged()
         cursor.close()
-    }
+    }*/
 
     private fun cargarLineasDocumento(url: String) {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
                     conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    val keAndroid = conn!!.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     llCommit = false
-                    keAndroid.beginTransaction()
                     for (i in 0 until response.length()) {
                         try {
 
                             //obtengo de la respuesta los datos en un json object
                             jsonObject = response.getJSONObject(i)
                             //preparo los campos para las operaciones
-                            agencia = jsonObject.getString("agencia").trim { it <= ' ' }
-                            tipodoc = jsonObject.getString("tipodoc").trim { it <= ' ' }
-                            documento = jsonObject.getString("documento").trim { it <= ' ' }
-                            tipodocv = jsonObject.getString("tipodocv").trim { it <= ' ' }
-                            grupo = jsonObject.getString("grupo").trim { it <= ' ' }
-                            subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
-                            origen = jsonObject.getDouble("origen")
-                            codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                            codhijo = jsonObject.getString("codhijo").trim { it <= ' ' }
-                            pid = jsonObject.getString("pid").trim { it <= ' ' }
-                            nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                            cantidad = jsonObject.getDouble("cantidad")
-                            cntdevuelt = jsonObject.getDouble("cntdevuelt")
-                            vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
-                            dvndmtototal = jsonObject.getDouble("dvndmtototal")
-                            dpreciofin = jsonObject.getDouble("dpreciofin")
-                            dpreciounit = jsonObject.getDouble("dpreciounit")
-                            dmontoneto = jsonObject.getDouble("dmontoneto")
-                            dmontototal = jsonObject.getDouble("dmontototal")
-                            timpueprc = jsonObject.getDouble("timpueprc")
-                            unidevuelt = jsonObject.getDouble("unidevuelt")
-                            fechadoc = jsonObject.getString("fechadoc").trim { it <= ' ' }
-                            vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                            codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                            fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
-                            val qDocumentosLin = ContentValues()
-                            qDocumentosLin.put("agencia", agencia)
-                            qDocumentosLin.put("tipodoc", tipodoc)
-                            qDocumentosLin.put("documento", documento)
-                            qDocumentosLin.put("tipodocv", tipodocv)
-                            qDocumentosLin.put("grupo", grupo)
-                            qDocumentosLin.put("subgrupo", subgrupo)
-                            qDocumentosLin.put("origen", origen)
-                            qDocumentosLin.put("codigo", codigo)
-                            qDocumentosLin.put("codhijo", codhijo)
-                            qDocumentosLin.put("pid", pid)
-                            qDocumentosLin.put("nombre", nombre)
-                            qDocumentosLin.put("cantidad", cantidad)
-                            qDocumentosLin.put("cntdevuelt", cntdevuelt)
-                            qDocumentosLin.put("vndcntdevuelt", vndcntdevuelt)
-                            qDocumentosLin.put("dvndmtototal", dvndmtototal)
-                            qDocumentosLin.put("dpreciofin", dpreciofin)
-                            qDocumentosLin.put("dpreciounit", dpreciounit)
-                            qDocumentosLin.put("dmontoneto", dmontoneto)
-                            qDocumentosLin.put("dmontototal", dmontototal)
-                            qDocumentosLin.put("timpueprc", timpueprc)
-                            qDocumentosLin.put("unidevuelt", unidevuelt)
-                            qDocumentosLin.put("fechadoc", fechadoc)
-                            qDocumentosLin.put("vendedor", vendedor)
-                            qDocumentosLin.put("codcoord", codcoord)
-                            qDocumentosLin.put("fechamodifi", fechamodifi)
-                            val qcodigoLocal = keAndroid.rawQuery(
-                                "SELECT count(pid) FROM ke_doclmv WHERE pid ='$pid'",
-                                null
-                            )
-                            qcodigoLocal.moveToFirst()
-                            val codigoExiste = qcodigoLocal.getInt(0)
-                            if (codigoExiste > 0) {
-                                keAndroid.update(
-                                    "ke_doclmv",
-                                    qDocumentosLin,
-                                    "pid = ?",
-                                    arrayOf(pid)
+                            val agencia = jsonObject.getString("agencia")
+                            val tipodoc = jsonObject.getString("tipodoc")
+                            val documento = jsonObject.getString("documento")
+                            val tipodocv = jsonObject.getString("tipodocv")
+                            val grupo = jsonObject.getString("grupo")
+                            val subgrupo = jsonObject.getString("subgrupo")
+                            val origen = jsonObject.getDouble("origen")
+                            val codigo = jsonObject.getString("codigo")
+                            val codhijo = jsonObject.getString("codhijo")
+                            val pid = jsonObject.getString("pid")
+                            val nombre = jsonObject.getString("nombre")
+                            val cantidad = jsonObject.getDouble("cantidad")
+                            val cntdevuelt = jsonObject.getDouble("cntdevuelt")
+                            val vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
+                            val dvndmtototal = jsonObject.getDouble("dvndmtototal")
+                            val dpreciofin = jsonObject.getDouble("dpreciofin")
+                            val dpreciounit = jsonObject.getDouble("dpreciounit")
+                            val dmontoneto = jsonObject.getDouble("dmontoneto")
+                            val dmontototal = jsonObject.getDouble("dmontototal")
+                            val timpueprc = jsonObject.getDouble("timpueprc")
+                            val unidevuelt = jsonObject.getDouble("unidevuelt")
+                            val fechadoc = jsonObject.getString("fechadoc")
+                            val vendedor = jsonObject.getString("vendedor")
+                            val codcoord = jsonObject.getString("codcoord")
+                            val fechamodifi = jsonObject.getString("fechamodifi")
+
+                            val cv = ContentValues()
+                            cv.put("agencia", agencia)
+                            cv.put("tipodoc", tipodoc)
+                            cv.put("documento", documento)
+                            cv.put("tipodocv", tipodocv)
+                            cv.put("grupo", grupo)
+                            cv.put("subgrupo", subgrupo)
+                            cv.put("origen", origen)
+                            cv.put("codigo", codigo)
+                            cv.put("codhijo", codhijo)
+                            cv.put("pid", pid)
+                            cv.put("nombre", nombre)
+                            cv.put("cantidad", cantidad)
+                            cv.put("cntdevuelt", cntdevuelt)
+                            cv.put("vndcntdevuelt", vndcntdevuelt)
+                            cv.put("dvndmtototal", dvndmtototal)
+                            cv.put("dpreciofin", dpreciofin)
+                            cv.put("dpreciounit", dpreciounit)
+                            cv.put("dmontoneto", dmontoneto)
+                            cv.put("dmontototal", dmontototal)
+                            cv.put("timpueprc", timpueprc)
+                            cv.put("unidevuelt", unidevuelt)
+                            cv.put("fechadoc", fechadoc)
+                            cv.put("vendedor", vendedor)
+                            cv.put("codcoord", codcoord)
+                            cv.put("fechamodifi", fechamodifi)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_doclmv", ArrayList(
+                                        mutableListOf("pid", "empresa")
+                                    ), arrayListOf(pid, codEmpresa!!)
                                 )
-                            } else if (codigoExiste == 0) {
-                                keAndroid.insert("ke_doclmv", null, qDocumentosLin)
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_doclmv",
+                                    cv,
+                                    "pid = ? AND empresa = ?",
+                                    arrayOf(pid, codEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("ke_doclmv", cv)
                             }
+
                             llCommit = true
-                            qcodigoLocal.close()
                         } catch (e: Exception) {
                             println("Error de inserción: $e")
                             llCommit = false
@@ -437,16 +444,11 @@ class DocumentosActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    if (llCommit!!) {
-                        keAndroid.setTransactionSuccessful()
-                        keAndroid.endTransaction()
-                    } else if (!llCommit!!) {
-                        keAndroid.endTransaction()
-                    }
                 }
             }, Response.ErrorListener { error: VolleyError ->
                 println("--Error--")
                 error.printStackTrace()
+                println("--Error--")
             }) {
                 override fun getParams(): Map<String, String> {
                     val parametros: MutableMap<String, String> = HashMap()
@@ -459,11 +461,11 @@ class DocumentosActivity : AppCompatActivity() {
     }
 
     private fun consultarDocs() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var documentos: Documentos
         listadocs = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev FROM ke_doccti WHERE codcliente ='$codigoCliente'",
+            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev FROM ke_doccti WHERE codcliente ='$codigoCliente' AND empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -490,22 +492,15 @@ class DocumentosActivity : AppCompatActivity() {
     }
 
     private fun getfechaDocs() {
-        val keAndroid = conn!!.writableDatabase
-        val fechaUltmod = keAndroid.rawQuery(
-            "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'ke_doccti'",
-            null
-        )
-        fechaUltmod.moveToFirst()
-        fechaDocs = fechaUltmod.getString(0)
-        fechaUltmod.close()
+        fechaDocs = conn.getFecha("ke_doccti", codEmpresa!!)
     }
 
-    private fun cargarCabeceraDocuemntosCliente(url: String) {
+    /*private fun cargarCabeceraDocuemntosCliente(url: String) {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
                     conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    val keAndroid = conn!!.writableDatabase
+                    val keAndroid = conn.writableDatabase
                     var jsonObject: JSONObject //creamos un objeto json vacio
                     llCommit = false
                     keAndroid.beginTransaction()
@@ -637,10 +632,10 @@ class DocumentosActivity : AppCompatActivity() {
             }
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
-    }
+    }*/
 
     override fun onResume() {
-        evaluacionDeCargas()
+        //evaluacionDeCargas()
         consultarDocs()
         super.onResume()
     }
@@ -670,7 +665,7 @@ class DocumentosActivity : AppCompatActivity() {
         private var aceptadev: String? = null
         private var fechaDocs: String? = null
         private var cod_usuario: String? = null
-        private var codigoEmpresa: String? = ""
+        private var codEmpresa: String? = ""
         private var nombreEmpresa = ""
         private var enlaceEmpresa = ""
         private var codigoSucursal = ""

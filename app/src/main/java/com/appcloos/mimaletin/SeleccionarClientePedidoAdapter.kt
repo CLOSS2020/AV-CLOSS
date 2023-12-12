@@ -18,7 +18,8 @@ class SeleccionarClientePedidoAdapter(
     private var clientes: List<Cliente>,
     private val onClickListener: (String, String) -> Unit,
     private val onLongClickListener: (String, String) -> Unit,
-    private val context: Context
+    private val context: Context,
+    private val codEmpresa: String
 ) : RecyclerView.Adapter<SeleccionarClientePedidoAdapter.SeleccionarClientePedidoHolder>() {
 
     var nightModeFlags: Int = context.resources.configuration.uiMode and
@@ -109,8 +110,8 @@ class SeleccionarClientePedidoAdapter(
             }
 
             //Icono de advertensia
-            val comparar = ClienteAlertauseCase().comparar(cliente.codigo, context)
-            val colorIcon = ClienteAlertauseCase().compararIcon(cliente.codigo, context)
+            val comparar = ClienteAlertauseCase().comparar(cliente.codigo, context, codEmpresa)
+            val colorIcon = ClienteAlertauseCase().compararIcon(cliente.codigo, context, codEmpresa)
             binding.ivAlerta.apply {
                 isVisible = comparar
                 setColorFilter(color(colorIcon))

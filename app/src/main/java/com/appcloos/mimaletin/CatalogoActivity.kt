@@ -17,7 +17,6 @@ package com.appcloos.mimaletin
 
 import android.content.ContentValues
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
@@ -36,7 +35,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
@@ -53,7 +51,7 @@ class CatalogoActivity : AppCompatActivity() {
     var seleccionArticulo: ArrayList<*> = ArrayList<Any?>()
     var listainfo: ArrayList<String>? = null
     private var listacatalogo: ArrayList<Catalogo>? = null
-    var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
     var seleccionado = 0
     private var existenciaGuardar = ""
     var cantidad = 0
@@ -68,7 +66,7 @@ class CatalogoActivity : AppCompatActivity() {
     private var APP_DESCUENTOS_PEDIDOS = false
 
     private lateinit var preferences: SharedPreferences
-    private lateinit var codigoEmpresa:String
+    private lateinit var codEmpresa:String
 
     private lateinit var binding: ActivityCatalogoBinding
 
@@ -83,7 +81,7 @@ class CatalogoActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
-        codigoEmpresa = preferences.getString("codigoEmpresa", null).toString()
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
 
         /* este intent es para obtener la seleccion, tipo de precio, nro del pedido y codigo del cliente*/
         seleccionado = intent.getIntExtra("Seleccion", 0)
@@ -94,15 +92,18 @@ class CatalogoActivity : AppCompatActivity() {
         factura = intent.getBooleanExtra("factura", false)
         /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
           el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        APP_ITEMS_FACTURAS = conn!!.getConfigNum("APP_ITEMS_FACTURAS").toInt()
-        APP_ITEMS_NOTAS_ENTREGA = conn!!.getConfigNum("APP_ITEMS_NOTAS_ENTREGA").toInt()
-        APP_DESCUENTOS_PEDIDOS = conn!!.getConfigBool("APP_DESCUENTOS_PEDIDOS")
-        cargarEnlace()
+        APP_ITEMS_FACTURAS = conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa).toInt()
+        APP_ITEMS_NOTAS_ENTREGA = conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa).toInt()
+        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa)
+
+        enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa)
+
+        //cargarEnlace()
         //declaro el listview
         consultarArticulosNormal(preciomostrar) //consulto los articulos
 
         //coloco el adaptador personalizado a la lista del elementos que van al listview
-        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo)
+        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
         //ArrayAdapter adaptador = new ArrayAdapter(CatalogoActivity.this, R.layout.list_catalogo_personalizado, listainfo);
         binding.lvArticulos.adapter = catalogoAdapter //refresco el listview
         binding.lvArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
@@ -177,17 +178,17 @@ class CatalogoActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun cargarEnlace() {
+    /*private fun cargarEnlace() {
         val keAndroid = conn!!.writableDatabase
         val columnas = arrayOf("kee_nombre," + "kee_url")
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query("ke_enlace", columnas, "empresa = '$codEmpresa'", null, null, null, null)
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
         }
         cursor.close()
         keAndroid.close()
-    }
+    }*/
 
     //metodo para ver la seleccion del activity
     private fun actDirec() {
@@ -206,9 +207,10 @@ class CatalogoActivity : AppCompatActivity() {
                     val ventaMin = listacatalogo!![position].getVta_min()
                     val dctotope = listacatalogo!![position].getDctotope()
                     conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    val keAndroid = conn!!.writableDatabase
+                    val keAndroid = conn.writableDatabase
                     val cursorMul = keAndroid.rawQuery(
-                        "SELECT vta_minenx, vta_solofac, vta_solone FROM articulo WHERE codigo ='$codArticulo'",
+                        "SELECT vta_minenx, vta_solofac, vta_solone FROM articulo " +
+                                "WHERE codigo ='$codArticulo' AND empresa = '$codEmpresa';",
                         null
                     )
                     cursorMul.moveToFirst()
@@ -234,7 +236,7 @@ class CatalogoActivity : AppCompatActivity() {
                     val layout = LinearLayout(this@CatalogoActivity)
                     layout.orientation = LinearLayout.VERTICAL
                     val cursor = keAndroid.rawQuery(
-                        "SELECT kmv_codart FROM ke_carrito WHERE kmv_codart ='$codArticulo'",
+                        "SELECT kmv_codart FROM ke_carrito WHERE kmv_codart ='$codArticulo' AND empresa = '$codEmpresa';",
                         null
                     )
                     if (cursor.moveToFirst()) {
@@ -247,13 +249,13 @@ class CatalogoActivity : AppCompatActivity() {
                         val cajaDescuento = EditText(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setEditTextTheme(codigoEmpresa)
+                                setEditTextTheme(codEmpresa)
                             )
                         )
                         val cajatexto = EditText(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setEditTextTheme(codigoEmpresa)
+                                setEditTextTheme(codEmpresa)
                             )
                         )
                         cajaDescuento.inputType = InputType.TYPE_CLASS_NUMBER
@@ -264,7 +266,7 @@ class CatalogoActivity : AppCompatActivity() {
                         val ventana = AlertDialog.Builder(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setAlertDialogTheme(codigoEmpresa)
+                                setAlertDialogTheme(codEmpresa)
                             )
                         )
                         //declaramos textviews porque vamos a usar layout
@@ -275,7 +277,7 @@ class CatalogoActivity : AppCompatActivity() {
                         val darDescuento = CheckBox(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
-                                setCheckBoxTheme(codigoEmpresa)
+                                setCheckBoxTheme(codEmpresa)
                             )
                         )
                         //final TextView mensajeCantidadMultiplo = new TextView(CatalogoActivity.this);
@@ -308,7 +310,7 @@ class CatalogoActivity : AppCompatActivity() {
                         }
                         mensajecantidad.text = "Porfavor, elige la cantidad"
                         val cursorPretotal =
-                            keAndroid.rawQuery("SELECT SUM(kmv_stotdcto) FROM ke_carrito", null)
+                            keAndroid.rawQuery("SELECT SUM(kmv_stotdcto) FROM ke_carrito WHERE empresa = '$codEmpresa';", null)
                         cursorPretotal.moveToFirst()
                         precioTotalporArticulo = cursorPretotal.getDouble(0)
                         cursorPretotal.close()
@@ -431,21 +433,23 @@ class CatalogoActivity : AppCompatActivity() {
                                                         }
                                                         keAndroid.beginTransaction()
                                                         try {
-                                                            val insertar = ContentValues()
-                                                            insertar.put("kmv_codart", codArticulo)
-                                                            insertar.put("kmv_nombre", nArticulo)
-                                                            insertar.put("kmv_stot", precioTotal)
-                                                            insertar.put("kmv_cant", cantidad)
-                                                            insertar.put("kmv_artprec", precio)
-                                                            insertar.put(
+                                                            val cv = ContentValues()
+                                                            cv.put("kmv_codart", codArticulo)
+                                                            cv.put("kmv_nombre", nArticulo)
+                                                            cv.put("kmv_stot", precioTotal)
+                                                            cv.put("kmv_cant", cantidad)
+                                                            cv.put("kmv_artprec", precio)
+                                                            cv.put(
                                                                 "kmv_dctolin",
                                                                 dctonumerico
                                                             )
-                                                            insertar.put("kmv_stotdcto", stotdcto)
+                                                            cv.put("kmv_stotdcto", stotdcto)
+                                                            cv.put("empresa", codEmpresa)
+
                                                             keAndroid.insert(
                                                                 "ke_carrito",
                                                                 null,
-                                                                insertar
+                                                                cv
                                                             )
 
                                                             //llamo al metodo guardar limites si el articulo posee limites
@@ -523,18 +527,20 @@ class CatalogoActivity : AppCompatActivity() {
                                                     }
                                                     keAndroid.beginTransaction()
                                                     try {
-                                                        val insertar = ContentValues()
-                                                        insertar.put("kmv_codart", codArticulo)
-                                                        insertar.put("kmv_nombre", nArticulo)
-                                                        insertar.put("kmv_stot", precioTotal)
-                                                        insertar.put("kmv_cant", cantidadNew)
-                                                        insertar.put("kmv_artprec", precio)
-                                                        insertar.put("kmv_dctolin", dctonumerico)
-                                                        insertar.put("kmv_stotdcto", stotdcto)
+                                                        val cv = ContentValues()
+                                                        cv.put("kmv_codart", codArticulo)
+                                                        cv.put("kmv_nombre", nArticulo)
+                                                        cv.put("kmv_stot", precioTotal)
+                                                        cv.put("kmv_cant", cantidadNew)
+                                                        cv.put("kmv_artprec", precio)
+                                                        cv.put("kmv_dctolin", dctonumerico)
+                                                        cv.put("kmv_stotdcto", stotdcto)
+                                                        cv.put("empresa", codEmpresa)
+
                                                         keAndroid.insert(
                                                             "ke_carrito",
                                                             null,
-                                                            insertar
+                                                            cv
                                                         )
                                                         keAndroid.setTransactionSuccessful()
                                                         keAndroid.endTransaction()
@@ -586,18 +592,20 @@ class CatalogoActivity : AppCompatActivity() {
                                                     }
                                                     keAndroid.beginTransaction()
                                                     try {
-                                                        val insertar = ContentValues()
-                                                        insertar.put("kmv_codart", codArticulo)
-                                                        insertar.put("kmv_nombre", nArticulo)
-                                                        insertar.put("kmv_stot", precioTotal)
-                                                        insertar.put("kmv_cant", cantidad)
-                                                        insertar.put("kmv_artprec", precio)
-                                                        insertar.put("kmv_dctolin", dctonumerico)
-                                                        insertar.put("kmv_stotdcto", stotdcto)
+                                                        val cv = ContentValues()
+                                                        cv.put("kmv_codart", codArticulo)
+                                                        cv.put("kmv_nombre", nArticulo)
+                                                        cv.put("kmv_stot", precioTotal)
+                                                        cv.put("kmv_cant", cantidad)
+                                                        cv.put("kmv_artprec", precio)
+                                                        cv.put("kmv_dctolin", dctonumerico)
+                                                        cv.put("kmv_stotdcto", stotdcto)
+                                                        cv.put("empresa", codEmpresa)
+
                                                         keAndroid.insert(
                                                             "ke_carrito",
                                                             null,
-                                                            insertar
+                                                            cv
                                                         )
                                                         keAndroid.setTransactionSuccessful()
                                                         keAndroid.endTransaction()
@@ -643,15 +651,17 @@ class CatalogoActivity : AppCompatActivity() {
                                             }
                                             keAndroid.beginTransaction()
                                             try {
-                                                val insertar = ContentValues()
-                                                insertar.put("kmv_codart", codArticulo)
-                                                insertar.put("kmv_nombre", nArticulo)
-                                                insertar.put("kmv_stot", precioTotal)
-                                                insertar.put("kmv_cant", cantidad)
-                                                insertar.put("kmv_artprec", precio)
-                                                insertar.put("kmv_dctolin", dctonumerico)
-                                                insertar.put("kmv_stotdcto", stotdcto)
-                                                keAndroid.insert("ke_carrito", null, insertar)
+                                                val cv = ContentValues()
+                                                cv.put("kmv_codart", codArticulo)
+                                                cv.put("kmv_nombre", nArticulo)
+                                                cv.put("kmv_stot", precioTotal)
+                                                cv.put("kmv_cant", cantidad)
+                                                cv.put("kmv_artprec", precio)
+                                                cv.put("kmv_dctolin", dctonumerico)
+                                                cv.put("kmv_stotdcto", stotdcto)
+                                                cv.put("empresa", codEmpresa)
+
+                                                keAndroid.insert("ke_carrito", null, cv)
                                                 keAndroid.setTransactionSuccessful()
                                                 keAndroid.endTransaction()
                                                 Toast.makeText(
@@ -670,7 +680,7 @@ class CatalogoActivity : AppCompatActivity() {
                                         }
                                     }
                                     val cursorF = keAndroid.rawQuery(
-                                        "SELECT COUNT(kmv_codart) FROM ke_carrito",
+                                        "SELECT COUNT(kmv_codart) FROM ke_carrito WHERE empresa = '$codEmpresa';",
                                         null
                                     )
                                     cursorF.moveToFirst()
@@ -697,7 +707,7 @@ class CatalogoActivity : AppCompatActivity() {
 
                         val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
                         pbutton.apply {
-                            setTextColor(colorTextAgencia(codigoEmpresa))
+                            setTextColor(colorTextAgencia(codEmpresa))
                         }
 
 
@@ -719,7 +729,7 @@ class CatalogoActivity : AppCompatActivity() {
                     val ventana = AlertDialog.Builder(
                         ContextThemeWrapper(
                             this@CatalogoActivity,
-                            setAlertDialogTheme(codigoEmpresa)
+                            setAlertDialogTheme(codEmpresa)
                         )
                     )
                     ventana.setTitle("Imagen del articulo")
@@ -730,7 +740,7 @@ class CatalogoActivity : AppCompatActivity() {
 
                     val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
                     pbutton.apply {
-                        setTextColor(colorTextAgencia(codigoEmpresa))
+                        setTextColor(colorTextAgencia(codEmpresa))
                     }
 
                 }
@@ -749,7 +759,7 @@ class CatalogoActivity : AppCompatActivity() {
         fechaVence: String,
         status: String
     ) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val guardarArticulo = ContentValues()
         guardarArticulo.put("kli_track", tracking)
         guardarArticulo.put("kli_codven", codUsuario)
@@ -759,6 +769,8 @@ class CatalogoActivity : AppCompatActivity() {
         guardarArticulo.put("kli_fechahizo", fechaHoy)
         guardarArticulo.put("kli_fechavence", fechaVence)
         guardarArticulo.put("status", status)
+        guardarArticulo.put("empresa", codEmpresa)
+
         keAndroid.insert("ke_limitart", null, guardarArticulo)
     }
 
@@ -769,9 +781,11 @@ class CatalogoActivity : AppCompatActivity() {
         codArticulo: String
     ): Int {
         var resultado = 0
-        val keAndroid = conn!!.readableDatabase
+        val keAndroid = conn.readableDatabase
         val cuComp = keAndroid.rawQuery(
-            "SELECT SUM(kli_cant) FROM ke_limitart WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND kli_codart='$codArticulo' AND status ='1'",
+            "SELECT SUM(kli_cant) FROM ke_limitart " +
+                    "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND " +
+                    "kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa';",
             null
         )
         while (cuComp.moveToNext()) {
@@ -784,7 +798,7 @@ class CatalogoActivity : AppCompatActivity() {
     //busqueda de articulo
     fun buscarArticulo(busqueda: String) {
         binding.lvArticulos.adapter = null
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         if (busqueda == "") {
             //Toast.makeText(CatalogoActivity.this, "Debes introducir una palabra o código", Toast.LENGTH_SHORT).show();
@@ -795,18 +809,18 @@ class CatalogoActivity : AppCompatActivity() {
                 enpreventa = intent!!.getStringExtra("enpreventa")
                 if (enpreventa == "0") {
                     cursorca = keAndroid.rawQuery(
-                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa != '1' ORDER BY articulo.codigo ASC",
+                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa != '1' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                         null
                     )
                 } else if (enpreventa == "1") {
                     cursorca = keAndroid.rawQuery(
-                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa = '$enpreventa' ORDER BY articulo.codigo ASC",
+                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa = '$enpreventa' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                         null
                     )
                 }
             } else if (seleccionado == 1) {
                 cursorca = keAndroid.rawQuery(
-                    "select articulo.codigo, articulo.nombre, articulo.$preciomostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx , articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $preciomostrar> 0.00   AND discont = 0.0 ORDER BY articulo.codigo ASC",
+                    "select articulo.codigo, articulo.nombre, articulo.$preciomostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx , articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $preciomostrar> 0.00 AND discont = 0.0 AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                     null
                 )
             }
@@ -834,14 +848,14 @@ class CatalogoActivity : AppCompatActivity() {
                 listacatalogo!!.add(catalogo)
             }
             //ke_android.close();
-            catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo)
+            catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
             binding.lvArticulos.adapter = catalogoAdapter
             catalogoAdapter!!.notifyDataSetChanged()
         }
     }
 
     private fun consultarArticulosNormal(precioparametro: String) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         var cursor: Cursor? = null
         listacatalogo = ArrayList()
@@ -851,12 +865,12 @@ class CatalogoActivity : AppCompatActivity() {
         }
         if (enpreventa == "0") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         } else if (enpreventa == "1") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='1' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='1' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         }
@@ -901,7 +915,7 @@ class CatalogoActivity : AppCompatActivity() {
     }
 
     private fun consultarArticulosenPedido() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         var cursor: Cursor? = null
         listacatalogo = ArrayList()
@@ -911,12 +925,12 @@ class CatalogoActivity : AppCompatActivity() {
         }
         if (enpreventa == "0") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa = '' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa = '' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         } else if (enpreventa == "1") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='$enpreventa' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='$enpreventa' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         }
@@ -947,7 +961,7 @@ class CatalogoActivity : AppCompatActivity() {
         }
         cursor.close()
         keAndroid.close()
-        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo)
+        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
         binding.lvArticulos.adapter = catalogoAdapter
         catalogoAdapter!!.notifyDataSetChanged()
     }
@@ -969,7 +983,7 @@ class CatalogoActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeAgencia(codigoEmpresa), true)
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

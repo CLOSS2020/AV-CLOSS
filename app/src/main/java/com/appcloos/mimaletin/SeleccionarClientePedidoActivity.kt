@@ -37,7 +37,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario = preferences.getString("cod_usuario", null).toString()
-        codEmpresa = preferences.getString("cod_usuario", null).toString()
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
 
         supportActionBar!!.title = "Selecione un Cliente"
 
@@ -52,7 +52,8 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             clientes,
             onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
             onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
-            this
+            this,
+            codEmpresa
         )
         binding.rvMainPedido.adapter = adapter
 
@@ -106,7 +107,8 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 clientes,
                 onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
                 onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
-                this
+                this,
+                codEmpresa
             )
             binding.rvMainPedido.adapter = adapter
             adapter.notifyDataSetChanged()
@@ -138,7 +140,8 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 clientes,
                 onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
                 onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
-                this
+                this,
+                codEmpresa
             )
             binding.rvMainPedido.adapter = adapter
             adapter.notifyDataSetChanged()
@@ -146,7 +149,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
     }
 
     private fun dialogCliente(cliente: String, nomCliente: String) {
-        val dialog = DialogClientesDatos(this, cliente, nomCliente)
+        val dialog = DialogClientesDatos(this, cliente, nomCliente, codEmpresa)
         dialog.show()
     }
 

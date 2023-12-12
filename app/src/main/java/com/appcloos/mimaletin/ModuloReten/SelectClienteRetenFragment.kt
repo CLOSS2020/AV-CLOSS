@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.PorterDuff
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,11 +12,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.SearchView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -41,9 +36,10 @@ class SelectClienteRetenFragment : Fragment() {
     private var clienteList: List<Cliente> = clientes.toMutableList()
 
     private lateinit var preferences: SharedPreferences
-    private lateinit var cod_usuario: String
+    private lateinit var codUsuario: String
+    private lateinit var codigoEmpresa: String
 
-    lateinit var ke_android: SQLiteDatabase
+    lateinit var keAndroid: SQLiteDatabase
     private lateinit var conn: AdminSQLiteOpenHelper
 
     private lateinit var adapter: SeleccionarClientePedidoAdapter
@@ -68,11 +64,11 @@ class SelectClienteRetenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         preferences = this.requireActivity()
             .getSharedPreferences("Preferences", AppCompatActivity.MODE_PRIVATE)
-        cod_usuario = preferences.getString("cod_usuario", null).toString()
-
+        codUsuario = preferences.getString("cod_usuario", null).toString()
+        codigoEmpresa = preferences.getString("codigoEmpresa", null).toString()
         conn = AdminSQLiteOpenHelper(requireContext(), "ke_android", null)
 
-        ke_android = conn.writableDatabase
+        keAndroid = conn.writableDatabase
 
         buscarClintes("")
 
@@ -86,13 +82,13 @@ class SelectClienteRetenFragment : Fragment() {
         clientes.clear()
 
         val cursor: Cursor = if (Text.isNullOrEmpty()) {
-            ke_android.rawQuery(
-                "SELECT DISTINCT cliempre.codigo, cliempre.nombre, cliempre.contribespecial, cliempre.kne_activa, (SELECT count(ke_doccti.documento) FROM ke_doccti WHERE codcliente=cliempre.codigo AND ke_doccti.agencia != '002' AND estatusdoc != '2' AND (dtotalfinal - dtotpagos) > 0.00) AS CanidadDoc FROM cliempre INNER JOIN ke_doccti ON cliempre.codigo = ke_doccti.codcliente WHERE cliempre.status = '1' AND cliempre.vendedor = '$cod_usuario' AND ke_doccti.agencia != '002' ORDER BY nombre ASC;",
+            keAndroid.rawQuery(
+                "SELECT DISTINCT cliempre.codigo, cliempre.nombre, cliempre.contribespecial, cliempre.kne_activa, (SELECT count(ke_doccti.documento) FROM ke_doccti WHERE codcliente=cliempre.codigo AND ke_doccti.agencia != '002' AND estatusdoc != '2' AND (dtotalfinal - dtotpagos) > 0.00) AS CanidadDoc FROM cliempre INNER JOIN ke_doccti ON cliempre.codigo = ke_doccti.codcliente WHERE cliempre.status = '1' AND cliempre.vendedor = '$codUsuario' AND ke_doccti.agencia != '002' ORDER BY nombre ASC;",
                 null
             )
         } else {
-            ke_android.rawQuery(
-                "SELECT DISTINCT cliempre.codigo, cliempre.nombre, cliempre.contribespecial, cliempre.kne_activa, (SELECT COUNT(ke_doccti.documento) FROM ke_doccti WHERE codcliente=cliempre.codigo AND ke_doccti.agencia != '002' AND estatusdoc != '2' AND (dtotalfinal - dtotpagos) > 0.00) AS CanidadDoc FROM cliempre INNER JOIN ke_doccti ON cliempre.codigo = ke_doccti.codcliente WHERE cliempre.status = '1' AND cliempre.vendedor = '$cod_usuario' AND ke_doccti.agencia != '002' AND (nombre LIKE'%$Text%' OR codigo LIKE '%$Text%') ORDER BY nombre ASC;",
+            keAndroid.rawQuery(
+                "SELECT DISTINCT cliempre.codigo, cliempre.nombre, cliempre.contribespecial, cliempre.kne_activa, (SELECT COUNT(ke_doccti.documento) FROM ke_doccti WHERE codcliente=cliempre.codigo AND ke_doccti.agencia != '002' AND estatusdoc != '2' AND (dtotalfinal - dtotpagos) > 0.00) AS CanidadDoc FROM cliempre INNER JOIN ke_doccti ON cliempre.codigo = ke_doccti.codcliente WHERE cliempre.status = '1' AND cliempre.vendedor = '$codUsuario' AND ke_doccti.agencia != '002' AND (nombre LIKE'%$Text%' OR codigo LIKE '%$Text%') ORDER BY nombre ASC;",
                 null
             )
         }
@@ -117,7 +113,8 @@ class SelectClienteRetenFragment : Fragment() {
             clientes,
             onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) },
             onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
-            requireContext()
+            requireContext(),
+            codigoEmpresa
         )
         binding.rvMainSelctReten.adapter = adapter
         adapter.notifyDataSetChanged()
@@ -166,7 +163,7 @@ class SelectClienteRetenFragment : Fragment() {
     }
 
     private fun dialogCliente(cliente: String, nomCliente: String) {
-        val dialog = DialogClientesDatos(requireContext(), cliente, nomCliente)
+        val dialog = DialogClientesDatos(requireContext(), cliente, nomCliente, codigoEmpresa)
         dialog.show()
     }
 

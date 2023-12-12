@@ -212,8 +212,8 @@ class CxcReportActivity : AppCompatActivity() {
         //inst. conexion
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
-        APP_NOTA_ENTREGA_BS = conn.getConfigBool("APP_NOTA_ENTREGA_BS")
-        APP_PORCENTAJE_COMPLEMENTO = conn.getConfigNum("APP_PORCENTAJE_COMPLEMENTO")
+        APP_NOTA_ENTREGA_BS = conn.getConfigBool("APP_NOTA_ENTREGA_BS", codEmpresa!!)
+        APP_PORCENTAJE_COMPLEMENTO = conn.getConfigNum("APP_PORCENTAJE_COMPLEMENTO", codEmpresa!!)
 
         //listBankDesc = conn.getConfigString("APP_BANCOS_DESCUENTOS").trim().split(",")
 
@@ -1641,12 +1641,12 @@ class CxcReportActivity : AppCompatActivity() {
         }
 
         if (binding.rbCxcCompMain.isChecked &&
-            superSaldoFavor() > conn.getConfigNum("APP_LIMITE_SALDO_FAVOR") &&
+            superSaldoFavor() > conn.getConfigNum("APP_LIMITE_SALDO_FAVOR", codEmpresa!!) &&
             binding.rbCxcDivisasMain.isChecked
         ) {
             Toast.makeText(
                 this,
-                "El monto a favor no puede exceder de ${conn.getConfigNum("APP_LIMITE_SALDO_FAVOR")}.",
+                "El monto a favor no puede exceder de ${conn.getConfigNum("APP_LIMITE_SALDO_FAVOR", codEmpresa!!)}.",
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -6519,7 +6519,7 @@ class CxcReportActivity : AppCompatActivity() {
         val date = sdf.parse(fechaRecepcion)
         val cal = Calendar.getInstance()
         cal.time = date!!
-        cal.add(Calendar.DATE, +conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt())
+        cal.add(Calendar.DATE, +conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt())
 
         val newDate: Date = cal.time
 

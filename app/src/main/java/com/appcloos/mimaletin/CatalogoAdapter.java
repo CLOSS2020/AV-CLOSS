@@ -18,12 +18,15 @@ import java.util.ArrayList;
 public class CatalogoAdapter extends BaseAdapter {
     private final ArrayList<Catalogo> listcatalogo;
     private final Context context;
+
+    private final String enlaceEmpresa;
     private LayoutInflater inflater;
     private ConstraintLayout it_backcatalogo;
 
-    public CatalogoAdapter(Context context, ArrayList<Catalogo> listcatalogo) {
+    public CatalogoAdapter(Context context, ArrayList<Catalogo> listcatalogo, String enlaceEmpresa) {
         this.context = context;
         this.listcatalogo = listcatalogo;
+        this.enlaceEmpresa = enlaceEmpresa;
     }
 
     @Override
@@ -144,7 +147,7 @@ public class CatalogoAdapter extends BaseAdapter {
 
         //generacion de la miniatura de la imagen --
         String codigo = catalogo.codigo;
-        String enlace = "https://www.cloccidental.com/img/" + codigo + ".jpg"; //este enlace debe parametrizarse despues
+        String enlace = "https://" + enlaceEmpresa + "/img/" + codigo + ".jpg"; //este enlace debe parametrizarse despues
         Picasso.get().load(enlace).resize(100, 100).centerCrop().into(img_thumb); //cargo la imagen en cada objeto img
 
 

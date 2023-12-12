@@ -290,6 +290,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertar.put(
                                 "kco_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertar.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correla", null, insertar)
                             //--------------------------------------------------------------------
 
@@ -302,6 +303,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertarRec.put(
                                 "kcc_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertarRec.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correlacxc", null, insertarRec)
                             //-------------------------------------------------------
 
@@ -314,6 +316,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertarRcl.put(
                                 "kdev_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertarRcl.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correladev", null, insertarRcl)
                             //---------------------------------------------------------------------------
 
@@ -326,6 +329,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertarCXC.put(
                                 "kcor_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertarCXC.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_corprec", null, insertarCXC)
                             //---------------------------------------------------------------------------
                             /*keAndroid.delete(

@@ -27,8 +27,6 @@ import android.content.pm.ActivityInfo
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -380,6 +378,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertar.put(
                                 "kco_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertar.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correla", null, insertar)
                             //--------------------------------------------------------------------
 
@@ -392,6 +391,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertarRec.put(
                                 "kcc_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertarRec.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correlacxc", null, insertarRec)
                             //-------------------------------------------------------
 
@@ -404,6 +404,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertarRcl.put(
                                 "kdev_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertarRcl.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correladev", null, insertarRcl)
                             //---------------------------------------------------------------------------
 
@@ -416,6 +417,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertarCXC.put(
                                 "kcor_vendedor",
                                 codUsuario.trim { it <= ' ' })
+                            insertarCXC.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_corprec", null, insertarCXC)
                             //---------------------------------------------------------------------------
                             /*keAndroid.delete(
@@ -449,7 +451,6 @@ class MainActivity : AppCompatActivity(), Serializable {
                             usuarioDatos.put("ualterprec", ualterprec)
                             usuarioDatos.put("sesionactiva", sesionactiva)
                             usuarioDatos.put("superves", superves)
-                            println(newEmpresa.kedCodigo)
                             usuarioDatos.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("usuarios", null, usuarioDatos)
                             keAndroid.setTransactionSuccessful()
@@ -549,6 +550,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                         guardarPermisos.put("kmo_codigo", codigoModulo)
                         guardarPermisos.put("kmo_status", activoModulo)
                         guardarPermisos.put("kee_sucursal", codigoSuc)
+                        guardarPermisos.put("empresa", newEmpresa.kedCodigo)
                         keAndroid.insert("ke_modulos", null, guardarPermisos)
                     }
                     keAndroid.setTransactionSuccessful()

@@ -4,36 +4,32 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
-import android.database.DatabaseUtils
 import android.database.SQLException
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
 import android.widget.SearchView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.databinding.ActivityEstadisticasBinding
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 class EstadisticasActivity : AppCompatActivity() {
-    var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
     lateinit var listavendedores: ListView
     private var vendedoresAdapter: VendedoresAdapter? = null
     private var listadeestadisticas: ArrayList<Estadistica>? = null
+    private lateinit var cod_usuario: String
+    private lateinit var codEmpresa: String
 
     private lateinit var binding: ActivityEstadisticasBinding
 
@@ -47,7 +43,8 @@ class EstadisticasActivity : AppCompatActivity() {
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         listavendedores = findViewById(R.id.listaVendedores)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
-        cod_usuario = preferences.getString("cod_usuario", null)
+        cod_usuario = preferences.getString("cod_usuario", null).toString()
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
         cargarEnlace()
         validarTipodeUsuario(cod_usuario)
         consultarVendedores(campo, cod_usuario)
@@ -63,13 +60,14 @@ class EstadisticasActivity : AppCompatActivity() {
             iraDetalleVendedor(codigoVend, nombreVendedor)
         }
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario!!)
+        objetoAux.descargaDesactivo(cod_usuario)
     }
 
     private fun iraDetalleVendedor(codigoVend: String, nombreVendedor: String) {
         val intent = Intent(applicationContext, DetalleVendedorActivity::class.java)
         intent.putExtra("codigoVend", codigoVend)
         intent.putExtra("nombreVend", nombreVendedor)
+        intent.putExtra("codigoEmpresa", codEmpresa)
         startActivity(intent)
     }
 
@@ -93,11 +91,15 @@ class EstadisticasActivity : AppCompatActivity() {
     }
 
     private fun buscarVendedor(busqueda: String) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var estadistica: Estadistica
         listadeestadisticas = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT vendedor, nombrevend, prcmeta, fecha_estad FROM ke_estadc01 WHERE $campo='$cod_usuario' AND (vendedor LIKE '%$busqueda%' OR nombrevend LIKE '%$busqueda%')  ORDER BY prcmeta desc",
+            "SELECT vendedor, nombrevend, prcmeta, fecha_estad FROM ke_estadc01 " +
+                    "WHERE $campo = '$cod_usuario' AND " +
+                    "(vendedor LIKE '%$busqueda%' OR nombrevend LIKE '%$busqueda%') AND " +
+                    "empresa = '$codEmpresa' " +
+                    "ORDER BY prcmeta desc",
             null
         )
         while (cursor.moveToNext()) {
@@ -121,7 +123,7 @@ class EstadisticasActivity : AppCompatActivity() {
         val itemid = item.itemId
         if (itemid == R.id.sync_estad) {
             fecha
-            bajarEstadisticas("https://" + enlaceEmpresa + "/webservice/estadisticas.php?campo=" + campo + "&&cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&fecha_sinc=" + fechaEstadis + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+            bajarEstadisticas("https://$enlaceEmpresa/webservice/estadisticas_V2.php?campo=$campo&&cod_usuario=$cod_usuario&&fecha_sinc=$fechaEstadis")
         }
         return super.onOptionsItemSelected(item)
     }
@@ -135,13 +137,21 @@ class EstadisticasActivity : AppCompatActivity() {
         }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
                     "kee_url," +
                     "kee_sucursal"
         )
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -152,344 +162,111 @@ class EstadisticasActivity : AppCompatActivity() {
     }
 
     private fun bajarEstadisticas(url: String) {
-        val jsonArrayRequest: JsonArrayRequest = object : JsonArrayRequest(
+        val jsonArrayRequest: JsonObjectRequest = object : JsonObjectRequest(
             url,
-            Response.Listener { response: JSONArray? ->
+            Response.Listener { response: JSONObject ->
                 println(response)
-                if (response != null) {
+                if (response.getString("estadisticas") != "null") {
                     Toast.makeText(
-                        applicationContext,
-                        "Descargando Estadísticas",
-                        Toast.LENGTH_SHORT
+                        applicationContext, "Descargando Estadísticas", Toast.LENGTH_SHORT
                     ).show()
-                    val keAndroid = conn!!.writableDatabase
-                    val filas = DatabaseUtils.queryNumEntries(keAndroid, "ke_estadc01")
-                    if (filas > 0) {
-                        var jsonObject: JSONObject?  //creamos un objeto json vacio
-                        for (i in 0 until response.length()) {
-                            try {
-                                keAndroid.beginTransaction()
-                                jsonObject = response.getJSONObject(i)
-                                codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                                nomcoord = jsonObject.getString("nomcoord").trim { it <= ' ' }
-                                vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                                nombrevend = jsonObject.getString("nombrevend").trim { it <= ' ' }
-                                cntpedidos = jsonObject.getDouble("cntpedidos")
-                                mtopedidos = jsonObject.getDouble("mtopedidos")
-                                cntfacturas = jsonObject.getDouble("cntfacturas")
-                                mtofacturas = jsonObject.getDouble("mtofacturas")
-                                metavend = jsonObject.getDouble("metavend")
-                                prcmeta = jsonObject.getDouble("prcmeta")
-                                cntclientes = jsonObject.getDouble("cntclientes")
-                                clivisit = jsonObject.getDouble("clivisit")
-                                prcvisitas = jsonObject.getDouble("prcvisitas")
-                                lom_montovtas = jsonObject.getDouble("lom_montovtas")
-                                lom_prcvtas = jsonObject.getDouble("lom_prcvtas")
-                                lom_prcvisit = jsonObject.getDouble("lom_prcvisit")
-                                rlom_montovtas = jsonObject.getDouble("rlom_montovtas")
-                                rlom_prcvtas = jsonObject.getDouble("rlom_prcvtas")
-                                rlom_prcvisit = jsonObject.getDouble("rlom_prcvisit")
-                                fecha_estad = jsonObject.getString("fecha_estad")
-                                ppgdol_totneto = jsonObject.getString("ppgdol_totneto")
-                                devdol_totneto = jsonObject.getString("devdol_totneto")
-                                defdol_totneto = jsonObject.getString("defdol_totneto")
-                                totdolcob = jsonObject.getString("totdolcob")
-                                val actualizar = ContentValues()
-                                actualizar.put("codcoord", codcoord)
-                                actualizar.put("nomcoord", nomcoord)
-                                actualizar.put("vendedor", vendedor)
-                                actualizar.put("nombrevend", nombrevend)
-                                actualizar.put("cntpedidos", cntpedidos)
-                                actualizar.put("mtopedidos", mtopedidos)
-                                actualizar.put("cntfacturas", cntfacturas)
-                                actualizar.put("mtofacturas", mtofacturas)
-                                actualizar.put("metavend", metavend)
-                                actualizar.put("prcmeta", prcmeta)
-                                actualizar.put("cntclientes", cntclientes)
-                                actualizar.put("clivisit", clivisit)
-                                actualizar.put("prcvisitas", prcvisitas)
-                                actualizar.put("lom_montovtas", lom_montovtas)
-                                actualizar.put("lom_prcvtas", lom_prcvtas)
-                                actualizar.put("lom_prcvisit", lom_prcvisit)
-                                actualizar.put("rlom_montovtas", rlom_montovtas)
-                                actualizar.put("rlom_prcvtas", rlom_prcvtas)
-                                actualizar.put("rlom_prcvisit", rlom_prcvisit)
-                                actualizar.put("fecha_estad", fecha_estad)
-                                actualizar.put("ppgdol_totneto", ppgdol_totneto)
-                                actualizar.put("devdol_totneto", devdol_totneto)
-                                actualizar.put("defdol_totneto", defdol_totneto)
-                                actualizar.put("totdolcob", totdolcob)
-                                keAndroid.update(
-                                    "ke_estadc01", actualizar, "vendedor = ?", arrayOf(
-                                        vendedor
-                                    )
+
+                    val estadisticas = response.getJSONArray("estadisticas")
+
+                    for (i in 0 until estadisticas.length()) {
+                        try {
+                            val jsonObject = estadisticas.getJSONObject(i)
+
+                            val codcoord = jsonObject.getString("codcoord")
+                            val nomcoord = jsonObject.getString("nomcoord")
+                            val vendedor = jsonObject.getString("vendedor")
+                            val nombrevend = jsonObject.getString("nombrevend")
+                            val cntpedidos = jsonObject.getDouble("cntpedidos")
+                            val mtopedidos = jsonObject.getDouble("mtopedidos")
+                            val cntfacturas = jsonObject.getDouble("cntfacturas")
+                            val mtofacturas = jsonObject.getDouble("mtofacturas")
+                            val metavend = jsonObject.getDouble("metavend")
+                            val prcmeta = jsonObject.getDouble("prcmeta")
+                            val cntclientes = jsonObject.getDouble("cntclientes")
+                            val clivisit = jsonObject.getDouble("clivisit")
+                            val prcvisitas = jsonObject.getDouble("prcvisitas")
+                            val lomMontovtas = jsonObject.getDouble("lom_montovtas")
+                            val lomPrcvtas = jsonObject.getDouble("lom_prcvtas")
+                            val lomPrcvisit = jsonObject.getDouble("lom_prcvisit")
+                            val rlomMontovtas = jsonObject.getDouble("rlom_montovtas")
+                            val rlomPrcvtas = jsonObject.getDouble("rlom_prcvtas")
+                            val rlomPrcvisit = jsonObject.getDouble("rlom_prcvisit")
+                            val fechaEstad = jsonObject.getString("fecha_estad")
+                            val ppgdolTotneto = jsonObject.getDouble("ppgdol_totneto")
+                            val devdolTotneto = jsonObject.getDouble("devdol_totneto")
+                            val defdolTotneto = jsonObject.getDouble("defdol_totneto")
+                            val totdolcob = jsonObject.getDouble("totdolcob")
+                            //val cntrecl = jsonObject.getDouble("cntrecl")
+                            //val mtorecl = jsonObject.getDouble("mtorecl")
+
+                            val cv = ContentValues()
+                            cv.put("codcoord", codcoord)
+                            cv.put("nomcoord", nomcoord)
+                            cv.put("vendedor", vendedor)
+                            cv.put("nombrevend", nombrevend)
+                            cv.put("cntpedidos", cntpedidos)
+                            cv.put("mtopedidos", mtopedidos)
+                            cv.put("cntfacturas", cntfacturas)
+                            cv.put("mtofacturas", mtofacturas)
+                            cv.put("metavend", metavend)
+                            cv.put("prcmeta", prcmeta)
+                            cv.put("cntclientes", cntclientes)
+                            cv.put("clivisit", clivisit)
+                            cv.put("prcvisitas", prcvisitas)
+                            cv.put("lom_montovtas", lomMontovtas)
+                            cv.put("lom_prcvtas", lomPrcvtas)
+                            cv.put("lom_prcvisit", lomPrcvisit)
+                            cv.put("rlom_montovtas", rlomMontovtas)
+                            cv.put("rlom_prcvtas", rlomPrcvtas)
+                            cv.put("rlom_prcvisit", rlomPrcvisit)
+                            cv.put("fecha_estad", fechaEstad)
+                            cv.put("ppgdol_totneto", ppgdolTotneto)
+                            cv.put("devdol_totneto", devdolTotneto)
+                            cv.put("defdol_totneto", defdolTotneto)
+                            cv.put("totdolcob", totdolcob)
+                            //cv.put("cntrecl", cntrecl)
+                            //cv.put("mtorecl", mtorecl)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_estadc01", ArrayList(
+                                        mutableListOf("vendedor", "empresa")
+                                    ), arrayListOf(vendedor, codEmpresa)
                                 )
-                                keAndroid.setTransactionSuccessful()
-                                Toast.makeText(
-                                    this@EstadisticasActivity,
-                                    "Datos actualizados.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } catch (e: SQLException) {
-                                Toast.makeText(
-                                    this@EstadisticasActivity,
-                                    "Error en la insercion en $e",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            } catch (e: JSONException) {
-                                Toast.makeText(
-                                    this@EstadisticasActivity,
-                                    "Error en la insercion en $e",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            } finally {
-                                keAndroid.endTransaction()
-                            }
-                            val vendedorExistente = keAndroid.rawQuery(
-                                "SELECT count(vendedor) FROM ke_estadc01 WHERE vendedor ='$vendedor'",
-                                null
-                            )
-                            vendedorExistente.moveToFirst()
-                            val vendedorExistente1 = vendedorExistente.getInt(0)
-                            vendedorExistente.close()
-                            if (vendedorExistente1 > 0) {
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = response.getJSONObject(i)
-                                    codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                                    nomcoord = jsonObject.getString("nomcoord").trim { it <= ' ' }
-                                    vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                                    nombrevend =
-                                        jsonObject.getString("nombrevend").trim { it <= ' ' }
-                                    cntpedidos = jsonObject.getDouble("cntpedidos")
-                                    mtopedidos = jsonObject.getDouble("mtopedidos")
-                                    cntfacturas = jsonObject.getDouble("cntfacturas")
-                                    mtofacturas = jsonObject.getDouble("mtofacturas")
-                                    metavend = jsonObject.getDouble("metavend")
-                                    prcmeta = jsonObject.getDouble("prcmeta")
-                                    cntclientes = jsonObject.getDouble("cntclientes")
-                                    clivisit = jsonObject.getDouble("clivisit")
-                                    prcvisitas = jsonObject.getDouble("prcvisitas")
-                                    lom_montovtas = jsonObject.getDouble("lom_montovtas")
-                                    lom_prcvtas = jsonObject.getDouble("lom_prcvtas")
-                                    lom_prcvisit = jsonObject.getDouble("lom_prcvisit")
-                                    rlom_montovtas = jsonObject.getDouble("rlom_montovtas")
-                                    rlom_prcvtas = jsonObject.getDouble("rlom_prcvtas")
-                                    rlom_prcvisit = jsonObject.getDouble("rlom_prcvisit")
-                                    fecha_estad = jsonObject.getString("fecha_estad")
-                                    ppgdol_totneto = jsonObject.getString("ppgdol_totneto")
-                                    devdol_totneto = jsonObject.getString("devdol_totneto")
-                                    defdol_totneto = jsonObject.getString("defdol_totneto")
-                                    totdolcob = jsonObject.getString("totdolcob")
-                                    val actualizar = ContentValues()
-                                    actualizar.put("codcoord", codcoord)
-                                    actualizar.put("nomcoord", nomcoord)
-                                    actualizar.put("vendedor", vendedor)
-                                    actualizar.put("nombrevend", nombrevend)
-                                    actualizar.put("cntpedidos", cntpedidos)
-                                    actualizar.put("mtopedidos", mtopedidos)
-                                    actualizar.put("cntfacturas", cntfacturas)
-                                    actualizar.put("mtofacturas", mtofacturas)
-                                    actualizar.put("metavend", metavend)
-                                    actualizar.put("prcmeta", prcmeta)
-                                    actualizar.put("cntclientes", cntclientes)
-                                    actualizar.put("clivisit", clivisit)
-                                    actualizar.put("prcvisitas", prcvisitas)
-                                    actualizar.put("lom_montovtas", lom_montovtas)
-                                    actualizar.put("lom_prcvtas", lom_prcvtas)
-                                    actualizar.put("lom_prcvisit", lom_prcvisit)
-                                    actualizar.put("rlom_montovtas", rlom_montovtas)
-                                    actualizar.put("rlom_prcvtas", rlom_prcvtas)
-                                    actualizar.put("rlom_prcvisit", rlom_prcvisit)
-                                    actualizar.put("fecha_estad", fecha_estad)
-                                    actualizar.put("ppgdol_totneto", ppgdol_totneto)
-                                    actualizar.put("devdol_totneto", devdol_totneto)
-                                    actualizar.put("defdol_totneto", defdol_totneto)
-                                    actualizar.put("totdolcob", totdolcob)
-                                    keAndroid.update(
-                                        "ke_estadc01", actualizar, "vendedor = ?", arrayOf(
-                                            vendedor
-                                        )
-                                    )
-                                    keAndroid.setTransactionSuccessful()
-                                    Toast.makeText(
-                                        this@EstadisticasActivity,
-                                        "Datos actualizados.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } catch (e: SQLException) {
-                                    Toast.makeText(
-                                        this@EstadisticasActivity,
-                                        "Error en la insercion en $e",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        this@EstadisticasActivity,
-                                        "Error en la insercion en $e",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_estadc01",
+                                    cv,
+                                    "vendedor = ? AND empresa = ?",
+                                    arrayOf(vendedor, codEmpresa)
+                                )
                             } else {
-                                try {
-                                    keAndroid.beginTransaction()
-                                    jsonObject = response.getJSONObject(i)
-                                    codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                                    nomcoord = jsonObject.getString("nomcoord").trim { it <= ' ' }
-                                    vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                                    nombrevend =
-                                        jsonObject.getString("nombrevend").trim { it <= ' ' }
-                                    cntpedidos = jsonObject.getDouble("cntpedidos")
-                                    mtopedidos = jsonObject.getDouble("mtopedidos")
-                                    cntfacturas = jsonObject.getDouble("cntfacturas")
-                                    mtofacturas = jsonObject.getDouble("mtofacturas")
-                                    metavend = jsonObject.getDouble("metavend")
-                                    prcmeta = jsonObject.getDouble("prcmeta")
-                                    cntclientes = jsonObject.getDouble("cntclientes")
-                                    clivisit = jsonObject.getDouble("clivisit")
-                                    prcvisitas = jsonObject.getDouble("prcvisitas")
-                                    lom_montovtas = jsonObject.getDouble("lom_montovtas")
-                                    lom_prcvtas = jsonObject.getDouble("lom_prcvtas")
-                                    lom_prcvisit = jsonObject.getDouble("lom_prcvisit")
-                                    rlom_montovtas = jsonObject.getDouble("rlom_montovtas")
-                                    rlom_prcvtas = jsonObject.getDouble("rlom_prcvtas")
-                                    rlom_prcvisit = jsonObject.getDouble("rlom_prcvisit")
-                                    fecha_estad = jsonObject.getString("fecha_estad")
-                                    ppgdol_totneto = jsonObject.getString("ppgdol_totneto")
-                                    devdol_totneto = jsonObject.getString("devdol_totneto")
-                                    defdol_totneto = jsonObject.getString("defdol_totneto")
-                                    totdolcob = jsonObject.getString("totdolcob")
-                                    val insertar = ContentValues()
-                                    insertar.put("codcoord", codcoord)
-                                    insertar.put("nomcoord", nomcoord)
-                                    insertar.put("vendedor", vendedor)
-                                    insertar.put("nombrevend", nombrevend)
-                                    insertar.put("cntpedidos", cntpedidos)
-                                    insertar.put("mtopedidos", mtopedidos)
-                                    insertar.put("cntfacturas", cntfacturas)
-                                    insertar.put("mtofacturas", mtofacturas)
-                                    insertar.put("metavend", metavend)
-                                    insertar.put("prcmeta", prcmeta)
-                                    insertar.put("cntclientes", cntclientes)
-                                    insertar.put("clivisit", clivisit)
-                                    insertar.put("prcvisitas", prcvisitas)
-                                    insertar.put("lom_montovtas", lom_montovtas)
-                                    insertar.put("lom_prcvtas", lom_prcvtas)
-                                    insertar.put("lom_prcvisit", lom_prcvisit)
-                                    insertar.put("rlom_montovtas", rlom_montovtas)
-                                    insertar.put("rlom_prcvtas", rlom_prcvtas)
-                                    insertar.put("rlom_prcvisit", rlom_prcvisit)
-                                    insertar.put("fecha_estad", fecha_estad)
-                                    insertar.put("ppgdol_totneto", ppgdol_totneto)
-                                    insertar.put("devdol_totneto", devdol_totneto)
-                                    insertar.put("defdol_totneto", defdol_totneto)
-                                    insertar.put("totdolcob", totdolcob)
-                                    keAndroid.insert("ke_estadc01", null, insertar)
-                                    keAndroid.setTransactionSuccessful()
-                                    Toast.makeText(
-                                        this@EstadisticasActivity,
-                                        "Datos actualizados.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } catch (e: SQLException) {
-                                    Toast.makeText(
-                                        this@EstadisticasActivity,
-                                        "Error en la insercion en $e",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } catch (e: JSONException) {
-                                    Toast.makeText(
-                                        this@EstadisticasActivity,
-                                        "Error en la insercion en $e",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } finally {
-                                    keAndroid.endTransaction()
-                                }
+                                conn.insertJSON("ke_estadc01", cv)
                             }
-                        } //aca cierra el for
-                    } else { // aqui cierran las filas
-                        var jsonObject: JSONObject //creamos un objeto json vacio
-                        for (i in 0 until response.length()) {
-                            try {
-                                keAndroid.beginTransaction()
-                                jsonObject = response.getJSONObject(i)
-                                codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                                nomcoord = jsonObject.getString("nomcoord").trim { it <= ' ' }
-                                vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                                nombrevend = jsonObject.getString("nombrevend").trim { it <= ' ' }
-                                cntpedidos = jsonObject.getDouble("cntpedidos")
-                                mtopedidos = jsonObject.getDouble("mtopedidos")
-                                cntfacturas = jsonObject.getDouble("cntfacturas")
-                                mtofacturas = jsonObject.getDouble("mtofacturas")
-                                metavend = jsonObject.getDouble("metavend")
-                                prcmeta = jsonObject.getDouble("prcmeta")
-                                cntclientes = jsonObject.getDouble("cntclientes")
-                                clivisit = jsonObject.getDouble("clivisit")
-                                prcvisitas = jsonObject.getDouble("prcvisitas")
-                                lom_montovtas = jsonObject.getDouble("lom_montovtas")
-                                lom_prcvtas = jsonObject.getDouble("lom_prcvtas")
-                                lom_prcvisit = jsonObject.getDouble("lom_prcvisit")
-                                rlom_montovtas = jsonObject.getDouble("rlom_montovtas")
-                                rlom_prcvtas = jsonObject.getDouble("rlom_prcvtas")
-                                rlom_prcvisit = jsonObject.getDouble("rlom_prcvisit")
-                                fecha_estad = jsonObject.getString("fecha_estad")
-                                ppgdol_totneto = jsonObject.getString("ppgdol_totneto")
-                                devdol_totneto = jsonObject.getString("devdol_totneto")
-                                defdol_totneto = jsonObject.getString("defdol_totneto")
-                                totdolcob = jsonObject.getString("totdolcob")
-                                val insertar = ContentValues()
-                                insertar.put("codcoord", codcoord)
-                                insertar.put("nomcoord", nomcoord)
-                                insertar.put("vendedor", vendedor)
-                                insertar.put("nombrevend", nombrevend)
-                                insertar.put("cntpedidos", cntpedidos)
-                                insertar.put("mtopedidos", mtopedidos)
-                                insertar.put("cntfacturas", cntfacturas)
-                                insertar.put("mtofacturas", mtofacturas)
-                                insertar.put("metavend", metavend)
-                                insertar.put("prcmeta", prcmeta)
-                                insertar.put("cntclientes", cntclientes)
-                                insertar.put("clivisit", clivisit)
-                                insertar.put("prcvisitas", prcvisitas)
-                                insertar.put("lom_montovtas", lom_montovtas)
-                                insertar.put("lom_prcvtas", lom_prcvtas)
-                                insertar.put("lom_prcvisit", lom_prcvisit)
-                                insertar.put("rlom_montovtas", rlom_montovtas)
-                                insertar.put("rlom_prcvtas", rlom_prcvtas)
-                                insertar.put("rlom_prcvisit", rlom_prcvisit)
-                                insertar.put("fecha_estad", fecha_estad)
-                                insertar.put("ppgdol_totneto", ppgdol_totneto)
-                                insertar.put("devdol_totneto", devdol_totneto)
-                                insertar.put("defdol_totneto", defdol_totneto)
-                                insertar.put("totdolcob", totdolcob)
-                                keAndroid.insert("ke_estadc01", null, insertar)
-                                keAndroid.setTransactionSuccessful()
-                                Toast.makeText(
-                                    this@EstadisticasActivity,
-                                    "Datos actualizados.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } catch (e: SQLException) {
-                                Toast.makeText(
-                                    this@EstadisticasActivity,
-                                    "Error en la insercion en $e",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            } catch (e: JSONException) {
-                                Toast.makeText(
-                                    this@EstadisticasActivity,
-                                    "Error en la insercion en $e",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            } finally {
-                                keAndroid.endTransaction()
-                            }
+
+                            Toast.makeText(
+                                this@EstadisticasActivity, "Datos actualizados.", Toast.LENGTH_SHORT
+                            ).show()
+                        } catch (e: SQLException) {
+                            Toast.makeText(
+                                this@EstadisticasActivity,
+                                "Error en la insercion en $e",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } catch (e: JSONException) {
+                            Toast.makeText(
+                                this@EstadisticasActivity,
+                                "Error en la insercion en $e",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
-                        keAndroid.close()
-                    }
+                        } //aca cierra el for
+
                     actualizarLista()
                 } else {
                     Toast.makeText(
@@ -524,9 +301,9 @@ class EstadisticasActivity : AppCompatActivity() {
 
     private fun validarTipodeUsuario(codUsuario: String?) {
         var tipodeUsuario = ""
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursorusu = keAndroid.rawQuery(
-            "SELECT superves FROM usuarios WHERE vendedor ='$codUsuario'",
+            "SELECT superves FROM usuarios WHERE vendedor = '$codUsuario' AND empresa = '$codEmpresa'",
             null
         )
         while (cursorusu.moveToNext()) {
@@ -541,11 +318,12 @@ class EstadisticasActivity : AppCompatActivity() {
 
     //el metodo para consultar los vendedores segun el coordinador
     private fun consultarVendedores(campo: String?, codUsuario: String?) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var estadistica: Estadistica
         listadeestadisticas = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT vendedor, nombrevend, prcmeta, fecha_estad FROM ke_estadc01 WHERE $campo= '$codUsuario' ORDER BY prcmeta desc",
+            "SELECT vendedor, nombrevend, prcmeta, fecha_estad FROM ke_estadc01 " +
+                    "WHERE $campo = '$codUsuario' AND empresa = '$codEmpresa' ORDER BY prcmeta desc",
             null
         )
         while (cursor.moveToNext()) {
@@ -563,7 +341,6 @@ class EstadisticasActivity : AppCompatActivity() {
     }
 
     companion object {
-        var cod_usuario: String? = null
         var campo: String? = null
         var fechaEstadis: String? = null
         var nombrevend: String? = null

@@ -122,22 +122,22 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         navView.setNavigationItemSelectedListener(this)
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
-        codigoEmpresa = preferences.getString("codigoEmpresa", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
         codigoSucursal = preferences.getString("codigoSucursal", null)
         val nombreUsuario = preferences.getString("nombre_usuario", null)
         val nombreEmpresa = conn.getCampoString(
             "ke_enlace",
             "kee_nombre",
             "kee_codigo",
-            codigoEmpresa ?: Constantes.CLO
+            codEmpresa ?: Constantes.CLO
         )
 
-        fechaAuxiliar = conn.getFecha("kecxc_tasas", codigoEmpresa!!)
+        fechaAuxiliar = conn.getFecha("kecxc_tasas", codEmpresa!!)
 
         objetoAux!!.descargaDesactivo(cod_usuario!!)
-        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codigoEmpresa!!)
+        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codEmpresa!!)
         DESACTIVADO = conn.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
-        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS")
+        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
         checkForAppUpdate()
         cargarModulosActivos()
         cargarEnlace()
@@ -216,7 +216,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     private fun carousel() {
         val carousel = findViewById<ImageCarousel>(R.id.carousel)
         carousel.registerLifecycle(this.lifecycle)
-        val list = conn.imgCarousel(codigoEmpresa!!)
+        val list = conn.imgCarousel(codEmpresa!!)
         carousel.carouselListener = object : CarouselListener {
             override fun onCreateViewHolder(
                 layoutInflater: LayoutInflater,
@@ -301,7 +301,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         //descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim());
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kecxc_tasa, kecxc_fchyhora FROM kecxc_tasas WHERE empresa = '$codigoEmpresa' ORDER BY kecxc_fchyhora DESC LIMIT 1",
+            "SELECT kecxc_tasa, kecxc_fchyhora FROM kecxc_tasas WHERE empresa = '$codEmpresa' ORDER BY kecxc_fchyhora DESC LIMIT 1",
             null
         )
         var fechaTasa: String? = ""
@@ -362,26 +362,26 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                             cv.put("kecxc_ip", ip)
                             cv.put("kecxc_fchyhora", fchyhora)
                             cv.put("fechamodifi", fechamod)
-                            cv.put("empresa", codigoEmpresa)
+                            cv.put("empresa", codEmpresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "kecxc_tasas", ArrayList(
                                         mutableListOf("kecxc_id", "empresa")
-                                    ), arrayListOf(id, codigoEmpresa!!)
+                                    ), arrayListOf(id, codEmpresa!!)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "kecxc_tasas",
                                     cv,
                                     "kecxc_id = ? AND empresa = ?",
-                                    arrayOf(id, codigoEmpresa!!)
+                                    arrayOf(id, codEmpresa!!)
                                 )
                             } else {
                                 conn.insertJSON("kecxc_tasas", cv)
                             }
 
                         }
-                        conn.updateTablaAux("kecxc_tasas", codigoEmpresa!!)
+                        conn.updateTablaAux("kecxc_tasas", codEmpresa!!)
                         llCommit = true
                         cargarUtilmaTasa()
                     } catch (exception: Exception) {
@@ -427,7 +427,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         val keAndroid = conn.writableDatabase
         //Cursor cursor = ke_android.rawQuery("SELECT kmo_codigo FROM ke_modulos WHERE kmo_status = '1' AND ked_codigo='" + codigoEmpresa + "'", null);
         val cursor = keAndroid.rawQuery(
-            "SELECT cnfg_idconfig FROM ke_wcnf_conf WHERE cnfg_clase = 'M' AND cnfg_valsino = '1' AND empresa = '$codigoEmpresa';",
+            "SELECT cnfg_idconfig FROM ke_wcnf_conf WHERE cnfg_clase = 'M' AND cnfg_valsino = '1' AND empresa = '$codEmpresa';",
             null
         )
         while (cursor.moveToNext()) {
@@ -438,7 +438,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 "APP_MODULO_CLIENTES" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_CLIENTES_USER",
                         cod_usuario!!,
-                        codigoEmpresa!!
+                        codEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(0).isVisible = true
@@ -447,7 +447,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 "APP_MODULO_CATALOGO" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_CATALOGO_USER",
                         cod_usuario!!,
-                        codigoEmpresa!!
+                        codEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(1).isVisible = true
@@ -458,7 +458,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 "APP_MODULO_PEDIDO" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_PEDIDO_USER",
                         cod_usuario!!,
-                        codigoEmpresa!!
+                        codEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(4).isVisible = true
@@ -468,7 +468,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_CXC_OLD_USER",
                             cod_usuario!!,
-                            codigoEmpresa!!
+                            codEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(7).isVisible = true
@@ -480,7 +480,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_CXC_USER",
                             cod_usuario!!,
-                            codigoEmpresa!!
+                            codEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(8).isVisible = true
@@ -491,7 +491,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_RETEN_USER",
                             cod_usuario!!,
-                            codigoEmpresa!!
+                            codEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(10).isVisible = true
@@ -499,7 +499,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_ESTADISTICA_USER",
                             cod_usuario!!,
-                            codigoEmpresa!!
+                            codEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(5).isVisible = true
@@ -509,7 +509,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 "APP_MODULO_ESTADISTICA" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_ESTADISTICA_USER",
                         cod_usuario!!,
-                        codigoEmpresa!!
+                        codEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(5).isVisible = true
@@ -518,7 +518,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 "APP_MODULO_RECLAMO" -> if (!conn.getConfigBoolUsuario(
                         "APP_MODULO_RECLAMO_USER",
                         cod_usuario!!,
-                        codigoEmpresa!!
+                        codEmpresa!!
                     ) && SINCRONIZO && DESACTIVADO
                 ) {
                     navView.menu.getItem(6).isVisible = true
@@ -534,7 +534,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         val cursor = keAndroid.query(
             "ke_enlace",
             columnas,
-            "kee_codigo ='$codigoEmpresa'",
+            "kee_codigo ='$codEmpresa'",
             null,
             null,
             null,
@@ -643,14 +643,14 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     private fun iraClientes() {
         val intent = Intent(applicationContext, ClientesActivity::class.java)
         intent.putExtra("cod_usuario", cod_usuario)
-        intent.putExtra("codigoEmpresa", codigoEmpresa)
+        intent.putExtra("codigoEmpresa", codEmpresa)
         startActivity(intent)
     }
 
     private fun iraCXC() {
         val intent = Intent(applicationContext, CXCActivity::class.java)
         intent.putExtra("cod_usuario", cod_usuario)
-        intent.putExtra("codigoEmpresa", codigoEmpresa)
+        intent.putExtra("codigoEmpresa", codEmpresa)
         startActivity(intent)
     }
 
@@ -715,7 +715,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     private fun obtenerPermisos() {
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT desactivo FROM usuarios  WHERE vendedor = '$cod_usuario' AND empresa = '$codigoEmpresa'",
+            "SELECT desactivo FROM usuarios  WHERE vendedor = '$cod_usuario' AND empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -728,7 +728,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     private fun validarSesionActiva() {
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT desactivo FROM usuarios  WHERE vendedor ='$cod_usuario' AND empresa = '$codigoEmpresa'",
+            "SELECT desactivo FROM usuarios  WHERE vendedor ='$cod_usuario' AND empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -928,7 +928,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         //Ejecucion de la seleccion de la fechas mas actual dentro de articulo
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT ult_sinc FROM usuarios WHERE vendedor = '$cod_usuario' AND empresa = '$codigoEmpresa'",
+            "SELECT ult_sinc FROM usuarios WHERE vendedor = '$cod_usuario' AND empresa = '$codEmpresa'",
             null
         )
 
@@ -1065,7 +1065,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         var version: String? = null
         var caducidad: String? = null
         var versionNube: String? = null
-        var codigoEmpresa: String? = ""
+        var codEmpresa: String? = ""
         var nombreEmpresa = ""
         var enlaceEmpresa = ""
         var codigoSucursal: String? = ""

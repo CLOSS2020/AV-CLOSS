@@ -11,6 +11,7 @@ class DetalleVendedorActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityDetalleVendedorBinding
+    private lateinit var codEmpresa: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +22,7 @@ class DetalleVendedorActivity : AppCompatActivity() {
         val intent = intent
         val codigoVendedor = intent.getStringExtra("codigoVend")
         val nombreVendedor = intent.getStringExtra("nombreVend")
+        codEmpresa = intent.getStringExtra("codigoEmpresa").toString()
         supportActionBar!!.title = nombreVendedor
 
         //declaracion de campos de la tabla que van a ser llenados por el resultado de la consulta.
@@ -37,7 +39,8 @@ class DetalleVendedorActivity : AppCompatActivity() {
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT cntpedidos, mtopedidos, cntfacturas, mtofacturas, metavend, prcmeta, cntclientes, clivisit, prcvisitas, lom_montovtas, lom_prcvtas, lom_prcvisit, rlom_montovtas, rlom_prcvtas, rlom_prcvisit, ppgdol_totneto, devdol_totneto, defdol_totneto, totdolcob FROM ke_estadc01 WHERE vendedor ='$codigoVendedor'",
+            "SELECT cntpedidos, mtopedidos, cntfacturas, mtofacturas, metavend, prcmeta, cntclientes, clivisit, prcvisitas, lom_montovtas, lom_prcvtas, lom_prcvisit, rlom_montovtas, rlom_prcvtas, rlom_prcvisit, ppgdol_totneto, devdol_totneto, defdol_totneto, totdolcob FROM ke_estadc01 " +
+                    "WHERE vendedor ='$codigoVendedor' AND empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {

@@ -10,7 +10,10 @@ import com.appcloos.mimaletin.databinding.DialogDatosClientesBinding
 
 
 class DialogClientesDatos(
-    context: Context, private val codigoCliente: String, private val nombreCliente: String
+    context: Context,
+    private val codigoCliente: String,
+    private val nombreCliente: String,
+    private val codEmpresa: String
 ) : AlertDialog(context) {
 
 
@@ -28,7 +31,7 @@ class DialogClientesDatos(
         setColors()
         val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
-        val clientes = conn.getCliente(codigoCliente)
+        val clientes = conn.getCliente(codigoCliente, codEmpresa)
 
         binding.apply {
             tvCodigoCliente.text = clientes.codigo
@@ -114,30 +117,30 @@ class DialogClientesDatos(
         intent.putExtra("codigoCliente", codigoCliente)
         intent.putExtra("nombreCliente", nombreCliente)
         intent.putExtra("cod_usuario", ClientesActivity.cod_usuario)
-        intent.putExtra("codigoEmpresa", ClientesActivity.codigoEmpresa)
+        intent.putExtra("codigoEmpresa", codEmpresa)
         context.startActivity(intent)
     }
 
     private fun setColors() {
         binding.apply {
-            tvTelefono.setTextColor(tvTelefono.colorTextAgencia(Constantes.AGENCIA))
-            tvCorreo.setTextColor(tvCorreo.colorTextAgencia(Constantes.AGENCIA))
-            tvPerscont.setTextColor(tvPerscont.colorTextAgencia(Constantes.AGENCIA))
-            tvContribespecial.setTextColor(tvContribespecial.colorTextAgencia(Constantes.AGENCIA))
+            tvTelefono.setTextColor(tvTelefono.colorTextAgencia(codEmpresa))
+            tvCorreo.setTextColor(tvCorreo.colorTextAgencia(codEmpresa))
+            tvPerscont.setTextColor(tvPerscont.colorTextAgencia(codEmpresa))
+            tvContribespecial.setTextColor(tvContribespecial.colorTextAgencia(codEmpresa))
 
-            tvDiasultvta.setTextColor(tvDiasultvta.colorTextAgencia(Constantes.AGENCIA))
+            tvDiasultvta.setTextColor(tvDiasultvta.colorTextAgencia(codEmpresa))
 
-            tvTotmtodocs.setTextColor(tvTotmtodocs.colorTextAgencia(Constantes.AGENCIA))
-            tvPrommtodoc.setTextColor(tvPrommtodoc.colorTextAgencia(Constantes.AGENCIA))
-            tvPromdiasvta.setTextColor(tvPromdiasvta.colorTextAgencia(Constantes.AGENCIA))
-            tvLimcred.setTextColor(tvLimcred.colorTextAgencia(Constantes.AGENCIA))
+            tvTotmtodocs.setTextColor(tvTotmtodocs.colorTextAgencia(codEmpresa))
+            tvPrommtodoc.setTextColor(tvPrommtodoc.colorTextAgencia(codEmpresa))
+            tvPromdiasvta.setTextColor(tvPromdiasvta.colorTextAgencia(codEmpresa))
+            tvLimcred.setTextColor(tvLimcred.colorTextAgencia(codEmpresa))
 
-            tvCantdocs.setTextColor(tvCantdocs.colorTextAgencia(Constantes.AGENCIA))
-            tvPrcdpagdia.setTextColor(tvPrcdpagdia.colorTextAgencia(Constantes.AGENCIA))
-            tvPromdiasp.setTextColor(tvPromdiasp.colorTextAgencia(Constantes.AGENCIA))
-            tvRiesgocrd.setTextColor(tvRiesgocrd.colorTextAgencia(Constantes.AGENCIA))
+            tvCantdocs.setTextColor(tvCantdocs.colorTextAgencia(codEmpresa))
+            tvPrcdpagdia.setTextColor(tvPrcdpagdia.colorTextAgencia(codEmpresa))
+            tvPromdiasp.setTextColor(tvPromdiasp.colorTextAgencia(codEmpresa))
+            tvRiesgocrd.setTextColor(tvRiesgocrd.colorTextAgencia(codEmpresa))
 
-            btnVerDocs.setTextColor(btnVerDocs.colorTextAgencia(Constantes.AGENCIA))
+            btnVerDocs.setTextColor(btnVerDocs.colorTextAgencia(codEmpresa))
         }
     }
 

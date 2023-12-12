@@ -33,6 +33,7 @@ class PlanificadorCXCFragment : Fragment() {
     private lateinit var conn: AdminSQLiteOpenHelper
     lateinit var ke_android: SQLiteDatabase
     var cod_usuario: String? = null
+    var codEmpresa: String? = null
     var campo: String = ""
     lateinit var preferences: SharedPreferences
     private lateinit var adapter: PlanificadorCXCAdapter
@@ -104,6 +105,7 @@ class PlanificadorCXCFragment : Fragment() {
         super.onCreate(savedInstanceState)
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
 
         /*if (preferences.getString("origin", null) == "Reten"){
 
@@ -141,7 +143,7 @@ class PlanificadorCXCFragment : Fragment() {
         adapter = PlanificadorCXCAdapter(
             planificadorCxc = listaPlanificadorCxc,
             onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
-            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()
+            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt()
         )
         binding.rvPlanModulCXC.adapter = adapter
         //consultarDocs("")

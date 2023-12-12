@@ -17,7 +17,8 @@ import com.squareup.picasso.Picasso
 class KardexActivity : AppCompatActivity() {
     private lateinit var listaKardex: ListView
     private var listacatalogo: ArrayList<Catalogo>? = null
-    var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
+    lateinit var codEmpresa:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation =
@@ -25,6 +26,7 @@ class KardexActivity : AppCompatActivity() {
         setContentView(R.layout.activity_kardex)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         val codUsuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         listaKardex = findViewById(R.id.lv_kardex)
         cargarEnlace()
@@ -53,19 +55,20 @@ class KardexActivity : AppCompatActivity() {
                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
             }
         }
-        consultarArticulosNormal(tipoDePrecioaMostrar)
-        val catalogoAdapter = CatalogoAdapter(this@KardexActivity, listacatalogo)
+        consultarArticulosNormal()
+        val catalogoAdapter = CatalogoAdapter(this@KardexActivity, listacatalogo, enlaceEmpresa
+        )
         listaKardex.adapter = catalogoAdapter
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(codUsuario!!)
     }
 
-    private fun consultarArticulosNormal(precioparametro: String) {
-        val keAndroid = conn!!.writableDatabase
+    private fun consultarArticulosNormal() {
+        val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         listacatalogo = ArrayList()
         val cursor = keAndroid.rawQuery(
-            "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa FROM ke_kardex LEFT JOIN articulo ON ke_kardex.kde_codart = articulo.codigo WHERE (existencia - comprometido) > 0 AND discont = 0.0",
+            "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa FROM ke_kardex LEFT JOIN articulo ON ke_kardex.kde_codart = articulo.codigo WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND articulo.empresa = '$codEmpresa';",
             null
         )
 
@@ -81,6 +84,7 @@ class KardexActivity : AppCompatActivity() {
             val existenc = cursor.getDouble(3)
             val existenciaRd = existenc.toInt()
             catalogo.setExistencia(existenciaRd)
+            catalogo.setCodigoKardex(cursor.getString(5))
             catalogo.setVta_min(cursor.getDouble(6))
             catalogo.setVta_max(cursor.getDouble(7))
             catalogo.setDctotope(cursor.getDouble(8))
@@ -92,13 +96,13 @@ class KardexActivity : AppCompatActivity() {
     }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
                     "kee_url," +
                     "kee_sucursal"
         )
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query("ke_enlace", columnas, "kee_codigo = '$codEmpresa'", null, null, null, null)
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)

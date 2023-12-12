@@ -43,7 +43,7 @@ import java.util.Locale
 class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
 //CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
     (val context: Context?, val name: String?, val factory: CursorFactory?) :
-    SQLiteOpenHelper(context, name, factory, 55) {//<-- 46 para pruebas
+    SQLiteOpenHelper(context, name, factory, 55) {//<-- 46 para pruebas / 55
 
     //private lateinit var dataBase: SQLiteDatabase
     //aqui se define la estructura de la base de datos al instalar la app (no cambia, solo se le agrega)
@@ -1075,11 +1075,12 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return campoAux
     }
 
-    fun getConfigNum(config: String): Double {
+    fun getConfigNum(config: String, codEmpresa: String): Double {
         val db = this.writableDatabase
         val num: Double
         val cursor = db.rawQuery(
-            "SELECT " + getConfigTipo("N") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';",
+            "SELECT ${getConfigTipo("N")} FROM ke_wcnf_conf " +
+                    "WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
             null
         )
         num = if (cursor.moveToFirst()) {
@@ -1092,11 +1093,12 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return num
     }
 
-    fun getConfigBool(config: String): Boolean {
+    fun getConfigBool(config: String, codEmpresa: String): Boolean {
         val db = this.writableDatabase
         var flag = false
         val cursor = db.rawQuery(
-            "SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';",
+            "SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf " +
+                    "WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
             null
         )
         //System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
@@ -1275,6 +1277,32 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                     retorno = cursor.getDouble(0)
                 }
             }
+        cerarDB(db)
+        return retorno
+    }
+
+    fun getCampoDoubleCamposVarios(
+        tabla: String,
+        campo: String,
+        campoWhere: List<String>,
+        respuestaWhere: List<String>
+    ): Double {
+        var retorno = 0.0
+        val db = this.writableDatabase
+        val sql = "SELECT $campo FROM $tabla WHERE "
+        var where = ""
+        for (i in campoWhere.indices) {
+            where += campoWhere[i] + " = '" + respuestaWhere[i] + "'"
+            if (i + 1 != campoWhere.size) {
+                where += " AND "
+            }
+        }
+        val query = sql + where
+        db.rawQuery(query, null).use { cursor ->
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getDouble(0)
+            }
+        }
         cerarDB(db)
         return retorno
     }
@@ -1564,28 +1592,28 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    val articulosPromo: ArrayList<Catalogo>
-        get() {
-            val retorno = ArrayList<Catalogo>()
-            val db = this.writableDatabase
-            db.rawQuery(
-                "SELECT * FROM articulo WHERE dctotope > 0 AND (existencia - comprometido) > 0;",
-                null
-            ).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val catalogo = Catalogo()
-                    catalogo.setCodigo(cursor.getString(0))
-                    catalogo.setNombre(cursor.getString(3))
-                    catalogo.setExistencia(cursor.getInt(7) - cursor.getInt(21))
-                    catalogo.setPrecio1(valorReal(cursor.getDouble(8)))
-                    catalogo.setDctotope(cursor.getDouble(19))
-                    catalogo.setMultiplo(cursor.getInt(22))
-                    catalogo.setVta_min(cursor.getDouble(17))
-                    catalogo.setVta_max(cursor.getDouble(18))
-                    retorno.add(catalogo)
-                }
+    fun articulosPromo(codEmpresa: String): ArrayList<Catalogo> {
+        val retorno = ArrayList<Catalogo>()
+        val db = this.writableDatabase
+        db.rawQuery(
+            "SELECT * FROM articulo " +
+                    "WHERE dctotope > 0 AND (existencia - comprometido) > 0 AND empresa = '$codEmpresa';",
+            null
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                val catalogo = Catalogo()
+                catalogo.setCodigo(cursor.getString(0))
+                catalogo.setNombre(cursor.getString(3))
+                catalogo.setExistencia(cursor.getInt(7) - cursor.getInt(21))
+                catalogo.setPrecio1(valorReal(cursor.getDouble(8)))
+                catalogo.setDctotope(cursor.getDouble(19))
+                catalogo.setMultiplo(cursor.getInt(22))
+                catalogo.setVta_min(cursor.getDouble(17))
+                catalogo.setVta_max(cursor.getDouble(18))
+                retorno.add(catalogo)
             }
-            cerarDB(db)
+        }
+        cerarDB(db)
             return retorno
         }
 
@@ -1788,10 +1816,13 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getCliente(codigoCliente: String): ClientesKt {
+    fun getCliente(codigoCliente: String, codEmpresa: String): ClientesKt {
         val item = ClientesKt()
         val db = this.writableDatabase
-        db.rawQuery("SELECT * FROM cliempre WHERE codigo = '$codigoCliente';", null).use { cursor ->
+        db.rawQuery(
+            "SELECT * FROM cliempre WHERE codigo = '$codigoCliente' AND empresa = '$codEmpresa';",
+            null
+        ).use { cursor ->
             if (cursor.moveToFirst()) {
 
 

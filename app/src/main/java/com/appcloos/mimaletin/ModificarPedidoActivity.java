@@ -67,6 +67,7 @@ public class ModificarPedidoActivity extends AppCompatActivity {
     Switch sw_negoespemod;
     TextView tv_bloqueado;
     String cod_usuario;
+    String codEmpresa;
     DecimalFormat formato = new DecimalFormat("#,###.00");
     private int APP_ITEMS_FACTURAS;
     private int APP_ITEMS_NOTAS_ENTREGA;
@@ -131,13 +132,14 @@ public class ModificarPedidoActivity extends AppCompatActivity {
         codigoCliente = intent.getStringExtra("codigocliente");
         Objects.requireNonNull(getSupportActionBar()).setTitle("Pedido: " + codigoPedido);
 
-        APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
-        APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));
-        int NOEMIFAC = conn.getCampoInt("cliempre", "noemifac", "codigo", codigoCliente);
-        int NOEMINOTA = conn.getCampoInt("cliempre", "noeminota", "codigo", codigoCliente);
-
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         cod_usuario = preferences.getString("cod_usuario", null);
+        codEmpresa = preferences.getString("codigoEmpresa", null);
+
+        APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa));
+        APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa));
+        int NOEMIFAC = conn.getCampoInt("cliempre", "noemifac", "codigo", codigoCliente);
+        int NOEMINOTA = conn.getCampoInt("cliempre", "noeminota", "codigo", codigoCliente);
 
         RadioGroup grupoRadio = findViewById(R.id.radioGroupDocMod);
         Factura = findViewById(R.id.RbFacturaMod);

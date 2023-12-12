@@ -19,6 +19,7 @@ class SelectorClienteReten : AppCompatActivity() {
 
     private lateinit var preferences: SharedPreferences
     private lateinit var codUsuario: String
+    private lateinit var codEmpresa: String
 
     lateinit var keAndroid: SQLiteDatabase
     private lateinit var conn: AdminSQLiteOpenHelper
@@ -32,6 +33,8 @@ class SelectorClienteReten : AppCompatActivity() {
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario = preferences.getString("cod_usuario", null).toString()
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
+
 
         supportActionBar!!.title = "Selecione un Cliente"
 
@@ -47,7 +50,8 @@ class SelectorClienteReten : AppCompatActivity() {
         adapter = SeleccionarClientePedidoAdapter(clientes,
             onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) },
             onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
-            this
+            this,
+            codEmpresa
         )
         binding.rvMainSelctReten.adapter = adapter
     }
@@ -86,7 +90,7 @@ class SelectorClienteReten : AppCompatActivity() {
     }
 
     private fun dialogCliente(cliente: String, nomCliente: String) {
-        val dialog = DialogClientesDatos(this, cliente, nomCliente)
+        val dialog = DialogClientesDatos(this, cliente, nomCliente, codEmpresa)
         dialog.show()
     }
 

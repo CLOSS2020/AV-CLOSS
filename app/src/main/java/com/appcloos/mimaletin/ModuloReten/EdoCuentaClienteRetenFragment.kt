@@ -139,7 +139,7 @@ class EdoCuentaClienteRetenFragment : Fragment(), EdoCuentaClienteRetenAdapter.Q
             this,
             docsViejos = docsViejos,
             listaDocsSeleccionados = listaDocsSeleccionados,
-            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()
+            DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt()
         )
         binding.rvEdoCuenta.adapter = adapter
 

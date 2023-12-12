@@ -32,7 +32,7 @@ import java.util.Locale
 class ListaReclamosActivity : AppCompatActivity() {
     private lateinit var listareclamo: ArrayList<Reclamo>
     private var listalineasrcl: ArrayList<Reclamo>? = null
-    var conn: AdminSQLiteOpenHelper? = null
+    private lateinit var conn: AdminSQLiteOpenHelper
     var codigoCliente: String? = null
     var nombreCliente: String? = null
     var documento: String? = null
@@ -52,7 +52,7 @@ class ListaReclamosActivity : AppCompatActivity() {
 
         //establecemos los detalles de la conexion a la base de datos
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        cargarEnlace()
+
         //enlazo la parte logica a la grafica del recyclerview
         listaReclamos = findViewById(R.id.lv_reclamoslist)
         listaReclamos.layoutManager = LinearLayoutManager(this)
@@ -60,9 +60,12 @@ class ListaReclamosActivity : AppCompatActivity() {
         //PREFERENCIAS PARA TRAER POR EJEMPLO,EL CODIGO DEL USUARIO ACTUAL
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
-        codEmpresa = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
 
-        println(cod_usuario)
+        //enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
+
+        cargarEnlace()
+
         //llamo al metodo para consultar si hay reclamos creados (seran mostrados en recycleview)
         consultarReclamos()
 
@@ -75,9 +78,9 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     private fun getfechaSinc() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val fechaUltmod = keAndroid.rawQuery(
-            "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'ke_rclcti'",
+            "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'ke_rclcti' AND empresa = '$codEmpresa'",
             null
         )
         fechaUltmod.moveToFirst()
@@ -97,7 +100,15 @@ class ListaReclamosActivity : AppCompatActivity() {
             "kee_nombre," +
                     "kee_url"
         )
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -108,7 +119,7 @@ class ListaReclamosActivity : AppCompatActivity() {
 
     //metodo para consultar los reclamos creados (2021-12-10)-- revisar si es conveniente un switch
     private fun consultarReclamos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var reclamo: Reclamo
         listareclamo = ArrayList()
 
@@ -127,7 +138,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                     "fechamodifi"
         )
         val condicion =
-            "krti_status != '9'  AND krti_codvend='" + cod_usuario!!.trim { it <= ' ' } + "'"
+            "krti_status != '9' AND krti_codvend='$cod_usuario' AND empresa = '$codEmpresa'"
         val cursor = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
         while (cursor.moveToNext()) {
 
@@ -162,7 +173,7 @@ class ListaReclamosActivity : AppCompatActivity() {
             reclamo.setDocnc(reclamoNotac)
             reclamo.setFechadoc(cursor.getString(9))
             reclamo.setFechamodifi(cursor.getString(10))
-            listareclamo!!.add(reclamo) //añado los campos a una lista
+            listareclamo.add(reclamo) //añado los campos a una lista
         }
         cursor.close()
         keAndroid.close()
@@ -173,7 +184,7 @@ class ListaReclamosActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.subir_reclamos -> subirReclamos()
-            R.id.actu_reclamos -> actualizarReclamos("https://" + enlaceEmpresa + "/webservice/obtenerdatosreclamos.php?cod_usuario=" + cod_usuario!!.trim { it <= ' ' } + "&&fecha_sinc=" + fecha_sinc!!.trim { it <= ' ' })
+            R.id.actu_reclamos -> actualizarReclamos("https://$enlaceEmpresa/webservice/obtenerdatosreclamos.php?cod_usuario=$cod_usuario&&fecha_sinc=$fecha_sinc")
         }
         return super.onOptionsItemSelected(item)
     }
@@ -216,7 +227,9 @@ class ListaReclamosActivity : AppCompatActivity() {
                                 keAndroid.update(
                                     "ke_rcllmv",
                                     actualizarLineas,
-                                    "krti_ndoc ='$codigorcl' AND krmv_pid ='$pid'",
+                                    "krti_ndoc ='$codigorcl' AND " +
+                                            "krmv_pid ='$pid' AND " +
+                                            "empresa = '$codEmpresa'",
                                     null
                                 )
                             }
@@ -234,7 +247,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                             keAndroid.update(
                                 "ke_rclcti",
                                 actualizarCabeceras,
-                                "krti_ndoc ='$codigorcl'",
+                                "krti_ndoc ='$codigorcl' AND empresa = '$codEmpresa'",
                                 null
                             )
                             llCommit = true
@@ -248,7 +261,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                             keAndroid.update(
                                 "tabla_aux",
                                 actualizarFecha,
-                                "tabla ='ke_rclcti'",
+                                "tabla = 'ke_rclcti' AND empresa = '$codEmpresa'",
                                 null
                             )
                         } catch (e: JSONException) {
@@ -319,7 +332,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                     "krti_notas"
         )
         val condicion =
-            "krti_status = '0' AND krti_codvend = '" + cod_usuario!!.trim { it <= ' ' } + "'"
+            "krti_status = '0' AND krti_codvend = '$cod_usuario' AND empresa = '$codEmpresa'"
         val cursor = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
         if (cursor.count > 0) {
             cargarReclamos()
@@ -353,7 +366,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                     "krti_notas"
         )
         val condicion =
-            "krti_status = '0' AND krti_codvend = '" + cod_usuario!!.trim { it <= ' ' } + "'"
+            "krti_status = '0' AND krti_codvend = '$cod_usuario' AND empresa = '$codEmpresa'"
         val cursorti = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
         arrayTi = JSONArray()
         arrayMV = JSONArray()
@@ -400,7 +413,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                             "krmv_pid," +
                             "fechamodifi"
                 )
-                val condicionLineas = "krti_ndoc = '$krti_ndoc'"
+                val condicionLineas = "krti_ndoc = '$krti_ndoc' AND empresa = '$codEmpresa'"
                 val cursormv = keAndroid.query(
                     "ke_rcllmv",
                     camposLineas,
@@ -505,7 +518,10 @@ class ListaReclamosActivity : AppCompatActivity() {
             try {
                 val objetodeCabeza = arrayTi!!.getJSONObject(i)
                 val codigoDelReclamoenArray = objetodeCabeza.getString("krti_ndoc")
-                keAndroid.execSQL("UPDATE ke_rclcti SET krti_status = '1' WHERE krti_ndoc ='$codigoDelReclamoenArray'")
+                keAndroid.execSQL(
+                    "UPDATE ke_rclcti SET krti_status = '1' " +
+                            "WHERE krti_ndoc ='$codigoDelReclamoenArray' AND empresa = '$codEmpresa'"
+                )
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
@@ -518,14 +534,14 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     fun onItemClick(position: Int) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         llCommit = false
-        val docFactura = listareclamo!![position].getDocfac()
-        val docStatus = listareclamo!![position].getStatus()
-        val codReclamo = listareclamo!![position].getNdoc()
-        val documentoNC = listareclamo!![position].getDocnc()
-        val documentoDEV = listareclamo!![position].getDocdev()
-        val montodef = listareclamo!![position].getTotnetodef()
+        val docFactura = listareclamo[position].getDocfac()
+        val docStatus = listareclamo[position].getStatus()
+        val codReclamo = listareclamo[position].getNdoc()
+        val documentoNC = listareclamo[position].getDocnc()
+        val documentoDEV = listareclamo[position].getDocdev()
+        val montodef = listareclamo[position].getTotnetodef()
 
         val ventana = AlertDialog.Builder(
             ContextThemeWrapper(
@@ -580,7 +596,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                         keAndroid.update(
                             "ke_doccti",
                             actualizarAceptarDev,
-                            "documento='$docFactura'",
+                            "documento = '$docFactura' AND empresa = '$codEmpresa'",
                             null
                         )
                         llCommit = true
@@ -700,14 +716,14 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     private fun cargarLineasRCL(codReclamo: String) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         var reclamo: Reclamo
         listalineasrcl = ArrayList()
         val tabla = "ke_rcllmv"
         val columnas = arrayOf(
             "krmv_codart, krmv_nombre, krmv_cant, krmv_stot, krmv_stotdef, krmv_cantdef"
         )
-        val condicion = "krti_ndoc ='$codReclamo'"
+        val condicion = "krti_ndoc ='$codReclamo' AND empresa = '$codEmpresa'"
         val cursor = keAndroid.query(tabla, columnas, condicion, null, null, null, null)
         while (cursor.moveToNext()) {
             reclamo = Reclamo()
@@ -723,13 +739,16 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     private fun borrarReclamo(codReclamo: String) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         llCommit = false
         keAndroid.beginTransaction()
         try {
             //borro las lineas pero cambio la cabecera a 9 (anulado/borrado)
-            keAndroid.execSQL("UPDATE ke_rclcti SET krti_status = '9' WHERE krti_ndoc = '$codReclamo'")
-            keAndroid.execSQL("DELETE FROM ke_rcllmv WHERE krti_ndoc = '$codReclamo'")
+            keAndroid.execSQL(
+                "UPDATE ke_rclcti SET krti_status = '9' " +
+                        "WHERE krti_ndoc = '$codReclamo' AND empresa = '$codEmpresa'"
+            )
+            keAndroid.execSQL("DELETE FROM ke_rcllmv WHERE krti_ndoc = '$codReclamo' AND empresa = '$codEmpresa'")
             //si se efectuo correctamente, digo que el commit fue verdadero
             llCommit = true
         } catch (e: Exception) {
@@ -798,7 +817,7 @@ class ListaReclamosActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
-        theme.applyStyle(setThemeNoBarAgencia(Constantes.AGENCIA), true)
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
         // you could also use a switch if you have many themes that could apply
         return theme
     }

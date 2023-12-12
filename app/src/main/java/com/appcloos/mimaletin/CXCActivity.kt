@@ -1291,7 +1291,7 @@ class CXCActivity : AppCompatActivity() {
 
         val firstDate: Date = sdf.parse(current) as Date
         val secondDate: Date = sumarDias(
-            conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO").toInt(), sdf.parse(fchrecibo) as Date
+            conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO", codEmpresa!!).toInt(), sdf.parse(fchrecibo) as Date
         )
 
         //vence > fecha = 1
