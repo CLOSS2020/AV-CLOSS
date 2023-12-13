@@ -98,7 +98,6 @@ class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.Qu
         listaTiposRet = intent.extras?.getStringArrayList("listatiposret") as ArrayList<String>
         //la lista de los docs y a cual les voy a cargar retencion
         listaDocs = intent.extras?.getStringArrayList("listaDocs") as ArrayList<String>
-        println(listaDocs)
         activarRetenciones()
         verficarRetYaGuardadas()
 
@@ -166,7 +165,6 @@ class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.Qu
         binding.spDocumentos.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position, _ ->
                 nroDoc = listaDocs[position]
-                println("ELNUEMRO $nroDoc")
                 cambioRetencion()
             }
 

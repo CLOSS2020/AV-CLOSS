@@ -35,12 +35,14 @@
             android:layout_height="wrap_content"
             android:text="@string/Rb4"
             android:textSize="12sp"
+            android:enabled="false"
+            android:visibility="invisible"
             android:theme="@style/BasicStyleRadioButton" />
     </RadioGroup>
 
     <LinearLayout
         android:id="@+id/linearLayout4"
-        android:layout_width="00dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="7dp"

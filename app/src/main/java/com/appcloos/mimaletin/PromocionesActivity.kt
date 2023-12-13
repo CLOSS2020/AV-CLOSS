@@ -49,7 +49,7 @@ class PromocionesActivity : AppCompatActivity() {
           el activyty */
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
-        enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
+        enlaceEmpresa = conn.getCampoStringCamposVarios("ke_enlace", "kee_url", listOf("kee_codigo"), listOf(codEmpresa!!))
 
         //APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
         //APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));

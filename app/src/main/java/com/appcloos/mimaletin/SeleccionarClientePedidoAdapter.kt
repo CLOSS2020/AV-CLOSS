@@ -99,7 +99,7 @@ class SeleccionarClientePedidoAdapter(
                 val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
                 val diasPedidos =
-                    conn.getCampoInt("cliempre", "diasultvta", "codigo", cliente.codigo)
+                    conn.getCampoIntCamposVarios("cliempre", "diasultvta", listOf("codigo", "empresa"), listOf(cliente.codigo, codEmpresa))
 
                 binding.tvPedidoDiasMain.text = "Dias sin hacer pedidos: "
                 binding.tvPedidoDias.text = if (diasPedidos <= 0) "0" else diasPedidos.toString()

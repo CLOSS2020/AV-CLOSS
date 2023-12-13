@@ -1047,14 +1047,14 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         //dataBase = conn.writableDatabase // ya eso lo intentaste supongo
     }
 
-    fun upReciboCobroStatus(idRecibo: String) {
+    fun upReciboCobroStatus(idRecibo: String, codEmpresa: String) {
         val db = this.writableDatabase
         val cv = ContentValues()
         cv.put("edorec", 3)
         cv.put("fechamodifi", fechaHoy(true))
         try {
             db.beginTransaction()
-            db.update("ke_precobranza", cv, "cxcndoc = ?", arrayOf(idRecibo))
+            db.update("ke_precobranza", cv, "cxcndoc = ? AND empresa = ?", arrayOf(idRecibo, codEmpresa))
             db.setTransactionSuccessful()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1126,11 +1126,13 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return flag
     }
 
-    fun getConfigString(config: String): String {
+    fun getConfigString(config: String, codEmpresa: String): String {
+
         val db = this.writableDatabase
         val texto: String
         val cursor = db.rawQuery(
-            "SELECT " + getConfigTipo("C") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "' AND cnfg_activa = '1.0';",
+            "SELECT ${getConfigTipo("C")} FROM ke_wcnf_conf " +
+                    "WHERE cnfg_idconfig = '$config' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
             null
         )
         texto = if (cursor.moveToFirst()) {
@@ -1231,7 +1233,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return numero
     }
 
-    fun getCampoInt(tabla: String, campo: String, campoWhere: String, respuestaWhere: String): Int {
+    /*fun getCampoInt(tabla: String, campo: String, campoWhere: String, respuestaWhere: String): Int {
         var retorno = 0
         val db = this.writableDatabase
         db.rawQuery("SELECT $campo FROM $tabla WHERE $campoWhere = '$respuestaWhere';", null)
@@ -1242,7 +1244,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             }
         cerarDB(db)
         return retorno
-    }
+    }*/
 
     fun getCampoIntCamposVarios(tabla: String, campo: String, campoWhere: List<String>, respuestaWhere: List<String>): Int {
         var retorno = 0
@@ -1265,7 +1267,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getCampoDouble(
+    /*fun getCampoDouble(
         tabla: String, campo: String, campoWhere: String, respuestaWhere: String
     ): Double {
         var retorno = 0.0
@@ -1279,7 +1281,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             }
         cerarDB(db)
         return retorno
-    }
+    }*/
 
     fun getCampoDoubleCamposVarios(
         tabla: String,
@@ -1307,7 +1309,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getCampoString(
+    /*fun getCampoString(
         tabla: String, campo: String, campoWhere: String, respuestaWhere: String
     ): String {
         var retorno = ""
@@ -1321,6 +1323,32 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                 }
             }
         //cerarDB(db)
+        return retorno
+    }*/
+
+    fun getCampoStringCamposVarios(
+        tabla: String,
+        campo: String,
+        campoWhere: List<String>,
+        respuestaWhere: List<String>
+    ): String {
+        var retorno = ""
+        val db = this.writableDatabase
+        val sql = "SELECT $campo FROM $tabla WHERE "
+        var where = ""
+        for (i in campoWhere.indices) {
+            where += campoWhere[i] + " = '" + respuestaWhere[i] + "'"
+            if (i + 1 != campoWhere.size) {
+                where += " AND "
+            }
+        }
+        val query = sql + where
+        db.rawQuery(query, null).use { cursor ->
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getString(0)
+            }
+        }
+        cerarDB(db)
         return retorno
     }
 
@@ -1764,10 +1792,13 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
 
     }
 
-    fun getCabeceraPedido(codigoPedido: String): keOpti {
+    fun getCabeceraPedido(codigoPedido: String, codEmpresa: String): keOpti {
         val retorno = keOpti()
         val db = this.writableDatabase
-        db.rawQuery("SELECT * FROM ke_opti WHERE kti_ndoc = '$codigoPedido';", null).use { cursor ->
+        db.rawQuery(
+            "SELECT * FROM ke_opti WHERE kti_ndoc = '$codigoPedido' AND empresa = '$codEmpresa';",
+            null
+        ).use { cursor ->
             if (cursor.moveToFirst()) {
                 retorno.kti_ndoc = cursor.getString(0)
                 retorno.kti_tdoc = cursor.getString(1)
@@ -1792,10 +1823,10 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getLineasPedido(codigoPedido: String): ArrayList<keOpmv> {
+    fun getLineasPedido(codigoPedido: String, codEmpresa: String): ArrayList<keOpmv> {
         val retorno = arrayListOf<keOpmv>()
         val db = this.writableDatabase
-        db.rawQuery("SELECT * FROM ke_opmv WHERE kti_ndoc = '$codigoPedido';", null).use { cursor ->
+        db.rawQuery("SELECT * FROM ke_opmv WHERE kti_ndoc = '$codigoPedido' AND empresa = '$codEmpresa';", null).use { cursor ->
             while (cursor.moveToNext()) {
                 val item = keOpmv()
                 item.kti_tdoc = cursor.getString(0)

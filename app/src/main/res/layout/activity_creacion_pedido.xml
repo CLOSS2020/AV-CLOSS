@@ -19,9 +19,9 @@
         android:background="@drawable/marcos"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.857"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+        app:layout_constraintBottom_toTopOf="@+id/textView37">
 
         <ListView
             android:id="@+id/ListPedido"

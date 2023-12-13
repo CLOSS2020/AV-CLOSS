@@ -9,7 +9,9 @@ import com.appcloos.mimaletin.databinding.ItemDetallesCxcBinding
 import com.appcloos.mimaletin.model.CXC.ke_precobradocs
 
 class DetalleCXCAdapter(
-    private var kePrecobradocs: List<ke_precobradocs>, private val context: Context
+    private var kePrecobradocs: List<ke_precobradocs>,
+    private val context: Context,
+    private val codEmpresa: String
 ) : RecyclerView.Adapter<DetalleCXCAdapter.DetalleCXCHolder>() {
     inner class DetalleCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -19,7 +21,12 @@ class DetalleCXCAdapter(
         fun render(kePrecobradocs: ke_precobradocs) {
             val moneda = kePrecobradocs.tnetoddol == 0.00
             val tasa =
-                conn.getCampoDouble("ke_doccti", "tasadoc", "documento", kePrecobradocs.documento)
+                conn.getCampoDoubleCamposVarios(
+                    "ke_doccti",
+                    "tasadoc",
+                    listOf("documento", "empresa"),
+                    listOf(kePrecobradocs.documento, codEmpresa)
+                )
 
             val iva = kePrecobradocs.bsmtoiva - kePrecobradocs.bsretiva
             val flete = kePrecobradocs.bsmtofte - kePrecobradocs.bsretfte

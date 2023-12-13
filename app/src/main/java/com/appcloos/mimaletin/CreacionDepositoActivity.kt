@@ -3,13 +3,10 @@ package com.appcloos.mimaletin
 import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -21,7 +18,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -112,7 +108,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
         )
         //----
         if (cursorCorrelativo.moveToFirst()) {
-            println("YA HAY CORRELATIVOS")
             nroCorrelativo = cursorCorrelativo.getInt(0)
             nroCorrelativo += 1
             correlativoTexto = nroCorrelativo.toString()
@@ -265,14 +260,12 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
         //RECORRO LAS LINEAS DE LOS NUEVOS DOCS.
         //for(i in listaRecibos.indices){
-        println("Recibos -> ${recibosSelecc.toString().replace("[", "").replace("]", "")}")
         val cursorH: Cursor = keAndroid.rawQuery(
             "SELECT * FROM ke_precobradocs WHERE cxcndoc IN (" + recibosSelecc.toString()
                 .replace("[", "").replace("]", "") + ")", null
         )
 
         while (cursorH.moveToNext()) {
-            println("recibos que estan llegando ${cursorH.getString(0)}")
             val linea = CXC()
             /*linea.id_recibo = nroDeposito
             linea.agencia    =  cursorH.getString(1)
@@ -420,46 +413,50 @@ class CreacionDepositoActivity : AppCompatActivity() {
                     qlineas.put("tnetoddol", listaLineasNueva[j].tnetoddol)
                     qlineas.put("afavor", listaLineasNueva[j].afavor)
                     qlineas.put("reten", reten[j])
-                    val cliente = conn.getCampoString(
+                    val cliente = conn.getCampoStringCamposVarios(
                         "ke_doccti",
                         "codcliente",
-                        "documento",
-                        listaLineasNueva[j].documento
+                        listOf("documento", "empresa"),
+                        listOf(listaLineasNueva[j].documento, codEmpresa!!)
                     )
                     qlineas.put("codcliente", cliente)
                     qlineas.put(
                         "nombrecli",
-                        conn.getCampoString("cliempre", "nombre", "codigo", cliente)
+                        conn.getCampoStringCamposVarios(
+                            "cliempre",
+                            "nombre",
+                            listOf("codigo", "empresa"),
+                            listOf(cliente, codEmpresa!!)
+                        )
                     )
                     qlineas.put(
                         "tasadoc",
-                        conn.getCampoDouble(
+                        conn.getCampoDoubleCamposVarios(
                             "ke_doccti",
                             "tasadoc",
-                            "documento",
-                            listaLineasNueva[j].documento
+                            listOf("documento", "empresa"),
+                            listOf(listaLineasNueva[j].documento, codEmpresa!!)
                         )
                     )
                     //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                     qlineas.put(
                         "cbsretiva",
-                        conn.getCampoDouble(
+                        conn.getCampoDoubleCamposVarios(
                             "ke_doccti",
                             "cbsretiva",
-                            "documento",
-                            listaLineasNueva[j].documento
+                            listOf("documento", "empresa"),
+                            listOf(listaLineasNueva[j].documento, codEmpresa!!)
                         )
                     )
                     qlineas.put(
                         "cbsretflete",
-                        conn.getCampoDouble(
+                        conn.getCampoDoubleCamposVarios(
                             "ke_doccti",
                             "cbsretflete",
-                            "documento",
-                            listaLineasNueva[j].documento
+                            listOf("documento", "empresa"),
+                            listOf(listaLineasNueva[j].documento, codEmpresa!!)
                         )
                     )
-                    println("Numero $j")
                     //qlineas.put("monto_aux_pdf", listaRecibos[j].efectivo)
                     keAndroid.insert("ke_precobradocs", null, qlineas)
                 }
@@ -548,7 +545,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
         sumaTotal = 0.00
         listaRecibos = ArrayList()
 
-        println("$listaRecibosSel")
         var cobranza: CXC
         val query = arrayOf(
             "cxcndoc," + "efectivo," + "bsneto," + "bsretiva," + "bsiva," + "bsflete," + "dolflete," +
@@ -578,7 +574,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
             cobranza.bsretflete = cursorRec.getDouble(12)
             cobranza.retmun_sbi = cursorRec.getDouble(13)
             cobranza.retmun_sbs = cursorRec.getDouble(14)
-            println("recibos añadidos a la lista ${cobranza.id_recibo}")
             listaRecibos.add(cobranza)
 
         }
@@ -628,14 +623,12 @@ class CreacionDepositoActivity : AppCompatActivity() {
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.readableDatabase
 
-        // println("hasta aca todo bien")
         val jsonArrayRequest = JsonArrayRequest(
             Request.Method.GET, // method
             URL, // url
             null, // json request
             { response -> // response listener
                 if (response != null) {
-                    println("si hubo respuesta")
                     llCommit = false
                     keAndroid.beginTransaction()
                     var jsonObject: JSONObject?
@@ -838,11 +831,9 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 if (clipData == null) {
                     imageUri = data.data!!
                     listaImagenes.add(imageUri)
-                    println(listaImagenes)
                 } else {
                     for (i in 0 until clipData.itemCount) {
                         listaImagenes.add(clipData.getItemAt(i).uri)
-                        println(listaImagenes)
                     }
                 }
             } catch (e: java.lang.Exception) {

@@ -27,6 +27,7 @@ class DetalleCXCActivity : AppCompatActivity() {
     //val dato = bundle?.getString("codigoRecibo")
 
     lateinit var preferences: SharedPreferences
+    lateinit var codEmpresa: String
     lateinit var cxcndoc: String
 
     private var kePrecobranza = ke_precobranza()
@@ -43,6 +44,7 @@ class DetalleCXCActivity : AppCompatActivity() {
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cxcndoc = preferences.getString("recibo", null).toString()
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.writableDatabase
@@ -85,7 +87,12 @@ class DetalleCXCActivity : AppCompatActivity() {
             binding.tvBanco.text = kePrecobranza.bcocod
 
             val nombreBanco =
-                conn.getCampoString("listbanc", "nombanco", "codbanco", kePrecobranza.bcocod)
+                conn.getCampoStringCamposVarios(
+                    "listbanc",
+                    "nombanco",
+                    listOf("codbanco", "empresa"),
+                    listOf(kePrecobranza.bcocod, codEmpresa!!)
+                )
 
             if (nombreBanco.isNotEmpty()) {
                 binding.tvBanco.text = "${kePrecobranza.bcocod} ${nombreBanco}"
@@ -104,7 +111,7 @@ class DetalleCXCActivity : AppCompatActivity() {
 
             binding.rvDocumentos.setHasFixedSize(true)
             binding.rvDocumentos.layoutManager = LinearLayoutManager(this)
-            binding.rvDocumentos.adapter = DetalleCXCAdapter(kePrecobradocsMain, this)
+            binding.rvDocumentos.adapter = DetalleCXCAdapter(kePrecobradocsMain, this, codEmpresa)
 
             if (kePrecobranza.tiporecibo == "W") {
                 binding.tvClave.text = getClave()

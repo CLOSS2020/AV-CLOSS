@@ -87,29 +87,29 @@ class DialogChangeAccount(context: Context, private val onClick: () -> Unit) :
         val preferences: SharedPreferences =
             context.getSharedPreferences("Preferences", AppCompatActivity.MODE_PRIVATE)
 
-        val user = conn.getCampoString(
+        val user = conn.getCampoStringCamposVarios(
             "usuarios",
             "username",
-            "empresa",
-            listaEmpresas[position].kedCodigo
+            listOf("empresa"),
+            listOf(listaEmpresas[position].kedCodigo)
         )
-        val codUsuario = conn.getCampoString(
+        val codUsuario = conn.getCampoStringCamposVarios(
             "usuarios",
             "vendedor",
-            "empresa",
-            listaEmpresas[position].kedCodigo
+            listOf("empresa"),
+            listOf(listaEmpresas[position].kedCodigo)
         )
-        val nUsuario = conn.getCampoString(
+        val nUsuario = conn.getCampoStringCamposVarios(
             "usuarios",
             "nombre",
-            "empresa",
-            listaEmpresas[position].kedCodigo
+            listOf("empresa"),
+            listOf(listaEmpresas[position].kedCodigo)
         )
-        val superves = conn.getCampoString(
+        val superves = conn.getCampoStringCamposVarios(
             "usuarios",
             "superves",
-            "empresa",
-            listaEmpresas[position].kedCodigo
+            listOf("empresa"),
+            listOf(listaEmpresas[position].kedCodigo)
         )
 
         val editor = preferences.edit()

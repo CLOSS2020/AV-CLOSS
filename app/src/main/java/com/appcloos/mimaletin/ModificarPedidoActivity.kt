@@ -1,264 +1,297 @@
-package com.appcloos.mimaletin;
+package com.appcloos.mimaletin
 
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.text.InputType;
-import android.view.ContextThemeWrapper;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.content.ContentValues
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.Typeface
+import android.os.Bundle
+import android.text.InputType
+import android.view.ContextThemeWrapper
+import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.RadioGroup
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.appcloos.mimaletin.ObjetoUtils.Companion.valorReal
+import com.appcloos.mimaletin.databinding.ActivityModificarPedidoBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.roundToInt
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+class ModificarPedidoActivity : AppCompatActivity() {
+    private lateinit var adapter: ArrayAdapter<*>
+    var adapterSpinner: ArrayAdapter<CharSequence>? = null
+    var listainfo: ArrayList<String>? = null
+    var listapedido: ArrayList<String>? = null
+    private var listacarritoMod: ArrayList<Carrito>? = null
+    private lateinit var spinner: Spinner
+    private lateinit var conn: AdminSQLiteOpenHelper
+    private lateinit var tv_subtotal: TextView
+    var subtotal: Double? = null
+    var NetoTotal = 0.00
+    private var montoMinimoTotal = 0.00
+    private lateinit var ibt_modificar: ImageButton
+    private lateinit var carritoAdapter: CarritoAdapter
+    var enpreventa = "0"
+    private var cod_usuario: String? = null
+    var codEmpresa: String? = null
+    var formato = DecimalFormat("#,###.00")
+    private var APP_ITEMS_FACTURAS = 0
+    private var APP_ITEMS_NOTAS_ENTREGA = 0
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+    private var precioTotalporArticulo = 0.0
+    private var montoNetoConDescuento = 0.0
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
+    private lateinit var enlaceEmpresa: String
 
-public class ModificarPedidoActivity extends AppCompatActivity {
 
-    public static String codigoPedido, n_cliente;
-    public static String documento, formaPago, tipoDoc = "PED", tipoDePrecioaMostrar, codigoCliente, negociacionActivaMod, negociacionEstado;
-    public static int seleccion, indexposicion, nroCorrelativo, enteroPrecio;
-    public static Double precioTotalporArticulo, preciocliente, montoMinimoMod, montoNetoConDescuento, descuentoTotal;
-    ArrayAdapter adapter;
-    ArrayAdapter<CharSequence> adapterSpinner;
-    ListView listaLineasMod;
-    ArrayList<String> listainfo = null, listapedido = null;
-    ArrayList<Carrito> listacarritoMod;
-    BottomNavigationView menunav;
-    Spinner spinner;
-    AdminSQLiteOpenHelper conn;
-    TextView tv_subtotal, tv_nombrecliente, tv_montominMod;
-    TextView tv_subcondcto;
-    TextView tv_netocondescuento;
-    Double subtotal;
-    Double NetoTotal = 0.00;
-    Double montoMinimoTotal = 0.00;
-    TextView tv_neto;
-    ImageButton ibt_modificar;
-    CarritoAdapter carritoAdapter;
-    String enpreventa = "0";
-    Switch sw_negoespemod;
-    TextView tv_bloqueado;
-    String cod_usuario;
-    String codEmpresa;
-    DecimalFormat formato = new DecimalFormat("#,###.00");
-    private int APP_ITEMS_FACTURAS;
-    private int APP_ITEMS_NOTAS_ENTREGA;
-    private RadioButton Factura, NotaEntrega, Credito, Prepago;
-    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-            switch (menuItem.getItemId()) {
-                case R.id.ic_agregarart:
-
-                    if (codigoCliente == null || (!Factura.isChecked() && !NotaEntrega.isChecked()) || (!Prepago.isChecked() && !Credito.isChecked())) {
-                        Toast.makeText(ModificarPedidoActivity.this, "Debes Seleccionar un cliente, factura o nota de entrega y credito o prepago", Toast.LENGTH_SHORT).show();
-
+    private val mOnNavigationItemSelectedListener =
+        BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.ic_agregarart -> {
+                    if (codigoCliente == null || !binding.RbFacturaMod.isChecked && !binding.RbNotaEntregaMod.isChecked || !binding.RbPrepagoMod.isChecked && !binding.RbCreditoMod.isChecked) {
+                        Toast.makeText(
+                            this@ModificarPedidoActivity,
+                            "Debes Seleccionar un cliente, factura o nota de entrega y credito o prepago",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        if ((Factura.isChecked() && listacarritoMod.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarritoMod.size() > APP_ITEMS_NOTAS_ENTREGA)) {
-                            if (Factura.isChecked()) {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para facturas debe tener un maximo de " + APP_ITEMS_FACTURAS + " lineas de articulos", Toast.LENGTH_LONG).show();
+                        if (binding.RbFacturaMod.isChecked && listacarritoMod!!.size > APP_ITEMS_FACTURAS || binding.RbNotaEntregaMod.isChecked && listacarritoMod!!.size > APP_ITEMS_NOTAS_ENTREGA) {
+                            if (binding.RbFacturaMod.isChecked) {
+                                Toast.makeText(
+                                    this@ModificarPedidoActivity,
+                                    "Para facturas debe tener un maximo de $APP_ITEMS_FACTURAS lineas de articulos",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             } else {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para notas de entrega debe tener un maximo de " + APP_ITEMS_NOTAS_ENTREGA + " lineas de articulos", Toast.LENGTH_LONG).show();
+                                Toast.makeText(
+                                    this@ModificarPedidoActivity,
+                                    "Para notas de entrega debe tener un maximo de $APP_ITEMS_NOTAS_ENTREGA lineas de articulos",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         } else {
                             //Asignacion de precio para saber si es negociacion especial
                             //asignarTipodePrecio();
-                            iraCatalogo();
+                            iraCatalogo()
                         }
-
-
                     }
-                    return true;
-                case R.id.ic_procesarpedido:
+                    return@OnNavigationItemSelectedListener true
+                }
+
+                R.id.ic_procesarpedido -> {
                     if (!negociacionIsActiva() && montoNetoConDescuento < montoMinimoTotal) {
-                        Toast.makeText(ModificarPedidoActivity.this, "Para procesar el pedido, debe cumplir con el monto mínimo de $" + montoMinimoTotal, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                            this@ModificarPedidoActivity,
+                            "Para procesar el pedido, debe cumplir con el monto mínimo de $$montoMinimoTotal",
+                            Toast.LENGTH_LONG
+                        ).show()
                     } else if (montoNetoConDescuento >= montoMinimoTotal) {
-                        if ((Factura.isChecked() && listacarritoMod.size() > APP_ITEMS_FACTURAS) || (NotaEntrega.isChecked() && listacarritoMod.size() > APP_ITEMS_NOTAS_ENTREGA)) {
-                            if (Factura.isChecked()) {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para facturas debe tener un maximo de " + APP_ITEMS_FACTURAS + " lineas de articulos", Toast.LENGTH_LONG).show();
+                        if (binding.RbFacturaMod.isChecked && listacarritoMod!!.size > APP_ITEMS_FACTURAS || binding.RbNotaEntregaMod.isChecked && listacarritoMod!!.size > APP_ITEMS_NOTAS_ENTREGA) {
+                            if (binding.RbFacturaMod.isChecked) {
+                                Toast.makeText(
+                                    this@ModificarPedidoActivity,
+                                    "Para facturas debe tener un maximo de $APP_ITEMS_FACTURAS lineas de articulos",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             } else {
-                                Toast.makeText(ModificarPedidoActivity.this, "Para notas de entrega debe tener un maximo de " + APP_ITEMS_NOTAS_ENTREGA + " lineas de articulos", Toast.LENGTH_LONG).show();
+                                Toast.makeText(
+                                    this@ModificarPedidoActivity,
+                                    "Para notas de entrega debe tener un maximo de $APP_ITEMS_NOTAS_ENTREGA lineas de articulos",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         } else {
-                            ProcesarPedido();
+                            procesarPedido()
                         }
                     }
-                    return true;
+                    return@OnNavigationItemSelectedListener true
+                }
             }
-
-            return false;
-        }
-    };
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_modificar_pedido);
-
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
-
-        Intent intent = getIntent();
-        codigoPedido = intent.getStringExtra("codigopedido");
-        n_cliente = intent.getStringExtra("n_cliente");
-        codigoCliente = intent.getStringExtra("codigocliente");
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Pedido: " + codigoPedido);
-
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        cod_usuario = preferences.getString("cod_usuario", null);
-        codEmpresa = preferences.getString("codigoEmpresa", null);
-
-        APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa));
-        APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa));
-        int NOEMIFAC = conn.getCampoInt("cliempre", "noemifac", "codigo", codigoCliente);
-        int NOEMINOTA = conn.getCampoInt("cliempre", "noeminota", "codigo", codigoCliente);
-
-        RadioGroup grupoRadio = findViewById(R.id.radioGroupDocMod);
-        Factura = findViewById(R.id.RbFacturaMod);
-        NotaEntrega = findViewById(R.id.RbNotaEntregaMod);
-        Credito = findViewById(R.id.RbCreditoMod);
-        Prepago = findViewById(R.id.RbPrepagoMod);
-        tv_neto = findViewById(R.id.tv_neto_mod);
-        sw_negoespemod = findViewById(R.id.sw_negoespecialMod);
-        tv_nombrecliente = findViewById(R.id.tv_clientepedido);
-        tv_netocondescuento = findViewById(R.id.tv_neto_dcto);
-        tv_nombrecliente.setText(n_cliente);
-        tv_subcondcto = findViewById(R.id.tv_subdcto);
-        listaLineasMod = findViewById(R.id.ListPedidoMod);
-        tv_montominMod = findViewById(R.id.tv_montominMod);
-        tv_bloqueado = findViewById(R.id.tv_avisobloqueo);
-
-        menunav = findViewById(R.id.menu_modifi);
-        menunav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        lineasDelPedido();
-        obtenerCondicionesEspeciales();
-        CargarCondiciones();
-        asignarTipodePrecio();
-        validarNegActivo();
-        CargarLineas();
-        SumaNeto();
-        validarSiHayPreventa();
-        montoMinimoTotal = obtenerMontoMinimoTotal();
-
-        if (Factura.isChecked()) {
-            tv_bloqueado.setVisibility(View.VISIBLE);
-            tv_bloqueado.setText("Las facturas solo tendran un  maximo de 12 lineas de articulos");
+            false
         }
 
-        grupoRadio.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.RbFacturaMod) {
-                tv_bloqueado.setVisibility(View.VISIBLE);
-                tv_bloqueado.setText("Las facturas solo tendrán un máximo de " + APP_ITEMS_FACTURAS + " líneas de artículos");
-            } else if (checkedId == R.id.RbNotaEntregaMod) {
-                tv_bloqueado.setVisibility(View.VISIBLE);
-                tv_bloqueado.setText("Las N/E solo tendrán un máximo de " + APP_ITEMS_NOTAS_ENTREGA + " líneas de artículos");
+    private lateinit var binding: ActivityModificarPedidoBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityModificarPedidoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+
+        setColors()
+
+        val intent = intent
+        codigoPedido = intent.getStringExtra("codigopedido")
+        n_cliente = intent.getStringExtra("n_cliente")
+        codigoCliente = intent.getStringExtra("codigocliente")
+
+        supportActionBar!!.title = "Pedido: $codigoPedido"
+
+        val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        cod_usuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null)
+
+        APP_ITEMS_FACTURAS = conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa!!).roundToInt()
+        APP_ITEMS_NOTAS_ENTREGA =
+            conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa!!).roundToInt()
+        enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codEmpresa!!)
+        )
+
+        val NOEMIFAC = conn.getCampoIntCamposVarios(
+            "cliempre",
+            "noemifac",
+            listOf("codigo", "empresa"),
+            listOf(codigoCliente!!, codEmpresa!!)
+        )
+        val NOEMINOTA = conn.getCampoIntCamposVarios(
+            "cliempre",
+            "noeminota",
+            listOf("codigo", "empresa"),
+            listOf(codigoCliente!!, codEmpresa!!)
+        )
+
+        binding.tvClientepedido.text = n_cliente
+
+        binding.menuModifi.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        lineasDelPedido()
+        obtenerCondicionesEspeciales()
+        cargarCondiciones()
+        asignarTipodePrecio()
+        validarNegActivo()
+        cargarLineas()
+        sumaNeto()
+        validarSiHayPreventa()
+        montoMinimoTotal = obtenerMontoMinimoTotal()
+        if (binding.RbFacturaMod.isChecked) {
+            binding.tvAvisobloqueo.visibility = View.VISIBLE
+            binding.tvAvisobloqueo.text =
+                "Las facturas solo tendran un  maximo de 12 lineas de articulos"
+        }
+        binding.radioGroupDocMod.setOnCheckedChangeListener { _: RadioGroup?, checkedId: Int ->
+            if (checkedId == binding.RbFacturaMod.id) {
+                binding.tvAvisobloqueo.visibility = View.VISIBLE
+                binding.tvAvisobloqueo.text =
+                    "Las facturas solo tendrán un máximo de $APP_ITEMS_FACTURAS líneas de artículos"
+            } else if (checkedId == binding.RbNotaEntregaMod.id) {
+                binding.tvAvisobloqueo.visibility = View.VISIBLE
+                binding.tvAvisobloqueo.text =
+                    "Las N/E solo tendrán un máximo de $APP_ITEMS_NOTAS_ENTREGA líneas de artículos"
             }
-        });
-
-        Prepago.setOnCheckedChangeListener((buttonView, isChecked) -> recalculoPrecio(isChecked));
-
-        if (NotaEntrega.isChecked()) {
-            Prepago.setChecked(false);
-            Prepago.setVisibility(View.INVISIBLE);
-            Prepago.setEnabled(false);
-            Credito.setChecked(true);
+        }
+        binding.RbPrepagoMod.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            recalculoPrecio(
+                isChecked
+            )
+        }
+        /*if (binding.RbNotaEntregaMod.isChecked) {
+            binding.RbPrepagoMod.isChecked = false
+            binding.RbPrepagoMod.visibility = View.INVISIBLE
+            binding.RbPrepagoMod.isEnabled = false
+            binding.RbCreditoMod.isChecked = true
         } else {
-            Prepago.setVisibility(View.VISIBLE);
-            Prepago.setEnabled(true);
-        }
-
-        NotaEntrega.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                Prepago.setChecked(false);
-                Prepago.setVisibility(View.INVISIBLE);
-                Prepago.setEnabled(false);
-                Credito.setChecked(true);
+            binding.RbPrepagoMod.visibility = View.VISIBLE
+            binding.RbPrepagoMod.isEnabled = true
+        }*/
+        binding.RbNotaEntregaMod.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            /*if (isChecked) {
+                binding.RbPrepagoMod.isChecked = false
+                binding.RbPrepagoMod.visibility = View.INVISIBLE
+                binding.RbPrepagoMod.isEnabled = false
+                binding.RbCreditoMod.isChecked = true
             } else {
-                Prepago.setVisibility(View.VISIBLE);
-                Prepago.setEnabled(true);
-            }
-        });
+                binding.RbPrepagoMod.visibility = View.VISIBLE
+                binding.RbPrepagoMod.isEnabled = true
+            }*/
+        }
 
 
         //aqui va el metodo para borrar un articulo del pedido (onlongclick)
-        listaLineasMod.setOnItemLongClickListener((adapterView, view, position, l) -> {
-            final String codigo = listacarritoMod.get(position).getCodigo();
+        binding.ListPedidoMod.setOnItemLongClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+            val codigo = listacarritoMod!![position].getCodigo()
+            val ventana = AlertDialog.Builder(
+                ContextThemeWrapper(
+                    this@ModificarPedidoActivity,
+                    setAlertDialogTheme(Constantes.AGENCIA)
+                )
+            )
+            ventana.setTitle("Mensaje del Sistema")
+            ventana.setMessage("¿Desea eliminar este artículo?")
+            ventana.setPositiveButton("Aceptar") { _: DialogInterface?, _: Int ->
+                val keAndroid = conn.writableDatabase
+                keAndroid.execSQL("DELETE FROM ke_carrito WHERE kmv_codart ='$codigo'")
+                actualizaLista()
+                Toast.makeText(this@ModificarPedidoActivity, "Artículo borrado", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            ventana.setNegativeButton("Cancelar") { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            val dialogo = ventana.create()
+            dialogo.show()
 
-            final AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.AlertDialogCustom));
-            ventana.setTitle("Mensaje del Sistema");
-            ventana.setMessage("¿Desea eliminar este artículo?");
+            val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
+            pbutton.apply {
+                setTextColor(colorTextAgencia(Constantes.AGENCIA))
+            }
 
-            ventana.setPositiveButton("Aceptar", (dialogInterface, i) -> {
+            val nbutton: Button = dialogo.getButton(DialogInterface.BUTTON_NEGATIVE)
+            nbutton.apply {
+                setTextColor(colorTextAgencia(Constantes.AGENCIA))
+            }
 
-                SQLiteDatabase ke_android = conn.getWritableDatabase();
-                ke_android.execSQL("DELETE FROM ke_carrito WHERE kmv_codart ='" + codigo + "'");
-                actualizaLista();
-
-                Toast.makeText(ModificarPedidoActivity.this, "Artículo borrado", Toast.LENGTH_SHORT).show();
-
-
-            });
-
-            ventana.setNegativeButton("Cancelar", (dialogInterface, i) -> dialogInterface.dismiss());
-
-            AlertDialog dialogo = ventana.create();
-            dialogo.show();
-
-
-            return false;
-        });
-
-
-        /************************************************************************************************************/
+            false
+        }
+        /** */
         //este metodo permite cambiar las cantidades del articulo que se encuentra en ke_carrito al momento de ser seleccionado
-        listaLineasMod.setOnItemClickListener((adapterView, view, position, l) -> {
-
-            final String codigo = listacarritoMod.get(position).getCodigo();
-            final Double dctolin = listacarritoMod.get(position).getDctolin();
-
-            final EditText cajatexto = new EditText(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.EditTextStyleCustom));
-            cajatexto.setInputType(InputType.TYPE_CLASS_NUMBER);
-
-            conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
-            final SQLiteDatabase ke_android = conn.getWritableDatabase();
-            Cursor cursor_mul = ke_android.rawQuery("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
-            System.out.println("SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
-            cursor_mul.moveToFirst();
-            double vta_Min = cursor_mul.getDouble(0);
-            int vta_minenx = cursor_mul.getInt(1);
-            cursor_mul.close();
-            System.out.println("ventaMin: " + vta_Min);
-            AlertDialog.Builder ventana = new AlertDialog.Builder(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.AlertDialogCustom));
-            ventana.setTitle("Modificar Linea");
-            ventana.setMessage("Porfavor, elige la cantidad");
+        binding.ListPedidoMod.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+            val codigo = listacarritoMod!![position].getCodigo()
+            val dctolin = listacarritoMod!![position].getDctolin()
+            val cajatexto = EditText(
+                ContextThemeWrapper(
+                    this@ModificarPedidoActivity,
+                    setEditTextTheme(codEmpresa)
+                )
+            )
+            cajatexto.inputType = InputType.TYPE_CLASS_NUMBER
+            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+            val keAndroid = conn.writableDatabase
+            val cursorMul = keAndroid.rawQuery(
+                "SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
+                null
+            )
+            cursorMul.moveToFirst()
+            val vtaMin = cursorMul.getDouble(0)
+            val vtaMinenx = cursorMul.getInt(1)
+            cursorMul.close()
+            println("ventaMin: $vtaMin")
+            val ventana = AlertDialog.Builder(
+                ContextThemeWrapper(
+                    this@ModificarPedidoActivity,
+                    setAlertDialogTheme(Constantes.AGENCIA)
+                )
+            )
+            ventana.setTitle("Modificar Linea")
+            ventana.setMessage("Porfavor, elige la cantidad")
             /*if (vta_minenx == 1) {
                 LinearLayout layout_h = new LinearLayout(ModificarPedidoActivity.this);
                 layout_h.setOrientation(LinearLayout.HORIZONTAL);
@@ -277,211 +310,199 @@ public class ModificarPedidoActivity extends AppCompatActivity {
             } else {
                 ventana.setView(cajatexto);
             }*/
-
-
-            LinearLayout layout_h = new LinearLayout(ModificarPedidoActivity.this);
-            layout_h.setOrientation(LinearLayout.VERTICAL);
-
-            final CheckBox darDescuento = new CheckBox(ModificarPedidoActivity.this);
-
-            double descuentoBool = conn.getCampoDouble("articulo", "dctotope", "codigo", codigo);
+            val layoutH = LinearLayout(this@ModificarPedidoActivity)
+            layoutH.orientation = LinearLayout.VERTICAL
+            val darDescuento = CheckBox(this@ModificarPedidoActivity)
+            val descuentoBool = conn.getCampoDoubleCamposVarios(
+                "articulo",
+                "dctotope",
+                listOf("codigo", "empresa"),
+                listOf(codigo, codEmpresa!!)
+            )
             //2023-09-14 Verificando que el articulo permita descuento
             if (descuentoBool > 0.0) {
                 //final CheckBox darDescuento = new CheckBox(CreacionPedidoActivity.this);
-                darDescuento.setText("Dar Descuento del Articulo");
+                darDescuento.text = "Dar Descuento del Articulo"
                 //2023-09-14 Checkeo el boton si se chekeo en catalogo
                 if (dctolin > 0.0) {
-                    darDescuento.setChecked(true);
+                    darDescuento.isChecked = true
                 }
-                layout_h.addView(darDescuento);
+                layoutH.addView(darDescuento)
             }
-
-            if (vta_minenx == 1) {
-
-                LinearLayout layout_vta_minenx = new LinearLayout(ModificarPedidoActivity.this);
-                layout_vta_minenx.setOrientation(LinearLayout.HORIZONTAL);
-
-                final TextView mensajeCantidadMultiplo = new TextView(ModificarPedidoActivity.this);
-
-                mensajeCantidadMultiplo.setTextSize(20);
-                mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD);
-                mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
-                mensajeCantidadMultiplo.setText(((int) Math.round(vta_Min)) + " x ");
+            if (vtaMinenx == 1) {
+                val layoutVtaMinenx = LinearLayout(this@ModificarPedidoActivity)
+                layoutVtaMinenx.orientation = LinearLayout.HORIZONTAL
+                val mensajeCantidadMultiplo = TextView(this@ModificarPedidoActivity)
+                mensajeCantidadMultiplo.textSize = 20f
+                mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD)
+                mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"))
+                mensajeCantidadMultiplo.text = vtaMin.roundToInt().toString() + " x "
                 //mensajeCantidadMultiplo.setLayoutParams(params);
-                cajatexto.setWidth(1000);
-                cajatexto.setHint("Cantidad de paquetes a pedir");
-                layout_vta_minenx.addView(mensajeCantidadMultiplo);
+                cajatexto.width = 1000
+                cajatexto.hint = "Cantidad de paquetes a pedir"
+                layoutVtaMinenx.addView(mensajeCantidadMultiplo)
                 //cajatexto.setLayoutParams(params2);
-                layout_vta_minenx.addView(cajatexto);
-
-                layout_h.addView(layout_vta_minenx);
-
+                layoutVtaMinenx.addView(cajatexto)
+                layoutH.addView(layoutVtaMinenx)
             } else {
-                cajatexto.setHint("Cantidad a pedir");
-                layout_h.addView(cajatexto);
+                cajatexto.hint = "Cantidad a pedir"
+                layoutH.addView(cajatexto)
             }
-
-            ventana.setView(layout_h);
-
-            ventana.setPositiveButton("Aceptar", (dialogInterface, i) -> {
-
-
-                String cantidad_nueva = cajatexto.getText().toString();
-                boolean aprobarDescuento = darDescuento.isChecked();
-
-                int cantidad = Integer.parseInt(cantidad_nueva);
-
+            ventana.setView(layoutH)
+            ventana.setPositiveButton("Aceptar") { _: DialogInterface?, _: Int ->
+                val cantidadNueva = cajatexto.text.toString()
+                val aprobarDescuento = darDescuento.isChecked
+                val cantidad = cantidadNueva.toInt()
                 if (cantidad != 0) {
-
-                    Cursor cursor = ke_android.rawQuery("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'", null);
-                    cursor.moveToNext();
-                    double precio = ObjetoUtils.Companion.valorReal(cursor.getDouble(0));
-                    double existencia = cursor.getDouble(1);
-                    Double ventaMax = cursor.getDouble(3);
-                    double ventaMin = cursor.getDouble(2);
-                    int vta_minenx1 = cursor.getInt(4);
-                    cursor.close();
-                    int existencia_validar = (int) Math.round(existencia);
-
-                    System.out.println(cantidad);
-                    System.out.println(existencia_validar);
-
-                    if (cantidad > existencia_validar) {
-                        Toast.makeText(ModificarPedidoActivity.this, "La cantidad no puede ser superior a la existencia", Toast.LENGTH_SHORT).show();
+                    val cursor = keAndroid.rawQuery(
+                        "SELECT $tipoDePrecioaMostrar, (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo " +
+                                "WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
+                        null
+                    )
+                    cursor.moveToNext()
+                    val precio = valorReal(cursor.getDouble(0))
+                    val existencia = cursor.getDouble(1)
+                    val ventaMax = cursor.getDouble(3)
+                    val ventaMin = cursor.getDouble(2)
+                    val vtaMinenx1 = cursor.getInt(4)
+                    cursor.close()
+                    val existenciaValidar = existencia.roundToInt()
+                    println(cantidad)
+                    println(existenciaValidar)
+                    if (cantidad > existenciaValidar) {
+                        Toast.makeText(
+                            this@ModificarPedidoActivity,
+                            "La cantidad no puede ser superior a la existencia",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
                         if (ventaMin > 0) {
-                            System.out.println("Multiplo: " + vta_minenx1);
-                            if (vta_minenx1 == 1) {
+                            println("Multiplo: $vtaMinenx1")
+                            if (vtaMinenx1 == 1) {
                                 if (cantidad * ventaMin > existencia) {
-                                    Toast.makeText(ModificarPedidoActivity.this, "Debe de elegir una cantidad dentro de la existencia", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(
+                                        this@ModificarPedidoActivity,
+                                        "Debe de elegir una cantidad dentro de la existencia",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 } else if (cantidad * ventaMin <= existencia) {
-                                    int cantidad_new = (int) (cantidad * ventaMin);
-                                    System.out.println("Nueva cantidad " + cantidad_new);
-                                    double precioTotal = precio * cantidad_new;
-                                    System.out.println("Precio total: " + precioTotal);
-                                    precioTotal = Math.round(precioTotal * 100.00) / 100.00;
-
-                                    ke_android.beginTransaction();
+                                    val cantidadNew = (cantidad * ventaMin).toInt()
+                                    println("Nueva cantidad $cantidadNew")
+                                    var precioTotal = precio * cantidadNew
+                                    println("Precio total: $precioTotal")
+                                    precioTotal = precioTotal.valorReal()
+                                    keAndroid.beginTransaction()
                                     try {
-
-                                        double precioNuevo = precioTotal;
-                                        precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
+                                        var precioNuevo = precioTotal
+                                        precioNuevo = precioNuevo.valorReal()
 
                                         //2023-09-14 If para saber si se guarda el descuento o no
-                                        double mtoDctoNuevo;
-                                        double descuento;
-
+                                        var mtoDctoNuevo: Double
+                                        val descuento: Double
                                         if (aprobarDescuento) {
-                                            mtoDctoNuevo = precioNuevo - (precioNuevo * (descuentoBool / 100));
-                                            mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
-                                            descuento = descuentoBool;
+                                            mtoDctoNuevo =
+                                                precioNuevo - precioNuevo * (descuentoBool / 100)
+                                            mtoDctoNuevo = mtoDctoNuevo.valorReal()
+                                            descuento = descuentoBool
                                         } else {
-                                            mtoDctoNuevo = precioTotal;
-                                            descuento = 0.0;
+                                            mtoDctoNuevo = precioTotal
+                                            descuento = 0.0
                                         }
-
-
-                                        ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad_new + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + ", kmv_dctolin =" + descuento + " WHERE kmv_codart ='" + codigo + "'");
-
-
-                                        ke_android.setTransactionSuccessful();
-                                        ke_android.endTransaction();
-                                        Toast.makeText(ModificarPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
-                                    } catch (Exception ex) {
-                                        System.out.println("--Error--");
-                                        ex.printStackTrace();
-                                        System.out.println("--Error--");
-                                        ke_android.endTransaction();
-
+                                        keAndroid.execSQL("UPDATE ke_carrito SET kmv_cant=$cantidadNew, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                        keAndroid.setTransactionSuccessful()
+                                        keAndroid.endTransaction()
+                                        Toast.makeText(
+                                            this@ModificarPedidoActivity,
+                                            "Artículo modificado",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } catch (ex: Exception) {
+                                        println("--Error--")
+                                        ex.printStackTrace()
+                                        println("--Error--")
+                                        keAndroid.endTransaction()
                                     }
                                 }
-
                             } else {
                                 if (cantidad < ventaMin) {
-                                    Toast.makeText(ModificarPedidoActivity.this, "Debe cumplir con la cantidad mínima para la venta", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(
+                                        this@ModificarPedidoActivity,
+                                        "Debe cumplir con la cantidad mínima para la venta",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 } else if (cantidad >= ventaMin) {
-
-                                    double precioTotal = precio * (double) cantidad;
-                                    precioTotal = Math.round(precioTotal * 100.00) / 100.00;
-
-                                    ke_android.beginTransaction();
+                                    var precioTotal = precio * cantidad.toDouble()
+                                    precioTotal = precioTotal.valorReal()
+                                    keAndroid.beginTransaction()
                                     try {
-
-                                        double precioNuevo = precio * (double) cantidad;
-                                        precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
+                                        var precioNuevo = precio * cantidad.toDouble()
+                                        precioNuevo = precioNuevo.valorReal()
 
                                         //2023-09-14 If para saber si se guarda el descuento o no
-                                        double mtoDctoNuevo;
-                                        double descuento;
-
+                                        var mtoDctoNuevo: Double
+                                        val descuento: Double
                                         if (aprobarDescuento) {
-                                            mtoDctoNuevo = precioNuevo - (precioNuevo * (descuentoBool / 100));
-                                            mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
-                                            descuento = descuentoBool;
+                                            mtoDctoNuevo =
+                                                precioNuevo - precioNuevo * (descuentoBool / 100)
+                                            mtoDctoNuevo = mtoDctoNuevo.valorReal()
+                                            descuento = descuentoBool
                                         } else {
-                                            mtoDctoNuevo = precioTotal;
-                                            descuento = 0.0;
+                                            mtoDctoNuevo = precioTotal
+                                            descuento = 0.0
                                         }
-
-
-                                        ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + ", kmv_dctolin =" + descuento + " WHERE kmv_codart ='" + codigo + "'");
-
-
-                                        ke_android.setTransactionSuccessful();
-                                        ke_android.endTransaction();
-                                        Toast.makeText(ModificarPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
+                                        keAndroid.execSQL("UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                        keAndroid.setTransactionSuccessful()
+                                        keAndroid.endTransaction()
+                                        Toast.makeText(
+                                            this@ModificarPedidoActivity,
+                                            "Artículo modificado",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         //finish();
-                                    } catch (Exception ex) {
-                                        System.out.println("--Error--");
-                                        ex.printStackTrace();
-                                        System.out.println("--Error--");
-                                        ke_android.endTransaction();
-
+                                    } catch (ex: Exception) {
+                                        println("--Error--")
+                                        ex.printStackTrace()
+                                        println("--Error--")
+                                        keAndroid.endTransaction()
                                     }
                                 }
                             }
-
-
                         } else {
-                            double precioTotal = precio * (double) cantidad;
-                            precioTotal = Math.round(precioTotal * 100.00) / 100.00;
-
-                            ke_android.beginTransaction();
+                            var precioTotal = precio * cantidad.toDouble()
+                            precioTotal = precioTotal.valorReal()
+                            keAndroid.beginTransaction()
                             try {
-
-                                double precioNuevo = precio * (double) cantidad;
-                                precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
+                                var precioNuevo = precio * cantidad.toDouble()
+                                precioNuevo = precioNuevo.valorReal()
 
                                 //2023-09-14 If para saber si se guarda el descuento o no
-                                double mtoDctoNuevo;
-                                double descuento;
-
+                                var mtoDctoNuevo: Double
+                                val descuento: Double
                                 if (aprobarDescuento) {
-                                    mtoDctoNuevo = precioNuevo - (precioNuevo * (descuentoBool / 100));
-                                    mtoDctoNuevo = Math.round(mtoDctoNuevo * 100.0) / 100.00;
-                                    descuento = descuentoBool;
+                                    mtoDctoNuevo = precioNuevo - precioNuevo * (descuentoBool / 100)
+                                    mtoDctoNuevo = mtoDctoNuevo.valorReal()
+                                    descuento = descuentoBool
                                 } else {
-                                    mtoDctoNuevo = precioTotal;
-                                    descuento = 0.0;
+                                    mtoDctoNuevo = precioTotal
+                                    descuento = 0.0
                                 }
-
-
-                                ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioTotal + ", kmv_stotdcto =" + mtoDctoNuevo + ", kmv_dctolin =" + descuento + " WHERE kmv_codart ='" + codigo + "'");
-
-
-                                ke_android.setTransactionSuccessful();
-                                ke_android.endTransaction();
+                                keAndroid.execSQL("UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                keAndroid.setTransactionSuccessful()
+                                keAndroid.endTransaction()
                                 //finish();
-                                Toast.makeText(ModificarPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
-                            } catch (Exception ex) {
-                                System.out.println("--Error--");
-                                ex.printStackTrace();
-                                System.out.println("--Error--");
-                                ke_android.endTransaction();
-
+                                Toast.makeText(
+                                    this@ModificarPedidoActivity,
+                                    "Artículo modificado",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } catch (ex: Exception) {
+                                println("--Error--")
+                                ex.printStackTrace()
+                                println("--Error--")
+                                keAndroid.endTransaction()
                             }
                         }
-                            /*
+                        /*
                             Double precioNuevo = precio * Double.valueOf(cantidad);
                             precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
@@ -492,606 +513,658 @@ public class ModificarPedidoActivity extends AppCompatActivity {
                             actualizaLista();
 
                             Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();*/
-
-                        Toast.makeText(ModificarPedidoActivity.this, "Articulo añadido", Toast.LENGTH_LONG).show();
-                        actualizaLista();
+                        Toast.makeText(
+                            this@ModificarPedidoActivity,
+                            "Articulo añadido",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        actualizaLista()
 
                         //Toast.makeText(ModificarPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(ModificarPedidoActivity.this, "La existencia no puede ser 0", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                        this@ModificarPedidoActivity,
+                        "La existencia no puede ser 0",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-            });
-
-            ventana.setNegativeButton("Cancelar", (dialogInterface, i) -> dialogInterface.dismiss());
-            AlertDialog dialogo = ventana.create();
-            dialogo.show();
-
-
-        });
-
-
-        sw_negoespemod.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (compoundButton.isChecked()) {
-
-                tv_montominMod.setEnabled(true);
-                tv_montominMod.setVisibility(View.VISIBLE);
-                tv_montominMod.setText("Monto Mín: $" + montoMinimoMod);
-
-            } else {
-                tv_montominMod.setEnabled(false);
-                tv_montominMod.setVisibility(View.INVISIBLE);
-
             }
-        });
+            ventana.setNegativeButton("Cancelar") { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            val dialogo = ventana.create()
+            dialogo.show()
 
+            val nbutton: Button = dialogo.getButton(DialogInterface.BUTTON_NEGATIVE)
+            nbutton.apply {
+                setTextColor(colorTextAgencia(Constantes.AGENCIA))
+            }
+
+            val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
+            pbutton.apply {
+                setTextColor(colorTextAgencia(Constantes.AGENCIA))
+            }
+        }
+        binding.swNegoespecialMod.setOnCheckedChangeListener { compoundButton: CompoundButton, _: Boolean ->
+            if (compoundButton.isChecked) {
+                binding.tvMontominMod.isEnabled = true
+                binding.tvMontominMod.visibility = View.VISIBLE
+                binding.tvMontominMod.text = "Monto Mín: $$montoMinimoMod"
+            } else {
+                binding.tvMontominMod.isEnabled = false
+                binding.tvMontominMod.visibility = View.INVISIBLE
+            }
+        }
         if (NOEMIFAC == 1) {
-            Factura.setVisibility(View.INVISIBLE);
+            binding.RbFacturaMod.visibility = View.INVISIBLE
         } else {
-            Factura.setVisibility(View.VISIBLE);
+            binding.RbFacturaMod.visibility = View.VISIBLE
         }
-
         if (NOEMINOTA == 1) {
-            NotaEntrega.setVisibility(View.INVISIBLE);
+            binding.RbNotaEntregaMod.visibility = View.INVISIBLE
         } else {
-            NotaEntrega.setVisibility(View.VISIBLE);
+            binding.RbNotaEntregaMod.visibility = View.VISIBLE
         }
-
         if (NOEMIFAC == 1 && NOEMINOTA == 1) {
-            Toast.makeText(this, "Cliente suspendido", Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(this, "Cliente suspendido", Toast.LENGTH_SHORT).show()
+            finish()
         }
-
-        Factura.setOnClickListener(v -> analizarArticulos("vta_solone", listacarritoMod));
-
-        NotaEntrega.setOnClickListener(v -> analizarArticulos("vta_solofac", listacarritoMod));
-
+        binding.RbFacturaMod.setOnClickListener {
+            analizarArticulos(
+                "vta_solone",
+                listacarritoMod
+            )
+        }
+        binding.RbNotaEntregaMod.setOnClickListener {
+            analizarArticulos(
+                "vta_solofac",
+                listacarritoMod
+            )
+        }
     }
 
-    private void analizarArticulos(String campo, ArrayList<Carrito> listacarrito) {
-
-        int num = 0;
+    private fun analizarArticulos(campo: String, listacarrito: ArrayList<Carrito>?) {
+        var num = 0
         //int numNE = 0;
-        for (int i = 0; i < listacarrito.size(); i++) {
-            num = conn.getCampoInt("articulo", campo, "codigo", listacarrito.get(i).codigo);
+        for (i in listacarrito!!.indices) {
+            num = conn.getCampoIntCamposVarios(
+                "articulo",
+                campo,
+                listOf("codigo", "empresa"),
+                listOf(listacarrito[i].codigo, codEmpresa!!)
+            )
             //numNE += conn.getCampoInt("articulo", "vta_solone", "codigo", listacarrito.get(i).codigo);
             if (num > 0) {
-                break;
+                break
             }
         }
-
-        if (num > 0 && NotaEntrega.isChecked()) {
-            Toast.makeText(this, "Posee artículos que solo están disponibles para Facturas", Toast.LENGTH_SHORT).show();
-            Factura.setChecked(true);
-        } else if (num > 0 && Factura.isChecked()) {
-            Toast.makeText(this, "Posee artículos que solo están disponibles para Notas de Entrega", Toast.LENGTH_SHORT).show();
-            NotaEntrega.setChecked(true);
+        if (num > 0 && binding.RbNotaEntregaMod.isChecked) {
+            Toast.makeText(
+                this,
+                "Posee artículos que solo están disponibles para Facturas",
+                Toast.LENGTH_SHORT
+            ).show()
+            binding.RbFacturaMod.isChecked = true
+        } else if (num > 0 && binding.RbFacturaMod.isChecked) {
+            Toast.makeText(
+                this,
+                "Posee artículos que solo están disponibles para Notas de Entrega",
+                Toast.LENGTH_SHORT
+            ).show()
+            binding.RbNotaEntregaMod.isChecked = true
         }
-
     }
 
-    private void recalculoPrecio(boolean b) {
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT precio FROM cliempre WHERE codigo='" + codigoCliente + "'", null);
-
+    private fun recalculoPrecio(b: Boolean) {
+        var keAndroid = conn.writableDatabase
+        var cursor = keAndroid.rawQuery(
+            "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
+            null
+        )
         if (b) {
-            tipoDePrecioaMostrar = "precio1";
-            preciocliente = 1.0;
+            tipoDePrecioaMostrar = "precio1"
+            preciocliente = 1.0
 
             //2023-06-05 se comento debido a que la opcion de prepago se borrara y ahora se llamara pago BCV y se asignara precio1 (Posiblemente precio3 se elimine)
             /*tipoDePrecioaMostrar = "precio3";
             preciocliente = 3.0;*/
-
         } else {
-
-            cursor.moveToFirst();
-            preciocliente = cursor.getDouble(0);
-            enteroPrecio = (int) Math.round(preciocliente);
-
-
-            tipoDePrecioaMostrar = "precio" + enteroPrecio;
+            cursor.moveToFirst()
+            preciocliente = cursor.getDouble(0)
+            enteroPrecio = (preciocliente!!).roundToInt()
+            tipoDePrecioaMostrar = "precio$enteroPrecio"
         }
-        cursor.close();
-
-        System.out.println("precio que esta cogiendo (upa): " + tipoDePrecioaMostrar);
+        cursor.close()
+        println("precio que esta cogiendo (upa): $tipoDePrecioaMostrar")
         // tipoDePrecioaMostrar = (b)?"precio3":"precio"+enteroPrecio;
-
-        ke_android = conn.getWritableDatabase();
-        Cursor cursorMain = ke_android.rawQuery("SELECT * FROM ke_carrito", null);
+        keAndroid = conn.writableDatabase
+        val cursorMain =
+            keAndroid.rawQuery("SELECT * FROM ke_carrito AND empresa = '$codEmpresa'", null)
         while (cursorMain.moveToNext()) {
-            String codigo = cursorMain.getString(0);
-            Double cantidad = cursorMain.getDouble(2);
-            System.out.println("SELECT " + tipoDePrecioaMostrar + " FROM articulo WHERE codigo = '" + codigo + "'");
-            cursor = ke_android.rawQuery("SELECT " + tipoDePrecioaMostrar + " FROM articulo WHERE codigo = '" + codigo + "'", null);
-            cursor.moveToFirst();
-            Double precio = Math.round(cursor.getDouble(0) * 100.00) / 100.00;
-            double precioTotal = (precio * cantidad);
-            double precioTotalRedondo = Math.round(precioTotal * 100.00) / 100.00;
-            cursor.close();
-
-
-            ke_android.execSQL("UPDATE ke_carrito SET kmv_artprec=" + precio + ", kmv_stot= " + precioTotalRedondo + ", kmv_stotdcto=" + precioTotalRedondo + " WHERE kmv_codart ='" + codigo + "'");
-            CargarLineas();
-            SumaNeto();
-
+            val codigo = cursorMain.getString(0)
+            val cantidad = cursorMain.getDouble(2)
+            cursor = keAndroid.rawQuery(
+                "SELECT $tipoDePrecioaMostrar FROM articulo WHERE codigo = '$codigo' AND empresa = '$codEmpresa'",
+                null
+            )
+            cursor.moveToFirst()
+            val precio = cursor.getDouble(0).valorReal()
+            val precioTotal = precio * cantidad
+            val precioTotalRedondo = precioTotal.valorReal()
+            cursor.close()
+            keAndroid.execSQL("UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+            cargarLineas()
+            sumaNeto()
         }
-        cursorMain.close();
-
+        cursorMain.close()
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemid = item.getItemId();
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val itemid = item.itemId
         if (itemid == android.R.id.home) {
-            ValidarSalida();
+            validarSalida()
         }
         //return super.onOptionsItemSelected(item);
-        return true;
+        return true
     }
 
-    @Override
-    public void onBackPressed() {
-        ValidarSalida();
+    override fun onBackPressed() {
+        validarSalida()
     }
 
-    private void ValidarSalida() {
+    private fun validarSalida() {
+        val dialog = AlertDialog.Builder(
+            ContextThemeWrapper(
+                this@ModificarPedidoActivity,
+                setAlertDialogTheme(Constantes.AGENCIA)
+            )
+        ).setTitle("Salir").setMessage("¿Está seguro de desear salir?").setCancelable(true)
+            .setPositiveButton("Si", null).setNegativeButton("No", null).show()
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            dialog.dismiss()
+            finish()
+        }
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+            .setOnClickListener { dialog.dismiss() }
 
-        AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(ModificarPedidoActivity.this, R.style.AlertDialogCustom)).setTitle("Salir").setMessage("¿Está seguro de desear salir?").setCancelable(true).setPositiveButton("Si", null).setNegativeButton("No", null).show();
+        val nbutton: Button = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+        nbutton.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
 
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
-            dialog.dismiss();
-            finish();
-        });
-        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(v -> dialog.dismiss());
-
+        val pbutton: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        pbutton.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
     }
 
-    private void validarSiHayPreventa() {
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT count(ke_opmv.kmv_codart) FROM ke_opmv " + "LEFT JOIN articulo ON articulo.codigo = ke_opmv.kmv_codart WHERE articulo.enpreventa = '1' AND kti_ndoc ='" + codigoPedido + "'", null);
-        int conteo = 0;
+    private fun validarSiHayPreventa() {
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT count(ke_opmv.kmv_codart) FROM ke_opmv LEFT JOIN articulo ON articulo.codigo = ke_opmv.kmv_codart " +
+                    "WHERE articulo.enpreventa = '1' AND kti_ndoc ='$codigoPedido' AND ke_opmv.empresa = '$codEmpresa'",
+            null
+        )
+        var conteo = 0
         if (cursor.moveToFirst()) {
-            conteo = cursor.getInt(0);
+            conteo = cursor.getInt(0)
         }
-        cursor.close();
+        cursor.close()
         if (conteo > 0) {
-            enpreventa = "1";
+            enpreventa = "1"
         }
     }
 
-    public void obtenerCondicionesEspeciales() {
+    private fun obtenerCondicionesEspeciales() {
         //CON ESTA FUNCION IDENTIFICO SI EL CLIENTE POSEE O NO LA POSIBLIDAD DE LLEVAR A CABO UNA NEGOCIACIÓN ESPECIAL
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT kne_activa, kne_mtomin FROM cliempre WHERE codigo ='" + codigoCliente + "'", null);
-
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT kne_activa, kne_mtomin FROM cliempre WHERE codigo ='$codigoCliente' AND empresa = '$codEmpresa'",
+            null
+        )
         while (cursor.moveToNext()) {
-            negociacionActivaMod = cursor.getString(0);
-            montoMinimoMod = cursor.getDouble(1); //IMPORTANTE: EL CLIENTE CUENTA CON UN MONTO MINIMO PARA LA NEG. ESPECIAL
+            negociacionActivaMod = cursor.getString(0)
+            montoMinimoMod =
+                cursor.getDouble(1) //IMPORTANTE: EL CLIENTE CUENTA CON UN MONTO MINIMO PARA LA NEG. ESPECIAL
         }
-
-        cursor.close();
-
-        if (negociacionActivaMod.equals("0")) {
-            sw_negoespemod.setEnabled(false);
-            sw_negoespemod.setVisibility(View.INVISIBLE);
-
-            tv_montominMod.setEnabled(false);
-            tv_montominMod.setVisibility(View.INVISIBLE);
-
-        } else if (negociacionActivaMod.equals("1")) {
-            sw_negoespemod.setEnabled(true);
-            sw_negoespemod.setVisibility(View.VISIBLE);
-
+        cursor.close()
+        if (negociacionActivaMod == "0") {
+            binding.swNegoespecialMod.isEnabled = false
+            binding.swNegoespecialMod.visibility = View.INVISIBLE
+            binding.tvMontominMod.isEnabled = false
+            binding.tvMontominMod.visibility = View.INVISIBLE
+        } else if (negociacionActivaMod == "1") {
+            binding.swNegoespecialMod.isEnabled = true
+            binding.swNegoespecialMod.visibility = View.VISIBLE
         }
-
     }
 
-    public boolean negociacionIsActiva() {
-        return sw_negoespemod.isChecked();
+    private fun negociacionIsActiva(): Boolean {
+        return binding.swNegoespecialMod.isChecked
     }
 
-    public void validarNegActivo() {
+    private fun validarNegActivo() {
         if (negociacionIsActiva()) {
-            tv_montominMod.setText("Monto Mín: $" + montoMinimoMod);
-            tv_montominMod.setEnabled(true);
-            tv_montominMod.setVisibility(View.VISIBLE);
-            tv_montominMod.setTextColor(Color.rgb(22, 129, 67));
+            binding.tvMontominMod.text = "Monto Mín: $$montoMinimoMod"
+            binding.tvMontominMod.isEnabled = true
+            binding.tvMontominMod.visibility = View.VISIBLE
+            binding.tvMontominMod.setTextColor(Color.rgb(22, 129, 67))
         }
     }
-
 
     //este es el metodo para procesar el pedido
-    private void ProcesarPedido() {
-
+    private fun procesarPedido() {
         if (negociacionIsActiva()) {
-            if (precioTotalporArticulo >= montoMinimoMod) {
-                guardarDatosPedidoMod();
+            if (precioTotalporArticulo >= montoMinimoMod!!) {
+                guardarDatosPedidoMod()
             } else {
-                Toast.makeText(ModificarPedidoActivity.this, "En negociación especial, el pedido debe cumplir con el monto mínimo asignado.", Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                    this@ModificarPedidoActivity,
+                    "En negociación especial, el pedido debe cumplir con el monto mínimo asignado.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         } else if (!negociacionIsActiva()) {
-            negociacionActivaMod = "0";
-            guardarDatosPedidoMod();
+            negociacionActivaMod = "0"
+            guardarDatosPedidoMod()
         }
-
-
     }
 
     //con este metodo actualizamos las lineas del carrito y del neto cada vez que se produce un cambio (modificacion/eliminacion)
-    private void actualizaLista() {
-        CargarLineas();
-        SumaNeto();
+    private fun actualizaLista() {
+        cargarLineas()
+        sumaNeto()
     }
 
-
-    /************************************************************************************/
-    //este metodo realiza la sumatoria del neto en funcion a los articulos que se van agregando en ke_carrito
-    private void SumaNeto() {
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-
-        Cursor cursor = ke_android.rawQuery("SELECT SUM(kmv_stot), SUM(kmv_dctolin), SUM(kmv_stotdcto) FROM ke_carrito", null);
-
+    /** */ //este metodo realiza la sumatoria del neto en funcion a los articulos que se van agregando en ke_carrito
+    private fun sumaNeto() {
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT SUM(kmv_stot), SUM(kmv_dctolin), SUM(kmv_stotdcto) FROM ke_carrito WHERE empresa = '$codEmpresa'",
+            null
+        )
         if (cursor.moveToNext()) {
-            precioTotalporArticulo = cursor.getDouble(0);
-            precioTotalporArticulo = Math.round(precioTotalporArticulo * 100.00) / 100.00;
-            System.out.println(precioTotalporArticulo);
-
-            descuentoTotal = cursor.getDouble(1);
-
-            montoNetoConDescuento = cursor.getDouble(2);
-            tv_neto.setText("$" + formato.format(precioTotalporArticulo));
-
-            if (descuentoTotal > 0.0) {
-                tv_subcondcto.setVisibility(View.VISIBLE);
-                tv_netocondescuento.setVisibility(View.VISIBLE);
-                montoNetoConDescuento = Math.round(montoNetoConDescuento * 100.00) / 100.00;
-                tv_netocondescuento.setText("$" + formato.format(montoNetoConDescuento));
+            precioTotalporArticulo = cursor.getDouble(0)
+            precioTotalporArticulo = precioTotalporArticulo.valorReal()
+            println(precioTotalporArticulo)
+            descuentoTotal = cursor.getDouble(1)
+            montoNetoConDescuento = cursor.getDouble(2)
+            binding.tvNetoMod.text = "$" + formato.format(precioTotalporArticulo)
+            if (descuentoTotal!! > 0.0) {
+                binding.tvSubdcto.visibility = View.VISIBLE
+                binding.tvNetoDcto.visibility = View.VISIBLE
+                montoNetoConDescuento = montoNetoConDescuento.valorReal()
+                binding.tvNetoDcto.text = "$" + formato.format(montoNetoConDescuento)
             } else {
-
-                tv_netocondescuento.setText("$0.00");
-                tv_subcondcto.setVisibility(View.INVISIBLE);
-                tv_netocondescuento.setVisibility(View.INVISIBLE);
+                binding.tvNetoDcto.text = "$0.00"
+                binding.tvSubdcto.visibility = View.INVISIBLE
+                binding.tvNetoDcto.visibility = View.INVISIBLE
             }
-
         } else {
-            tv_neto.setText("$0.00");
-            tv_netocondescuento.setText("$0.00");
-            tv_subcondcto.setVisibility(View.INVISIBLE);
-            tv_netocondescuento.setVisibility(View.INVISIBLE);
+            binding.tvNetoMod.text = "$0.00"
+            binding.tvNetoDcto.text = "$0.00"
+            binding.tvSubdcto.visibility = View.INVISIBLE
+            binding.tvNetoDcto.visibility = View.INVISIBLE
 
             //---aqui tambien se coloca algo en caso de que sea 0 con descuento
         }
-        cursor.close();
-
+        cursor.close()
         if (negociacionIsActiva()) {
-
-
-            if (precioTotalporArticulo >= montoMinimoMod) {
-                tv_montominMod.setTextColor(Color.rgb(22, 129, 67));
-
+            if (precioTotalporArticulo >= montoMinimoMod!!) {
+                binding.tvMontominMod.setTextColor(Color.rgb(22, 129, 67))
             } else {
-                tv_montominMod.setTextColor(Color.rgb(244, 67, 54));
+                binding.tvMontominMod.setTextColor(Color.rgb(244, 67, 54))
             }
-
-
         }
-
-
     }
 
-
-    private void guardarDatosPedidoMod() {
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin FROM ke_carrito WHERE 1", null);
-
-        menunav.setEnabled(false);
-
+    private fun guardarDatosPedidoMod() {
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin FROM ke_carrito WHERE empresa = '$codEmpresa'",
+            null
+        )
+        binding.menuModifi.isEnabled = false
         if (cursor.moveToFirst()) {
-            PedidoCondicion();
-            String kti_docsolicitado = documento;
-            String kti_condicion = formaPago;
-            Double kti_totneto = precioTotalporArticulo;
-            String kti_ndoc = codigoPedido;
-            String kti_tdoc = tipoDoc;
-            Double kti_precio = 1.00;
-            String kti_negesp = negociacionActivaMod;
-
-            Date fechaTabla = new Date(Calendar.getInstance().getTimeInMillis());
-            SimpleDateFormat formatoFechaTabla = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
-            String kti_fchdoc = formatoFechaTabla.format(fechaTabla);
-
+            pedidoCondicion()
+            val ktiDocsolicitado = documento
+            val ktiCondicion = formaPago
+            val ktiTotneto = precioTotalporArticulo
+            val ktiNdoc = codigoPedido
+            val ktiTdoc = tipoDoc
+            val ktiPrecio = 1.00
+            val ktiNegesp = negociacionActivaMod
+            val fechaTabla = Date(Calendar.getInstance().timeInMillis)
+            val formatoFechaTabla = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val ktiFchdoc = formatoFechaTabla.format(fechaTabla)
             try {
-
-                ContentValues actualizarCabecera = new ContentValues();
-                ke_android.beginTransaction(); //iniciamos la tranasaccion
-
-                actualizarCabecera.put("kti_docsol", kti_docsolicitado);
-                actualizarCabecera.put("kti_condicion", kti_condicion);
-                actualizarCabecera.put("kti_totneto", kti_totneto);
-                actualizarCabecera.put("kti_fchdoc", kti_fchdoc);
-                actualizarCabecera.put("kti_negesp", kti_negesp);
-                actualizarCabecera.put("kti_totnetodcto", ObjetoUtils.Companion.valorReal(montoNetoConDescuento));
-                ke_android.update("ke_opti", actualizarCabecera, "kti_ndoc='" + codigoPedido + "'", null);
+                val actualizarCabecera = ContentValues()
+                keAndroid.beginTransaction() //iniciamos la tranasaccion
+                actualizarCabecera.put("kti_docsol", ktiDocsolicitado)
+                actualizarCabecera.put("kti_condicion", ktiCondicion)
+                actualizarCabecera.put("kti_totneto", ktiTotneto)
+                actualizarCabecera.put("kti_fchdoc", ktiFchdoc)
+                actualizarCabecera.put("kti_negesp", ktiNegesp)
+                actualizarCabecera.put(
+                    "kti_totnetodcto", valorReal(
+                        montoNetoConDescuento
+                    )
+                )
+                keAndroid.update(
+                    "ke_opti",
+                    actualizarCabecera,
+                    "kti_ndoc='$codigoPedido' AND empresa = '$codEmpresa'",
+                    null
+                )
 
                 //borramos las lineas actuales para incluir las nuevas
-                ke_android.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc ='" + codigoPedido + "'");
+                keAndroid.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc ='$codigoPedido' AND empresa = '$codEmpresa'")
 
                 //insertamos las lineas
-                for (int i = 0; i < listacarritoMod.size(); i++) {
-
-                    ContentValues insertarLineas = new ContentValues();
-                    insertarLineas.put("kmv_codart", listacarritoMod.get(i).getCodigo());
-                    insertarLineas.put("kmv_nombre", listacarritoMod.get(i).getNombre());
-                    insertarLineas.put("kti_tipprec", kti_precio);
-                    insertarLineas.put("kmv_cant", listacarritoMod.get(i).getCantidad());
-                    insertarLineas.put("kti_tdoc", kti_tdoc);
-                    insertarLineas.put("kti_ndoc", kti_ndoc);
-                    insertarLineas.put("kmv_stot", listacarritoMod.get(i).getPrecio());
-                    insertarLineas.put("kmv_artprec", listacarritoMod.get(i).getPreciou());
-                    insertarLineas.put("kmv_dctolin", listacarritoMod.get(i).getDctolin());
-                    insertarLineas.put("kmv_stotdcto", listacarritoMod.get(i).getStotNeto());
+                for (i in listacarritoMod!!.indices) {
+                    val cvLineas = ContentValues()
+                    cvLineas.put("kmv_codart", listacarritoMod!![i].getCodigo())
+                    cvLineas.put("kmv_nombre", listacarritoMod!![i].getNombre())
+                    cvLineas.put("kti_tipprec", ktiPrecio)
+                    cvLineas.put("kmv_cant", listacarritoMod!![i].getCantidad())
+                    cvLineas.put("kti_tdoc", ktiTdoc)
+                    cvLineas.put("kti_ndoc", ktiNdoc)
+                    cvLineas.put("kmv_stot", listacarritoMod!![i].getPrecio())
+                    cvLineas.put("kmv_artprec", listacarritoMod!![i].getPreciou())
+                    cvLineas.put("kmv_dctolin", listacarritoMod!![i].getDctolin())
+                    cvLineas.put("kmv_stotdcto", listacarritoMod!![i].getStotNeto())
+                    cvLineas.put("empresa", codEmpresa)
 
                     //insertamos las lineas
-                    ke_android.insert("ke_opmv", null, insertarLineas);
+                    keAndroid.insert("ke_opmv", null, cvLineas)
                 }
                 //limpiamos ke_carrito
-                ke_android.delete("ke_carrito", "1", null);
-
-
-                ke_android.setTransactionSuccessful();
-
-            } catch (Exception ex) {
-                Toast.makeText(ModificarPedidoActivity.this, "Error en: " + ex, Toast.LENGTH_SHORT).show();
+                keAndroid.delete("ke_carrito", "empresa = '$codEmpresa'", null)
+                keAndroid.setTransactionSuccessful()
+            } catch (ex: Exception) {
+                Toast.makeText(this@ModificarPedidoActivity, "Error en: $ex", Toast.LENGTH_SHORT)
+                    .show()
             } finally {
-                ke_android.endTransaction();
+                keAndroid.endTransaction()
             }
-            Toast.makeText(ModificarPedidoActivity.this, "Pedido modificado exitosamente", Toast.LENGTH_SHORT).show();
-            finish();
-
+            Toast.makeText(
+                this@ModificarPedidoActivity,
+                "Pedido modificado exitosamente",
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
         } else {
-            Toast.makeText(ModificarPedidoActivity.this, "Por favor, agrega artículos al pedido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                this@ModificarPedidoActivity,
+                "Por favor, agrega artículos al pedido",
+                Toast.LENGTH_SHORT
+            ).show()
         }
-        cursor.close();
+        cursor.close()
     }
 
-
-    private Double obtenerMontoMinimoTotal() {
-        double monto;
-        monto = 75.00;
-
-        return monto;
+    private fun obtenerMontoMinimoTotal(): Double {
+        val monto: Double = if (binding.RbFacturaMod.isChecked) {
+            conn.getConfigNum("APP_MONTO_MINIMO_FAC", codEmpresa!!)
+        } else if (binding.RbFacturaMod.isChecked) {
+            conn.getConfigNum("APP_MONTO_MINIMO_NE", codEmpresa!!)
+        } else {
+            75.00
+        }
+        return monto
     }
 
-
-    private void CargarLineas() {
-
-        CarritoCompras();
-
+    private fun cargarLineas() {
+        carritoCompras()
         if (listacarritoMod != null) {
             // adapter.notifyDataSetChanged();
-            carritoAdapter = new CarritoAdapter(ModificarPedidoActivity.this, listacarritoMod);
-            listaLineasMod.setAdapter(carritoAdapter);
-            carritoAdapter.notifyDataSetChanged();
-
+            carritoAdapter =
+                CarritoAdapter(this@ModificarPedidoActivity, listacarritoMod, enlaceEmpresa)
+            binding.ListPedidoMod.adapter = carritoAdapter
+            carritoAdapter.notifyDataSetChanged()
         } else {
-            Toast.makeText(ModificarPedidoActivity.this, "Por favor, agrega lineas al pedido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                this@ModificarPedidoActivity,
+                "Por favor, agrega lineas al pedido",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    /*************************************************************/
-
-    private void CarritoCompras() {
-        listacarritoMod = new ArrayList<>();
-
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
-        final SQLiteDatabase ke_android = conn.getWritableDatabase();
-
-        Cursor cursor = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito WHERE 1", null);
-
+    /** */
+    private fun carritoCompras() {
+        listacarritoMod = ArrayList()
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito WHERE empresa = '$codEmpresa'",
+            null
+        )
         while (cursor.moveToNext()) {
-            Carrito carrito = new Carrito();
-            carrito.setCodigo(cursor.getString(0));
-            carrito.setNombre(cursor.getString(1));
-            carrito.setCantidad(cursor.getInt(2));
-            carrito.setPrecio(cursor.getDouble(3));
-            carrito.setPreciou(cursor.getDouble(4));
-            carrito.setDctolin(cursor.getDouble(5));
-            carrito.setStotNeto(cursor.getDouble(6));
-
-            listacarritoMod.add(carrito);
-
+            val carrito = Carrito()
+            carrito.setCodigo(cursor.getString(0))
+            carrito.setNombre(cursor.getString(1))
+            carrito.setCantidad(cursor.getInt(2))
+            carrito.setPrecio(cursor.getDouble(3))
+            carrito.setPreciou(cursor.getDouble(4))
+            carrito.setDctolin(cursor.getDouble(5))
+            carrito.setStotNeto(cursor.getDouble(6))
+            listacarritoMod!!.add(carrito)
         }
-        cursor.close();
-        ke_android.close();
-
+        cursor.close()
+        keAndroid.close()
     }
 
-
-    private void iraCatalogo() {
-        menunav.setEnabled(false);
-        Toast.makeText(ModificarPedidoActivity.this, "Cargando Datos", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(ModificarPedidoActivity.this, CatalogoActivity.class);
-        seleccion = 2;
-        intent.putExtra("Seleccion", seleccion);
-        intent.putExtra("tipoDePrecioaMostrar", tipoDePrecioaMostrar);
-        intent.putExtra("enpreventa", enpreventa);
-        intent.putExtra("factura", Factura.isChecked());
-        startActivity(intent);
-
+    private fun iraCatalogo() {
+        binding.menuModifi.isEnabled = false
+        Toast.makeText(this@ModificarPedidoActivity, "Cargando Datos", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this@ModificarPedidoActivity, CatalogoActivity::class.java)
+        seleccion = 2
+        intent.putExtra("Seleccion", seleccion)
+        intent.putExtra("tipoDePrecioaMostrar", tipoDePrecioaMostrar)
+        intent.putExtra("enpreventa", enpreventa)
+        intent.putExtra("factura", binding.RbFacturaMod.isChecked)
+        startActivity(intent)
     }
 
-    public void lineasDelPedido() {
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_opmv WHERE kti_ndoc='" + codigoPedido + "'", null);
-
+    private fun lineasDelPedido() {
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_opmv " +
+                    "WHERE kti_ndoc='$codigoPedido' AND empresa = '$codEmpresa'",
+            null
+        )
         while (cursor.moveToNext()) {
-
-            String kmv_codart = cursor.getString(0);
-            String kmv_nombre = cursor.getString(1);
-            Double kmv_cant = cursor.getDouble(2);
-            Double kmv_stot = cursor.getDouble(3);
-            Double kmv_artprec = cursor.getDouble(4);
-            Double kmv_dctolin = cursor.getDouble(5);
-            Double kmv_stotdcto = cursor.getDouble(6);
-
-            ContentValues insertarenCarrito = new ContentValues();
-            insertarenCarrito.put("kmv_codart", kmv_codart);
-            insertarenCarrito.put("kmv_nombre", kmv_nombre);
-            insertarenCarrito.put("kmv_cant", kmv_cant);
-            insertarenCarrito.put("kmv_stot", kmv_stot);
-            insertarenCarrito.put("kmv_artprec", kmv_artprec);
-            insertarenCarrito.put("kmv_dctolin", kmv_dctolin);
-            insertarenCarrito.put("kmv_stotdcto", kmv_stotdcto);
-
-            ke_android.insert("ke_carrito", null, insertarenCarrito);
-
+            val kmvCodart = cursor.getString(0)
+            val kmvNombre = cursor.getString(1)
+            val kmvCant = cursor.getDouble(2)
+            val kmvStot = cursor.getDouble(3)
+            val kmvArtprec = cursor.getDouble(4)
+            val kmvDctolin = cursor.getDouble(5)
+            val kmvStotdcto = cursor.getDouble(6)
+            val cvCarrito = ContentValues()
+            cvCarrito.put("kmv_codart", kmvCodart)
+            cvCarrito.put("kmv_nombre", kmvNombre)
+            cvCarrito.put("kmv_cant", kmvCant)
+            cvCarrito.put("kmv_stot", kmvStot)
+            cvCarrito.put("kmv_artprec", kmvArtprec)
+            cvCarrito.put("kmv_dctolin", kmvDctolin)
+            cvCarrito.put("kmv_stotdcto", kmvStotdcto)
+            cvCarrito.put("empresa", codEmpresa)
+            keAndroid.insert("ke_carrito", null, cvCarrito)
         }
-        cursor.close();
+        cursor.close()
     }
 
     //aqui determinamos el valor de las condiciones para el pedido(documento/condicion)
-    public void PedidoCondicion() {
-        if (Factura.isChecked()) {
-            documento = "1";
-            if (Credito.isChecked()) {
-                formaPago = "2";
-            } else if (Prepago.isChecked()) {
-                formaPago = "1";
+    private fun pedidoCondicion() {
+        if (binding.RbFacturaMod.isChecked) {
+            documento = "1"
+            if (binding.RbCreditoMod.isChecked) {
+                formaPago = "2"
+            } else if (binding.RbPrepagoMod.isChecked) {
+                formaPago = "1"
             }
-
-
-        } else if (NotaEntrega.isChecked()) {
-            documento = "2";
-            if (Credito.isChecked()) {
-                formaPago = "2";
-            } else if (Prepago.isChecked()) {
-                formaPago = "1";
+        } else if (binding.RbNotaEntregaMod.isChecked) {
+            documento = "2"
+            if (binding.RbCreditoMod.isChecked) {
+                formaPago = "2"
+            } else if (binding.RbPrepagoMod.isChecked) {
+                formaPago = "1"
             }
         }
         //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
-
     }
 
     //este metodo evalua la cabecera del pedido y marca los radiobuttons segun la condicion que encuentre
-    public void CargarCondiciones() {
-        conn = new AdminSQLiteOpenHelper(getApplicationContext(), "ke_android", null);
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT kti_docsol, kti_condicion, kti_negesp FROM ke_opti WHERE kti_ndoc='" + codigoPedido + "'", null);
-
+    private fun cargarCondiciones() {
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT kti_docsol, kti_condicion, kti_negesp FROM ke_opti " +
+                    "WHERE kti_ndoc='$codigoPedido' AND empresa = '$codEmpresa'",
+            null
+        )
         while (cursor.moveToNext()) {
-            documento = cursor.getString(0);
-            formaPago = cursor.getString(1);
-            negociacionEstado = cursor.getString(2);
+            documento = cursor.getString(0)
+            formaPago = cursor.getString(1)
+            negociacionEstado = cursor.getString(2)
         }
-        cursor.close();
-        if (negociacionEstado.equals("1")) {
-            sw_negoespemod.setChecked(true);
+        cursor.close()
+        if (negociacionEstado == "1") {
+            binding.swNegoespecialMod.isChecked = true
         }
-
-        if (documento.equals("1")) {
-            Factura.toggle();
-        } else if (documento.equals("2")) {
-            NotaEntrega.toggle();
+        if (documento == "1") {
+            binding.RbFacturaMod.toggle()
+        } else if (documento == "2") {
+            binding.RbNotaEntregaMod.toggle()
         }
-
-        if (formaPago.equals("1")) {
-            Prepago.toggle();
-        } else if (formaPago.equals("2")) {
-            Credito.toggle();
+        if (formaPago == "1") {
+            binding.RbPrepagoMod.toggle()
+        } else if (formaPago == "2") {
+            binding.RbCreditoMod.toggle()
         }
-
     }
 
-
-    public void asignarTipodePrecio() {
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        Cursor cursor = ke_android.rawQuery("SELECT precio FROM cliempre WHERE codigo='" + codigoCliente + "'", null);
-
+    private fun asignarTipodePrecio() {
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
+            null
+        )
         while (cursor.moveToNext()) {
-            preciocliente = cursor.getDouble(0);
-            enteroPrecio = (int) Math.round(preciocliente);
+            preciocliente = cursor.getDouble(0)
+            enteroPrecio = (preciocliente!!).roundToInt()
         }
-        cursor.close();
-        switch (enteroPrecio) {
-
-            case 1:
-                tipoDePrecioaMostrar = "precio1";
-                break;
-
-            case 2:
-                tipoDePrecioaMostrar = "precio2";
-                break;
-
-            case 3:
-                tipoDePrecioaMostrar = "precio3";
-                break;
-
-            case 4:
-                tipoDePrecioaMostrar = "precio4";
-                break;
-
-            case 5:
-                tipoDePrecioaMostrar = "precio5";
-                break;
-
-            case 6:
-                tipoDePrecioaMostrar = "precio6";
-                break;
-
-            case 7:
-                tipoDePrecioaMostrar = "precio7";
-                break;
-
-            default:
-                tipoDePrecioaMostrar = "precio1";
+        cursor.close()
+        tipoDePrecioaMostrar = when (enteroPrecio) {
+            1 -> "precio1"
+            2 -> "precio2"
+            3 -> "precio3"
+            4 -> "precio4"
+            5 -> "precio5"
+            6 -> "precio6"
+            7 -> "precio7"
+            else -> "precio1"
         }
-
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        CargarLineas();
-        SumaNeto();
-        menunav.setEnabled(true);
+    override fun onResume() {
+        super.onResume()
+        cargarLineas()
+        sumaNeto()
+        binding.menuModifi.isEnabled = true
         // adapter.notifyDataSetChanged();
-        validarSiHayPreventa();
-
+        validarSiHayPreventa()
     }
 
-
-    public int consultarDisponibilidad(String cod_usuario, String cod_cliente, String cod_articulo) {
-        int resultado = 0;
-        SQLiteDatabase ke_android = conn.getReadableDatabase();
-        Cursor cu_comp = ke_android.rawQuery("SELECT SUM(kli_cant) FROM ke_limitart WHERE kli_codven ='" + cod_usuario + "' AND kli_codcli='" + cod_cliente + "' AND kli_codart='" + cod_articulo + "' AND status ='1'", null);
-
-        while (cu_comp.moveToNext()) {
-            resultado = cu_comp.getInt(0);
+    fun consultarDisponibilidad(
+        codUsuario: String,
+        codCliente: String,
+        codArticulo: String
+    ): Int {
+        var resultado = 0
+        val keAndroid = conn.readableDatabase
+        val cuComp = keAndroid.rawQuery(
+            "SELECT SUM(kli_cant) FROM ke_limitart " +
+                    "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa'",
+            null
+        )
+        while (cuComp.moveToNext()) {
+            resultado = cuComp.getInt(0)
         }
-        cu_comp.close();
-
-        return resultado;
+        cuComp.close()
+        return resultado
     }
 
-    private void guardarLimite(String tracking, String cod_usuario, String cod_cliente, String cod_articulo, int cantidad, String fecha_hoy, String fecha_vence, String status) {
-
-        SQLiteDatabase ke_android = conn.getWritableDatabase();
-        ContentValues guardarArticulo = new ContentValues();
-        guardarArticulo.put("kli_track", tracking);
-        guardarArticulo.put("kli_codven", cod_usuario);
-        guardarArticulo.put("kli_codcli", cod_cliente);
-        guardarArticulo.put("kli_codart", cod_articulo);
-        guardarArticulo.put("kli_cant", cantidad);
-        guardarArticulo.put("kli_fechahizo", fecha_hoy);
-        guardarArticulo.put("kli_fechavence", fecha_vence);
-        guardarArticulo.put("status", status);
-        ke_android.insert("ke_limitart", null, guardarArticulo);
+    private fun guardarLimite(
+        tracking: String,
+        codUsuario: String,
+        codCliente: String,
+        codArticulo: String,
+        cantidad: Int,
+        fechaHoy: String,
+        fechaVence: String,
+        status: String
+    ) {
+        val keAndroid = conn.writableDatabase
+        val guardarArticulo = ContentValues()
+        guardarArticulo.put("kli_track", tracking)
+        guardarArticulo.put("kli_codven", codUsuario)
+        guardarArticulo.put("kli_codcli", codCliente)
+        guardarArticulo.put("kli_codart", codArticulo)
+        guardarArticulo.put("kli_cant", cantidad)
+        guardarArticulo.put("kli_fechahizo", fechaHoy)
+        guardarArticulo.put("kli_fechavence", fechaVence)
+        guardarArticulo.put("status", status)
+        guardarArticulo.put("empresa", codEmpresa)
+        keAndroid.insert("ke_limitart", null, guardarArticulo)
     }
 
+    companion object {
+        var codigoPedido: String? = null
+        var n_cliente: String? = null
+        var documento: String? = null
+        var formaPago: String? = null
+        var tipoDoc = "PED"
+        var tipoDePrecioaMostrar: String? = null
+        var codigoCliente: String? = null
+        var negociacionActivaMod: String? = null
+        var negociacionEstado: String? = null
+        var seleccion = 0
+        var indexposicion = 0
+        var nroCorrelativo = 0
+        var enteroPrecio = 0
+        var preciocliente: Double? = null
+        var montoMinimoMod: Double? = null
+        var descuentoTotal: Double? = null
+    }
 
+    fun setColors() {
+        binding.apply {
+            RbFacturaMod.buttonTintList = RbFacturaMod.setColorRadioButon(Constantes.AGENCIA)
+            RbNotaEntregaMod.buttonTintList =
+                RbNotaEntregaMod.setColorRadioButon(Constantes.AGENCIA)
+            RbCreditoMod.buttonTintList = RbCreditoMod.setColorRadioButon(Constantes.AGENCIA)
+            RbPrepagoMod.buttonTintList = RbPrepagoMod.setColorRadioButon(Constantes.AGENCIA)
+
+            tvClientepedido.setDrawableHeadAgencia(Constantes.AGENCIA)
+
+            menuModifi.setBackgroundColor(menuModifi.colorAgencia(Constantes.AGENCIA))
+
+            linearLayout4.setBackgroundResource(linearLayout4.changeColorMarco(Constantes.AGENCIA))
+
+            menuModifi.itemTextColor = menuModifi.colorIconReclamo(Constantes.AGENCIA)
+            menuModifi.itemIconTintList = menuModifi.colorIconReclamo(Constantes.AGENCIA)
+
+        }
+    }
+
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
+        // you could also use a switch if you have many themes that could apply
+        return theme
+    }
 }

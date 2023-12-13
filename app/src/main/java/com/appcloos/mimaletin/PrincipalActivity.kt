@@ -125,18 +125,23 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         codEmpresa = preferences.getString("codigoEmpresa", null)
         codigoSucursal = preferences.getString("codigoSucursal", null)
         val nombreUsuario = preferences.getString("nombre_usuario", null)
-        val nombreEmpresa = conn.getCampoString(
+        val nombreEmpresa = conn.getCampoStringCamposVarios(
             "ke_enlace",
             "kee_nombre",
-            "kee_codigo",
-            codEmpresa ?: Constantes.CLO
+            listOf("kee_codigo"),
+            listOf(codEmpresa ?: Constantes.CLO)
         )
 
         fechaAuxiliar = conn.getFecha("kecxc_tasas", codEmpresa!!)
 
         objetoAux!!.descargaDesactivo(cod_usuario!!)
         SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codEmpresa!!)
-        DESACTIVADO = conn.getCampoInt("usuarios", "desactivo", "vendedor", cod_usuario!!) == 0
+        DESACTIVADO = conn.getCampoIntCamposVarios(
+            "usuarios",
+            "desactivo",
+            listOf("vendedor", "empresa"),
+            listOf(cod_usuario!!, codEmpresa!!)
+        ) == 0
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
         checkForAppUpdate()
         cargarModulosActivos()

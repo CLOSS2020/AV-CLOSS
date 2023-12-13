@@ -46,8 +46,6 @@ class DatePickerFragment(
                 day
             )
 
-        println(" fecha que es interna por variable:  $day, $month, $year")
-
         picker.datePicker.maxDate = calen.timeInMillis
 
         //calculo la fecha anterior de 3 dias (por los momentos, parametrizar despues)

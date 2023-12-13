@@ -32,13 +32,15 @@ import java.util.ArrayList;
 public class CarritoAdapter extends BaseAdapter {
     private final ArrayList<Carrito> listcarrito;
     private final Context context;
+    private final String enlaceEmpresa;
     private LayoutInflater inflater;
 
     //tendra como parametro el contexto donde se use y el arraylist de tipo carrito que se use en
     //ese momento
-    public CarritoAdapter(Context context, ArrayList<Carrito> listcarrito){
+    public CarritoAdapter(Context context, ArrayList<Carrito> listcarrito, String enlaceEmpresa) {
         this.context = context;
         this.listcarrito = listcarrito;
+        this.enlaceEmpresa = enlaceEmpresa;
     }
 
     //metodos nativos del BaseAdapter
@@ -103,8 +105,8 @@ public class CarritoAdapter extends BaseAdapter {
 
         }
         //generacion de la miniatura de la imagen --
-        String codigo    = carrito.codigo;
-        String enlace    = "https://www.cloccidental.com/img/"+codigo+".jpg"; //este enlace debe parametrizarse despues
+        String codigo = carrito.codigo;
+        String enlace = "https://" + enlaceEmpresa + "/img/" + codigo + ".jpg"; //este enlace debe parametrizarse despues
         Picasso.get().load(enlace).resize(100, 100).centerCrop().into(img_thumb); //cargo la imagen en cada objeto img
 
         return convertView;

@@ -179,13 +179,18 @@ class PedidosActivity : AppCompatActivity() {
             val btnPdf = customView.findViewById<Button>(R.id.btnPdf)
             val creacion = builder.create()
             creacion.show()
+
+            colorButton(btnVer)
+            colorButton(btnModificar)
+            colorButton(btnEliminar)
+            colorButton(btnPdf)
+
             btnVer.setOnClickListener { _: View? -> verPedido() }
             btnModificar.setOnClickListener { _: View? -> modificarPedido() }
             btnEliminar.setOnClickListener { _: View? ->
                 eliminarPedido(creacion)
             }
             btnPdf.setOnClickListener { _: View? -> crearPDF(codigoPedido) }
-
         }
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!)
@@ -196,7 +201,15 @@ class PedidosActivity : AppCompatActivity() {
         val columnas = arrayOf(
             "kee_nombre," + "kee_url," + "kee_sucursal"
         )
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -208,7 +221,17 @@ class PedidosActivity : AppCompatActivity() {
     private fun limpiarCarrito() {
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
-        keAndroid.delete("ke_carrito", "1", null)
+        try {
+            keAndroid.delete(
+                "ke_carrito",
+                "empresa = '$codEmpresa'",
+                null
+            )//<- no deberia importar si se coloca empresa
+        } catch (e: Exception) {
+            println("--Error--")
+            e.printStackTrace()
+            println("--Error--")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -219,7 +242,7 @@ class PedidosActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.validarSubidas -> validarPendientes("https://cloccidental.com/Rest/obtenerpedidosdelmes.php?cod_usuario=" + cod_usuario + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+            R.id.validarSubidas -> validarPendientes("https://cloccidental.com/Rest/obtenerpedidosdelmes.php?cod_usuario=$cod_usuario&&agencia=$codigoSucursal")
             R.id.archivados -> iraArchivados()
         }
         return super.onOptionsItemSelected(item)
@@ -264,7 +287,7 @@ class PedidosActivity : AppCompatActivity() {
                                 ke_android.beginTransaction()
                                 try {
                                     println("Este pedido no se encuentra en la nube, debe subirse")
-                                    ke_android.execSQL("UPDATE ke_opti SET kti_status = '0' WHERE kti_ndoc ='$pedidoEnTelf'")
+                                    ke_android.execSQL("UPDATE ke_opti SET kti_status = '0' WHERE kti_ndoc ='$pedidoEnTelf' AND empresa = '$codEmpresa'")
                                     ke_android.setTransactionSuccessful()
                                     ke_android.endTransaction()
                                     finish()
@@ -317,10 +340,12 @@ class PedidosActivity : AppCompatActivity() {
     }
 
     private fun iraModificacionPedido() {
+        limpiarCarrito()
         sharpref!!.edit().clear().apply()
         val intent = Intent(this@PedidosActivity, ModificarPedidoActivity::class.java)
         intent.putExtra("codigopedido", codigoPedido)
         intent.putExtra("codigocliente", codigoCliente)
+        intent.putExtra("codigoEmpresa", codEmpresa)
         intent.putExtra("n_cliente", n_cliente)
         startActivity(intent)
     }
@@ -343,7 +368,7 @@ class PedidosActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             """SELECT kti_codcli, kti_ndoc, kti_nombrecli, kti_fchdoc, kti_totneto, kti_status, kti_nroped, kti_totnetodcto, datetime('now','start of month') as principiomes,
-  datetime('now') as hoy, ke_pedstatus FROM ke_opti WHERE kti_status !='3' AND kti_codven = '${cod_usuario!!.trim { it <= ' ' }}' and kti_fchdoc BETWEEN principiomes AND hoy
+  datetime('now') as hoy, ke_pedstatus FROM ke_opti WHERE kti_status !='3' AND empresa = '$codEmpresa' AND kti_codven = '$cod_usuario' and kti_fchdoc BETWEEN principiomes AND hoy
   ORDER BY kti_ndoc DESC""",
             null
         )
@@ -424,15 +449,15 @@ class PedidosActivity : AppCompatActivity() {
         keAndroid.close()
     }
 
-    private fun CargarLineasdelPedido() {
+    private fun cargarLineasdelPedido() {
         listalineas = ArrayList()
         listalineasdoc = ArrayList()
         // System.out.println(cod_usuario);
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        val ke_android = conn.writableDatabase
-        val cursor = ke_android.rawQuery(
-            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec " +
-                    "FROM ke_opmv WHERE kti_ndoc='" + codigoPedido + "'",
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec FROM ke_opmv " +
+                    "WHERE kti_ndoc='$codigoPedido' AND empresa = '$codEmpresa';",
             null
         )
         while (cursor.moveToNext()) {
@@ -452,7 +477,7 @@ class PedidosActivity : AppCompatActivity() {
             listalineasdoc!!.add(lineas)
         }
         cursor.close()
-        ke_android.close()
+        keAndroid.close()
         obtenerlineas()
     }
 
@@ -485,29 +510,34 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         }
 */
         //en realidad le cambiamos la cabecera a "3" Y borramos solo las lineas
-        ke_android.execSQL("UPDATE ke_opti SET kti_status = '3' WHERE kti_ndoc ='" + codigoPedido + "'")
-        ke_android.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc ='" + codigoPedido + "'")
-        ke_android.execSQL("DELETE FROM ke_limitart WHERE kli_track ='" + codigoPedido + "'")
+        ke_android.execSQL("UPDATE ke_opti SET kti_status = '3' WHERE kti_ndoc ='$codigoPedido' AND empresa = '$codEmpresa'")
+        ke_android.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc ='$codigoPedido' AND empresa = '$codEmpresa'")
+        ke_android.execSQL("DELETE FROM ke_limitart WHERE kli_track ='$codigoPedido' AND empresa = '$codEmpresa'")
         Toast.makeText(this@PedidosActivity, "Pedido borrado", Toast.LENGTH_SHORT).show()
         lineasPedidos()
         ke_android.close()
     }
 
-    private fun BorrarPedidoAlt() {
-        val ke_android = conn.writableDatabase
+    private fun borrarPedidoAlt() {
+        val keAndroid = conn.writableDatabase
         //en realidad le cambiamos la cabecera a "3" Y borramos solo las lineas
-        ke_android.execSQL("UPDATE ke_opti SET kti_status = '3' WHERE kti_ndoc ='" + codigoPedido + "'")
-        ke_android.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc ='" + codigoPedido + "'")
+        keAndroid.execSQL(
+            "UPDATE ke_opti SET kti_status = '3' " +
+                    "WHERE kti_ndoc ='$codigoPedido' AND empresa = '$codEmpresa';"
+        )
+        keAndroid.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc = '$codigoPedido' AND empresa = '$codEmpresa';")
         Toast.makeText(this@PedidosActivity, "Pedido borrado", Toast.LENGTH_SHORT).show()
         lineasPedidos()
-        ke_android.close()
+        keAndroid.close()
     }
 
     fun sesion() {
-        val ke_android = conn.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor =
-            ke_android.rawQuery("SELECT sesionactiva FROM usuarios WHERE vendedor ='" + cod_usuario!!.trim { it <= ' ' } + "'",
-                null)
+            keAndroid.rawQuery(
+                "SELECT sesionactiva FROM usuarios WHERE vendedor ='$cod_usuario' AND empresa = '$codEmpresa';",
+                null
+            )
         while (cursor.moveToNext()) {
             sesionActiva = cursor.getString(0).trim { it <= ' ' }
         }
@@ -607,8 +637,8 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         dialogofull.setCustomTitle(title)
         val listadeLineas = ListView(this@PedidosActivity)
         listadeLineas.setHeaderDividersEnabled(true)
-        CargarLineasdelPedido()
-        lineasAdapter = LineasAdapter(this@PedidosActivity, listalineasdoc)
+        cargarLineasdelPedido()
+        lineasAdapter = LineasAdapter(this@PedidosActivity, listalineasdoc!!)
         listadeLineas.adapter = lineasAdapter
         lineasAdapter!!.notifyDataSetChanged()
         dialogofull.setView(listadeLineas)
@@ -651,8 +681,19 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             }
             val dialogo2 = subventana.create()
             dialogo2.show()
+
+            val pbutton: Button = dialogo2.getButton(DialogInterface.BUTTON_POSITIVE)
+            pbutton.apply {
+                setTextColor(colorTextAgencia(Constantes.AGENCIA))
+            }
+
+            val nbutton: Button = dialogo2.getButton(DialogInterface.BUTTON_NEGATIVE)
+            nbutton.apply {
+                setTextColor(colorTextAgencia(Constantes.AGENCIA))
+            }
+
         } else if (statusPedido == "5") {
-            BorrarPedidoAlt()
+            borrarPedidoAlt()
             Toast.makeText(
                 baseContext, "Este pedido fue borrado solamente del dispositivo.", Toast.LENGTH_LONG
             ).show()
@@ -664,8 +705,8 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
     private fun crearPDF(codigoPedido: String?) {
         val nroArtPag = 30.0
 
-        val cabecera = conn.getCabeceraPedido(codigoPedido!!)
-        val lineas = conn.getLineasPedido(codigoPedido)
+        val cabecera = conn.getCabeceraPedido(codigoPedido!!, codEmpresa!!)
+        val lineas = conn.getLineasPedido(codigoPedido, codEmpresa!!)
 
         val nroPag = ceil(lineas.size / nroArtPag).toInt()
 
@@ -690,9 +731,9 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         }
 
         val totalNeto = if (cabecera.kti_status == "0") {
-            "*${cabecera.kti_totnetodcto.valorReal()}*"
+            "*${cabecera.kti_totnetodcto.toTwoDecimals()}*"
         } else {
-            "${cabecera.kti_totnetodcto.valorReal()}"
+            cabecera.kti_totnetodcto.toTwoDecimals()
         }
 
         var pagActual = 1
@@ -916,8 +957,11 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
             canvas.drawText(cabecera.kti_codven, 90f, counter + 30f, paint)
             canvas.drawText(
-                conn.getCampoString(
-                    "usuarios", "nombre", "vendedor", cabecera.kti_codven
+                conn.getCampoStringCamposVarios(
+                    "usuarios",
+                    "nombre",
+                    listOf("vendedor", "empresa"),
+                    listOf(cabecera.kti_codven, codEmpresa!!)
                 ), 25f, counter + 45f, paint
             )
 
@@ -1075,6 +1119,12 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         var codigoSucursal = ""
         var enlaceEmpresa = ""
         var montoNeto: Double? = null
+    }
+
+    private fun colorButton(btn: Button) {
+        btn.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
     }
 
     private fun setColors() {

@@ -61,6 +61,9 @@ class MainActivity : AppCompatActivity(), Serializable {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var newEmpresa: keDataconex
+
+    private lateinit var codEmpresa: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation =
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
@@ -901,7 +904,13 @@ class MainActivity : AppCompatActivity(), Serializable {
     private fun validarSesion() {
         nick_usuario = preferences.getString("nick_usuario", null)
         cod_usuario = preferences.getString("cod_usuario", null)
-        desactivo = conn.getCampoDouble("usuarios", "desactivo", "vendedor", cod_usuario?:"0")
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
+        desactivo = conn.getCampoDoubleCamposVarios(
+            "usuarios",
+            "desactivo",
+            listOf("vendedor", "empresa"),
+            listOf(cod_usuario ?: "0", codEmpresa)
+        )
         /*val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery("SELECT desactivo FROM usuarios  WHERE 1", null)
         while (cursor.moveToNext()) {

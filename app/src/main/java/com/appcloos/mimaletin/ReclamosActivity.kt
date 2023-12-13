@@ -110,7 +110,7 @@ class ReclamosActivity : AppCompatActivity() {
                     val lineasdoc = ListView(this@ReclamosActivity)
                     lineasdoc.setHeaderDividersEnabled(true)
                     cargarLineasDoc()
-                    lineasAdapter = LineasAdapter(this@ReclamosActivity, listalineasdoc)
+                    lineasAdapter = LineasAdapter(this@ReclamosActivity, listalineasdoc!!)
                     lineasdoc.adapter = lineasAdapter
                     lineasAdapter!!.notifyDataSetChanged()
                     dialogolineas.setView(lineasdoc)
@@ -161,7 +161,7 @@ class ReclamosActivity : AppCompatActivity() {
                                         )
                                         cargarLineasDoc()
                                         lineasAdapter =
-                                            LineasAdapter(this@ReclamosActivity, listalineasdoc)
+                                            LineasAdapter(this@ReclamosActivity, listalineasdoc!!)
                                         sumaNeto()
                                         lineasdoc.adapter = lineasAdapter
                                         lineasAdapter!!.notifyDataSetChanged()

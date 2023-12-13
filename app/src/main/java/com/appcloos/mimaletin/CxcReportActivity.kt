@@ -218,7 +218,7 @@ class CxcReportActivity : AppCompatActivity() {
         //listBankDesc = conn.getConfigString("APP_BANCOS_DESCUENTOS").trim().split(",")
 
         listaBancoRepetible =
-            conn.getConfigString("APP_BANCOS_REFERENCIA_REPETIBL").replace(" ", "").split(",")
+            conn.getConfigString("APP_BANCOS_REFERENCIA_REPETIBL", codEmpresa!!).replace(" ", "").split(",")
 
         /*if (listBankDesc[0] == "") {
             binding.cbCxcDescuentos.isEnabled = false
@@ -2490,31 +2490,31 @@ class CxcReportActivity : AppCompatActivity() {
                                     qlineas.put("codcliente", listaDocumentos[i].codcliente)
                                     qlineas.put(
                                         "nombrecli",
-                                        conn.getCampoString(
+                                        conn.getCampoStringCamposVarios(
                                             "cliempre",
                                             "nombre",
-                                            "codigo",
-                                            listaDocumentos[i].codcliente
+                                            listOf("codigo", "empresa"),
+                                            listOf(listaDocumentos[i].codcliente, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put("tasadoc", listaDocumentos[j].tasadoc)
                                     //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                                     qlineas.put(
                                         "cbsretiva",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretiva",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put(
                                         "cbsretflete",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretflete",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
@@ -2634,31 +2634,31 @@ class CxcReportActivity : AppCompatActivity() {
                                     qlineas.put("codcliente", listaDocumentos[i].codcliente)
                                     qlineas.put(
                                         "nombrecli",
-                                        conn.getCampoString(
+                                        conn.getCampoStringCamposVarios(
                                             "cliempre",
                                             "nombre",
-                                            "codigo",
-                                            listaDocumentos[i].codcliente
+                                            listOf("codigo", "empresa"),
+                                            listOf(listaDocumentos[i].codcliente, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put("tasadoc", listaDocumentos[j].tasadoc)
                                     //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                                     qlineas.put(
                                         "cbsretiva",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretiva",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put(
                                         "cbsretflete",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretflete",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
@@ -3209,31 +3209,31 @@ class CxcReportActivity : AppCompatActivity() {
                             qlineas.put("codcliente", listaDocumentos[i].codcliente)
                             qlineas.put(
                                 "nombrecli",
-                                conn.getCampoString(
+                                conn.getCampoStringCamposVarios(
                                     "cliempre",
                                     "nombre",
-                                    "codigo",
-                                    listaDocumentos[i].codcliente
+                                    listOf("codigo", "empresa"),
+                                    listOf(listaDocumentos[i].codcliente, codEmpresa!!)
                                 )
                             )
                             qlineas.put("tasadoc", listaDocumentos[j].tasadoc)
                             //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                             qlineas.put(
                                 "cbsretiva",
-                                conn.getCampoDouble(
+                                conn.getCampoDoubleCamposVarios(
                                     "ke_doccti",
                                     "cbsretiva",
-                                    "documento",
-                                    listaDocumentos[i].documento
+                                    listOf("documento", "empresa"),
+                                    listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
                             qlineas.put(
                                 "cbsretflete",
-                                conn.getCampoDouble(
+                                conn.getCampoDoubleCamposVarios(
                                     "ke_doccti",
                                     "cbsretflete",
-                                    "documento",
-                                    listaDocumentos[i].documento
+                                    listOf("documento","empresa"),
+                                    listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
 
@@ -4088,31 +4088,31 @@ class CxcReportActivity : AppCompatActivity() {
                                     qlineas.put("codcliente", listaDocumentos[i].codcliente)
                                     qlineas.put(
                                         "nombrecli",
-                                        conn.getCampoString(
+                                        conn.getCampoStringCamposVarios(
                                             "cliempre",
                                             "nombre",
-                                            "codigo",
-                                            listaDocumentos[i].codcliente
+                                            listOf("codigo", "empresa"),
+                                            listOf(listaDocumentos[i].codcliente, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put("tasadoc", listaDocumentos[j].tasadoc)
                                     //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                                     qlineas.put(
                                         "cbsretiva",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretiva",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put(
                                         "cbsretflete",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretflete",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
@@ -4232,31 +4232,31 @@ class CxcReportActivity : AppCompatActivity() {
                                     qlineas.put("codcliente", listaDocumentos[i].codcliente)
                                     qlineas.put(
                                         "nombrecli",
-                                        conn.getCampoString(
+                                        conn.getCampoStringCamposVarios(
                                             "cliempre",
                                             "nombre",
-                                            "codigo",
-                                            listaDocumentos[i].codcliente
+                                            listOf("codigo", "empresa"),
+                                            listOf(listaDocumentos[i].codcliente, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put("tasadoc", listaDocumentos[j].tasadoc)
                                     //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                                     qlineas.put(
                                         "cbsretiva",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretiva",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     qlineas.put(
                                         "cbsretflete",
-                                        conn.getCampoDouble(
+                                        conn.getCampoDoubleCamposVarios(
                                             "ke_doccti",
                                             "cbsretflete",
-                                            "documento",
-                                            listaDocumentos[i].documento
+                                            listOf("documento", "empresa"),
+                                            listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
@@ -4816,31 +4816,31 @@ class CxcReportActivity : AppCompatActivity() {
                             qlineas.put("codcliente", listaDocumentos[i].codcliente)
                             qlineas.put(
                                 "nombrecli",
-                                conn.getCampoString(
+                                conn.getCampoStringCamposVarios(
                                     "cliempre",
                                     "nombre",
-                                    "codigo",
-                                    listaDocumentos[i].codcliente
+                                    listOf("codigo", "empresa"),
+                                    listOf(listaDocumentos[i].codcliente, codEmpresa!!)
                                 )
                             )
                             qlineas.put("tasadoc", listaDocumentos[j].tasadoc)
                             //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                             qlineas.put(
                                 "cbsretiva",
-                                conn.getCampoDouble(
+                                conn.getCampoDoubleCamposVarios(
                                     "ke_doccti",
                                     "cbsretiva",
-                                    "documento",
-                                    listaDocumentos[i].documento
+                                    listOf("documento", "empresa"),
+                                    listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
                             qlineas.put(
                                 "cbsretflete",
-                                conn.getCampoDouble(
+                                conn.getCampoDoubleCamposVarios(
                                     "ke_doccti",
                                     "cbsretflete",
-                                    "documento",
-                                    listaDocumentos[i].documento
+                                    listOf("documento","empresa"),
+                                    listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
                             keAndroid.insert("ke_precobradocs", null, qlineas)

@@ -313,7 +313,7 @@ class DocumentosActivity : AppCompatActivity() {
         builder.setTitle("Detalle del Doc. $documentoP")
         val lvDetalledoc = ListView(this@DocumentosActivity)
         //verLineasDocumento(documentoP)
-        lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc)
+        lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc!!)
         lvDetalledoc.adapter = lineasAdapter
         lineasAdapter!!.notifyDataSetChanged()
         builder.setView(lvDetalledoc)

@@ -76,7 +76,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val keAndroid = conn.writableDatabase
         //cargarEnlace()
 
-        enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
+        enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codEmpresa!!)
+        )
 
         checkForAppUpdate()
         setColors()
@@ -177,7 +182,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     //En caso de ser True (Hay error), el textView de aviso indicara que hay un error y ademas de atualizara la fecha de ultima sinroonizacion a una fecha 0 para no aceder
     //a ciertos modulos como catalogo y pedidos
     private fun analisisError() {
-        println("La variable -> $varAuxError")
         if (varAuxError) {
             val keAndroid = conn.writableDatabase
             try {
@@ -408,7 +412,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarDescuentosBancos(url: String) {
-        println(url)
         val keAndroid = conn.writableDatabase
         val descuentoBancoNube = ArrayList<String>()
         val descuentoBancoNube2 = ArrayList<String>()
@@ -487,7 +490,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarDescuentos(url: String) {
-        println(url)
         val keAndroid = conn.writableDatabase
         val descuentoNube = ArrayList<String?>()
         val jsonObjectRequest =
@@ -571,7 +573,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarPromociones(url: String) {
-        println(url)
         val keAndroid = conn.writableDatabase
         val imgNube = ArrayList<String?>()
         val jsonObjectRequest =
@@ -649,7 +650,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun bajarBancos(url: String) {
         val keAndroid = conn.writableDatabase
         val bancosNube = ArrayList<String?>()
-        println(url)
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -731,7 +731,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun bajarConfigExtra(url: String) {
         val keAndroid = conn.writableDatabase
-        println("Config -->$url")
 
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         //String fecha_error = ObtenerFechaPreError("fchhn_ultmod");

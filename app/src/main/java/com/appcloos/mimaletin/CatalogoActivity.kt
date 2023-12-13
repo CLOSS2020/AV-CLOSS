@@ -96,7 +96,12 @@ class CatalogoActivity : AppCompatActivity() {
         APP_ITEMS_NOTAS_ENTREGA = conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa).toInt()
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa)
 
-        enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa)
+        enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codEmpresa)
+        )
 
         //cargarEnlace()
         //declaro el listview
@@ -385,7 +390,6 @@ class CatalogoActivity : AppCompatActivity() {
                                                     codArticulo
                                                 )
                                                 val exisHist = comprobacion + cantidad
-                                                println("ESTA ES LA EXISTENCIA HISTORICA$exisHist")
                                                 if (exisHist > ventaMax) {
                                                     Toast.makeText(
                                                         this@CatalogoActivity,
@@ -403,8 +407,6 @@ class CatalogoActivity : AppCompatActivity() {
                                                     //las fechas formateadas
                                                     val fechaHoy = hoy.format(formatter)
                                                     val fechaVence = vencimiento.format(formatter)
-                                                    println(fechaHoy)
-                                                    println(fechaVence)
                                                     val descuentoTexto =
                                                         cajaDescuento.text.toString()
                                                     val aprobarDescuento = darDescuento.isChecked
@@ -491,7 +493,6 @@ class CatalogoActivity : AppCompatActivity() {
                                         //de no tener un limite de venta maxima, sigo y guardo el articulo.
                                     } else if (ventaMin > 0) {
                                         if (vtaMinenx == 1) {
-                                            println("hola " + cantidad * ventaMin + " " + existencia)
                                             if (cantidad * ventaMin > existencia) {
                                                 Toast.makeText(
                                                     this@CatalogoActivity,
@@ -500,9 +501,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                 ).show()
                                             } else if (cantidad * ventaMin <= existencia) {
                                                 val cantidadNew = (cantidad * ventaMin).toInt()
-                                                println("Nueva cantidad $cantidadNew")
                                                 var precioTotal = precio * cantidadNew
-                                                println("Precio total: $precioTotal")
                                                 precioTotal = precioTotal.valorReal()
                                                 val descuentoTexto = cajaDescuento.text.toString()
                                                 val aprobarDescuento = darDescuento.isChecked
@@ -544,7 +543,6 @@ class CatalogoActivity : AppCompatActivity() {
                                                         )
                                                         keAndroid.setTransactionSuccessful()
                                                         keAndroid.endTransaction()
-                                                        println("Precio: " + cantidad * ventaMin * precio)
                                                         //finish();
                                                         Toast.makeText(
                                                             this@CatalogoActivity,
@@ -609,7 +607,6 @@ class CatalogoActivity : AppCompatActivity() {
                                                         )
                                                         keAndroid.setTransactionSuccessful()
                                                         keAndroid.endTransaction()
-                                                        println(cantidad * ventaMin)
                                                         //finish();
                                                         Toast.makeText(
                                                             this@CatalogoActivity,
@@ -686,7 +683,6 @@ class CatalogoActivity : AppCompatActivity() {
                                     cursorF.moveToFirst()
                                     val cantidadCarritoFac = cursorF.getInt(0)
                                     cursorF.close()
-                                    println("El numero $cantidadCarritoFac")
                                     if (cantidadCarritoFac > APP_ITEMS_FACTURAS && factura!!) {
                                         finish()
                                     }

@@ -260,7 +260,7 @@ class CXCActivity : AppCompatActivity() {
             "bsretflete"
         )
         //var seleccion = "codvend='${cod_usuario}' AND edorec != 3 AND edorec != 8"
-        val seleccion = "codvend='${codUsuario}'"
+        val seleccion = "codvend='$codUsuario' AND empresa = '$codEmpresa'"
 
         cursorCobranza =
             keAndroid.query(tabla, columna, seleccion, null, null, null, "cxcndoc DESC")
@@ -269,7 +269,7 @@ class CXCActivity : AppCompatActivity() {
             val cursor = keAndroid.rawQuery(
                 "SELECT nombrecli FROM ke_precobradocs WHERE cxcndoc = '${
                     cursorCobranza.getString(0)
-                }';", null
+                } AND empresa = '$codEmpresa';", null
             )
 
             val cobranza = CXC()
@@ -321,8 +321,7 @@ class CXCActivity : AppCompatActivity() {
         edorec: String,
     ): String {
         return if ((compararFecha(fchrecibo) > 0) && (efectivo > 0) && (edorec != "9" && edorec != "10")) {
-            println("entro")
-            conn.upReciboCobroStatus(idRecibo)
+            conn.upReciboCobroStatus(idRecibo, codEmpresa!!)
             "3"
         } else {
             edorec
@@ -345,7 +344,7 @@ class CXCActivity : AppCompatActivity() {
 
         val tabla = "ke_precobranza"
         val columna = arrayOf("edorec")
-        val seleccion = "cxcndoc='${codigoRecibo}'"
+        val seleccion = "cxcndoc='$codigoRecibo' AND empresa = '$codEmpresa'"
 
         val cursorRecibo: Cursor =
             keAndroid.query(tabla, columna, seleccion, null, null, null, null)
@@ -385,7 +384,12 @@ class CXCActivity : AppCompatActivity() {
         builder.setNeutralButton("Generar Documento PDF") { _, _ ->
             //toast("Le di al boton")
             val validarCampo =
-                conn.getCampoString("ke_precobradocs", "codcliente", "cxcndoc", codigoRecibo)
+                conn.getCampoStringCamposVarios(
+                    "ke_precobradocs",
+                    "codcliente",
+                    listOf("cxcndoc", "empresa"),
+                    listOf(codigoRecibo, codEmpresa!!)
+                )
             if (validarCampo == "") {
                 toast("El recibo no debe ser de antes de la actualización 23.10.2023")
             } else {
@@ -410,9 +414,17 @@ class CXCActivity : AppCompatActivity() {
     }
 
     private fun borrarRecibo(codigoRecibo: String) {
-        keAndroid.delete("ke_precobranza", "cxcndoc = '$codigoRecibo'", null)
-        keAndroid.delete("ke_precobradocs", "cxcndoc = '$codigoRecibo'", null)
-        keAndroid.delete("ke_retimg", "cxcndoc = '$codigoRecibo'", null)
+        keAndroid.delete(
+            "ke_precobranza",
+            "cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa'",
+            null
+        )
+        keAndroid.delete(
+            "ke_precobradocs",
+            "cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa'",
+            null
+        )
+        keAndroid.delete("ke_retimg", "cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa'", null)
         clearAdapter()
     }
 
@@ -421,7 +433,7 @@ class CXCActivity : AppCompatActivity() {
 
         val tabla = "ke_precobranza"
         val columna = arrayOf("edorec")
-        val seleccion = "cxcndoc='${codigoRecibo}'"
+        val seleccion = "cxcndoc='$codigoRecibo' AND empresa = '$codEmpresa'"
 
         val cursorRecibo: Cursor =
             keAndroid.query(tabla, columna, seleccion, null, null, null, null)
@@ -489,7 +501,7 @@ class CXCActivity : AppCompatActivity() {
             val columna = arrayOf(
                 "cxcndoc," + "codvend," + "fchrecibo," + "bcomonto," + "moneda," + "efectivo," + "tasadia," + "kecxc_id," + "moneda," + "bcocod," + "bcoref," + "bstotal," + "doltotal, tiporecibo, (bsretiva + bsretflete)"
             )
-            val seleccion = "cxcndoc='${codigoRecibo}'"
+            val seleccion = "cxcndoc='$codigoRecibo' AND empresa = '$codEmpresa'"
 
             val cursorRecibo: Cursor =
                 keAndroid.query(tabla, columna, seleccion, null, null, null, null)
@@ -536,7 +548,7 @@ class CXCActivity : AppCompatActivity() {
 
                 val tablaT = "kecxc_tasas"
                 val columnaT = arrayOf("kecxc_fchyhora")
-                val seleccionT = "kecxc_id='${keCxcId}'"
+                val seleccionT = "kecxc_id='$keCxcId' AND empresa = '$codEmpresa'"
 
                 val cursorTasa: Cursor =
                     keAndroid.query(tablaT, columnaT, seleccionT, null, null, null, null)
@@ -599,7 +611,7 @@ class CXCActivity : AppCompatActivity() {
                 if (banco != "") {
                     val tablaBanco = "listbanc"
                     val columnaBanco = arrayOf("nombanco")
-                    val seleccionBanco = "codbanco='${banco}'"
+                    val seleccionBanco = "codbanco='$banco' AND empresa = '$codEmpresa'"
 
                     val cursorBanco: Cursor = keAndroid.query(
                         tablaBanco, columnaBanco, seleccionBanco, null, null, null, null
@@ -624,12 +636,8 @@ class CXCActivity : AppCompatActivity() {
                     codBanco = ""
                 }
 
-                println(
-                    "SELECT nombrecli, " + "documento, " + "codcliente, " + "tasadoc, " + "tnetodbs, " + "tnetoddol, " + "bsretiva, " + "bsretfte, " + "bsmtoiva, " + "bsmtofte, " + "refret, " + "refretfte, " + "reten, " + "prcdsctopp, " + "afavor, " + "kecxc_idd, " + "fchemiret, " + "fchemirfte " + "FROM ke_precobradocs " + "WHERE cxcndoc = '${codigoRecibo}';"
-                )
-
                 val cursorDocs = keAndroid.rawQuery(
-                    "SELECT nombrecli, " + "documento, " + "codcliente, " + "tasadoc, " + "tnetodbs, " + "tnetoddol, " + "bsretiva, " + "bsretfte, " + "bsmtoiva, " + "bsmtofte, " + "refret, " + "refretfte, " + "reten, " + "prcdsctopp, " + "afavor, " + "kecxc_idd, " + "fchemiret, " + "fchemirfte " + "FROM ke_precobradocs " + "WHERE cxcndoc = '${codigoRecibo}';",
+                    "SELECT nombrecli, " + "documento, " + "codcliente, " + "tasadoc, " + "tnetodbs, " + "tnetoddol, " + "bsretiva, " + "bsretfte, " + "bsmtoiva, " + "bsmtofte, " + "refret, " + "refretfte, " + "reten, " + "prcdsctopp, " + "afavor, " + "kecxc_idd, " + "fchemiret, " + "fchemirfte " + "FROM ke_precobradocs " + "WHERE cxcndoc = '${codigoRecibo} AND empresa = '$codEmpresa';",
                     null
                 )
                 while (cursorDocs.moveToNext()) {
@@ -904,16 +912,22 @@ class CXCActivity : AppCompatActivity() {
 
             //ESTAS INTENTANDO QUE LA SUMA DEL DOCUMENTO EN BS Y DOLARES ESTE BIEN EN LA MONEDA QUE SE SOLICITA
             for (i in listaDocumentos.indices) {
-                val campoWhere: List<String> = listOf("cxcndoc", "documento")
-                val respuestaWhere: List<String> = listOf(codigoRecibo, listaDocumentos[i])
-                val retenIvaBD = conn.getCampoDoubleV(
+                val campoWhere: List<String> = listOf("cxcndoc", "documento", "empresa")
+                val respuestaWhere: List<String> =
+                    listOf(codigoRecibo, listaDocumentos[i], codEmpresa!!)
+                val retenIvaBD = conn.getCampoDoubleCamposVarios(
                     "ke_precobradocs",
                     "bsretiva",
                     campoWhere,
                     respuestaWhere
                 ) // <--------- ya los buscastes anteriormente
                 val retenFleteBD =
-                    conn.getCampoDoubleV("ke_precobradocs", "bsretfte", campoWhere, respuestaWhere)
+                    conn.getCampoDoubleCamposVarios(
+                        "ke_precobradocs",
+                        "bsretfte",
+                        campoWhere,
+                        respuestaWhere
+                    )
 
                 val valorCobrado = if (moneda == "Dólar") cobradoDol[i] else cobradoBS[i]
                 val ivaCobrado = validarMoneda(
@@ -1034,7 +1048,12 @@ class CXCActivity : AppCompatActivity() {
                 paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
                 canvas.drawText(codUsuario!!, 90f, counter + 55, paint)
                 canvas.drawText(
-                    conn.getCampoString("usuarios", "nombre", "vendedor", codUsuario!!),
+                    conn.getCampoStringCamposVarios(
+                        "usuarios",
+                        "nombre",
+                        listOf("vendedor", "empresa"),
+                        listOf(codUsuario!!, codEmpresa!!)
+                    ),
                     25f,
                     counter + 70,
                     paint
@@ -1156,7 +1175,8 @@ class CXCActivity : AppCompatActivity() {
             0.0 //<- retorno
         } else {
             val cursor = keAndroid.rawQuery(
-                "SELECT $campo FROM ke_precobradocs WHERE documento = '$documento'", null
+                "SELECT $campo FROM ke_precobradocs WHERE documento = '$documento' AND empresa = '$codEmpresa'",
+                null
             )
             val regreso: Double = if (cursor.moveToFirst()) {
                 cursor.getDouble(0) //<- valor adquirido por "regreso"
@@ -1241,8 +1261,6 @@ class CXCActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
-                println("error")
-                println("Error -> $e")
             }
         }
 
@@ -1259,7 +1277,7 @@ class CXCActivity : AppCompatActivity() {
         val tabla = "ke_precobranza"
         val columna = arrayOf("cxcndoc," + "fchvigen")
         val seleccion =
-            "fchvigen < DATE('now') AND codvend='${codUsuario}' AND edorec != 3 AND edorec != 8"
+            "fchvigen < DATE('now') AND codvend='$codUsuario' AND empresa = '$codEmpresa' AND edorec != 3 AND edorec != 8"
 
         cursorCobranza = keAndroid.query(tabla, columna, seleccion, null, null, null, null)
 
@@ -1268,7 +1286,12 @@ class CXCActivity : AppCompatActivity() {
             val cvEdo = ContentValues()
             cvEdo.put("edorec", "3")
 
-            keAndroid.update("ke_precobranza", cvEdo, "cxcndoc ='$idRecibo}'", null)
+            keAndroid.update(
+                "ke_precobranza",
+                cvEdo,
+                "cxcndoc ='$idRecibo' AND empresa = '$codEmpresa'",
+                null
+            )
         }
     }
 
@@ -1298,7 +1321,6 @@ class CXCActivity : AppCompatActivity() {
         //vence = fecha = 0
         //vence < fecha = -1
 
-        println(firstDate.compareTo(secondDate))
 
         return firstDate.compareTo(secondDate)
 

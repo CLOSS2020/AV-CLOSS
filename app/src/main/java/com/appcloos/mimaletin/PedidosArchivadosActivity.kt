@@ -44,7 +44,7 @@ class PedidosArchivadosActivity : AppCompatActivity() {
                     "datetime('now','start of month','-1 day') as finalmes"
         )
         val condicion =
-            "kti_codven = '$codUsuario' AND kti_fchdoc BETWEEN principiomes AND finalmes"
+            "kti_codven = '$codUsuario' AND empresa = '$codEmpresa' AND kti_fchdoc BETWEEN principiomes AND finalmes"
         val cursor = keAndroid!!.query(tabla, consulta, condicion, null, null, null, null)
         while (cursor.moveToNext()) {
             val pedidos = Pedidos()
