@@ -91,6 +91,8 @@ class EdoGenCuentaFragment : Fragment() {
     var cdretflete = 0.00
     var retmun_mto = 0.00
 
+    private lateinit var codEmpresa: String
+
     var kti_negesp: Int = 0
 
     private lateinit var searchView: SearchView
@@ -115,12 +117,13 @@ class EdoGenCuentaFragment : Fragment() {
 
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
+        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
 
         conn = AdminSQLiteOpenHelper(context, "ke_android", null)
         ke_android = conn.writableDatabase
         cargarEnlace()
 
-        listaEstadoGen = conn.getEdoGenCuenta(cod_usuario!!, null)
+        listaEstadoGen = conn.getEdoGenCuenta(cod_usuario!!, null, codEmpresa)
         binding.rvEstadoGencxc.setHasFixedSize(true)
         binding.rvEstadoGencxc.layoutManager = LinearLayoutManager(requireContext())
 
@@ -137,7 +140,15 @@ class EdoGenCuentaFragment : Fragment() {
         val columnas = arrayOf(
             "kee_nombre," + "kee_url," + "kee_sucursal"
         )
-        val cursor = ke_android.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = ke_android.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -326,7 +337,7 @@ class EdoGenCuentaFragment : Fragment() {
 
     private fun consultarEstadoClientes(text: String?) {
         listaEstadoGen.clear()
-        listaEstadoGen = conn.getEdoGenCuenta(cod_usuario!!, text)
+        listaEstadoGen = conn.getEdoGenCuenta(cod_usuario!!, text, codEmpresa)
         adapter.updateAdapter(listaEstadoGen)
     }
 

@@ -27,7 +27,6 @@ import com.appcloos.mimaletin.CxcReportActivity
 import com.appcloos.mimaletin.Documentos
 import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.colorButtonAgencia
-import com.appcloos.mimaletin.colorTextAgencia
 import com.appcloos.mimaletin.databinding.FragmentEdoCuentaClienteBinding
 import com.appcloos.mimaletin.setDrawableHeadAgencia
 import java.text.SimpleDateFormat
@@ -444,7 +443,8 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
         listadocs = ArrayList()
         docsViejos = ArrayList()
         val cursorDocs = ke_android.rawQuery(
-            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev FROM ke_doccti WHERE codcliente ='$codigoCliente' AND estatusdoc != '2' AND (dtotalfinal - (dtotpagos + dtotdev)) > 0.00",
+            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev FROM ke_doccti " +
+                    "WHERE codcliente ='$codigoCliente' AND estatusdoc != '2' AND (dtotalfinal - (dtotpagos + dtotdev)) > 0.00 AND empresa = '$codEmpresa'",
             null
         )
 
@@ -501,7 +501,15 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
     private fun cargarEnlace() {
         ke_android = conn.writableDatabase
         val columnas = arrayOf("kee_nombre," + "kee_url," + "kee_sucursal")
-        val cursorE: Cursor = ke_android.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursorE: Cursor = ke_android.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
 
         while (cursorE.moveToNext()) {
             nombreEmpresa = cursorE.getString(0)

@@ -12,9 +12,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
 import android.widget.SearchView
-import android.widget.TextView
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -24,7 +22,6 @@ import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.databinding.FragmentPlanificadorCxcBinding
 import com.appcloos.mimaletin.moduloCXC.fragments.planificadorCXCAdapter.PlanificadorCXCAdapter
 import com.appcloos.mimaletin.moduloCXC.viewmodel.PlanificadorCxc
-import java.lang.reflect.Field
 
 
 class PlanificadorCXCFragment : Fragment() {
@@ -135,7 +132,7 @@ class PlanificadorCXCFragment : Fragment() {
         ke_android = conn.writableDatabase
         cargarEnlace()
 
-        listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, null)
+        listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, null, codEmpresa!!)
         binding.rvPlanModulCXC.setHasFixedSize(true)
         binding.rvPlanModulCXC.layoutManager = LinearLayoutManager(requireContext())
         //cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
@@ -171,7 +168,15 @@ class PlanificadorCXCFragment : Fragment() {
         val columnas = arrayOf(
             "kee_nombre," + "kee_url," + "kee_sucursal"
         )
-        val cursor = ke_android.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = ke_android.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -183,7 +188,7 @@ class PlanificadorCXCFragment : Fragment() {
 
     private fun consultarDocs(text: String?) {
         listaPlanificadorCxc.clear()
-        listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, text)
+        listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, text, codEmpresa!!)
         adapter.updateAdapter(listaPlanificadorCxc)
     }
 

@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.icu.text.DecimalFormat
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.Html
@@ -256,7 +255,8 @@ class CxcReportActivity : AppCompatActivity() {
         listaDocsSeleccionados = intent.getStringArrayListExtra("listaDocs") as ArrayList<String>
         //validacion del correlativo para la cobranza
         val cursorCorrelativo = keAndroid.rawQuery(
-            "SELECT MAX(kcor_numero) FROM ke_corprec WHERE kcor_vendedor ='$codUsuario'", null
+            "SELECT MAX(kcor_numero) FROM ke_corprec " +
+                    "WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'", null
         )
         //----
         if (cursorCorrelativo.moveToFirst()) {
@@ -1187,7 +1187,8 @@ class CxcReportActivity : AppCompatActivity() {
 
     private fun verificarSiHayDescuentos(documento: String): Boolean {
         val cursorDesc: Cursor = keAndroid.rawQuery(
-            "SELECT edodcto FROM ke_precobdcto WHERE documento = '${documento}'", null
+            "SELECT edodcto FROM ke_precobdcto WHERE documento = '$documento AND empresa = '$codEmpresa''",
+            null
         )
         return if (cursorDesc.count > 0) {
             cursorDesc.close()
@@ -1215,7 +1216,8 @@ class CxcReportActivity : AppCompatActivity() {
         }
 
         val cursorBancos: Cursor = keAndroid.rawQuery(
-            "SELECT DISTINCT codbanco, nombanco,cuentanac, inactiva, fechamodifi FROM listbanc " + "WHERE inactiva = 0 AND cuentanac = $moneda",
+            "SELECT DISTINCT codbanco, nombanco,cuentanac, inactiva, fechamodifi FROM listbanc " +
+                    "WHERE inactiva = 0 AND cuentanac = $moneda AND empresa = '$codEmpresa'",
             null
         )
         while (cursorBancos.moveToNext()) {
@@ -2462,6 +2464,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     "complemento",
                                     if (binding.cbCxcComplemento.isChecked) nroComplemento else ""
                                 )
+                                qcabecera.put("empresa", codEmpresa!!)
                                 //qcabecera.put("docdifcamb",diferencialCambiario)
 
                                 for (j in listaReciboPrLineas.indices) {
@@ -2517,6 +2520,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
+                                    qlineas.put("empresa", codEmpresa!!)
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
                                 }
                             }
@@ -2525,11 +2529,13 @@ class CxcReportActivity : AppCompatActivity() {
                             val qcorrelativo = ContentValues()
                             qcorrelativo.put("kcor_numero", nroCorrelativo)
                             qcorrelativo.put("kcor_vendedor", codUsuario)
+                            qcorrelativo.put("empresa", codEmpresa!!)
 
                             conn.saveImg(
                                 listaImagenes,
                                 nroPrecobranza,
-                                this
+                                this,
+                                codEmpresa!!
                             ) // <-- Guardando Imagenes
 
                             keAndroid.insert("ke_corprec", null, qcorrelativo)
@@ -2617,6 +2623,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     "complemento",
                                     if (binding.cbCxcComplemento.isChecked) nroPrecobranza else ""
                                 )
+                                qcabecera.put("empresa", codEmpresa!!)
                                 //qcabecera.put("docdifcamb",diferencialCambiario)
 
                                 for (j in listaReciboCmLineas.indices) {
@@ -2661,6 +2668,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
+                                    qlineas.put("empresa", codEmpresa!!)
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
                                 }
 
@@ -2713,6 +2721,7 @@ class CxcReportActivity : AppCompatActivity() {
                                                 listaDocumentos[i].vence
                                             )
                                             qdescuentos.put("fechamodifi", fechaActual)
+                                            qdescuentos.put("empresa", codEmpresa!!)
                                             //inserción de descuentos de tenerlos
                                             keAndroid.insert("ke_precobdcto", null, qdescuentos)
                                         }
@@ -2724,6 +2733,7 @@ class CxcReportActivity : AppCompatActivity() {
                             val qcorrelativo = ContentValues()
                             qcorrelativo.put("kcor_numero", nroCorrelativoCom)
                             qcorrelativo.put("kcor_vendedor", codUsuario)
+                            qcorrelativo.put("empresa", codEmpresa!!)
 
                             keAndroid.insert("ke_corprec", null, qcorrelativo)
                             llCommit = true
@@ -3178,6 +3188,7 @@ class CxcReportActivity : AppCompatActivity() {
                             "complemento",
                             if (binding.cbCxcComplemento.isChecked) nroComplemento else ""
                         )
+                        qcabecera.put("empresa", codEmpresa!!)
                         //qcabecera.put("docdifcamb",diferencialCambiario)
 
                         for (j in listaReciboPrLineas.indices) {
@@ -3236,6 +3247,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
+                            qlineas.put("empresa", codEmpresa!!)
 
                             keAndroid.insert("ke_precobradocs", null, qlineas)
                         }
@@ -3271,6 +3283,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     qdescuentos.put("codcliente", listaDocumentos[i].codcliente)
                                     qdescuentos.put("fchvigen", listaDocumentos[i].vence)
                                     qdescuentos.put("fechamodifi", fechaActual)
+                                    qdescuentos.put("empresa", codEmpresa!!)
                                     //inserción de descuentos de tenerlos
                                     keAndroid.insert("ke_precobdcto", null, qdescuentos)
                                 }
@@ -3278,11 +3291,17 @@ class CxcReportActivity : AppCompatActivity() {
                         }
                     }
 
-                    conn.saveImg(listaImagenes, nroPrecobranza, this) // <-- Guardando Imagenes
+                    conn.saveImg(
+                        listaImagenes,
+                        nroPrecobranza,
+                        this,
+                        codEmpresa!!
+                    ) // <-- Guardando Imagenes
 
                     val qcorrelativo = ContentValues()
                     qcorrelativo.put("kcor_numero", nroCorrelativo)
                     qcorrelativo.put("kcor_vendedor", codUsuario)
+                    qcorrelativo.put("empresa", codEmpresa!!)
 
                     keAndroid.insert("ke_corprec", null, qcorrelativo)
 
@@ -4060,6 +4079,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     "complemento",
                                     if (binding.cbCxcComplemento.isChecked) nroComplemento else ""
                                 )
+                                qcabecera.put("empresa", codEmpresa!!)
                                 //qcabecera.put("docdifcamb",diferencialCambiario)
 
                                 for (j in listaReciboPrLineas.indices) {
@@ -4115,6 +4135,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
+                                    qlineas.put("empresa", codEmpresa!!)
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
                                 }
                             }
@@ -4124,12 +4145,14 @@ class CxcReportActivity : AppCompatActivity() {
                             conn.saveImg(
                                 listaImagenes,
                                 nroPrecobranza,
-                                this
+                                this,
+                                codEmpresa!!
                             ) // <-- Guardando Imagenes
 
                             val qcorrelativo = ContentValues()
                             qcorrelativo.put("kcor_numero", nroCorrelativo)
                             qcorrelativo.put("kcor_vendedor", codUsuario)
+                            qcorrelativo.put("empresa", codEmpresa!!)
 
                             keAndroid.insert("ke_corprec", null, qcorrelativo)
                             llCommit = true
@@ -4215,6 +4238,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     "complemento",
                                     if (binding.cbCxcComplemento.isChecked) nroPrecobranza else ""
                                 )
+                                qcabecera.put("empresa", codEmpresa!!)
                                 //qcabecera.put("docdifcamb",diferencialCambiario)
 
                                 for (j in listaReciboCmLineas.indices) {
@@ -4259,6 +4283,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             listOf(listaDocumentos[i].documento, codEmpresa!!)
                                         )
                                     )
+                                    qlineas.put("empresa", codEmpresa!!)
                                     keAndroid.insert("ke_precobradocs", null, qlineas)
                                 }
 
@@ -4279,6 +4304,7 @@ class CxcReportActivity : AppCompatActivity() {
                             val qcorrelativo = ContentValues()
                             qcorrelativo.put("kcor_numero", nroCorrelativoCom)
                             qcorrelativo.put("kcor_vendedor", codUsuario)
+                            qcorrelativo.put("empresa", codEmpresa!!)
 
                             keAndroid.insert("ke_corprec", null, qcorrelativo)
                             llCommit = true
@@ -4784,6 +4810,7 @@ class CxcReportActivity : AppCompatActivity() {
                             "complemento",
                             if (binding.cbCxcComplemento.isChecked) nroComplemento else ""
                         )
+                        qcabecera.put("empresa", codEmpresa!!)
                         //qcabecera.put("docdifcamb",diferencialCambiario)
 
 
@@ -4843,6 +4870,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
+                            qlineas.put("empresa", codEmpresa!!)
                             keAndroid.insert("ke_precobradocs", null, qlineas)
                         }
                     }
@@ -4861,11 +4889,17 @@ class CxcReportActivity : AppCompatActivity() {
                     )
                     keAndroid.insert("ke_precobranza", null, qcabecera)
 
-                    conn.saveImg(listaImagenes, nroPrecobranza, this) // <-- Guardando Imagenes
+                    conn.saveImg(
+                        listaImagenes,
+                        nroPrecobranza,
+                        this,
+                        codEmpresa!!
+                    ) // <-- Guardando Imagenes
 
                     val qcorrelativo = ContentValues()
                     qcorrelativo.put("kcor_numero", nroCorrelativo)
                     qcorrelativo.put("kcor_vendedor", codUsuario)
+                    qcorrelativo.put("empresa", codEmpresa!!)
 
                     keAndroid.insert("ke_corprec", null, qcorrelativo)
                     llCommit = true
@@ -4908,7 +4942,8 @@ class CxcReportActivity : AppCompatActivity() {
             return 0
         }
         val cursor = keAndroid.rawQuery(
-            "SELECT COUNT(*) FROM $tabla WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco';",
+            "SELECT COUNT(*) FROM $tabla " +
+                    "WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco' AND empresa = '$codEmpresa';",
             null
         )
         if (cursor.moveToFirst()) {
@@ -4975,7 +5010,7 @@ class CxcReportActivity : AppCompatActivity() {
             * selecciona el correlativo del pago principal (en caso de no haber complemento), o el correlativo del complemento (en caso de haber un complemento)
             * selecciona siempre el ultimo documento de la lista de documentos seleccionados a pagar
             * */
-            keAndroid.execSQL("UPDATE ke_precobradocs SET afavor= '${valorReal((ingresoPrincipal + ingresoComplemento) - totalReal)}' WHERE cxcndoc='$cxcndoc' AND documento = '$documento';")
+            keAndroid.execSQL("UPDATE ke_precobradocs SET afavor= '${valorReal((ingresoPrincipal + ingresoComplemento) - totalReal)}' WHERE cxcndoc='$cxcndoc' AND documento = '$documento' AND empresa = '$codEmpresa';")
             //keAndroid.execSQL("UPDATE ke_precobranza SET netocob='${valorReal(valorReal(total.text.toString().toDouble()) + valorReal((ingresoPrincipal + ingresoComplemento) - totalReal))}' WHERE cxcndoc='$cxcndoc';")
         }
     }
@@ -5097,9 +5132,11 @@ class CxcReportActivity : AppCompatActivity() {
                         qDescuentos.put("montodctodol", montodctodol)
                         qDescuentos.put("tasadoc", tasadoc)
                         qDescuentos.put("fechamodifi", fechamodifi)
+                        qDescuentos.put("empresa", codEmpresa!!)
 
                         val qcodigoLocal: Cursor = keAndroid.rawQuery(
-                            "SELECT count(documento) FROM ke_precobdcto WHERE documento ='${documento}'",
+                            "SELECT count(documento) FROM ke_precobdcto " +
+                                    "WHERE documento ='documento' AND empresa = '$codEmpresa'",
                             null
                         )
                         qcodigoLocal.moveToFirst()
@@ -5386,7 +5423,8 @@ class CxcReportActivity : AppCompatActivity() {
         var cantretsparme = 0
         var cdretflete = 0.00
         val cursor: Cursor = keAndroid.rawQuery(
-            "SELECT contribespecial FROM cliempre WHERE codigo= '$codigoCliente'", null
+            "SELECT contribespecial FROM cliempre " +
+                    "WHERE codigo= '$codigoCliente' AND empresa = '$codEmpresa'", null
         )
         var esConEspecial = "0"
 
@@ -5628,7 +5666,7 @@ class CxcReportActivity : AppCompatActivity() {
         val query = arrayOf("sum(montocli)")
         val tabla = "ke_mtopendcli"
         val condicion =
-            "moneda ='1' AND codcliente='${codigoCliente}' AND estado = '0' AND edoweb ='1'"
+            "moneda ='1' AND codcliente='$codigoCliente' AND empresa = '$codEmpresa' AND estado = '0' AND edoweb ='1'"
 
         val cursorMto: Cursor = keAndroid.query(tabla, query, condicion, null, null, null, null)
 
@@ -5680,7 +5718,7 @@ class CxcReportActivity : AppCompatActivity() {
         )
         val tabla = "ke_doccti"
         val condicion =
-            "documento IN (" + listadocs.toString().replace("[", "").replace("]", "") + ")"
+            "empresa = '$codEmpresa' AND documento IN (" + listadocs.toString().replace("[", "").replace("]", "") + ")"
         val cursorDocs: Cursor =
             keAndroid.query(tabla, query, condicion, null, null, null, null)
 
@@ -6055,7 +6093,9 @@ class CxcReportActivity : AppCompatActivity() {
             var tasas: tasas
 
             val cursorTasas: Cursor = keAndroid.rawQuery(
-                "SELECT kecxc_id, kecxc_fecha, kecxc_tasa, kecxc_fchyhora, kecxc_tasaib FROM kecxc_tasas WHERE kecxc_fchyhora LIKE '%$fechaQuery%' ORDER BY kecxc_fchyhora DESC LIMIT 1",
+                "SELECT kecxc_id, kecxc_fecha, kecxc_tasa, kecxc_fchyhora, kecxc_tasaib FROM kecxc_tasas " +
+                        "WHERE kecxc_fchyhora LIKE '%$fechaQuery%' AND empresa = '$codEmpresa' " +
+                        "ORDER BY kecxc_fchyhora DESC LIMIT 1",
                 null
             )
 
@@ -6281,9 +6321,11 @@ class CxcReportActivity : AppCompatActivity() {
                             qTasas.put("kecxc_fchyhora", fechayHoraTasa)
                             qTasas.put("fechamodifi", fechamodifitasa)
                             qTasas.put("kecxc_tasaib", tasaInterbancaria)
+                            qTasas.put("empresa", codEmpresa!!)
 
                             val qcodigoLocal: Cursor = keAndroid.rawQuery(
-                                "SELECT count(kecxc_id) FROM kecxc_tasas WHERE kecxc_id ='$idTasa'",
+                                "SELECT count(kecxc_id) FROM kecxc_tasas " +
+                                        "WHERE kecxc_id ='$idTasa' AND empresa = '$codEmpresa'",
                                 null
                             )
                             qcodigoLocal.moveToFirst()
@@ -6426,7 +6468,8 @@ class CxcReportActivity : AppCompatActivity() {
         }
 
         val cursorBancos: Cursor = keAndroid.rawQuery(
-            "SELECT DISTINCT codbanco, nombanco,cuentanac, inactiva, fechamodifi FROM listbanc " + "WHERE inactiva = 0 AND cuentanac = $moneda",
+            "SELECT DISTINCT codbanco, nombanco, cuentanac, inactiva, fechamodifi FROM listbanc " +
+                    "WHERE inactiva = '0' AND cuentanac = '$moneda' AND empresa = '$codEmpresa'",
             null
         )
         while (cursorBancos.moveToNext()) {

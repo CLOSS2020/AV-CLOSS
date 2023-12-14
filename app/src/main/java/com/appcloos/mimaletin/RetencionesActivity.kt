@@ -230,7 +230,8 @@ class RetencionesActivity : AppCompatActivity(), RetencionesAdapter.RetHolder.Qu
             }
 
             val cursor: Cursor = keAndroid.rawQuery(
-                "SELECT $valorRetencion FROM ke_doccti WHERE documento= '$nroDoc'", null
+                "SELECT $valorRetencion FROM ke_doccti " +
+                        "WHERE documento= '$nroDoc' AND empresa = '$codEmpresa'", null
             )
 
             cursor.moveToFirst()

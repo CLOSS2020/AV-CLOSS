@@ -821,6 +821,9 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                 alterarTablas(keAndroid, "ke_tabdctos")
                 alterarTablas(keAndroid, "ke_tabdctosbcos")
 
+                alterarTablas(keAndroid, "ke_retimg")
+                alterarTablas(keAndroid, "ke_corprec")
+
                 keAndroid.setTransactionSuccessful()
 
             } catch (e: SQLException) {
@@ -1658,11 +1661,12 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getPlanificadorDocs(codUsuario: String, text: String?): ArrayList<PlanificadorCxc> {
+    fun getPlanificadorDocs(codUsuario: String, text: String?, codEmpresa: String): ArrayList<PlanificadorCxc> {
         val retorno = ArrayList<PlanificadorCxc>()
         val db = this.writableDatabase
         var sql =
-            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) > 0.00"
+            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento " +
+                    "WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) > 0.00 AND ke_doccti.empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
             sql += " AND (nombrecli LIKE '%$text%' OR documento LIKE '%$text%')"
         }
@@ -1699,11 +1703,12 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getEdoGenCuenta(codUsuario: String, text: String?): ArrayList<EdoGeneralCxc> {
+    fun getEdoGenCuenta(codUsuario: String, text: String?, codEmpresa: String): ArrayList<EdoGeneralCxc> {
         val retorno = ArrayList<EdoGeneralCxc>()
         val db = this.writableDatabase
         var sql =
-            "SELECT DISTINCT  codcliente, nombrecli, SUM(dtotalfinal - (dtotpagos + dtotdev)) as montototal, MIN(vence), ROUND(JULIANDAY('now') - JULIANDAY(MIN(vence))) as fechaentregaantigua FROM ke_doccti WHERE estatusdoc < '2' AND vendedor = '$codUsuario'"
+            "SELECT DISTINCT  codcliente, nombrecli, SUM(dtotalfinal - (dtotpagos + dtotdev)) as montototal, MIN(vence), ROUND(JULIANDAY('now') - JULIANDAY(MIN(vence))) as fechaentregaantigua FROM ke_doccti " +
+                    "WHERE estatusdoc < '2' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
             sql += " AND (nombrecli LIKE '%$$text%' OR codcliente LIKE '%$text%')"
         }
@@ -1953,7 +1958,8 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
     fun saveImg(
         listaImagenes: List<Uri>,
         numCXC: String,
-        activity: AppCompatActivity = AppCompatActivity()
+        activity: AppCompatActivity = AppCompatActivity(),
+        codEmpresa: String
     ) {
 
         val db = this.writableDatabase
@@ -1971,6 +1977,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                 cv.put("cxcndoc", numCXC)
                 cv.put("ruta", cadena)
                 cv.put("ret_nomimg", numCXC + "_" + i)
+                cv.put("empresa", codEmpresa)
 
                 bitmap.recycle()
 

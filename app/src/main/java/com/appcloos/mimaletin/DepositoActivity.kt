@@ -64,7 +64,7 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
 
         val tabla = "ke_precobranza"
         val columna = arrayOf("cxcndoc," + "fchrecibo," + "edorec," + "efectivo")
-        val seleccion = "codvend='${codUsuario}' AND edorec != '3' AND edorec != '4' " +
+        val seleccion = "codvend='$codUsuario' AND empresa = '$codEmpresa' AND edorec != '3' AND edorec != '4' " +
                 "AND edorec !='8' AND edorec !='9' AND edorec !='10' AND efectivo > 0.00 "
 
         cursorCobranza = keAndroid.query(tabla, columna, seleccion, null, null, null, null)

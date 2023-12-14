@@ -103,7 +103,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
 
         val cursorCorrelativo = keAndroid.rawQuery(
-            "SELECT MAX(kcor_numero) FROM ke_corprec WHERE kcor_vendedor ='$codUsuario'",
+            "SELECT MAX(kcor_numero) FROM ke_corprec WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'",
             null
         )
         //----
@@ -261,7 +261,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
         //RECORRO LAS LINEAS DE LOS NUEVOS DOCS.
         //for(i in listaRecibos.indices){
         val cursorH: Cursor = keAndroid.rawQuery(
-            "SELECT * FROM ke_precobradocs WHERE cxcndoc IN (" + recibosSelecc.toString()
+            "SELECT * FROM ke_precobradocs WHERE empresa = '$codEmpresa' AND cxcndoc IN (" + recibosSelecc.toString()
                 .replace("[", "").replace("]", "") + ")", null
         )
 
@@ -389,6 +389,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 qcabecera.put("fchvigen", listaCabeceraNueva[i].fchvigen)
                 qcabecera.put("bsretflete", listaCabeceraNueva[i].bsretflete)
                 qcabecera.put("fechamodifi", getFechaHoy())
+                qcabecera.put("empresa", codEmpresa)
 
                 for (j in listaLineasNueva.indices) {
                     qlineas.put("cxcndoc", listaLineasNueva[j].id_recibo)
@@ -457,17 +458,25 @@ class CreacionDepositoActivity : AppCompatActivity() {
                             listOf(listaLineasNueva[j].documento, codEmpresa!!)
                         )
                     )
+                    qlineas.put("empresa", codEmpresa)
+
                     //qlineas.put("monto_aux_pdf", listaRecibos[j].efectivo)
                     keAndroid.insert("ke_precobradocs", null, qlineas)
                 }
 
                 keAndroid.insert("ke_precobranza", null, qcabecera)
 
-                conn.saveImg(listaImagenes, nroDeposito, this) // <-- Guardando imagenes
+                conn.saveImg(
+                    listaImagenes,
+                    nroDeposito,
+                    this,
+                    codEmpresa!!
+                ) // <-- Guardando imagenes
 
                 val qcorrelativo = ContentValues()
                 qcorrelativo.put("kcor_numero", nroCorrelativo)
                 qcorrelativo.put("kcor_vendedor", codUsuario)
+                qcorrelativo.put("empresa", codEmpresa)
 
                 keAndroid.insert("ke_corprec", null, qcorrelativo)
 
@@ -479,7 +488,8 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 keAndroid.update(
                     "ke_precobranza",
                     estado,
-                    "cxcndoc IN (" + recibosSelecc.toString().replace("[", "")
+                    "empresa = '$codEmpresa' AND cxcndoc IN (" + recibosSelecc.toString()
+                        .replace("[", "")
                         .replace("]", "") + ")",
                     null
                 )
@@ -553,7 +563,8 @@ class CreacionDepositoActivity : AppCompatActivity() {
         )
         val tabla = "ke_precobranza"
         val condicion =
-            "cxcndoc IN (" + listaRecibosSel.toString().replace("[", "").replace("]", "") + ")"
+            "empresa = '$codEmpresa' AND cxcndoc IN (" + listaRecibosSel.toString().replace("[", "")
+                .replace("]", "") + ")"
 
         val cursorRec: Cursor = keAndroid.query(tabla, query, condicion, null, null, null, null)
 
@@ -647,9 +658,11 @@ class CreacionDepositoActivity : AppCompatActivity() {
                             qBancos.put("codbanco", codbanco)
                             qBancos.put("nombanco", nombanco)
                             qBancos.put("cuentanac", cuentanac)
+                            qBancos.put("empresa", codEmpresa)
 
                             val qcodigoLocal: Cursor = keAndroid.rawQuery(
-                                "SELECT count(codbanco) FROM listbanc WHERE codbanco ='$codbanco'",
+                                "SELECT count(codbanco) FROM listbanc " +
+                                        "WHERE codbanco ='$codbanco' AND empresa = '$codEmpresa'",
                                 null
                             )
                             qcodigoLocal.moveToFirst()
@@ -659,7 +672,10 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
                             if (codigoExistente > 0) {
                                 keAndroid.update(
-                                    "listbanc", qBancos, "codbanco= ?", arrayOf(codbanco)
+                                    "listbanc",
+                                    qBancos,
+                                    "codbanco= ? AND empresa = ?",
+                                    arrayOf(codbanco, codEmpresa!!)
                                 )
                             } else if (codigoExistente == 0) {
                                 keAndroid.insert("listbanc", null, qBancos)
@@ -713,7 +729,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
         val cursorBancos: Cursor = keAndroid.rawQuery(
             "SELECT DISTINCT codbanco, nombanco,cuentanac, inactiva, fechamodifi FROM listbanc " +
-                    "WHERE inactiva = 0 AND cuentanac = $moneda AND codbanco != '99'",
+                    "WHERE inactiva = 0 AND cuentanac = $moneda AND empresa = '$codEmpresa'",
             null
         )
         while (cursorBancos.moveToNext()) {
@@ -786,7 +802,8 @@ class CreacionDepositoActivity : AppCompatActivity() {
         codigoBanco: String
     ): Int {
         val cursor = keAndroid.rawQuery(
-            "SELECT COUNT(*) FROM $tabla WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco';",
+            "SELECT COUNT(*) FROM $tabla " +
+                    "WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco' AND empresa = '$codEmpresa';",
             null
         )
         if (cursor.moveToFirst()) {
