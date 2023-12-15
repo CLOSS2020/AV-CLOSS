@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/BasicStyleElementRecicleView2">
@@ -9,9 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_marginTop="2dp"
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="3dp"
+        android:paddingVertical="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,6 +27,7 @@
             android:layout_marginEnd="5dp"
             android:text="id del recibo"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView5"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,22 +37,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="2dp"
             android:text="Monto:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/imageView5"
-            app:layout_constraintTop_toBottomOf="@+id/tv_id_recibo_efectivo" />
-
-        <TextView
-            android:id="@+id/textView60"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="2dp"
-            android:text="Fecha:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            app:layout_constraintStart_toEndOf="@+id/imageView5"
-            app:layout_constraintTop_toBottomOf="@+id/textView59" />
+            app:layout_constraintTop_toTopOf="@+id/tv_monto_recibo_efectivo" />
 
         <TextView
             android:id="@+id/tv_monto_recibo_efectivo"
@@ -66,17 +57,52 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_id_recibo_efectivo" />
 
         <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Cliente:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toTopOf="@+id/tvNombreInfo" />
+
+        <TextView
+            android:id="@+id/tvNombreInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="5dp"
+            android:alpha="0.75"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/cb_recibo_selec_efectivo"
+            app:layout_constraintStart_toStartOf="@+id/tv_monto_recibo_efectivo"
+            app:layout_constraintTop_toBottomOf="@+id/tv_monto_recibo_efectivo"
+            tools:text="Wokin Tools Venezuela" />
+
+        <TextView
+            android:id="@+id/textView60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Fecha:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toTopOf="@+id/tv_fecha_recibo_efectivo" />
+
+        <TextView
             android:id="@+id/tv_fecha_recibo_efectivo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="5dp"
             android:alpha="0.75"
             android:text="0000-00-00"
             app:layout_constraintEnd_toStartOf="@+id/cb_recibo_selec_efectivo"
-            app:layout_constraintStart_toEndOf="@+id/textView60"
-            app:layout_constraintTop_toBottomOf="@+id/tv_monto_recibo_efectivo" />
+            app:layout_constraintStart_toStartOf="@+id/tv_monto_recibo_efectivo"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreInfo" />
 
         <ImageView
             android:id="@+id/imageView5"
@@ -90,11 +116,11 @@
 
         <CheckBox
             android:id="@+id/cb_recibo_selec_efectivo"
-            android:buttonTint="@drawable/color_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="10dp"
+            android:buttonTint="@drawable/color_checkbox"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

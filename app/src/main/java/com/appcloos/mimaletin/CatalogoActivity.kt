@@ -67,6 +67,7 @@ class CatalogoActivity : AppCompatActivity() {
 
     private lateinit var preferences: SharedPreferences
     private lateinit var codEmpresa:String
+    private lateinit var codUsuario:String
 
     private lateinit var binding: ActivityCatalogoBinding
 
@@ -81,6 +82,7 @@ class CatalogoActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        codUsuario = preferences.getString("cod_usuario", null).toString()
         codEmpresa = preferences.getString("codigoEmpresa", null).toString()
 
         /* este intent es para obtener la seleccion, tipo de precio, nro del pedido y codigo del cliente*/
@@ -117,7 +119,7 @@ class CatalogoActivity : AppCompatActivity() {
         //corro actDirect
         actDirec()
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(PrincipalActivity.cod_usuario!!)
+        objetoAux.descargaDesactivo(codUsuario, codEmpresa)
     }
 
     //este metodo inicializa un menu con el searchview y el selector de precios   SLECT
@@ -385,7 +387,7 @@ class CatalogoActivity : AppCompatActivity() {
                                         } else if (cantidad <= ventaMax) {
                                             if (cantidad > ventaMin) {
                                                 val comprobacion = consultarDisponibilidad(
-                                                    PrincipalActivity.cod_usuario,
+                                                    codUsuario,
                                                     cod_cliente,
                                                     codArticulo
                                                 )
@@ -457,7 +459,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                             //llamo al metodo guardar limites si el articulo posee limites
                                                             guardarLimite(
                                                                 tracking,
-                                                                PrincipalActivity.cod_usuario,
+                                                                codUsuario,
                                                                 cod_cliente,
                                                                 codArticulo,
                                                                 cantidad,

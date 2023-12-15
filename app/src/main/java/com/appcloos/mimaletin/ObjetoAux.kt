@@ -14,8 +14,8 @@ import org.json.JSONObject
 class ObjetoAux(val context: Context) {
     private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null)
 
-    fun login(codUsuario: String, sesion: Int) {
-        val url = "http://cloccidental.com:5001/login"
+    fun login(codUsuario: String, sesion: Int, enlaceEmpresa: String) {
+        val url = "http://$enlaceEmpresa:5001/login"
 
         val login = JSONObject()
         val subLogin = JSONObject()
@@ -63,7 +63,7 @@ class ObjetoAux(val context: Context) {
         requestQueue.add(jsonObjectRequest)
     }
 
-    fun descargaDesactivo(codUsuario: String) {
+    fun descargaDesactivo(codUsuario: String, codEmpresa: String) {
         val url = "https://cloccidental.com/webservice/desactivo.php?cod_usuario=$codUsuario"
 
         val jsonObjectRequest =
@@ -80,8 +80,14 @@ class ObjetoAux(val context: Context) {
 
                         val cv = ContentValues()
                         cv.put("desactivo", jsonObject.getString("desactivo"))
+                        cv.put("empresa", codEmpresa)
 
-                        conn.updateJSON("usuarios", cv, "vendedor", vendedor)
+                        conn.updateJSONCamposVarios(
+                            "usuarios",
+                            cv,
+                            "vendedor = ? AND empresa = ?",
+                            arrayOf(vendedor, codEmpresa)
+                        )
 
                         println("Si se logro descargar desactivo")
                         println(jsonObject.getString("desactivo"))

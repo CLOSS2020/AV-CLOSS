@@ -53,7 +53,7 @@ class ModuloCXCActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)*/
 
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(codUsuario!!)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
 
         //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
         //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones

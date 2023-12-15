@@ -144,7 +144,7 @@ class CXCActivity : AppCompatActivity() {
         }
 
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(codUsuario!!)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
 
         //Retroceder Activity
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -269,7 +269,7 @@ class CXCActivity : AppCompatActivity() {
             val cursor = keAndroid.rawQuery(
                 "SELECT nombrecli FROM ke_precobradocs WHERE cxcndoc = '${
                     cursorCobranza.getString(0)
-                } AND empresa = '$codEmpresa';", null
+                }' AND empresa = '$codEmpresa';", null
             )
 
             val cobranza = CXC()

@@ -24,6 +24,7 @@ class PromocionesActivity : AppCompatActivity() {
 
     private lateinit var preferences: SharedPreferences
     private var codEmpresa: String? = null
+    private var codUsuario: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +38,7 @@ class PromocionesActivity : AppCompatActivity() {
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codEmpresa = preferences.getString("codigoEmpresa", null)
+        codUsuario = preferences.getString("cod_usuario", null)
 
         /* este intent es para obtener la seleccion, tipo de precio, nro del pedido y codigo del cliente*/
         seleccionado = intent.getIntExtra("Seleccion", 0)
@@ -65,7 +67,7 @@ class PromocionesActivity : AppCompatActivity() {
         listaArticulos.adapter = catalogoAdapter //refresco el listview
         listaArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(PrincipalActivity.cod_usuario!!)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
     }
 
     private fun obtenerArticulosPromo() {

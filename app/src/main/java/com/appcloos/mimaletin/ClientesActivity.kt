@@ -53,7 +53,7 @@ class ClientesActivity : AppCompatActivity() {
 
 
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario!!)
+        objetoAux.descargaDesactivo(cod_usuario!!, codigoEmpresa!!)
     }
 
     /*    private fun iraDocumentos(codigoCliente: String, nombreCliente: String) {

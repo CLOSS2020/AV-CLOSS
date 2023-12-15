@@ -31,6 +31,7 @@ public class CobranzasActivity extends AppCompatActivity {
 
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String cod_usuario = preferences.getString("cod_usuario", null);
+        String codEmpresa = preferences.getString("codigoEmpresa", null);
 
         pagerAdapter = new PagerController(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
@@ -68,6 +69,6 @@ public class CobranzasActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         ObjetoAux objetoAux = new ObjetoAux(this);
-        objetoAux.descargaDesactivo(cod_usuario);
+        objetoAux.descargaDesactivo(cod_usuario, codEmpresa);
     }
 }

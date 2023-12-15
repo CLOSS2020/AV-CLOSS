@@ -585,6 +585,12 @@ class CreacionDepositoActivity : AppCompatActivity() {
             cobranza.bsretflete = cursorRec.getDouble(12)
             cobranza.retmun_sbi = cursorRec.getDouble(13)
             cobranza.retmun_sbs = cursorRec.getDouble(14)
+            cobranza.cliente = conn.getCampoStringCamposVarios(
+                "ke_precobradocs",
+                "nombrecli",
+                arrayListOf("cxcndoc", "empresa"),
+                arrayListOf(cobranza.id_recibo, codEmpresa!!)
+            )
             listaRecibos.add(cobranza)
 
         }

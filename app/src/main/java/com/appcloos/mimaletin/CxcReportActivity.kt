@@ -5184,7 +5184,10 @@ class CxcReportActivity : AppCompatActivity() {
 
     private fun calcularDescuentos2(moneda: String) {
         if (binding.cbCxcDescuentos.isChecked && //se seleccionó descuento
-            (conn.validarExistenciaDescuento(codigoBancoCompleto) || binding.rbCxcEfectivoMain.isChecked) && //validar que exista un descuento activo
+            (conn.validarExistenciaDescuento(
+                codigoBancoCompleto,
+                codEmpresa!!
+            ) || binding.rbCxcEfectivoMain.isChecked) && //validar que exista un descuento activo
             !binding.cbCxcComplemento.isChecked //validar que no se selecciono complemento
         ) {
             var descuentos: Descuentos
@@ -5216,9 +5219,10 @@ class CxcReportActivity : AppCompatActivity() {
                     cantidadDeDescuento =
                         if (binding.rbCxcTransfMain.isChecked) conn.getDescuento(
                             codigoBancoCompleto,
-                            listaDocumentos[i].tipodocv
+                            listaDocumentos[i].tipodocv,
+                            codEmpresa!!
                         ) else conn.getDescuentoEfectivo(
-                            moneda, listaDocumentos[i].tipodoc
+                            moneda, listaDocumentos[i].tipodoc, codEmpresa!!
                         )
                     val porcentajeAsignado = cantidadDeDescuento / 100
 

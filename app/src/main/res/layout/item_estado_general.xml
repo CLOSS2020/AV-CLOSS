@@ -12,6 +12,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
+        android:paddingBottom="5dp"
         android:theme="@style/BasicStyleElementRecicleView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,11 +35,11 @@
         <TextView
             android:id="@+id/tv_nomclie_est_gen"
             android:layout_width="0dp"
-            android:alpha="0.9"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="5dp"
+            android:alpha="0.9"
             android:text="Nombre del cliente"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -103,6 +104,7 @@
             android:layout_marginEnd="2dp"
             android:text="Lím. crédito:"
             android:textStyle="bold|italic"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/tv_limite_est_gen"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView84" />
@@ -114,6 +116,7 @@
             android:layout_marginStart="1dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="1dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/textView90"
             app:layout_constraintStart_toEndOf="@+id/textView88"
             app:layout_constraintTop_toBottomOf="@+id/textView84" />
@@ -126,6 +129,7 @@
             android:layout_marginEnd="1dp"
             android:text="Saldo:"
             android:textStyle="bold|italic"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/tv_saldo_est_gen"
             app:layout_constraintStart_toEndOf="@+id/tv_limite_est_gen"
             app:layout_constraintTop_toBottomOf="@+id/tv_deuda_est_gen" />
@@ -138,6 +142,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginEnd="5dp"
             android:text="$0000.00"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView90"
             app:layout_constraintTop_toBottomOf="@+id/tv_fecha_est_gen" />

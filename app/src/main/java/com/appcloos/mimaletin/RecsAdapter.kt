@@ -34,10 +34,12 @@ class RecsAdapter : RecyclerView.Adapter<RecsAdapter.RecHolder>() {
     class RecHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val idcxc = view.findViewById<TextView>(R.id.tv_id_resumen)
         val mtocxc = view.findViewById<TextView>(R.id.tv_efec_resumen)
+        val tvNombreClienteInfo = view.findViewById<TextView>(R.id.tvNombreClienteInfo)
 
         fun bind(cobranza: CXC) {
             idcxc.text = "ID: ${cobranza.id_recibo}"
             mtocxc.text = "$ ${cobranza.efectivo}"
+            tvNombreClienteInfo.text = cobranza.cliente
         }
     }
 

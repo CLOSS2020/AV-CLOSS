@@ -53,6 +53,17 @@ fun String.formatoFechaTiempoShow(): String {
     return dateFormat.format(fechaDate)
 }
 
+fun String.diferenciaFehca(): String {
+    val fecha1 = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(this)
+    val fecha2 = Date(System.currentTimeMillis())
+    val milisegundos = fecha2.time - fecha1!!.time
+    val segundos: Long = milisegundos / 1000
+    val minutos = segundos / 60
+    val horas = minutos / 60
+    val dias = horas / 24
+    return dias.toString()
+}
+
 fun Activity.toast(text: String, length: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, length).show()
 }
@@ -331,7 +342,22 @@ fun View.colorVariantAgencia(agencia: String?): Int {
 }
 
 fun View.colorAccentAgencia(agencia: String?): Int {
-    val retorno: Int = when (agencia) {
+    val nightModeFlags = this.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK
+
+    val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
+        ContextCompat.getColor(context, R.color.rojologo)
+    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
+        ContextCompat.getColor(context, R.color.wokinAccentColor)
+    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == CLO) {
+        ContextCompat.getColor(context, R.color.primaryColor)
+    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == WOKIN) {
+        ContextCompat.getColor(context, R.color.wokinPrimaryColor)
+    } else {
+        ContextCompat.getColor(context, R.color.rojologo)
+    }
+
+    /*val retorno: Int = when (agencia) {
         CLO -> {
             ContextCompat.getColor(context, R.color.rojologo)
         }
@@ -341,7 +367,7 @@ fun View.colorAccentAgencia(agencia: String?): Int {
         else -> {
             ContextCompat.getColor(context, R.color.whiteColor4)
         }
-    }
+    }*/
 
     return retorno
 }
@@ -414,9 +440,11 @@ fun Activity.setProgressDialogTheme(agencia: String?): Int {
         CLO -> {
             R.style.ProgressDialogCustom
         }
+
         WOKIN -> {
             R.style.ProgressDialogCustomWokin
         }
+
         else -> {
             R.style.ProgressDialogCustom
         }
@@ -625,6 +653,7 @@ fun View.colorToolBarAux(agencia: String?): Int {
 fun View.colorButtonAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
+
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.primaryColor)
     } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {

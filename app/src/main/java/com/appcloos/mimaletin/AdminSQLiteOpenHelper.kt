@@ -1176,11 +1176,11 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
     }
 
     //2023-06-19 Funcion que me devuelve la cantidad de documentos vencidos de un cliente
-    fun getDeudaClienteNum(cliente: String): Int {
+    fun getDeudaClienteNum(cliente: String, codEmpresa: String): Int {
         val db = this.writableDatabase
         var num = 0
         val cursor = db.rawQuery(
-            "SELECT COUNT(documento) FROM ke_doccti WHERE codcliente = '$cliente' AND vence < '" + fechaHoy(
+            "SELECT COUNT(documento) FROM ke_doccti WHERE codcliente = '$cliente' AND empresa = '$codEmpresa' AND vence < '" + fechaHoy(
                 false
             ) + "';", null
         )
@@ -1337,6 +1337,41 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
     ): String {
         var retorno = ""
         val db = this.writableDatabase
+        val sql = "SELECT $campo FROM $tabla"
+        var where = ""
+        if (campoWhere.isNotEmpty()) {
+            where = " WHERE "
+            for (i in campoWhere.indices) {
+                where += campoWhere[i] + " = '" + respuestaWhere[i] + "'"
+                if (i + 1 != campoWhere.size) {
+                    where += " AND "
+                }
+            }
+        }
+        val query = sql + where
+        db.rawQuery(query, null).use { cursor ->
+            try {
+                if (cursor.moveToFirst()) {
+                    retorno = cursor.getString(0)
+                }
+            } catch (e: Exception) {
+                println("--Error--")
+                e.printStackTrace()
+                println("--Error--")
+            }
+        }
+        cerarDB(db)
+        return retorno
+    }
+
+    fun getCampoStringRespuestaSimple(
+        tabla: String,
+        campo: String,
+        campoWhere: List<String>,
+        respuestaWhere: List<String>
+    ): String {
+        var retorno = ""
+        val db = this.writableDatabase
         val sql = "SELECT $campo FROM $tabla WHERE "
         var where = ""
         for (i in campoWhere.indices) {
@@ -1369,6 +1404,19 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         var retorno = false
         val db = this.writableDatabase
         db.rawQuery("SELECT count($campo) FROM $tabla WHERE $campo = '$campoWhere';", null)
+            .use { cursor ->
+                if (cursor.moveToFirst()) {
+                    retorno = cursor.getInt(0) > 0
+                }
+            }
+        cerarDB(db)
+        return retorno
+    }
+
+    fun validarExistenciaGeneral(tabla: String): Boolean {
+        var retorno = false
+        val db = this.writableDatabase
+        db.rawQuery("SELECT count(*) FROM $tabla;", null)
             .use { cursor ->
                 if (cursor.moveToFirst()) {
                     retorno = cursor.getInt(0) > 0
@@ -1467,7 +1515,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         cerarDB(db)
     }
 
-    fun deleteJSONCamposVarios(
+    fun deleteCamposVarios(
         table: String?, whereClause: String?, whereArgs: Array<String?>?
     ) {
         val db = this.writableDatabase
@@ -1551,11 +1599,11 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             return lista
         }
 
-    fun validarExistenciaDescuento(banco: String): Boolean {
+    fun validarExistenciaDescuento(banco: String, codEmpresa: String): Boolean {
         var retorno = false
         val db = this.writableDatabase
         db.rawQuery(
-            "SELECT count(*) FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1';",
+            "SELECT count(*) FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1' AND ke_tabdctos.empresa = '$codEmpresa';",
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -1566,11 +1614,11 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getDescuento(banco: String, tipoDoc: String): Double {
+    fun getDescuento(banco: String, tipoDoc: String, codEmpresa: String): Double {
         var retorno = 0.0
         val db = this.writableDatabase
         db.rawQuery(
-            "SELECT dcob_prc FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1'" + getTipoDocDescuento(
+            "SELECT dcob_prc FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1' AND ke_tabdctos.empresa = '$codEmpresa'" + getTipoDocDescuento(
                 tipoDoc
             ) + ";", null
         ).use { cursor ->
@@ -1582,7 +1630,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getDescuentoEfectivo(moneda: String, tipoDoc: String): Double {
+    fun getDescuentoEfectivo(moneda: String, tipoDoc: String, codEmpresa: String): Double {
         var retorno = 0.0
         val db = this.writableDatabase
         val dcobValemon: String = if (moneda == "USD") {
@@ -1591,7 +1639,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
             "('3', '4')"
         }
         db.rawQuery(
-            "SELECT dcob_prc FROM ke_tabdctos WHERE dcob_valemon IN $dcobValemon AND dcob_activo = '1';" + getTipoDocDescuento(
+            "SELECT dcob_prc FROM ke_tabdctos WHERE empresa = '$codEmpresa' dcob_valemon IN $dcobValemon AND dcob_activo = '1'" + getTipoDocDescuento(
                 tipoDoc
             ) + ";", null
         ).use { cursor ->
@@ -1707,10 +1755,10 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         val retorno = ArrayList<EdoGeneralCxc>()
         val db = this.writableDatabase
         var sql =
-            "SELECT DISTINCT  codcliente, nombrecli, SUM(dtotalfinal - (dtotpagos + dtotdev)) as montototal, MIN(vence), ROUND(JULIANDAY('now') - JULIANDAY(MIN(vence))) as fechaentregaantigua FROM ke_doccti " +
+            "SELECT DISTINCT codcliente, nombrecli, SUM(dtotalfinal - (dtotpagos + dtotdev)) as montototal, MIN(vence) FROM ke_doccti " +
                     "WHERE estatusdoc < '2' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
-            sql += " AND (nombrecli LIKE '%$$text%' OR codcliente LIKE '%$text%')"
+            sql += " AND (nombrecli LIKE '%$text%' OR codcliente LIKE '%$text%')"
         }
         sql += " GROUP BY codcliente ORDER BY montototal desc"
         db.rawQuery(sql, null).use { cursor ->
@@ -1718,7 +1766,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                 val codcliente = cursor.getString(0)
                 val nombreCliente = cursor.getString(1)
                 val montoTotal = valorReal(cursor.getDouble(2))
-                val fechaVence = cursor.getString(4)
+                val fechaVence = cursor.getString(3)
                 val limite = 0.00
                 val saldo = 0.00
                 val edoGeneralCxc = EdoGeneralCxc(
@@ -1730,6 +1778,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return retorno
     }
 
+    //Es descargar articulos de otra activity sincronizar que no es la principal
     fun guardarArticulos(articulosResponse: ArticulosResponse) {
         val db = this.writableDatabase
 
@@ -1994,7 +2043,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
 
     }
 
-    fun getEmpresas(agencia: String): ArrayList<keDataconex> {
+    fun getEmpresas(codEmpresa: String): ArrayList<keDataconex> {
         val retorno = ArrayList<keDataconex>()
         val db = this.writableDatabase
         val sql = "SELECT * FROM ke_enlace"
@@ -2006,7 +2055,7 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
                 val kedStatus = cursor.getString(2)
                 val kedEnlace = cursor.getString(3)
                 val kedAgen = cursor.getString(4)
-                val selected = kedCodigo == agencia
+                val selected = kedCodigo == codEmpresa
 
                 val keDataconex = keDataconex(
                     kedCodigo,
@@ -2038,5 +2087,50 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         return fecha
     }
 
+    fun deleteDatosSesion(codEmpresa: String){//43
+        deleteCamposVarios("articulo", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("cliempre", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("config2", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("grupos", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("img_carousel", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_carrito", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_corprec", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_correla", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_correlacxc", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_correladev", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_cxc", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_devlmtmp", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_doccti", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_doclmv", "empresa = ?", arrayOf(codEmpresa))
+        //deleteCamposVarios("ke_enlace", "kee_codigo = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_estadc01", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_imgrcl", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_kardex", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_limitart", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_modulos", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_mtopendcli", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_opmv", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_opti", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_precobdcto", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_precobradocs", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_precobranza", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_rclcti", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_rcllmv", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_referencias", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_retimg", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_tabdctos", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_tabdctosbcos", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_tiporecl", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_version", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("ke_wcnf_conf", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("kecxc_tasas", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("listbanc", "empresa = ?", arrayOf(codEmpresa))
+        //deleteCamposVarios("listvend", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("sectores", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("subgrupos", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("subsectores", "empresa = ?", arrayOf(codEmpresa))
+        deleteCamposVarios("tabla_aux", "empresa = ?", arrayOf(codEmpresa))
+        //deleteCamposVarios("usuarios", "empresa = ?", arrayOf(codEmpresa))
+    }
 
 }

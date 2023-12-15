@@ -97,7 +97,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 cliente.codigo = cursorca.getString(0)
                 cliente.nombre = cursorca.getString(1)
                 cliente.contribespecial = cursorca.getDouble(2)
-                cliente.kne_activa = conn.getDeudaClienteNum(cliente.codigo)
+                cliente.kne_activa = conn.getDeudaClienteNum(cliente.codigo, codEmpresa)
 
                 clientes.add(cliente)
             }
@@ -130,7 +130,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 cliente.codigo = cursorca.getString(0)
                 cliente.nombre = cursorca.getString(1)
                 cliente.contribespecial = cursorca.getDouble(2)
-                cliente.kne_activa = conn.getDeudaClienteNum(cliente.codigo)
+                cliente.kne_activa = conn.getDeudaClienteNum(cliente.codigo, codEmpresa)
 
                 clientes.add(cliente)
             }

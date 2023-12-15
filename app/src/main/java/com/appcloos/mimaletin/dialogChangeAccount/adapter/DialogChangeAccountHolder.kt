@@ -2,6 +2,7 @@ package com.appcloos.mimaletin.dialogChangeAccount.adapter
 
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.Typeface
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -28,8 +29,14 @@ class DialogChangeAccountHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
         }
 
+        binding.tvNombreEmpresa.typeface = if (keDataconex.selected) {
+            Typeface.DEFAULT_BOLD
+        } else {
+            Typeface.DEFAULT
+        }
+
         binding.tvNombreEmpresa.text = keDataconex.kedNombre
 
-        binding.llEmpresa.setOnClickListener{ onClick(absoluteAdapterPosition) }
+        binding.llEmpresa.setOnClickListener { onClick(absoluteAdapterPosition) }
     }
 }

@@ -75,6 +75,7 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
         private var montoRec: TextView = view.findViewById(R.id.tv_monto_recibo_efectivo)
         private var fechaRec: TextView = view.findViewById(R.id.tv_fecha_recibo_efectivo)
         private var tipoRec: TextView = view.findViewById(R.id.tv_tipo_recibo)
+        private var nombreCliente: TextView = view.findViewById(R.id.tvNombreInfo)
         val isSeleccionado: CheckBox = view.findViewById(R.id.cb_recibo_selec_efectivo)
 
 
@@ -83,6 +84,7 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
             nroRec.text = "N° ${recibos.id_recibo}"
             montoRec.text = "$" + recibos.efectivo.toString()
             fechaRec.text = recibos.fchrecibo
+            nombreCliente.text = recibos.cliente
 
             isSeleccionado.buttonTintList = isSeleccionado.setColorCheckBox(Constantes.AGENCIA)
 

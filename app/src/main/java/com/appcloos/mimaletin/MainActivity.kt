@@ -468,7 +468,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                             keAndroid.endTransaction()
                         }
 
-                        objetoAux.login(codUsuario, 1)
+                        objetoAux.login(codUsuario, 1, newEmpresa.kedEnlace)
 
                         val editor = preferences.edit()
                         editor.putString("nick_usuario", user)

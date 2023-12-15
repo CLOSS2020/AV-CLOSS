@@ -75,6 +75,12 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
             cobranza.fchrecibo = cursorCobranza.getString(1)
             cobranza.edorec = cursorCobranza.getString(2)
             cobranza.efectivo = cursorCobranza.getDouble(3)
+            cobranza.cliente = conn.getCampoStringCamposVarios(
+                "ke_precobradocs",
+                "nombrecli",
+                arrayListOf("cxcndoc", "empresa"),
+                arrayListOf(cobranza.id_recibo, codEmpresa!!)
+            )
             listRecibos.add(cobranza)
 
         }

@@ -155,7 +155,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
         //bt_subirprecob.setVisibility(View.INVISIBLE);
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario!!)
+        objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!)
         SINCRONIZO = conn.sincronizoPriVez(
             cod_usuario!!,
             codEmpresa!!
@@ -544,7 +544,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             }
                         }
                         //conn.updateTablaAux("ke_tabdctos", codEmpresa!!)
-                        eliminarDocViejos(descuentoNube, keAndroid, "ke_tabdctos", "dcob_id")
+                        eliminarDocViejos(descuentoNube, "ke_tabdctos", "dcob_id")
                     }
                     varAux++
                     sincronizacionVendedor()
@@ -615,7 +615,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             }
                         }
 
-                        eliminarDocViejos(imgNube, keAndroid, "img_carousel", "nombre")
+                        eliminarDocViejos(imgNube, "img_carousel", "nombre")
 
                         varAux++
                         sincronizacionVendedor()
@@ -690,13 +690,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             }
                         }
 
-                        conn.deleteJSONCamposVarios(
+                        conn.deleteCamposVarios(
                             "listbanc",
                             "inactiva= ? AND empresa = ?",
                             arrayOf("1", codEmpresa)
                         )
 
-                        eliminarDocViejos(bancosNube, keAndroid, "listbanc", "codbanco")
+                        eliminarDocViejos(bancosNube, "listbanc", "codbanco")
 
                         //conn.updateTablaAux("listbanc", codEmpresa!!)
                         varAux++
@@ -730,7 +730,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarConfigExtra(url: String) {
-        val keAndroid = conn.writableDatabase
 
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         //String fecha_error = ObtenerFechaPreError("fchhn_ultmod");
@@ -790,10 +789,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         }
 
                         //conn.updateTablaAux("ke_wcnf_conf", codEmpresa!!)
-                        eliminarDocViejos(configNube, keAndroid, "ke_wcnf_conf", "cnfg_idconfig")
+                        eliminarDocViejos(configNube, "ke_wcnf_conf", "cnfg_idconfig")
 
                     }
-                    conn.deleteJSONCamposVarios(
+                    conn.deleteCamposVarios(
                         "ke_wcnf_conf",
                         "cnfg_activa= ? AND empresa = ?",
                         arrayOf("0", codEmpresa)
@@ -881,7 +880,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             countRef++
                         }
                         //progressDialog.setMessage("Referencias:" + countRef);
-                        eliminarDocViejos(refNube, keAndroid, "ke_referencias", "bcoref")
+                        eliminarDocViejos(refNube, "ke_referencias", "bcoref")
                         varAux++
                         sincronizacionVendedor()
                     } else if (response.getString("referencias") == "null") {
@@ -1057,12 +1056,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         }
 
                         //keAndroid.delete("ke_doccti", "estatusdoc= ?", arrayOf("2"))
-                        conn.deleteJSONCamposVarios(
+                        conn.deleteCamposVarios(
                             "ke_doccti",
                             "estatusdoc= ? AND empresa = ?",
                             arrayOf("2", codEmpresa)
                         )
-                        eliminarDocViejos(documentosNube, keAndroid, "ke_doccti", "documento")
+                        eliminarDocViejos(documentosNube, "ke_doccti", "documento")
 
                         binding.tvDocumentos.setTextColor(Color.rgb(62, 197, 58))
                         binding.tvDocumentos.text = "Documentos: $countDoc"
@@ -1105,10 +1104,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun eliminarDocViejos(
         documentosNube: ArrayList<String?>,
-        keAndroid: SQLiteDatabase,
         tabla: String,
         campo: String
     ) {
+        val keAndroid = conn.writableDatabase
         val documentosBDD = arrayDocumento(tabla, campo)
         for (i in documentosBDD.indices) {
             if (!documentosNube.contains(documentosBDD[i])) {
@@ -1125,7 +1124,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun arrayDocumento(tabla: String, campo: String): ArrayList<String> {
         val keAndroid = conn.writableDatabase
         val documentos = ArrayList<String>()
-        val cursor = keAndroid.rawQuery("SELECT $campo FROM $tabla WHERE empresa = $codEmpresa;", null)
+        val cursor = keAndroid.rawQuery("SELECT $campo FROM $tabla WHERE empresa = '$codEmpresa';", null)
         while (cursor.moveToNext()) {
             documentos.add(cursor.getString(0))
         }
@@ -1413,7 +1412,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 } catch (e: JSONException) {
                                     Toast.makeText(
                                         this@SincronizacionActivity,
-                                        "Error 1",
+                                        "Evento 1",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } finally {
@@ -2446,7 +2445,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     e.printStackTrace()
                                     Toast.makeText(
                                         applicationContext,
-                                        "Error 15",
+                                        "Evento 15",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } finally {
@@ -2962,7 +2961,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.tvDocumentos.text = "Documentos: Sincronizando"
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         //String fecha_error = ObtenerFechaPreError("limites");
-        val keAndroid = conn.writableDatabase
+
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -3059,13 +3058,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 e.printStackTrace()
                             }
                         }
-                        conn.deleteJSONCamposVarios(
+                        conn.deleteCamposVarios(
                             "cliempre",
                             "status= ? AND empresa = ?",
                             arrayOf("2", codEmpresa)
                         )
                         //keAndroid.delete("cliempre", "status= ?", arrayOf("2"))
-                        eliminarDocViejos(clientesNube, keAndroid, "cliempre", "codigo")
+                        eliminarDocViejos(clientesNube, "cliempre", "codigo")
                         conn.updateTablaAux("cliempre", codEmpresa!!)
 
                         binding.tvCliente.setTextColor(Color.rgb(62, 197, 58))
@@ -4402,7 +4401,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '4' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
             }
         } else {
-            Toast.makeText(this, "Error al actualizar estatus", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Evento imprevisto  al actualizar estatus", Toast.LENGTH_SHORT).show()
         }
         cursor.close()
     }
@@ -4689,7 +4688,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             }
                         }
 
-                        eliminarDocViejos(articulosNube, keAndroid, "ke_kardex", "kde_codart")
+                        eliminarDocViejos(articulosNube, "ke_kardex", "kde_codart")
 
 
                         // No requiere de actualizar por que bajarArticulos ya lo actualiza

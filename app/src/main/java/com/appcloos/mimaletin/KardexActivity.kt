@@ -60,7 +60,7 @@ class KardexActivity : AppCompatActivity() {
         )
         listaKardex.adapter = catalogoAdapter
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(codUsuario!!)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa)
     }
 
     private fun consultarArticulosNormal() {

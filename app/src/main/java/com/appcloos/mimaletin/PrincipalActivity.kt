@@ -11,6 +11,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ContentValues
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender.SendIntentException
 import android.content.SharedPreferences
@@ -134,7 +135,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
         fechaAuxiliar = conn.getFecha("kecxc_tasas", codEmpresa!!)
 
-        objetoAux!!.descargaDesactivo(cod_usuario!!)
+        objetoAux!!.descargaDesactivo(cod_usuario!!, codEmpresa!!)
         SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codEmpresa!!)
         DESACTIVADO = conn.getCampoIntCamposVarios(
             "usuarios",
@@ -700,13 +701,83 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     //este es el metodo para cerrar sesion
     private fun cerrarsesion() {
-        conn.deleteAll("usuarios")
-        objetoAux!!.login(cod_usuario!!, 0)
-        val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
-        preferences.edit().clear().apply()
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        //conn.deleteAll("usuarios")
+        conn.deleteCamposVarios(
+            "usuarios",
+            "vendedor = ? AND empresa = ?",
+            arrayOf(cod_usuario, codEmpresa)
+        )
+        conn.deleteCamposVarios(
+            "listvend",
+            "codigo = ? AND empresa = ?",
+            arrayOf(cod_usuario, codEmpresa)
+        )
+        conn.deleteCamposVarios(
+            "ke_enlace",
+            "kee_codigo = ?",
+            arrayOf(codEmpresa)
+        )
+        conn.deleteDatosSesion(codEmpresa!!)
+        objetoAux!!.login(cod_usuario!!, 0, enlaceEmpresa)
+
+        if (conn.validarExistenciaGeneral("usuarios")) {
+            val user = conn.getCampoStringCamposVarios(
+                "usuarios",
+                "username",
+                listOf(),
+                listOf()
+            )
+            val codUsuario = conn.getCampoStringCamposVarios(
+                "usuarios",
+                "vendedor",
+                listOf(),
+                listOf()
+            )
+            val nUsuario = conn.getCampoStringCamposVarios(
+                "usuarios",
+                "nombre",
+                listOf(),
+                listOf()
+            )
+            val superves = conn.getCampoStringCamposVarios(
+                "usuarios",
+                "superves",
+                listOf(),
+                listOf()
+            )
+            val codigoEmpresa = conn.getCampoStringCamposVarios(
+                "ke_enlace",
+                "kee_codigo",
+                listOf(),
+                listOf()
+            )
+            val codigoSucursal = conn.getCampoStringCamposVarios(
+                "ke_enlace",
+                "kee_sucursal",
+                listOf(),
+                listOf()
+            )
+
+            val editor = preferences.edit()
+            editor.putString("nick_usuario", user)
+            editor.putString("cod_usuario", codUsuario)
+            editor.putString("nombre_usuario", nUsuario)
+            editor.putString("superves", superves)
+            editor.putString("codigoEmpresa", codigoEmpresa)
+            editor.putString("codigoSucursal", codigoSucursal)
+            editor.apply()
+
+            Constantes.AGENCIA = codigoEmpresa
+
+            recargarEmpresa()
+
+        } else {
+            val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+            preferences.edit().clear().apply()
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
     //este es el metodo para ir al catalogo
@@ -781,7 +852,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         cargarModulosActivos()
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
-        objetoAux!!.descargaDesactivo(cod_usuario!!)
+        objetoAux!!.descargaDesactivo(cod_usuario!!, codEmpresa!!)
         obtenerPermisos()
         try {
             validarSesionActiva()
@@ -854,7 +925,30 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             }
 
             R.id.iccerrarsesion -> {
-                cerrarsesion()
+                val dialog = AlertDialog.Builder(
+                    ContextThemeWrapper(
+                        this,
+                        setAlertDialogTheme(Constantes.AGENCIA)
+                    )
+                ).setTitle("Salir")
+                    .setMessage("¿Está seguro de desear cerrar sesion en $nombreEmpresa?")
+                    .setCancelable(true)
+                    .setPositiveButton("Si", null).setNegativeButton("No", null).show()
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                    cerrarsesion()
+                }
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                    .setOnClickListener { dialog.dismiss() }
+
+                val pbutton: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                pbutton.apply {
+                    setTextColor(colorTextAgencia(Constantes.AGENCIA))
+                }
+
+                val nbutton: Button = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                nbutton.apply {
+                    setTextColor(colorTextAgencia(Constantes.AGENCIA))
+                }
                 return true
             }
 

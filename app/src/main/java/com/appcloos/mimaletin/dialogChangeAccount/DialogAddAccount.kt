@@ -15,9 +15,10 @@ import com.appcloos.mimaletin.AdminSQLiteOpenHelper
 import com.appcloos.mimaletin.Constantes
 import com.appcloos.mimaletin.MainActivity
 import com.appcloos.mimaletin.ObjetoAux
+import com.appcloos.mimaletin.colorButtonAgencia
 import com.appcloos.mimaletin.databinding.DialogAddAccountBinding
 import com.appcloos.mimaletin.dialogChangeAccount.model.keDataconex
-import com.appcloos.mimaletin.toast
+import com.appcloos.mimaletin.setColorModel
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -59,6 +60,8 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
         objetoAux = ObjetoAux(context)
 
         setListener()
+
+        setColor()
 
     }
 
@@ -377,7 +380,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             keAndroid.endTransaction()
                         }
 
-                        objetoAux.login(codUsuario, 1)
+                        objetoAux.login(codUsuario, 1, newEmpresa.kedEnlace)
 
                         val editor = preferences.edit()
                         editor.putString("nick_usuario", user)
@@ -420,6 +423,17 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
         val requestQueue = Volley.newRequestQueue(context)
         requestQueue.add(jsonArrayRequest)
+    }
+
+    fun setColor() {
+        binding.apply {
+            tilCodigo.setColorModel(Constantes.AGENCIA)
+            tilUser.setColorModel(Constantes.AGENCIA)
+            tilPass.setColorModel(Constantes.AGENCIA)
+
+            btnValidar.setBackgroundColor(btnValidar.colorButtonAgencia(Constantes.AGENCIA))
+            btnIngresar.setBackgroundColor(btnIngresar.colorButtonAgencia(Constantes.AGENCIA))
+        }
     }
 
 }

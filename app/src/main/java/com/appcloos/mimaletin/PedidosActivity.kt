@@ -193,7 +193,7 @@ class PedidosActivity : AppCompatActivity() {
             btnPdf.setOnClickListener { _: View? -> crearPDF(codigoPedido) }
         }
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario!!)
+        objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!)
     }
 
     private fun cargarEnlace() {
