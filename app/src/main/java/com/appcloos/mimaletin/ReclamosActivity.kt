@@ -179,7 +179,8 @@ class ReclamosActivity : AppCompatActivity() {
                             ventanalineas.show()
 
                             //Cambio de color a los botones del alert
-                            val pbutton: Button = ventanalineas.getButton(DialogInterface.BUTTON_POSITIVE)
+                            val pbutton: Button =
+                                ventanalineas.getButton(DialogInterface.BUTTON_POSITIVE)
                             pbutton.apply {
                                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
                             }
@@ -258,7 +259,7 @@ class ReclamosActivity : AppCompatActivity() {
                     listaMotivos = ArrayList()
                     codigosClasif = arrayOf()
                     motivosClasif = arrayOf()
-                    val keAndroid = conn!!.writableDatabase
+                    val keAndroid = conn.writableDatabase
                     val cursorClasif = keAndroid.rawQuery(
                         "SELECT kdv_codclasif, kdv_nomclaweb FROM ke_tiporecl WHERE empresa = '$codEmpresa'",
                         null
@@ -301,6 +302,10 @@ class ReclamosActivity : AppCompatActivity() {
     private lateinit var preferences: SharedPreferences
     private var codEmpresa: String? = null
 
+    private var APP_RECLAMO_MONTO_MINIMO: Double = 15.0
+
+    private var APP_RECLAMO_FOTOS_MINIMAS: Int = 3
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityReclamosBinding.inflate(layoutInflater)
@@ -327,7 +332,12 @@ class ReclamosActivity : AppCompatActivity() {
 
         //instancia del objeto de conexion a base de datos
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        val keAndroid = conn!!.writableDatabase
+
+        APP_RECLAMO_MONTO_MINIMO = conn.getConfigNum("APP_RECLAMO_MONTO_MINIMO", codEmpresa!!)
+        APP_RECLAMO_FOTOS_MINIMAS =
+            conn.getConfigNum("APP_RECLAMO_FOTOS_MINIMAS", codEmpresa!!).toInt()
+
+        val keAndroid = conn.writableDatabase
         //valido el numero de la dev para obtener el nuevo correlativo
         val cursor = keAndroid.rawQuery(
             "SELECT MAX(kdev_numero) FROM ke_correladev WHERE kdev_vendedor ='$cod_usuario' AND empresa = '$codEmpresa'",
@@ -362,7 +372,12 @@ class ReclamosActivity : AppCompatActivity() {
             val cantidad = listalineas!![position].getCantidad()
             val precioFin = listalineas!![position].getDpreciofin()
             val cajacantidad =
-                EditText(ContextThemeWrapper(this@ReclamosActivity, setEditTextTheme(Constantes.AGENCIA)))
+                EditText(
+                    ContextThemeWrapper(
+                        this@ReclamosActivity,
+                        setEditTextTheme(Constantes.AGENCIA)
+                    )
+                )
             cajacantidad.inputType = InputType.TYPE_CLASS_NUMBER
             val builder = AlertDialog.Builder(
                 ContextThemeWrapper(
@@ -387,7 +402,10 @@ class ReclamosActivity : AppCompatActivity() {
             }
             builder.setPositiveButton("Modificar Cantidad") { _: DialogInterface?, _: Int ->
                 val dialogocantidad = AlertDialog.Builder(
-                    ContextThemeWrapper(this@ReclamosActivity, setAlertDialogTheme(Constantes.AGENCIA))
+                    ContextThemeWrapper(
+                        this@ReclamosActivity,
+                        setAlertDialogTheme(Constantes.AGENCIA)
+                    )
                 ) //aqui lo llamo igual
                 dialogocantidad.setTitle("Introduce una cantidad")
                 dialogocantidad.setView(cajacantidad)
@@ -652,10 +670,11 @@ class ReclamosActivity : AppCompatActivity() {
             "SELECT kdel_preciofin, kdel_mtolinea, kdel_pid, kdel_codart, kdel_cantdev, kdel_cantped, kdel_nombre FROM ke_devlmtmp WHERE empresa = '$codEmpresa'",
             null
         )
-        if (totneto <= 15) {
+
+        if (totneto <= APP_RECLAMO_MONTO_MINIMO) {
             Toast.makeText(
                 this@ReclamosActivity,
-                "El monto debe ser mayor a 15",
+                "El monto debe ser mayor a ${APP_RECLAMO_MONTO_MINIMO.toTwoDecimals()}",
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -664,17 +683,19 @@ class ReclamosActivity : AppCompatActivity() {
             println("Codigo seleccionado: $codSeleccionado")
             if (codSeleccionado == null ||
                 codSeleccionado!!.trim { it <= ' ' } == "0" ||
-                codSeleccionado!!.trim { it <= ' ' } == "") {
+                codSeleccionado!!.trim { it <= ' ' } == ""
+            ) {
                 Toast.makeText(
                     this@ReclamosActivity,
                     "Debes elegir el motivo del reclamo",
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                if (listaImagenes.size < 3) {
+
+                if (listaImagenes.size < APP_RECLAMO_FOTOS_MINIMAS) {
                     Toast.makeText(
                         this@ReclamosActivity,
-                        "Debes añadir un minido de 3 imágenes al reclamo",
+                        "Debes añadir un minimo de $APP_RECLAMO_FOTOS_MINIMAS imágenes al reclamo",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {

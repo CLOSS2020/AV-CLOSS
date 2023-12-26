@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class CatalogoAdapter extends BaseAdapter {
     private final ArrayList<Catalogo> listcatalogo;
@@ -63,6 +64,7 @@ public class CatalogoAdapter extends BaseAdapter {
         //TextView textDescuentoNormal     = (TextView) convertView.findViewById(R.id.tv_dsctonormal);
         TextView tv_multiplo = convertView.findViewById(R.id.tv_multiplo);
         TextView tvPedFacNE = convertView.findViewById(R.id.tvPedFacNE);
+        TextView tvRefernacia = convertView.findViewById(R.id.tvRefernacia);
         ConstraintLayout it_backcatalogo = convertView.findViewById(R.id.it_backcatalogo);
         ImageView img_thumb = convertView.findViewById(R.id.img_thumb);
 
@@ -83,6 +85,13 @@ public class CatalogoAdapter extends BaseAdapter {
         textcodigo.setText("Código: " + catalogo.getCodigo());
         textnombre.setText(catalogo.getNombre());
         textexistencia.setText("Existencia: " + catalogo.getExistencia() + "");
+
+        if(catalogo.getReferencia() != null && !Objects.equals(catalogo.getReferencia(), "")){
+            tvRefernacia.setVisibility(View.VISIBLE);
+            tvRefernacia.setText("Referencia: " + catalogo.getReferencia());
+        }else {
+            tvRefernacia.setVisibility(View.INVISIBLE);
+        }
 
         Double precio = catalogo.getPrecio1();
         Double montoDsctoNormal = precio * 0.20;

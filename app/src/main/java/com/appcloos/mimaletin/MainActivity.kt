@@ -342,7 +342,6 @@ class MainActivity : AppCompatActivity(), Serializable {
                     }
                 }
                 if (codUsuario.isEmpty()) {
-                    println("LLEGO AQUI $codUsuario")
                     Toast.makeText(
                         this,
                         "Usuario o password incorrecto",
@@ -608,13 +607,10 @@ class MainActivity : AppCompatActivity(), Serializable {
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
                 if (response != null) {
-                    println("llego aqui")
                     val jsonObject: JSONObject //creamos un objeto json vacio
                     try {
                         jsonObject = response.getJSONObject(0)
-                        println("contenido del json object$jsonObject")
                         versionNube = jsonObject.getString("kve_version").trim { it <= ' ' }
-                        println("version en nube $versionNube")
                         caducidad = jsonObject.getString("kve_activa")
                         if (versionNube != versionApp) {
                             Toast.makeText(
@@ -904,7 +900,7 @@ class MainActivity : AppCompatActivity(), Serializable {
     private fun validarSesion() {
         nick_usuario = preferences.getString("nick_usuario", null)
         cod_usuario = preferences.getString("cod_usuario", null)
-        codEmpresa = preferences.getString("codigoEmpresa", null).toString()
+        codEmpresa = preferences.getString("codigoEmpresa", "0").toString()
         desactivo = conn.getCampoDoubleCamposVarios(
             "usuarios",
             "desactivo",

@@ -807,18 +807,18 @@ class CatalogoActivity : AppCompatActivity() {
                 enpreventa = intent!!.getStringExtra("enpreventa")
                 if (enpreventa == "0") {
                     cursorca = keAndroid.rawQuery(
-                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa != '1' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone, articulo.referencia FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%' OR referencia LIKE '%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa != '1' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                         null
                     )
                 } else if (enpreventa == "1") {
                     cursorca = keAndroid.rawQuery(
-                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa = '$enpreventa' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                        "select articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone, articulo.referencia FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%' OR referencia LIKE '%$busqueda%') and $tipoDePrecioaMostrar > 0.00 AND discont = 0.0 AND enpreventa = '$enpreventa' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                         null
                     )
                 }
             } else if (seleccionado == 1) {
                 cursorca = keAndroid.rawQuery(
-                    "select articulo.codigo, articulo.nombre, articulo.$preciomostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx , articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%') and $preciomostrar> 0.00 AND discont = 0.0 AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                    "select articulo.codigo, articulo.nombre, articulo.$preciomostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx , articulo.vta_solofac, articulo.vta_solone, articulo.referencia FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 and (nombre LIKE '%$busqueda%' OR codigo LIKE'%$busqueda%' OR referencia LIKE '%$busqueda%') and $preciomostrar> 0.00 AND discont = 0.0 AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                     null
                 )
             }
@@ -843,6 +843,7 @@ class CatalogoActivity : AppCompatActivity() {
                 catalogo.setVta_solone(cursorca!!.getInt(12))
                 vtaMin = cursorca!!.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
                 vtaMax = cursorca!!.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
+                catalogo.setReferencia(cursorca!!.getString(13))
                 listacatalogo!!.add(catalogo)
             }
             //ke_android.close();
@@ -863,12 +864,12 @@ class CatalogoActivity : AppCompatActivity() {
         }
         if (enpreventa == "0") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone, articulo.referencia  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         } else if (enpreventa == "1") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='1' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$precioparametro, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone, articulo.referencia  FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='1' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         }
@@ -895,6 +896,7 @@ class CatalogoActivity : AppCompatActivity() {
             catalogo.setMultiplo(cursor.getInt(10)) // <------------------------ TE QUEDASTE AQUI
             catalogo.setVta_solofac(cursor.getInt(11))
             catalogo.setVta_solone(cursor.getInt(12))
+            catalogo.setReferencia(cursor.getString(13))
             vtaMin = cursor.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
             vtaMax = cursor.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
             listacatalogo!!.add(catalogo)
@@ -923,12 +925,12 @@ class CatalogoActivity : AppCompatActivity() {
         }
         if (enpreventa == "0") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa = '' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone, articulo.referencia FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa = '' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         } else if (enpreventa == "1") {
             cursor = keAndroid.rawQuery(
-                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='$enpreventa' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
+                "SELECT articulo.codigo, articulo.nombre, articulo.$tipoDePrecioaMostrar, articulo.existencia - articulo.comprometido, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope, articulo.enpreventa, articulo.vta_minenx, articulo.vta_solofac, articulo.vta_solone, articulo.referencia FROM articulo LEFT JOIN ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE (existencia - comprometido) > 0 AND discont = 0.0 AND enpreventa ='$enpreventa' AND articulo.empresa = '$codEmpresa' ORDER BY articulo.codigo ASC",
                 null
             )
         }
@@ -953,6 +955,7 @@ class CatalogoActivity : AppCompatActivity() {
             catalogo.setMultiplo(cursor.getInt(10))
             catalogo.setVta_solofac(cursor.getInt(11))
             catalogo.setVta_solone(cursor.getInt(12))
+            catalogo.setReferencia(cursor.getString(13))
             vtaMin = cursor.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
             vtaMax = cursor.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
             listacatalogo!!.add(catalogo)

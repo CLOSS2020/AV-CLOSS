@@ -118,8 +118,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         while (progressDialog!!.progress <= progressDialog!!.max) {
                             Thread.sleep(200)
                         }
-                    } catch (exception: Exception) {
-                        exception.printStackTrace()
+                    } catch (error: Exception) {
+                        println("--Error--")
+                        error.printStackTrace()
+                        println("--Error--")
                     }
                 }.start()
                 sincronizacionVendedor()
@@ -136,8 +138,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         while (progressDialog!!.progress <= progressDialog!!.max) {
                             Thread.sleep(200)
                         }
-                    } catch (exception: Exception) {
-                        exception.printStackTrace()
+                    } catch (error: Exception) {
+                        println("--Error--")
+                        error.printStackTrace()
+                        println("--Error--")
                     }
                 }.start()
                 sincronizacionVendedor()
@@ -195,12 +199,11 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     arrayOf(cod_usuario, codEmpresa)
                 )
                 //ke_android.rawQuery("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'", null);
-                //System.out.println("LLEGUE " + varAuxError);
-                //System.out.println("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'");
                 keAndroid.setTransactionSuccessful()
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-                //System.out.println("NO LLEGUE");
+            } catch (error: Exception) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
             } finally {
                 keAndroid.endTransaction()
                 //ke_android.close();
@@ -230,7 +233,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     //Su utilidad radica en la actualizacio de la ultima sincronizacion en caso de error con fecha 0
     private fun analisisError2() {
 
-        //System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
         val keAndroid = conn.writableDatabase
         try {
             val contenedor = ContentValues()
@@ -242,13 +244,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 "vendedor = ? AND empresa = ?",
                 arrayOf(cod_usuario, codEmpresa)
             )
-            //ke_android.rawQuery("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'", null);
-            //System.out.println("LLEGUE " + varAuxError);
-            //System.out.println("UPDATE usuarios SET ult_sinc = '0001-01-01' WHERE vendedor = '" + cod_usuario + "'");
+
             keAndroid.setTransactionSuccessful()
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-            //System.out.println("NO LLEGUE");
+        } catch (error: Exception) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
         } finally {
             keAndroid.endTransaction()
             //ke_android.close();
@@ -300,11 +301,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 objetoRecibo.put("kcx_monto", kcxMonto)
                 //objetoRecibo.put("kcx_status", '1');
                 arrayRec!!.put(objetoRecibo)
-            } catch (e: JSONException) {
-                e.printStackTrace()
+            } catch (error: JSONException) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 Toast.makeText(
                     this@SincronizacionActivity,
-                    "Evento inesperado al cargar el recibo $e",
+                    "Evento inesperado al cargar el recibo",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -313,15 +316,19 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val jsonObject = JSONObject()
         try {
             jsonObject.put("Recibo", arrayRec)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        } catch (error: JSONException) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el recibo" + e, Toast.LENGTH_SHORT).show();
         }
         val jsonStrREC = jsonObject.toString()
         try {
             insertarRecibo(jsonStrREC)
-        } catch (exc: Exception) {
-            exc.printStackTrace()
+        } catch (error: Exception) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el recibo" + exc, Toast.LENGTH_SHORT).show();
         }
     }
@@ -358,14 +365,15 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun cambiarEstadoRecibo() {
         val keAndroid = conn.writableDatabase
-        //System.out.println(arrayRec);
         for (i in 0 until arrayRec!!.length()) {
             try {
                 val objetodeRecibo = arrayRec!!.getJSONObject(i)
                 val codigoDelReciboEnArray = objetodeRecibo.getString("kcx_nrorecibo")
                 keAndroid.execSQL("UPDATE ke_cxc SET kcx_status = '1' WHERE kcx_nrorecibo = '$codigoDelReciboEnArray' AND empresa = '$codEmpresa'")
-            } catch (e: JSONException) {
-                e.printStackTrace()
+            } catch (error: JSONException) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
             }
         }
     }
@@ -441,7 +449,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     ), ArrayList(listOf(dcobId, bcoCodigo))
                                 )
                             ) {
-                                //System.out.println("UPDATE " + documento);
                                 conn.updateJSONCamposVarios(
                                     "ke_tabdctosbcos",
                                     cv,
@@ -449,7 +456,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     arrayOf(dcobId, bcoCodigo, codEmpresa)
                                 )
                             } else {
-                                //System.out.println("INSERT " + documento);
                                 conn.insertJSON("ke_tabdctosbcos", cv)
                             }
                         }
@@ -837,9 +843,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarDatosExtra(url: String) {
-        //System.out.println("Referencias -> " + URL);
         val refNube = ArrayList<String?>()
-        val keAndroid = conn.writableDatabase
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
                 try {
@@ -914,7 +918,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarDocumentos(url: String) {
-        println("Documentos -> $url")
         //final ArrayList<String> documentosBDD = arrayDocumento();
         val documentosNube = ArrayList<String?>()
         progressDialog!!.setMessage("Sincronizando Documentos")
@@ -1077,13 +1080,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: Exception) {
-                    //System.out.println("Error Bajar Documento -> " + e);
-                    e.printStackTrace()
+                } catch (error: Exception) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }) { error: VolleyError? ->
-                error?.printStackTrace()
-                //System.out.println("Este es el error -> "+error);
+            }) { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
+
                 //Ingreso de la fecha antes de ser actualizada
                 //ActualizarFechaError(fecha_error);
 
@@ -1111,7 +1117,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val documentosBDD = arrayDocumento(tabla, campo)
         for (i in documentosBDD.indices) {
             if (!documentosNube.contains(documentosBDD[i])) {
-                //System.out.println("DELETE " + documentosBDD.get(i));
                 keAndroid.delete(
                     tabla,
                     "$campo = ? AND empresa = ?",
@@ -1147,7 +1152,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     documentosBDD2[i]
                 )
             ) {
-                //System.out.println("DELETE " + documentosBDD.get(i));
                 keAndroid.delete(
                     tabla, "$campo = ? AND $campo2 = ? AND empresa = ?", arrayOf(
                         documentosBDD[i], documentosBDD2[i], codEmpresa
@@ -1228,8 +1232,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     )*/
                                     conn.updateTablaAux("limites", codEmpresa!!)
                                     keAndroid.setTransactionSuccessful()
-                                } catch (exception: Exception) {
-                                    exception.printStackTrace()
+                                } catch (error: Exception) {
+                                    println("--Error--")
+                                    error.printStackTrace()
+                                    println("--Error--")
                                 } finally {
                                     keAndroid.endTransaction()
                                 }
@@ -1288,8 +1294,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         actualizarFecha.put("fchhn_ultmod", fechaLimites)
                                         //ke_android.update("tabla_aux", actualizarFecha, "tabla = ?", new String[]{"limites"});
                                         keAndroid.setTransactionSuccessful()
-                                    } catch (exception: Exception) {
-                                        exception.printStackTrace()
+                                    } catch (error: Exception) {
+                                        println("--Error--")
+                                        error.printStackTrace()
+                                        println("--Error--")
                                     } finally {
                                         keAndroid.endTransaction()
                                     }
@@ -1346,8 +1354,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         )*/
                                         conn.updateTablaAux("limites", codEmpresa!!)
                                         keAndroid.setTransactionSuccessful()
-                                    } catch (exception: Exception) {
-                                        exception.printStackTrace()
+                                    } catch (error: Exception) {
+                                        println("--Error--")
+                                        error.printStackTrace()
+                                        println("--Error--")
                                     } finally {
                                         keAndroid.endTransaction()
                                     }
@@ -1428,12 +1438,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            { error: VolleyError? ->
-                error?.printStackTrace()
+            { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -1480,7 +1494,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarInfoPedidos(url: String?) {
-        //System.out.println(URL);
         binding.tvPedidosact.setTextColor(Color.rgb(41, 184, 214))
         binding.tvPedidosact.text = "Pedidos Act.: Sincronizando."
         contadorpedidosactualizados = 0
@@ -1489,10 +1502,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             url,
             null,
             { response: JSONObject ->  //a traves de un json array request, traemos la informacion que viene del webservice
-                //System.out.println("Rspuestaaaaaaa ->" + response);
                 try {
                     if (response.getString("pedidos") != "null") { // si la respuesta no viene vacia
-                        //System.out.println("NO VINO NULA");
                         //conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
                         val pedidos = response.getJSONArray("pedidos")
@@ -1508,7 +1519,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     val numinterno = jsonObject.getString("kti_ndoc")
                                     val ktiStatus = jsonObject.getString("kti_status")
                                     val kePedstatus = jsonObject.getString("ke_pedstatus")
-                                    //System.out.println(nropedido);
+
                                     val cv = ContentValues()
                                     cv.put("kti_ndoc", numinterno)
                                     cv.put("kti_nroped", nropedido)
@@ -1560,12 +1571,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            { error: VolleyError? ->
-                error?.printStackTrace()
+            { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //--Manejo visual que indica al usuario del error--
                 binding.tvPedidosact.setTextColor(Color.rgb(232, 17, 35))
                 binding.tvPedidosact.text = "Pedidos Act: No ha logrado sincronizar"
@@ -1588,7 +1603,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarUsuario(url: String) {
-        //System.out.println("Usuario ->" + URL);
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         val fechaError = obtenerFechaPreError("usuarios")
         val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
@@ -1670,8 +1684,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     sincronizacionVendedor()
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
                 //--Manejo visual que indica al usuario del error--
@@ -1768,12 +1784,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -1797,7 +1817,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarVendedor(url: String) {
-        //System.out.println("URL vndeodr -> " + URL);
         //Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         val fechaError = obtenerFechaPreError("listvend")
         contadorvend = 0
@@ -1896,12 +1915,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -2054,7 +2077,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }*/
 
     private fun bajarArticulos(url: String) {
-        //System.out.println("Este es el URL -> " + URL);
         progressDialog!!.setMessage("Sincronizando articulos")
         //OJO AQUI QUE HAY 2 UPDATE Y SI SE ELIMINA 1 SE JODE TODA LA VAINA
         binding.tvArticulos.setTextColor(Color.rgb(41, 184, 214))
@@ -2162,8 +2184,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         arrayOf("articulo")
                                     )
                                     keAndroid.setTransactionSuccessful()
-                                } catch (exception: Exception) {
-                                    exception.printStackTrace()
+                                } catch (error: Exception) {
+                                    println("--Error--")
+                                    error.printStackTrace()
+                                    println("--Error--")
                                 } finally {
                                     keAndroid.endTransaction()
                                 }
@@ -2173,8 +2197,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 )
                                 codigoEnLocal.moveToFirst()
                                 val codigoExistente = codigoEnLocal.getInt(0)
-                                //System.out.println("ESTE ES EL CODIGO: " + codigo);
-                                //System.out.println("SELECT count(codigo) FROM articulo WHERE codigo = '" + codigo + "'");
+
                                 if (codigoExistente > 0) {
                                     try {
                                         keAndroid.beginTransaction()
@@ -2257,8 +2280,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         )
                                         keAndroid.setTransactionSuccessful()
                                         contadorart++
-                                    } catch (exception: Exception) {
-                                        exception.printStackTrace()
+                                    } catch (error: Exception) {
+                                        println("--Error--")
+                                        error.printStackTrace()
+                                        println("--Error--")
                                     } finally {
                                         codigoEnLocal.close()
                                         keAndroid.endTransaction()
@@ -2347,8 +2372,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         binding.tvArticulos.setTextColor(Color.rgb(62, 197, 58))
                                         binding.tvArticulos.text = "Articulos:$contadorart"
                                         progressDialog!!.setMessage("Articulos:$contadorart")
-                                    } catch (e: JSONException) {
-                                        e.printStackTrace()
+                                    } catch (error: JSONException) {
+                                        println("--Error--")
+                                        error.printStackTrace()
+                                        println("--Error--")
                                     } finally {
                                         keAndroid.endTransaction()
                                     }
@@ -2441,8 +2468,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     )
                                     contadorart++
                                     keAndroid.setTransactionSuccessful()
-                                } catch (e: JSONException) {
-                                    e.printStackTrace()
+                                } catch (error: JSONException) {
+                                    println("--Error--")
+                                    error.printStackTrace()
+                                    println("--Error--")
                                     Toast.makeText(
                                         applicationContext,
                                         "Evento 15",
@@ -2462,7 +2491,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             sincronizacionVendedor()
                         }
                     } else if (response.getString("articulo") == "null") {
-                        //System.out.println("AQUI ANDA");
 
                         // Toast.makeText(getApplicationContext(), "No se recibieron mas datos", LENGTH_LONG).show(); /* si en la consulta no ncuentra nada
                         //es que el usuario o password estan incorrectos */
@@ -2473,13 +2501,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
-                //System.out.println("Este es el error -> "+error);
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -2542,7 +2573,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val fecha = dateFormat.format(Date.from(Instant.now()))
 
-        //System.out.println("Fecha actual = " + fecha);
         val jsonObject = JSONObject()
         val sJsonObject = JSONObject()
         try {
@@ -2551,15 +2581,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             jsonObject.put("version", version)
             jsonObject.put("fecha", fecha)
             sJsonObject.put("sincroonizacion", jsonObject)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        } catch (error: JSONException) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
         }
         insertarSincronizacion(sJsonObject, fecha)
     }
 
     //Funcion que sube el JSON de sinronizacion a la base de datos
     private fun insertarSincronizacion(json: JSONObject, fecha: String) {
-        println("Sincronizacion -> $json")
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
             "http://$enlaceEmpresa:5001/sincroonizacion",
@@ -2583,7 +2614,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             ).show()
                             varAuxError = true
                         } else if (jsonObject.getString("status") == "200" && jsonObject.getString("usuario") == cod_usuario) {
-                            //System.out.println("Sincronizacion Exitosa");
 
                             //Guardado de la ultima sincronnizaion en la base de datos
                             val keAndroid = conn.writableDatabase
@@ -2603,19 +2633,25 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     )
                                 )
                                 keAndroid.setTransactionSuccessful()
-                            } catch (exception: Exception) {
-                                exception.printStackTrace()
+                            } catch (error: Exception) {
+                                println("--Error--")
+                                error.printStackTrace()
+                                println("--Error--")
                             } finally {
                                 keAndroid.endTransaction()
                                 keAndroid.close()
                             }
                         }
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
+                    } catch (error: JSONException) {
+                        println("--Error--")
+                        error.printStackTrace()
+                        println("--Error--")
                     }
                 }
-            }) { error: VolleyError? ->
-            error?.printStackTrace()
+            }) { error: VolleyError ->
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             Toast.makeText(
                 this@SincronizacionActivity,
                 "No ha logrado sincronizar, verifique su acceso a internet.",
@@ -2631,7 +2667,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarArticulos3(url: String) {
-        //System.out.println("Este es el URL -> " + URL);
         progressDialog!!.setMessage("Sincronizando articulos")
         //OJO AQUI QUE HAY 2 UPDATE Y SI SE ELIMINA 1 SE JODE TODA LA VAINA
         binding.tvArticulos.setTextColor(Color.rgb(41, 184, 214))
@@ -2738,9 +2773,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                    //System.out.println("Este es el error -> "+error);
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                     //Ingreso de la fecha antes de ser actualizada
                     actualizarFechaError(fechaError)
 
@@ -2756,8 +2792,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     sincronizacionVendedor()
                 }
             }) { error: VolleyError ->
+                println("--Error--")
                 error.printStackTrace()
-                //System.out.println("Este es el error -> "+error);
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -2868,13 +2905,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             if (codigoExistente == 0) {
                                 try {
 
-                                    //System.out.println("El codigo: " + codigo + " hizo INSERT");
                                     keAndroid.beginTransaction()
                                     keAndroid.insert("articulo", null, contenedor)
                                     keAndroid.setTransactionSuccessful()
                                     contadorart++
-                                } catch (exception: Exception) {
-                                    exception.printStackTrace()
+                                } catch (error: Exception) {
+                                    println("--Error--")
+                                    error.printStackTrace()
+                                    println("--Error--")
                                 } finally {
                                     keAndroid.endTransaction()
                                 }
@@ -2884,7 +2922,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 if (fechaBdd!!.before(fechaApi)) {
                                     try {
 
-                                        //System.out.println("El codigo: " + codigo + " hizo UPDATE");
                                         keAndroid.beginTransaction()
                                         keAndroid.update(
                                             "articulo", contenedor, "codigo = ?", arrayOf(
@@ -2893,15 +2930,19 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         )
                                         keAndroid.setTransactionSuccessful()
                                         contadorart++
-                                    } catch (exception: Exception) {
-                                        exception.printStackTrace()
+                                    } catch (error: Exception) {
+                                        println("--Error--")
+                                        error.printStackTrace()
+                                        println("--Error--")
                                     } finally {
                                         keAndroid.endTransaction()
                                     }
-                                } //System.out.println("El codigo: " + codigo + " hizo OUT");
+                                }
                             }
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
+                        } catch (error: JSONException) {
+                            println("--Error--")
+                            error.printStackTrace()
+                            println("--Error--")
                         }
                     }
                     keAndroid.close()
@@ -2920,8 +2961,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     sincronizacionVendedor()
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 binding.tvArticulos.setTextColor(Color.rgb(98, 117, 141))
                 binding.tvArticulos.text = "Articulos: Sin actualización"
                 progressDialog!!.setMessage("Articulos: Sin actualización")
@@ -3052,10 +3095,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 }
 
                                 countDoc++
-                            } catch (e: JSONException) {
+                            } catch (error: JSONException) {
                                 Toast.makeText(applicationContext, "Evento 16", Toast.LENGTH_LONG)
                                     .show()
-                                e.printStackTrace()
+                                println("--Error--")
+                                error.printStackTrace()
+                                println("--Error--")
                             }
                         }
                         conn.deleteCamposVarios(
@@ -3081,13 +3126,15 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: Exception) {
-                    //System.out.println("Error Bajar Documento -> " + e);
-                    e.printStackTrace()
+                } catch (error: Exception) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }) { error: VolleyError? ->
-                error?.printStackTrace()
-                //System.out.println("Este es el error -> "+error);
+            }) { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 //ActualizarFechaError(fecha_error);
 
@@ -3542,12 +3589,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -3654,12 +3705,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -3767,12 +3822,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -3881,12 +3940,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
             },
-            Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //Ingreso de la fecha antes de ser actualizada
                 actualizarFechaError(fechaError)
 
@@ -3993,7 +4056,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 "SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend = '$cod_usuario' AND empresa = '$codEmpresa'",
                 null
             )
-        //System.out.println("SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='" + cod_usuario.trim() + "'");
         //Creacion del JSON Array que contendra las precobranzas
         arrayCH = JSONArray()
         //while que reorera todos los casos positivos de la sentencia SQL ejeutada
@@ -4071,7 +4133,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     "SELECT * FROM ke_precobradocs WHERE cxcndoc ='$cxcndoc' AND empresa = '$codEmpresa'",
                     null
                 )
-                //System.out.println("SELECT * FROM ke_precobradocs WHERE cxcndoc ='" + cxcndoc + "'");
 
                 //Creacion del JSON Array que contendra todas las lineas de un documento
                 arrayCL = JSONArray()
@@ -4116,7 +4177,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     objetoLineas.put("kecxc_idd", cursorRl.getString(31))
                     objetoLineas.put("tasadiad", cursorRl.getDouble(32))
                     objetoLineas.put("afavor", cursorRl.getDouble(33))
-                    //System.out.println("LA FECHA --> "+ cursorRl.getString(23));
                     //Guardado del objeto JSON Lineas en el JSON Array
                     arrayCL!!.put(objetoLineas)
                 }
@@ -4127,12 +4187,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //Insercion del objeto cabecera en el Objeto JSON super cabecera
                 objetoSCabecera.put("Cabecera", objetoCabecera)
                 //Capturador de errores
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                println("Error al cargar datos del recibo$ex")
+            } catch (error: Exception) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 Toast.makeText(
                     this@SincronizacionActivity,
-                    "Error al cargar datos del recibo$ex",
+                    "Evento inesperado al cargar datos del recibo",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -4147,16 +4208,20 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         try {
             //Guardado del array Cobranza con su asignacion de nombre dentro del JSON
             jsonREC.put("Cobranza", arrayCH)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        } catch (error: JSONException) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el pedido" + e, Toast.LENGTH_SHORT).show();
         }
 
         try {
             //Funcion para el envio del JSON
             insertarCobranza(jsonREC)
-        } catch (exc: Exception) {
-            exc.printStackTrace()
+        } catch (error: Exception) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el pedido" + exc, Toast.LENGTH_SHORT).show();
         }
     }
@@ -4253,11 +4318,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 //Insercion del objeto cabecera en el Objeto JSON super cabecera
                 objetoSCabecera.put("Cabecera", objetoCabecera)
                 //Catch para la camtura de errores
-            } catch (e: JSONException) {
-                e.printStackTrace()
+            } catch (error: JSONException) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 Toast.makeText(
                     this@SincronizacionActivity,
-                    "Evento inesperado al cargar el pedido $e.",
+                    "Evento inesperado al cargar el pedido.",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -4268,22 +4335,25 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             binding.tvSubidospedidos.text =
                 "Cargando pedido: " + contadorPedidos + " de " + cursorti.count
         }
-        //System.out.println(arrayTi);
-        //  System.out.println(arrayMV);
+
         //Objeto JSON que contiene todo el JSON
         val jsonPE = JSONObject() //vamos a hacer un solo objeto de tipo json
         try {
             //Creacion de Objeto JSON pedido que contiene todo el JSON
             jsonPE.put("Pedido", arrayTi)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        } catch (error: JSONException) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el pedido" + e, Toast.LENGTH_SHORT).show();
         }
         try {
             //Envio de pedidos
             insertarPedido(jsonPE)
-        } catch (exc: Exception) {
-            exc.printStackTrace()
+        } catch (error: Exception) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
             // Toast.makeText(SincronizacionActivity.this, "Error al cargar el pedido" + exc, Toast.LENGTH_SHORT).show();
         }
     }
@@ -4312,29 +4382,33 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 objetoLimite.put("kli_fechahizo", kliFechahizo.trim { it <= ' ' })
                 objetoLimite.put("kli_fechavence", kliFechavence.trim { it <= ' ' })
                 arrayLimite!!.put(objetoLimite)
-            } catch (e: JSONException) {
-                e.printStackTrace()
+            } catch (error: JSONException) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 Toast.makeText(
                     applicationContext,
-                    "Error respaldando parámetros$e",
+                    "Evento inesperado respaldando parámetros",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
 
-
-        //System.out.println(arrayLimite);
         val jsonObject = JSONObject()
         try {
             jsonObject.put("Limites", arrayLimite)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        } catch (error: JSONException) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
         }
         val jsonStrLim = jsonObject.toString()
         try {
             insertarLimites(jsonStrLim)
-        } catch (exc: Exception) {
-            exc.printStackTrace()
+        } catch (error: Exception) {
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
         }
     }
 
@@ -4353,7 +4427,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 }
             },
             Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
                 error.printStackTrace()
+                println("--Error--")
                 varAux++
                 progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                 //varAuxError = true;
@@ -4413,7 +4489,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             "SELECT * FROM ke_retimg WHERE ke_retimg.cxcndoc = '$correlativo' AND empresa = '$codEmpresa';",
             null
         )
-        //System.out.println("SELECT * FROM ke_imgret WHERE ke_imgret.cxcndoc = '" + correlativo + "';");
         while (cursor.moveToNext()) {
             /*ke_imgret img = new ke_imgret(
                     cursor.getString(0),
@@ -4427,20 +4502,19 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 imagen.put("ruta", cursor.getString(1))
 
                 enviarImgRet(imagen, correlativo, edorec)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (error: Exception) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
             }
 
-            //System.out.println(img);
             i++
         }
         cursor.close()
     }
 
     private fun enviarImgRet(imgs: JSONObject, correlativo: String, edorec: String) {
-        //System.out.println(imgs);
         val keAndroid = conn.writableDatabase
-        //System.out.println("Imagen -->" + imgs);
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
             "https://$enlaceEmpresa/webservice/ImagenesRetenciones.php",
@@ -4453,13 +4527,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     } else {
                         keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '${edorec.toInt() - 1}' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                     keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '${edorec.toInt() - 1}' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
                 }
             }) { error: VolleyError ->
-            //System.out.println("Error -->" + error);
+            println("--Error--")
             error.printStackTrace()
+            println("--Error--")
             keAndroid.execSQL("UPDATE ke_precobranza SET edorec = '${edorec.toInt() - 1}' WHERE cxcndoc = '$correlativo' AND empresa = '$codEmpresa';")
         }
         val requestQueue = Volley.newRequestQueue(this)
@@ -4468,8 +4545,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     /** */
     private fun insertarCobranza(jsoncxc: JSONObject?) {
-        println(jsoncxc)
-        //http://cloccidental.com:5001/precobranzas2
         val requestQueue = Volley.newRequestQueue(this@SincronizacionActivity)
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
@@ -4535,8 +4610,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         }
                         //Mensaje final del proceso
                         binding.tvSubidospedidos.text = "Cobranzas Procesadas"
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
+                    } catch (error: Exception) {
+                        println("--Error--")
+                        error.printStackTrace()
+                        println("--Error--")
                     }
                 }
             },
@@ -4555,9 +4632,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
     private fun insertarPedido(jsonpe: JSONObject?) {
         //Muestra pantalla del json generado
-        //System.out.println("pedido llegando: " + jsonpe);
 
-        //http://cloccidental.com:5000/pedidos
         //Envio del JSON en la direccion dada
         val requestQueue = Volley.newRequestQueue(this@SincronizacionActivity)
         //Respuesta negativa del url
@@ -4626,13 +4701,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         }
                         //Mensaje final del proceso
                         binding.tvSubidospedidos.text = "Pedidos Procesados"
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
-                        println("Error status-correlativo")
+                    } catch (error: Exception) {
+                        println("--Error--")
+                        error.printStackTrace()
+                        println("--Error--")
                     }
                 }
             }) { error: VolleyError ->
+            println("--Error--")
             error.printStackTrace()
+            println("--Error--")
             Toast.makeText(
                 this@SincronizacionActivity,
                 "Sin conexión a Internet estable para subir pedidos.",
@@ -4709,11 +4787,15 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         sincronizacionVendedor()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError? ->
-                error?.printStackTrace()
+            }, Response.ErrorListener { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
                 //--Manejo visual que indica al usuario del error--
                 progressDialog!!.setMessage("Kard: No ha logrado sincronizar.")
                 varAux++

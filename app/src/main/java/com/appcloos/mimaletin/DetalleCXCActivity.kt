@@ -91,7 +91,7 @@ class DetalleCXCActivity : AppCompatActivity() {
                     "listbanc",
                     "nombanco",
                     listOf("codbanco", "empresa"),
-                    listOf(kePrecobranza.bcocod, codEmpresa!!)
+                    listOf(kePrecobranza.bcocod, codEmpresa)
                 )
 
             if (nombreBanco.isNotEmpty()) {
@@ -130,7 +130,8 @@ class DetalleCXCActivity : AppCompatActivity() {
     private fun getPrecobranza(cxcndoc: String): ke_precobranza {
         val kePrecobranza = ke_precobranza()
         try {
-            keAndroid.rawQuery("SELECT * FROM ke_precobranza WHERE cxcndoc = '$cxcndoc';", null)
+            keAndroid.rawQuery("SELECT * FROM ke_precobranza " +
+                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';", null)
                 .use { cursor ->
                     if (cursor.moveToFirst()) {
                         kePrecobranza.cxcndoc = cursor.getString(0)
@@ -154,7 +155,8 @@ class DetalleCXCActivity : AppCompatActivity() {
     private fun getDocs(cxcndoc: String) {
         kePrecobradocsMain = arrayListOf()
         try {
-            keAndroid.rawQuery("SELECT * FROM ke_precobradocs WHERE cxcndoc = '$cxcndoc';", null)
+            keAndroid.rawQuery("SELECT * FROM ke_precobradocs " +
+                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';", null)
                 .use { cursor ->
                     while (cursor.moveToNext()) {
                         val kePrecobradocs = ke_precobradocs()
@@ -207,7 +209,8 @@ class DetalleCXCActivity : AppCompatActivity() {
         val documentos = Documentos()
         try {
             keAndroid.rawQuery(
-                "SELECT nombrecli, codcliente FROM ke_precobradocs WHERE cxcndoc = '$cxcndoc';",null
+                "SELECT nombrecli, codcliente FROM ke_precobradocs " +
+                        "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",null
             ).use { cursor ->
                 if (cursor.moveToFirst()) {
                     documentos.nombrecli = cursor.getString(0)

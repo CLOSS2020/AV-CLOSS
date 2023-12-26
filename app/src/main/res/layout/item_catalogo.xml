@@ -114,6 +114,18 @@
             app:layout_constraintTop_toBottomOf="@+id/text_existencia" />
 
         <TextView
+            android:id="@+id/tvRefernacia"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:paddingStart="2dp"
+            android:textColor="@color/grayPerfect"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_precio" />
+
+        <TextView
             android:id="@+id/text_existencia"
             style="@style/TextColorAuxExistencia"
             android:layout_width="158dp"
@@ -203,7 +215,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/text_precio"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_max"
+            app:layout_constraintTop_toBottomOf="@+id/tvRefernacia"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView

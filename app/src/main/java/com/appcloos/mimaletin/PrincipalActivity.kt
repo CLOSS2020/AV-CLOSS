@@ -174,7 +174,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         navView.setNavigationItemSelectedListener(this)
         val headerView = navView.getHeaderView(0)
         tvNombreu = headerView.findViewById(R.id.tv_nombreu)
-        val tvNomEmpresa: TextView= headerView.findViewById(R.id.tvNomEmpresa)
+        val tvNomEmpresa: TextView = headerView.findViewById(R.id.tvNomEmpresa)
         llHeaderNavMenu = headerView.findViewById(R.id.llHeaderNavMenu)
         tvNombreu.text = "Bienvenid@, $nombreUsuario"
         tvNomEmpresa.text = "Empresa: $nombreEmpresa"
@@ -344,11 +344,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     private fun descargarTasas(url: String) {
-        val keAndroid = conn.writableDatabase
         val jsonArrayRequest: JsonObjectRequest =
             object : JsonObjectRequest(url, Response.Listener { response: JSONObject ->
                 if (response.getString("tasas") != "null") {
-                    keAndroid.beginTransaction()
                     try {
                         val tasas = response.getJSONArray("tasas")
                         for (i in 0 until tasas.length()) {
@@ -393,16 +391,8 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     } catch (exception: Exception) {
                         cargarUtilmaTasa()
                         exception.printStackTrace()
-                        llCommit = false
-                        if (!llCommit) return@Listener
                     }
-                    if (llCommit) {
-                        keAndroid.setTransactionSuccessful()
-                        keAndroid.endTransaction()
-                    } else if (!llCommit) {
-                        keAndroid.endTransaction()
-                    }
-                }else{
+                } else {
                     cargarUtilmaTasa()
                 }
             }, Response.ErrorListener { error: VolleyError ->
@@ -881,7 +871,6 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             }
 
             R.id.icpedidos -> {
-                println("Los permisos -> $permisos")
 
                 //IF que se ayuda de la Funcion PedidoBloq() que valida la fecha de la ultima vez que sincroonizo el vendedor
                 //En caso de ser true el vendedor puede hacer pedido

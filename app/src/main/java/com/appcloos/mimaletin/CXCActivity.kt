@@ -636,8 +636,10 @@ class CXCActivity : AppCompatActivity() {
                     codBanco = ""
                 }
 
+
+
                 val cursorDocs = keAndroid.rawQuery(
-                    "SELECT nombrecli, documento, codcliente, tasadoc, tnetodbs, tnetoddol, bsretiva, bsretfte, bsmtoiva, bsmtofte, refret, refretfte, reten, prcdsctopp, afavor, kecxc_idd, fchemiret, fchemirfte FROM ke_precobradocs WHERE cxcndoc = '$codigoRecibo AND empresa = '$codEmpresa';",
+                    "SELECT nombrecli, documento, codcliente, tasadoc, tnetodbs, tnetoddol, bsretiva, bsretfte, bsmtoiva, bsmtofte, refret, refretfte, reten, prcdsctopp, afavor, kecxc_idd, fchemiret, fchemirfte FROM ke_precobradocs WHERE cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa';",
                     null
                 )
                 while (cursorDocs.moveToNext()) {

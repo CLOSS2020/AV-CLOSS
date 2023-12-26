@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.appcloos.mimaletin.classes.DecimalDigitsInputFilter
 import com.appcloos.mimaletin.databinding.ActivityCxcReportBinding
@@ -206,8 +207,6 @@ class CxcReportActivity : AppCompatActivity() {
         //clase para guardar fotos
         val savePhoto = SavePhoto(this)
 
-        //System.out.println("ENLACE " + enlaceEmpresa);
-
         //inst. conexion
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
@@ -217,7 +216,8 @@ class CxcReportActivity : AppCompatActivity() {
         //listBankDesc = conn.getConfigString("APP_BANCOS_DESCUENTOS").trim().split(",")
 
         listaBancoRepetible =
-            conn.getConfigString("APP_BANCOS_REFERENCIA_REPETIBL", codEmpresa!!).replace(" ", "").split(",")
+            conn.getConfigString("APP_BANCOS_REFERENCIA_REPETIBL", codEmpresa!!).replace(" ", "")
+                .split(",")
 
         /*if (listBankDesc[0] == "") {
             binding.cbCxcDescuentos.isEnabled = false
@@ -235,7 +235,6 @@ class CxcReportActivity : AppCompatActivity() {
         //cargar datos
         cargarEnlace()
         fechaActual = getFechaHoy()
-        bajarDocsConDesc("https://" + enlaceEmpresa + "/webservice/bajardescuentos.php?fecha_sinc=" + fechaAuxiliar.trim() + "&&codigo_cli=" + codigoCliente.trim() + "&&agencia=" + codigoSucursal.trim())
         //Listas de Array
         listaTasas = ArrayList()
         listaInfoTasas = ArrayList()
@@ -258,6 +257,8 @@ class CxcReportActivity : AppCompatActivity() {
             "SELECT MAX(kcor_numero) FROM ke_corprec " +
                     "WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'", null
         )
+        cargarSaldos("USD", listaDocsSeleccionados)
+        bajarDocsConDesc("https://$enlaceEmpresa/webservice/bajardescuentos_V2.php?fecha_sinc=$fechaAuxiliar&codigo_cli=$codigoCliente")
         //----
         if (cursorCorrelativo.moveToFirst()) {
             nroCorrelativo = cursorCorrelativo.getInt(0)
@@ -1374,10 +1375,6 @@ class CxcReportActivity : AppCompatActivity() {
     private fun cargarDetalleDescuentos() {
         val listaDesc: ArrayList<Descuentos> = listaDescuentos
 
-        /*for (i in listaDesc.indices){
-            println("${listaDesc[i].nrodoc}")
-        }*/
-
         val dialog = DialogDescuento()
         dialog.DialogDescuento(this, listaDesc)
     }
@@ -1648,7 +1645,12 @@ class CxcReportActivity : AppCompatActivity() {
         ) {
             Toast.makeText(
                 this,
-                "El monto a favor no puede exceder de ${conn.getConfigNum("APP_LIMITE_SALDO_FAVOR", codEmpresa!!)}.",
+                "El monto a favor no puede exceder de ${
+                    conn.getConfigNum(
+                        "APP_LIMITE_SALDO_FAVOR",
+                        codEmpresa!!
+                    )
+                }.",
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -1722,7 +1724,6 @@ class CxcReportActivity : AppCompatActivity() {
                 // 2023-03-29 se comenta por la necesidad de que al seleccionar divisa estas no se
                 // les sera aplicada el 10%
                 //val diferencia = (valorReal(montoMinimoRec * 0.9) <= montoRec)
-                //println(diferencia)
 
                 val diferencia = if (binding.rbCxcDivisasCom.isChecked) {
                     true
@@ -2061,8 +2062,6 @@ class CxcReportActivity : AppCompatActivity() {
                                             listaReciboPrLineas[i].tnetodbs += (if (binding.cbExcReten.isChecked) listaDocumentos[i].bsflete else listaDocumentos[i].bsflete - listaDocumentos[i].cbsretflete)
                                             //listaReciboPrLineas[i].tnetodbs += listaDocumentos[i].bsiva
                                         }
-                                        println("")
-
 
                                     } else {
 
@@ -2095,7 +2094,6 @@ class CxcReportActivity : AppCompatActivity() {
                                         } else {
                                             listaReciboPrLineas[i].tnetodbs += (if (binding.cbExcReten.isChecked) listaDocumentos[i].bsflete else listaDocumentos[i].bsflete - listaDocumentos[i].cbsretflete)
                                             //listaReciboPrLineas[i].tnetodbs += listaDocumentos[i].bsiva
-                                            println("")
                                         }
 
                                     }
@@ -2410,7 +2408,6 @@ class CxcReportActivity : AppCompatActivity() {
                         cxc.retmun_sbi = 0.00//definir
                         cxc.retmun_sbs = 0.00//definir
                         //var fechaVigen = fechaSuma(fechaActual, 3)
-                        //println("ojo")
                         //cxc.fchvigen   = fechaVigen
                         cxc.moneda = monedaSeleccionadaPr
                         cxc.tasadia = tasaCambioSeleccionadaPrincipal
@@ -3116,9 +3113,7 @@ class CxcReportActivity : AppCompatActivity() {
                 cxc.netocob =
                     binding.etCxcMontoMain.text.toString().ifEmpty { "0.0" }.toDouble()
                 //if (monedaSeleccionadaPr == "2") cxc.doltotal + superSaldoFavor() else cxc.bstotal + valorReal(superSaldoFavor() * tasaCambioSeleccionadaPrincipal)
-                println(valorReal(superSaldoFavor() * tasaCambioSeleccionadaPrincipal))
-                println(cxc.bstotal)
-                println(cxc.netocob)
+                //println(valorReal(superSaldoFavor() * tasaCambioSeleccionadaPrincipal))
                 //2023-07-14 se comento devido a que es un calculo errado, debido a que se trata flete con la tasa del dia y no con la tasa del documento
                 /*var doltotal   = binding.etCxcMontoMain.text.toString().toDouble()
                 if(binding.rbCxcDivisasMain.isChecked){
@@ -3135,7 +3130,6 @@ class CxcReportActivity : AppCompatActivity() {
                 cxc.retmun_sbi = 0.00//definir
                 cxc.retmun_sbs = 0.00//definir
                 //var fechaVigen = fechaSuma(fechaActual, 3)
-                //println("ojo")
                 //cxc.fchvigen   = fechaVigen
                 cxc.moneda = monedaSeleccionadaPr
                 cxc.tasadia = tasaCambioSeleccionadaPrincipal
@@ -3243,7 +3237,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 conn.getCampoDoubleCamposVarios(
                                     "ke_doccti",
                                     "cbsretflete",
-                                    listOf("documento","empresa"),
+                                    listOf("documento", "empresa"),
                                     listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
@@ -4008,9 +4002,7 @@ class CxcReportActivity : AppCompatActivity() {
                         cxc.netocob =
                             binding.etCxcMontoMain.text.toString().ifEmpty { "0.0" }.toDouble()
                         //if (monedaSeleccionadaPr == "2") cxc.doltotal + superSaldoFavor() else cxc.bstotal + superSaldoFavor()
-                        println(valorReal(superSaldoFavor() * tasaCambioSeleccionadaPrincipal))
-                        println(cxc.bstotal)
-                        println(cxc.netocob)
+                        //println(valorReal(superSaldoFavor() * tasaCambioSeleccionadaPrincipal))
                         //2023-07-14 se comento devido a que es un calculo errado, debido a que se trata flete con la tasa del dia y no con la tasa del documento
                         /*var doltotal   = binding.etCxcMontoMain.text.toString().toDouble()
                         if(binding.rbCxcDivisasMain.isChecked){
@@ -4027,7 +4019,6 @@ class CxcReportActivity : AppCompatActivity() {
                         cxc.retmun_sbi = 0.00//definir
                         cxc.retmun_sbs = 0.00//definir
                         //var fechaVigen = fechaSuma(fechaActual, 3)
-                        //println("ojo")
                         //cxc.fchvigen   = fechaVigen
                         cxc.moneda = monedaSeleccionadaPr
                         cxc.tasadia = tasaCambioSeleccionadaPrincipal
@@ -4758,7 +4749,6 @@ class CxcReportActivity : AppCompatActivity() {
                 cxc.retmun_sbi = 0.00//definir
                 cxc.retmun_sbs = 0.00//definir
                 //var fechaVigen = fechaSuma(fechaActual, 3)
-                //println("ojo")
                 //cxc.fchvigen   = fechaVigen
                 cxc.moneda = monedaSeleccionadaPr
                 cxc.tasadia = tasaCambioSeleccionadaPrincipal
@@ -4866,7 +4856,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 conn.getCampoDoubleCamposVarios(
                                     "ke_doccti",
                                     "cbsretflete",
-                                    listOf("documento","empresa"),
+                                    listOf("documento", "empresa"),
                                     listOf(listaDocumentos[i].documento, codEmpresa!!)
                                 )
                             )
@@ -5102,25 +5092,21 @@ class CxcReportActivity : AppCompatActivity() {
         var tasadoc: Double
         var fechamodifi: String
 
-        var llCommitDc = false
-        val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, url, null, { response ->
-            if (response != null) {
-                llCommitDc = false
-                keAndroid.beginTransaction()
-
-                var jsonObject: JSONObject?
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null, { response ->
+            if (response.getString("docs") != "null") {
                 try {
+                    val jsonArray = response.getJSONArray("docs")
                     for (i in 0 until response.length()) {
-                        jsonObject = response.getJSONObject(i)
-                        agencia = jsonObject.getString("agencia").trim()
-                        tipodoc = jsonObject.getString("tipodoc").trim()
-                        documento = jsonObject.getString("documento").trim()
-                        codcliente = jsonObject.getString("codcliente").trim()
-                        edodcto = jsonObject.getString("edodcto").trim()
-                        prcdctoaplic = jsonObject.getDouble("prcdctoaplic")
-                        montodctodol = jsonObject.getDouble("montodctodol")
-                        tasadoc = jsonObject.getDouble("tasadoc")
-                        fechamodifi = jsonObject.getString("fechamodifi").trim()
+                        val docs = jsonArray.getJSONObject(i)
+                        agencia = docs.getString("agencia").trim()
+                        tipodoc = docs.getString("tipodoc").trim()
+                        documento = docs.getString("documento").trim()
+                        codcliente = docs.getString("codcliente").trim()
+                        edodcto = docs.getString("edodcto").trim()
+                        prcdctoaplic = docs.getDouble("prcdctoaplic")
+                        montodctodol = docs.getDouble("montodctodol")
+                        tasadoc = docs.getDouble("tasadoc")
+                        fechamodifi = docs.getString("fechamodifi").trim()
 
                         val qDescuentos = ContentValues()
                         qDescuentos.put("agencia", agencia)
@@ -5134,43 +5120,28 @@ class CxcReportActivity : AppCompatActivity() {
                         qDescuentos.put("fechamodifi", fechamodifi)
                         qDescuentos.put("empresa", codEmpresa!!)
 
-                        val qcodigoLocal: Cursor = keAndroid.rawQuery(
-                            "SELECT count(documento) FROM ke_precobdcto " +
-                                    "WHERE documento ='documento' AND empresa = '$codEmpresa'",
-                            null
-                        )
-                        qcodigoLocal.moveToFirst()
-
-                        val codigoExistente = qcodigoLocal.getInt(0)
-                        qcodigoLocal.close()
-
-                        if (codigoExistente > 0) {
-                            keAndroid.update(
+                        if (conn.validarExistenciaCamposVarios(
+                                "ke_precobdcto", ArrayList(
+                                    mutableListOf("documento", "empresa")
+                                ), arrayListOf(documento, codEmpresa!!)
+                            )
+                        ) {
+                            conn.updateJSONCamposVarios(
                                 "ke_precobdcto",
                                 qDescuentos,
-                                "documento = ?",
-                                arrayOf(documento)
+                                "documento = ? AND empresa = ?",
+                                arrayOf(documento, codEmpresa!!)
                             )
-                        } else if (codigoExistente == 0) {
-                            keAndroid.insert("ke_precobdcto", null, qDescuentos)
+                        } else {
+                            conn.insertJSON("ke_precobdcto", qDescuentos)
                         }
-
                     }
-                    llCommitDc = true
-
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    llCommitDc = false
-                    if (!llCommitDc) return@JsonArrayRequest
+                } catch (error: Exception) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
 
-            }
-            if (llCommitDc) {
-                keAndroid.setTransactionSuccessful()
-                keAndroid.endTransaction()
-
-            } else if (!llCommitDc) {
-                keAndroid.endTransaction()
             }
 
         }, { error ->
@@ -5179,7 +5150,7 @@ class CxcReportActivity : AppCompatActivity() {
             println("--Error--")
         })
         val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest)
+        requestQueue.add(jsonObjectRequest)
     }
 
     private fun calcularDescuentos2(moneda: String) {
@@ -5722,7 +5693,8 @@ class CxcReportActivity : AppCompatActivity() {
         )
         val tabla = "ke_doccti"
         val condicion =
-            "empresa = '$codEmpresa' AND documento IN (" + listadocs.toString().replace("[", "").replace("]", "") + ")"
+            "empresa = '$codEmpresa' AND documento IN (" + listadocs.toString().replace("[", "")
+                .replace("]", "") + ")"
         val cursorDocs: Cursor =
             keAndroid.query(tabla, query, condicion, null, null, null, null)
 
@@ -5967,9 +5939,9 @@ class CxcReportActivity : AppCompatActivity() {
         }
 
         val totalRestante =
-            (netoaMostrarTot - saldoAFavor) + ivaRestante + fleteRestante - retencionRestante
+            (netoaMostrarTot - saldoAFavor) + ((ivaRestante + fleteRestante) - retencionRestante)
         val totalRestantebss =
-            netoRestantebss + ivaRestantebss + fleteRestantebss - retencionRestantebss
+            netoRestantebss + ((ivaRestantebss + fleteRestantebss) - retencionRestantebss)
 
         //asignacion de valores -- debe ser segun la moneda seleccionada valorReal
 
@@ -6086,7 +6058,7 @@ class CxcReportActivity : AppCompatActivity() {
         var flag = true
 
         //consulto al webservice para guardar las tasas
-        descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fechaAuxiliar.trim() + "&&agencia=" + codigoSucursal.trim())
+        //descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fechaAuxiliar.trim() + "&&agencia=" + codigoSucursal.trim())
 
         while (flag) {
             //println("https://"+ enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim())
@@ -6524,13 +6496,13 @@ class CxcReportActivity : AppCompatActivity() {
                 lateinit var imageUri: Uri
                 val clipData = data!!.clipData
                 if (clipData == null) {
-                    imageUri = data!!.data!!
+                    imageUri = data.data!!
                     listaImagenes.add(imageUri)
-                    println(listaImagenes)
+                    //println(listaImagenes)
                 } else {
                     for (i in 0 until clipData.itemCount) {
                         listaImagenes.add(clipData.getItemAt(i).uri)
-                        println(listaImagenes)
+                        //println(listaImagenes)
                     }
                 }
             } catch (e: java.lang.Exception) {
@@ -6551,7 +6523,7 @@ class CxcReportActivity : AppCompatActivity() {
 
         val firstDate: Date = sdf.parse(fechaRecepcion) as Date
         val secondDate: Date = sdf.parse(current) as Date
-        println("Comparacion de la fecha ${firstDate.compareTo(secondDate)}")
+        //println("Comparacion de la fecha ${firstDate.compareTo(secondDate)}")
 
         //recepcion > fecha = 1
         //recepcion = fecha = 0
@@ -6566,7 +6538,10 @@ class CxcReportActivity : AppCompatActivity() {
         val date = sdf.parse(fechaRecepcion)
         val cal = Calendar.getInstance()
         cal.time = date!!
-        cal.add(Calendar.DATE, +conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt())
+        cal.add(
+            Calendar.DATE,
+            +conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt()
+        )
 
         val newDate: Date = cal.time
 
@@ -6574,7 +6549,7 @@ class CxcReportActivity : AppCompatActivity() {
 
         try {
             inActiveDate = sdf.format(newDate)
-            println(inActiveDate)
+            //println(inActiveDate)
         } catch (e1: ParseException) {
 
             // TODO Auto-generated catch block
@@ -6723,7 +6698,8 @@ class CxcReportActivity : AppCompatActivity() {
 
             btCxcProcesar.setBackgroundColor(btCxcProcesar.colorButtonAgencia(Constantes.AGENCIA))
 
-            cbCxcComplemento.buttonTintList = cbCxcComplemento.setColorRadioButon(Constantes.AGENCIA)
+            cbCxcComplemento.buttonTintList =
+                cbCxcComplemento.setColorRadioButon(Constantes.AGENCIA)
             cbCxcDescuentos.buttonTintList = cbCxcDescuentos.setColorRadioButon(Constantes.AGENCIA)
             cbExcReten.buttonTintList = cbExcReten.setColorRadioButon(Constantes.AGENCIA)
 

@@ -87,7 +87,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
             val cursorca = keAndroid.rawQuery(
                 "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
-                        "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY diasultvta DESC",
+                        "WHERE status = '1' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa' ORDER BY diasultvta DESC",
                 null
             )
 
