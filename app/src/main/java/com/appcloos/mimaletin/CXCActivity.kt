@@ -3,6 +3,7 @@ package com.appcloos.mimaletin
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.ContentValues
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -23,6 +24,7 @@ import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -331,7 +333,7 @@ class CXCActivity : AppCompatActivity() {
     private fun mensajeCXC(codigoRecibo: String) {
         val builder = AlertDialog.Builder(
             ContextThemeWrapper(
-                this, R.style.AlertDialogCustom
+                this, setAlertDialogTheme(Constantes.AGENCIA)
             )
         )
         builder.setTitle("Opciones del Recibo")
@@ -363,7 +365,7 @@ class CXCActivity : AppCompatActivity() {
 
                 val subbuilder = AlertDialog.Builder(
                     ContextThemeWrapper(
-                        this, R.style.AlertDialogCustom
+                        this, setAlertDialogTheme(Constantes.AGENCIA)
                     )
                 )
                 subbuilder.setTitle("Borrado de Recibo")
@@ -377,7 +379,20 @@ class CXCActivity : AppCompatActivity() {
 
                 }
 
-                subbuilder.show()
+                val subventana = subbuilder.create()
+                subventana.show()
+
+                val pbutton: Button =
+                    subventana.getButton(DialogInterface.BUTTON_POSITIVE)
+                pbutton.apply {
+                    setTextColor(colorTextAgencia(Constantes.AGENCIA))
+                }
+
+                val nbutton: Button =
+                    subventana.getButton(DialogInterface.BUTTON_NEUTRAL)
+                nbutton.apply {
+                    setTextColor(colorTextAgencia(Constantes.AGENCIA))
+                }
             }
         }
 
@@ -390,7 +405,7 @@ class CXCActivity : AppCompatActivity() {
                     listOf("cxcndoc", "empresa"),
                     listOf(codigoRecibo, codEmpresa!!)
                 )
-            if (validarCampo == "") {
+            if (false /*validarCampo == ""*/) {
                 toast("El recibo no debe ser de antes de la actualización 23.10.2023")
             } else {
                 try {
@@ -402,7 +417,27 @@ class CXCActivity : AppCompatActivity() {
 
             }
         }
-        builder.show()
+
+        val ventana = builder.create()
+        ventana.show()
+
+        val pbutton: Button =
+            ventana.getButton(DialogInterface.BUTTON_POSITIVE)
+        pbutton.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
+
+        val nbutton: Button =
+            ventana.getButton(DialogInterface.BUTTON_NEGATIVE)
+        nbutton.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
+
+        val nebutton: Button =
+            ventana.getButton(DialogInterface.BUTTON_NEUTRAL)
+        nebutton.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
     }
 
     private fun irADestalleCXC(codigoRecibo: String) {
@@ -449,11 +484,12 @@ class CXCActivity : AppCompatActivity() {
         //estado == "1" || estado == "10"
         if (true) {
             val listaDocumentos = arrayListOf<String>()
-            val nombreEmpresa = "COMERCIALIZADORA LA OCCIDENTAL, C.A."
-            val rifEmpresa = "RIF: J-405584017"
+            val nombreEmpresa = nombreEmpresa(codEmpresa)
+            val rifEmpresa = rifEmpresa(codEmpresa)
             val dirEmpresa1 = "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 3, ZONA"
             val dirEmpresa2 = "INDUSTRIAL NORTE, COMPLEJO PARQUE INDUSTRIAL NORTE,"
             val dirEmpresa3 = "MARACAIBO ZULIA POSTAL 4001"
+            val direccion = direccionEmpresa(codEmpresa)
             val tipoDoc = "Precobranza"
             val subTipoDoc: String
             var vendedorRecibo = ""
@@ -637,7 +673,6 @@ class CXCActivity : AppCompatActivity() {
                 }
 
 
-
                 val cursorDocs = keAndroid.rawQuery(
                     "SELECT nombrecli, documento, codcliente, tasadoc, tnetodbs, tnetoddol, bsretiva, bsretfte, bsmtoiva, bsmtofte, refret, refretfte, reten, prcdsctopp, afavor, kecxc_idd, fchemiret, fchemirfte FROM ke_precobradocs WHERE cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa';",
                     null
@@ -725,12 +760,12 @@ class CXCActivity : AppCompatActivity() {
 
             //CABECERA
             //imagen del la cabecera
-            val bmp = BitmapFactory.decodeResource(this.resources, R.drawable.plantillasello)
+            val bmp = BitmapFactory.decodeResource(this.resources, plantillaPDF(codEmpresa))
             val scaledBitmap = Bitmap.createScaledBitmap(bmp, 612, 792, false)
             canvas.drawBitmap(scaledBitmap, 0f, 0f, paint)
 
             //ICONO DE LA EMPRESA
-            val iconEmpresa = BitmapFactory.decodeResource(this.resources, R.drawable.clo_negro)
+            val iconEmpresa = BitmapFactory.decodeResource(this.resources, logoPDF(codEmpresa))
             val scaledBtmpEmpresa = Bitmap.createScaledBitmap(iconEmpresa, 100, 100, false)
             canvas.drawBitmap(scaledBtmpEmpresa, 5f, 15f, paint)
 
@@ -744,9 +779,15 @@ class CXCActivity : AppCompatActivity() {
 
             //Direccion Empresa
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
-            canvas.drawText(dirEmpresa1, 105f, 55f, paint)
-            canvas.drawText(dirEmpresa2, 105f, 65f, paint)
-            canvas.drawText(dirEmpresa3, 105f, 75f, paint)
+            paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
+            var y = 55f
+            direccion.forEach { direc ->
+                canvas.drawText(direc, 105f, y, paint)
+                y += 10
+            }
+            //canvas.drawText(direccion, 105f, 55f, paint)
+            //canvas.drawText(dirEmpresa2, 105f, 65f, paint)
+            //canvas.drawText(dirEmpresa3, 105f, 75f, paint)
 
             //Tipo de documento
             paint.textAlign = Paint.Align.RIGHT
@@ -1316,7 +1357,8 @@ class CXCActivity : AppCompatActivity() {
 
         val firstDate: Date = sdf.parse(current) as Date
         val secondDate: Date = sumarDias(
-            conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO", codEmpresa!!).toInt(), sdf.parse(fchrecibo) as Date
+            conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO", codEmpresa!!).toInt(),
+            sdf.parse(fchrecibo) as Date
         )
 
         //vence > fecha = 1

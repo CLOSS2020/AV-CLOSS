@@ -517,7 +517,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
             /* crear comprobante de deposito  */
 
             val dialog = DialogAnexo()
-            dialog.DialogAnexo(this, listadatos)
+            dialog.DialogAnexo(this, listadatos, codEmpresa)
 
             Toast.makeText(this, "Depósito creado", Toast.LENGTH_SHORT).show()
 

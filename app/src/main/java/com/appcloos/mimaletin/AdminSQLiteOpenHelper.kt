@@ -2023,7 +2023,11 @@ class AdminSQLiteOpenHelper  //la version de la app debe cambiarse tras cada act
         val retorno = ArrayList<PlanificadorCxc>()
         val db = this.writableDatabase
         var sql =
-            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento " +
+        //a lo pagado se le suma la devolucion debido a que se genero una nota de credito
+        //Ademas se suman las retenciones ya pagadas para que la deuda baje
+        // (dtotpagos solo refleja dinero y no retenciones que son papel)
+            //y todo lo demas resta a la deuda original para saber lo que de verdad se paga
+            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev + ke_doccti.dretencion)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento " +
                     "WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) > 0.00 AND ke_doccti.empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
             sql += " AND (nombrecli LIKE '%$text%' OR documento LIKE '%$text%')"

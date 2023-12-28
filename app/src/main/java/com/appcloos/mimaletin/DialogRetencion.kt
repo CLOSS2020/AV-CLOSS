@@ -53,7 +53,7 @@ class DialogRetencion {
         dialogo.window?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
         dialogo.setContentView(R.layout.dialog_recibo_ok)
 
-        aceptar = dialogo.findViewById(R.id.bt_aceptardiag)
+        aceptar = dialogo.findViewById(R.id.btAceptardiag)
         monto = dialogo.findViewById(R.id.tv_montodiag)
         fecha = dialogo.findViewById(R.id.tv_fechadiag)
         id = dialogo.findViewById(R.id.tv_prcid)

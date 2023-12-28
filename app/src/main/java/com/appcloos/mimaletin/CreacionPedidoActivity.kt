@@ -448,8 +448,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                                 mtoDctoNuevo = precioTotal
                                                 descuento = 0.0
                                             }
-                                            keAndroid12.execSQL("UPDATE ke_carrito SET kmv_cant=$cantidadNew, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                            keAndroid12.execSQL(
+                                                "UPDATE ke_carrito SET kmv_cant=$cantidadNew, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
+                                                        "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                            )
                                             keAndroid12.setTransactionSuccessful()
                                             keAndroid12.endTransaction()
                                             Toast.makeText(
@@ -488,8 +490,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                                 mtoDctoNuevo = precioTotal
                                                 descuento = 0.0
                                             }
-                                            keAndroid12.execSQL("UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                            keAndroid12.execSQL(
+                                                "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
+                                                        "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                            )
                                             keAndroid12.setTransactionSuccessful()
                                             keAndroid12.endTransaction()
                                             Toast.makeText(
@@ -523,8 +527,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                         mtoDctoNuevo = precioTotal
                                         descuento = 0.0
                                     }
-                                    keAndroid12.execSQL("UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                            "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                    keAndroid12.execSQL(
+                                        "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
+                                                "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                    )
                                     keAndroid12.setTransactionSuccessful()
                                     keAndroid12.endTransaction()
                                     //finish();
@@ -691,7 +697,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private fun recalculoPrecio(b: Boolean) {
         var keAndroid = conn!!.writableDatabase
         var cursor =
-            keAndroid.rawQuery("SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'", null)
+            keAndroid.rawQuery(
+                "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
+                null
+            )
         if (b) {
             tipoDePrecioaMostrar = "precio1"
             preciocliente = 1.0
@@ -708,7 +717,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
         cursor.close()
         // tipoDePrecioaMostrar = (b)?"precio3":"precio"+enteroPrecio;
         keAndroid = conn!!.writableDatabase
-        val cursorMain = keAndroid.rawQuery("SELECT * FROM ke_carrito WHERE empresa = '$codEmpresa'", null)
+        val cursorMain =
+            keAndroid.rawQuery("SELECT * FROM ke_carrito WHERE empresa = '$codEmpresa'", null)
         while (cursorMain.moveToNext()) {
             val codigo = cursorMain.getString(0)
             val cantidad = cursorMain.getDouble(2)
@@ -721,8 +731,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
             val precioTotal = precio * cantidad
             val precioTotalRedondo = precioTotal.valorReal()
             cursor.close()
-            keAndroid.execSQL("UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo " +
-                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'")
+            keAndroid.execSQL(
+                "UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo " +
+                        "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+            )
             cargarLineas()
             sumaNeto()
         }
@@ -781,7 +793,15 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private fun cargarEnlace() {
         val keAndroid = conn!!.writableDatabase
         val columnas = arrayOf("kee_nombre," + "kee_url")
-        val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
+        val cursor = keAndroid.query(
+            "ke_enlace",
+            columnas,
+            "kee_codigo = '$codEmpresa'",
+            null,
+            null,
+            null,
+            null
+        )
         while (cursor.moveToNext()) {
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
@@ -954,7 +974,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 "SELECT codigo, nombre FROM cliempre " +
                         "WHERE vendedor ='$codUsuario1' AND empresa = '$codEmpresa' " +
                         "ORDER BY nombre ASC",
-                null)
+                null
+            )
         while (cursor.moveToNext()) {
             cliente = Cliente()
             cliente.setCodigo(cursor.getString(0))
@@ -1248,7 +1269,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private fun asignarTipodePrecio() {
         val keAndroid = conn!!.writableDatabase
         val cursor =
-            keAndroid.rawQuery("SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'", null)
+            keAndroid.rawQuery(
+                "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
+                null
+            )
         while (cursor.moveToNext()) {
             preciocliente = cursor.getDouble(0)
             enteroPrecio = (preciocliente!!).roundToInt()
@@ -1270,7 +1294,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private fun actualizarPrecios() {
         val keAndroid = conn!!.writableDatabase
         val cursorcarrito =
-            keAndroid.rawQuery("SELECT kmv_codart, kmv_cant FROM ke_carrito WHERE empresa = '$codEmpresa'", null)
+            keAndroid.rawQuery(
+                "SELECT kmv_codart, kmv_cant FROM ke_carrito WHERE empresa = '$codEmpresa'",
+                null
+            )
         while (cursorcarrito.moveToNext()) {
             val codigoArticuloCarrito = cursorcarrito.getString(0)
             val cantidadCarrito = cursorcarrito.getDouble(1)

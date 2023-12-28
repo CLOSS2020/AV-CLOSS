@@ -175,7 +175,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         val headerView = navView.getHeaderView(0)
         tvNombreu = headerView.findViewById(R.id.tv_nombreu)
         val tvNomEmpresa: TextView = headerView.findViewById(R.id.tvNomEmpresa)
+        val logo: ImageView = headerView.findViewById(R.id.imageView)
         llHeaderNavMenu = headerView.findViewById(R.id.llHeaderNavMenu)
+        logo.setImageResource(logoIconPrincipal(codEmpresa))
         tvNombreu.text = "Bienvenid@, $nombreUsuario"
         tvNomEmpresa.text = "Empresa: $nombreEmpresa"
         descargarTasas("https://$enlaceEmpresa/webservice/tasas_V2.php?fecha_sinc=$fechaAuxiliar")

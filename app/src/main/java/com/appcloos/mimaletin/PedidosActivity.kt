@@ -710,11 +710,12 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
 
         val nroPag = ceil(lineas.size / nroArtPag).toInt()
 
-        val nombreEmpresa = "COMERCIALIZADORA LA OCCIDENTAL, C.A."
-        val rifEmpresa = "RIF: J-405584017"
+        val nombreEmpresa = nombreEmpresa(codEmpresa)
+        val rifEmpresa = rifEmpresa(codEmpresa)
         val dirEmpresa1 = "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 3, ZONA"
         val dirEmpresa2 = "INDUSTRIAL NORTE, COMPLEJO PARQUE INDUSTRIAL NORTE,"
         val dirEmpresa3 = "MARACAIBO ZULIA POSTAL 4001"
+        val direccion = direccionEmpresa(codEmpresa)
         val tipoDoc = "Pedido"
         val subTipoDoc = "Prototipo Pedido"
 
@@ -765,12 +766,12 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
 
             //CABECERA
             //imagen del la cabecera
-            val bmp = BitmapFactory.decodeResource(this.resources, R.drawable.plantillasello)
+            val bmp = BitmapFactory.decodeResource(this.resources, plantillaPDF(codEmpresa))
             val scaledBitmap = Bitmap.createScaledBitmap(bmp, 612, 792, false)
             canvas.drawBitmap(scaledBitmap, 0f, 0f, paint)
 
             //ICONO DE LA EMPRESA
-            val iconEmpresa = BitmapFactory.decodeResource(this.resources, R.drawable.clo_negro)
+            val iconEmpresa = BitmapFactory.decodeResource(this.resources, logoPDF(codEmpresa))
             val scaledBtmpEmpresa = Bitmap.createScaledBitmap(iconEmpresa, 100, 100, false)
             canvas.drawBitmap(scaledBtmpEmpresa, 5f, 15f, paint)
 
@@ -784,9 +785,14 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
 
             //Direccion Empresa
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
-            canvas.drawText(dirEmpresa1, 105f, 55f, paint)
-            canvas.drawText(dirEmpresa2, 105f, 65f, paint)
-            canvas.drawText(dirEmpresa3, 105f, 75f, paint)
+            var y = 55f
+            direccion.forEach { direc ->
+                canvas.drawText(direc, 105f, y, paint)
+                y += 10
+            }
+            //canvas.drawText(direccion, 105f, 55f, paint)
+            //canvas.drawText(dirEmpresa2, 105f, 65f, paint)
+            //canvas.drawText(dirEmpresa3, 105f, 75f, paint)
 
             //Tipo de documento
             paint.textAlign = Paint.Align.RIGHT

@@ -300,11 +300,13 @@ class CxcReportActivity : AppCompatActivity() {
         binding.rbCxcCompMain.isChecked = true
         binding.rbCxcTransfMain.isChecked = true
 
+        //calcularRetencion()
+
         //calculo automatico, mejorar despues .-
         if (binding.rbCxcDivisasMain.isChecked) {
             cargarBancosMain("USD")
             binding.rbCxcEfectivoMain.visibility = View.VISIBLE
-            cargarSaldos("USD", listaDocsSeleccionados)
+            cargarSaldos("USD", listaDocsSeleccionados, !binding.cbExcReten.isChecked)
             monedaSeleccionadaPr = "2"
 
         }
@@ -2754,7 +2756,7 @@ class CxcReportActivity : AppCompatActivity() {
                             listadatos[0].cliente = codigoCliente
 
                             val dialog = DialogRecibo()
-                            dialog.DialogRecibo(this, listadatos)
+                            dialog.DialogRecibo(this, listadatos, codEmpresa)
 
                             Toast.makeText(this, "RECIBO CREADO", Toast.LENGTH_SHORT).show()
                             // finish()
@@ -3321,7 +3323,7 @@ class CxcReportActivity : AppCompatActivity() {
                     listadatos[0].cliente = codigoCliente
 
                     val dialog = DialogRecibo()
-                    dialog.DialogRecibo(this, listadatos)
+                    dialog.DialogRecibo(this, listadatos, codEmpresa)
 
                     Toast.makeText(this, "RECIBO CREADO", Toast.LENGTH_SHORT).show()
                     // finish()
@@ -4320,7 +4322,7 @@ class CxcReportActivity : AppCompatActivity() {
                             listadatos[0].cliente = codigoCliente
 
                             val dialog = DialogRecibo()
-                            dialog.DialogRecibo(this, listadatos)
+                            dialog.DialogRecibo(this, listadatos, codEmpresa)
 
                             Toast.makeText(this, "RECIBO CREADO", Toast.LENGTH_SHORT).show()
                             // finish()
@@ -4914,7 +4916,7 @@ class CxcReportActivity : AppCompatActivity() {
                     listadatos[0].cliente = codigoCliente
 
                     val dialog = DialogRecibo()
-                    dialog.DialogRecibo(this, listadatos)
+                    dialog.DialogRecibo(this, listadatos, codEmpresa)
 
                     Toast.makeText(this, "RECIBO CREADO", Toast.LENGTH_SHORT).show()
                     // finish()
@@ -5829,17 +5831,17 @@ class CxcReportActivity : AppCompatActivity() {
                 fleteRestantebss += fleterestabss
                 ivaRestante += ivaresta
                 fleteRestante += fleteresta
-
-                netoresta += (totalnetodoc - listaDocumentos[i].dtotdev) - (totalpdoc - (ivapagodoc / tasadoc) - (fletepagodoc / tasadoc))
+                //se debe de sumar las retenciones pagadas debido a que dtotpagos solo refleja dinero
+                netoresta += (totalnetodoc - listaDocumentos[i].dtotdev) - ((totalpdoc - (ivapagodoc / tasadoc) - (fletepagodoc / tasadoc)) + listaDocumentos[i].dretencion)
                 val netorestadoc =
-                    (totalnetodoc - listaDocumentos[i].dtotdev) - (totalpdoc - (ivapagodoc / tasadoc) - (fletepagodoc / tasadoc))
+                    (totalnetodoc - listaDocumentos[i].dtotdev) - ((totalpdoc - (ivapagodoc / tasadoc) - (fletepagodoc / tasadoc)) + listaDocumentos[i].dretencion)
                 //COLOCAR FUERA DEL CICLO
                 //netoresta    = valorReal(netoresta)
 
                 //netorestabss = netoresta * tasaCambioSeleccionadaPrincipal
                 //Esto deberia solucionar el mal calculo de los bolivares
                 netorestabss +=
-                    ((totalnetodoc - listaDocumentos[i].dtotdev) - (totalpdoc - (ivapagodoc / tasadoc) - (fletepagodoc / tasadoc))) * tasaCambioSeleccionadaPrincipal
+                    ((totalnetodoc - listaDocumentos[i].dtotdev) - ((totalpdoc - (ivapagodoc / tasadoc) - (fletepagodoc / tasadoc)) + listaDocumentos[i].dretencion)) * tasaCambioSeleccionadaPrincipal
 
 
                 //netoRestantebss = netorestabss
@@ -6630,7 +6632,8 @@ class CxcReportActivity : AppCompatActivity() {
         validarReten()
         if (contadorDoc == contadorRetenIVA && contadorRetenFlete == 0) {
             binding.apply {
-                if (rbCxcCompMain.isChecked) {
+                val completoMain = rbCxcCompMain.isChecked
+                if (completoMain) {
                     cbExcReten.isChecked = true
                     cbExcReten.isEnabled = false
                 }
@@ -6645,6 +6648,7 @@ class CxcReportActivity : AppCompatActivity() {
             }
             //Toast.makeText(this, "Ya agregó retención de flete", Toast.LENGTH_SHORT).show()
         }
+        println()
     }
 
     private fun dialogImg() {

@@ -15,7 +15,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfDocument.PageInfo
 import android.os.Environment
-import android.view.View
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
@@ -39,6 +38,15 @@ class DialogRecibo {
     lateinit var banco: TextView
     lateinit var referencia: TextView
     lateinit var cliente: TextView
+
+    lateinit var lbPrcid: TextView
+    lateinit var lbFechaprc: TextView
+    lateinit var textView62: TextView
+    lateinit var textView65: TextView
+    lateinit var textView68: TextView
+    lateinit var textView70: TextView
+    lateinit var textView72: TextView
+
     private lateinit var rvDocs: RecyclerView
     val adapter: SimpleDocsAdapter = SimpleDocsAdapter()
 
@@ -52,10 +60,9 @@ class DialogRecibo {
     private lateinit var keAndroid: SQLiteDatabase
 
 
-    fun DialogRecibo(contexto: Context, datos: ArrayList<CXC>) {
+    fun DialogRecibo(contexto: Context, datos: ArrayList<CXC>, codEmpresa: String?) {
         conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
-
 
         //conf basica del dialogo
         val dialogo = Dialog(contexto, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
@@ -65,7 +72,7 @@ class DialogRecibo {
         dialogo.setContentView(R.layout.dialog_recibo_ok)
 
         // instanciamiento de los elementos
-        aceptar = dialogo.findViewById(R.id.bt_aceptardiag)
+        aceptar = dialogo.findViewById(R.id.btAceptardiag)
         monto = dialogo.findViewById(R.id.tv_montodiag)
         fecha = dialogo.findViewById(R.id.tv_fechadiag)
         id = dialogo.findViewById(R.id.tv_prcid)
@@ -73,6 +80,16 @@ class DialogRecibo {
         banco = dialogo.findViewById(R.id.tv_bancodiag)
         referencia = dialogo.findViewById(R.id.tv_refdiag)
         cliente = dialogo.findViewById(R.id.tv_clientediag)
+
+        lbPrcid = dialogo.findViewById(R.id.lbPrcid)
+        lbFechaprc = dialogo.findViewById(R.id.lbFechaprc)
+        textView62 = dialogo.findViewById(R.id.textView62)
+        textView65 = dialogo.findViewById(R.id.textView65)
+        textView68 = dialogo.findViewById(R.id.textView68)
+        textView70 = dialogo.findViewById(R.id.textView70)
+        textView72 = dialogo.findViewById(R.id.textView72)
+
+        setColors(codEmpresa)
 
         var rmoneda = ""
         var rfecha = ""
@@ -325,6 +342,18 @@ class DialogRecibo {
         val chooser = Intent.createChooser(intent, "Compartir recibo...")
 
 
+    }
+
+    private fun setColors(codEmpresa: String?) {
+        lbPrcid.setTextColor(lbPrcid.colorTextAgencia(codEmpresa))
+        lbFechaprc.setTextColor(lbFechaprc.colorTextAgencia(codEmpresa))
+        textView62.setTextColor(textView62.colorTextAgencia(codEmpresa))
+        textView65.setTextColor(textView65.colorTextAgencia(codEmpresa))
+        textView68.setTextColor(textView68.colorTextAgencia(codEmpresa))
+        textView70.setTextColor(textView70.colorTextAgencia(codEmpresa))
+        textView72.setTextColor(textView72.colorTextAgencia(codEmpresa))
+
+        aceptar.setBackgroundColor(aceptar.colorButtonAgencia(codEmpresa))
     }
 
 

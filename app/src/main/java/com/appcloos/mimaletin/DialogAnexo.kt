@@ -26,12 +26,19 @@ class DialogAnexo {
     var nombanco = ""
     var nomcliente = ""
 
+    private lateinit var textView69: TextView
+    private lateinit var textView71: TextView
+    private lateinit var textView74: TextView
+    private lateinit var textView76: TextView
+    private lateinit var textView78: TextView
+    private lateinit var textView80: TextView
+
     private lateinit var conn: AdminSQLiteOpenHelper
     private lateinit var keAndroid: SQLiteDatabase
     val adapter: SimpleDocsAdapter = SimpleDocsAdapter()
 
 
-    fun DialogAnexo(contexto: Context, datos: ArrayList<CXC>) {
+    fun DialogAnexo(contexto: Context, datos: ArrayList<CXC>, codEmpresa: String?) {
         conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
 
@@ -48,6 +55,15 @@ class DialogAnexo {
         id = dialogo.findViewById(R.id.tv_id_anexo)
         banco = dialogo.findViewById(R.id.tv_banco_anexo)
         referencia = dialogo.findViewById(R.id.tv_ref_anexo)
+
+        textView69 = dialogo.findViewById(R.id.textView69)
+        textView71 = dialogo.findViewById(R.id.textView71)
+        textView74 = dialogo.findViewById(R.id.textView74)
+        textView76 = dialogo.findViewById(R.id.textView76)
+        textView78 = dialogo.findViewById(R.id.textView78)
+        textView80 = dialogo.findViewById(R.id.textView80)
+
+        setColors(codEmpresa)
 
         //variables
         var rfecha = ""
@@ -112,6 +128,17 @@ class DialogAnexo {
         }
 
         dialogo.show()
+    }
+
+    private fun setColors(codEmpresa: String?) {
+        textView69.setTextColor(textView69.colorTextAgencia(codEmpresa))
+        textView71.setTextColor(textView71.colorTextAgencia(codEmpresa))
+        textView74.setTextColor(textView74.colorTextAgencia(codEmpresa))
+        textView76.setTextColor(textView76.colorTextAgencia(codEmpresa))
+        textView78.setTextColor(textView78.colorTextAgencia(codEmpresa))
+        textView80.setTextColor(textView80.colorTextAgencia(codEmpresa))
+
+        aceptar.setBackgroundColor(aceptar.colorButtonAgencia(codEmpresa))
     }
 
 }

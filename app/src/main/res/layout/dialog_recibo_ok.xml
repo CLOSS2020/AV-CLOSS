@@ -68,7 +68,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/lb_prcid"
+            android:id="@+id/lbPrcid"
             style="@style/TextViewCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView40" />
 
         <TextView
-            android:id="@+id/lb_fechaprc"
+            android:id="@+id/lbFechaprc"
             style="@style/TextViewCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lb_prcid" />
+            app:layout_constraintTop_toBottomOf="@+id/lbPrcid" />
 
         <TextView
             android:id="@+id/tv_prcid"
@@ -102,7 +102,7 @@
             android:layout_marginEnd="10dp"
             android:text="tv_prcid"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lb_prcid"
+            app:layout_constraintStart_toEndOf="@+id/lbPrcid"
             app:layout_constraintTop_toBottomOf="@+id/textView40" />
 
         <TextView
@@ -114,7 +114,7 @@
             android:layout_marginEnd="10dp"
             android:text="TextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lb_fechaprc"
+            app:layout_constraintStart_toEndOf="@+id/lbFechaprc"
             app:layout_constraintTop_toBottomOf="@+id/tv_prcid" />
 
         <TextView
@@ -159,7 +159,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lb_fechaprc" />
+            app:layout_constraintTop_toBottomOf="@+id/lbFechaprc" />
 
         <TextView
             android:id="@+id/textView68"
@@ -217,8 +217,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView70" />
 
-        <Button
-            android:id="@+id/bt_aceptardiag"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btAceptardiag"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"

@@ -763,3 +763,125 @@ fun View.backgroundNavMenu(agencia: String?): Int {
     return retorno
 
 }
+
+fun Activity.plantillaPDF(agencia: String?): Int {
+    val retorno: Int =
+        when (agencia) {
+            CLO -> {
+                R.drawable.plantillasello
+            }
+
+            WOKIN -> {
+                R.drawable.plantillasellowokin
+            }
+
+            else -> {
+                R.drawable.plantillasello
+            }
+        }
+
+    return retorno
+}
+
+fun Activity.logoPDF(agencia: String?): Int {
+    val retorno: Int =
+        when (agencia) {
+            CLO -> {
+                R.drawable.logo_negro
+            }
+
+            WOKIN -> {
+                R.drawable.logo_negro_wokin
+            }
+
+            else -> {
+                R.drawable.logo_negro
+            }
+        }
+
+    return retorno
+}
+
+fun Activity.logoIconPrincipal(agencia: String?): Int {
+    val retorno: Int =
+        when (agencia) {
+            CLO -> {
+                R.mipmap.ic_launcher
+            }
+
+            WOKIN -> {
+                R.mipmap.ic_wokin
+            }
+
+            else -> {
+                R.mipmap.ic_launcher
+            }
+        }
+
+    return retorno
+}
+
+fun Activity.nombreEmpresa(agencia: String?): String {
+    val retorno: String =
+        when (agencia) {
+            CLO -> {
+                "COMERCIALIZADORA LA OCCIDENTAL, C.A."
+            }
+
+            WOKIN -> {
+                "WOKIN VENEZUELA, C.A."
+            }
+
+            else -> {
+                "nO IDENTIFICADO"
+            }
+        }
+
+    return retorno
+}
+
+fun Activity.rifEmpresa(agencia: String?): String {
+    val retorno: String =
+        when (agencia) {
+            CLO -> {
+                "RIF: J-405584017"
+            }
+
+            WOKIN -> {
+                "RIF: J-504705322"
+            }
+
+            else -> {
+                "NO IDENTIFICADO"
+            }
+        }
+
+    return retorno
+}
+
+fun Activity.direccionEmpresa(agencia: String?): List<String> {
+    val retorno: List<String> =
+        when (agencia) {
+            CLO -> {
+                listOf(
+                    "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 6, ZONA",
+                    "INDUSTRIAL NORTE, COMPLEJO PARQUE INDUSTRIAL NORTE,",
+                    "MARACAIBO ZULIA POSTAL 4001"
+                )
+            }
+
+            WOKIN -> {
+                listOf(
+                    "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 3, ZONA",
+                    "INDUSTRIAL NORTE, COMPLEJO PARQUE INDUSTRIAL NORTE,",
+                    "MARACAIBO ZULIA POSTAL 4001"
+                )
+            }
+
+            else -> {
+                listOf("NO IDENTIFICADO", "NO IDENTIFICADO", "NO IDENTIFICADO")
+            }
+        }
+
+    return retorno
+}

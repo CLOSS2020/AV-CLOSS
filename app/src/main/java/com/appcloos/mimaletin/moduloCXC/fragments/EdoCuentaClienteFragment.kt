@@ -443,7 +443,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
         listadocs = ArrayList()
         docsViejos = ArrayList()
         val cursorDocs = ke_android.rawQuery(
-            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev FROM ke_doccti " +
+            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev, dretencion FROM ke_doccti " +
                     "WHERE codcliente ='$codigoCliente' AND estatusdoc != '2' AND (dtotalfinal - (dtotpagos + dtotdev)) > 0.00 AND empresa = '$codEmpresa'",
             null
         )
@@ -468,6 +468,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
             documentos.dtotpagos = cursorDocs.getDouble(15)
             documentos.diascred = cursorDocs.getDouble(16)
             documentos.dtotdev = cursorDocs.getDouble(17)
+            documentos.dretencion = cursorDocs.getDouble(18)
             listadocs.add(documentos)
 
             //2023-06-07 IF para guardar un documento viejo en otro array
