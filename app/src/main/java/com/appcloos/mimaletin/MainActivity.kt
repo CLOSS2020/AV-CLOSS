@@ -338,22 +338,23 @@ class MainActivity : AppCompatActivity(), Serializable {
                         println("--Error--")
                         e.printStackTrace()
                         println("--Error--")
-                        Toast.makeText(this, "No se logro ingresar", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "No se logró ingresar", Toast.LENGTH_LONG).show()
                     }
                 }
                 if (codUsuario.isEmpty()) {
                     Toast.makeText(
                         this,
-                        "Usuario o password incorrecto",
+                        "Usuario o contraseña incorrecto",
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
                     if (sesion == 1) {
                         Toast.makeText(
                             this,
-                            "Previamente Logueado",
+                            "El usuario ya tiene una sessión activa.",
                             Toast.LENGTH_LONG
                         ).show()
+                        return@JsonArrayRequest
                     }
                     if (desactivo == 0.0 || desactivo == 1.0) {
                         if (ultimoped.isEmpty()) {
@@ -478,6 +479,8 @@ class MainActivity : AppCompatActivity(), Serializable {
                         editor.putString("codigoSucursal", newEmpresa.kedAgen)
                         editor.apply()
 
+                        Constantes.AGENCIA = newEmpresa.kedCodigo
+
                         iraPrincipal()
 
                     } else if (desactivo == 2.0) {
@@ -491,7 +494,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             } else {
                 Toast.makeText(
                     this,
-                    "Usuario o password incorrecto",
+                    "Usuario o contraseña incorrecto",
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -499,7 +502,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             println("--Error--")
             error.printStackTrace()
             println("--Error--")
-            Toast.makeText(this, "No se logró el inicio de sesión", Toast.LENGTH_LONG)
+            Toast.makeText(this, "No se logró iniciar sesión", Toast.LENGTH_LONG)
                 .show()
         })
 
@@ -510,7 +513,7 @@ class MainActivity : AppCompatActivity(), Serializable {
     private fun validarEmpresa(codigoEmpresa: String) {
 
         if (binding.txtEmpresa.text.isEmpty()) {
-            toast("Falta codigo de la empresa")
+            toast("Falta código de la empresa")
             return
         }
 
@@ -582,7 +585,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                     e.printStackTrace()
                     Toast.makeText(
                         this,
-                        "No se pudo validar el codigo",
+                        "No se pudo validar el código",
                         Toast.LENGTH_LONG
                     ).show()
                     keAndroid.endTransaction()
@@ -594,7 +597,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             println("--Error--")
             Toast.makeText(
                 this,
-                "No se pudo validar el codigo, intente más tarde",
+                "No se pudo validar el código, intente más tarde",
                 Toast.LENGTH_LONG
             ).show()
         })
@@ -999,16 +1002,19 @@ class MainActivity : AppCompatActivity(), Serializable {
                 RESULT_OK -> {
                     Toast.makeText(this, "Actualización Exitosa!", Toast.LENGTH_SHORT).show()
                 }
+
                 RESULT_CANCELED -> {
                     Toast.makeText(this, "Actualización Cancelada", Toast.LENGTH_SHORT).show()
                     finish()
                     exitProcess(0)
                 }
+
                 ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> {
-                    Toast.makeText(this, "Algo salio mal", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Algo salió mal", Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {
-                    Toast.makeText(this, "Algo salio mal, sin datos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Algo salió mal, sin datos", Toast.LENGTH_SHORT).show()
                 }
             }
         }

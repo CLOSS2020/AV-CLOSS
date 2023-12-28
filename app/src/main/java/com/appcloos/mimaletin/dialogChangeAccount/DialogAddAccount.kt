@@ -50,8 +50,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
         binding = DialogAddAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        this.window
-            ?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
+        this.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
 
         this.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
@@ -79,8 +78,10 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
         val flag = conn.validarExistencia("ke_enlace", "kee_codigo", codigoEmpresa)
 
-        if (flag){
-            Toast.makeText(context, "Ya posee una sesion iniciada con esa empresa", Toast.LENGTH_SHORT).show()
+        if (flag) {
+            Toast.makeText(
+                context, "Ya posee una sesion iniciada con esa empresa", Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -102,11 +103,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                     val codigoSuc = jsonObject.getString("agenciaEmpresa")
 
                     newEmpresa = keDataconex(
-                        codigoEmp,
-                        nombreEmp,
-                        statusEmp,
-                        enlace,
-                        codigoSuc
+                        codigoEmp, nombreEmp, statusEmp, enlace, codigoSuc
                     )
 
                     /*val guardarEnlaces = ContentValues()
@@ -147,9 +144,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(
-                        context,
-                        "No se pudo validar el codigo",
-                        Toast.LENGTH_LONG
+                        context, "No se pudo validar el codigo", Toast.LENGTH_LONG
                     ).show()
                     keAndroid.endTransaction()
                 }
@@ -159,9 +154,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
             error.printStackTrace()
             println("--Error--")
             Toast.makeText(
-                context,
-                "No se pudo validar el codigo, intente más tarde",
-                Toast.LENGTH_LONG
+                context, "No se pudo validar el codigo, intente más tarde", Toast.LENGTH_LONG
             ).show()
         })
 
@@ -235,8 +228,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                         superves = jsonObject.getString("superves")
                         vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
                         ultimorec = jsonObject.getString("recibocobro").trim { it <= ' ' }
-                        ultimorcl =
-                            jsonObject.getString("correlativoreclamo").trim { it <= ' ' }
+                        ultimorcl = jsonObject.getString("correlativoreclamo").trim { it <= ' ' }
                         ultimorcxc =
                             jsonObject.getString("correlativoprecobranza").trim { it <= ' ' }
                         sesion = jsonObject.getInt("sesion")
@@ -248,11 +240,8 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                     }
                 }
                 if (codUsuario.isEmpty()) {
-                    println("LLEGO AQUI $codUsuario")
                     Toast.makeText(
-                        context,
-                        "Usuario o password incorrecto",
-                        Toast.LENGTH_LONG
+                        context, "Usuario o contraseña incorrecto", Toast.LENGTH_LONG
                     ).show()
 
                     dismiss()
@@ -260,13 +249,12 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                 } else {
                     if (sesion == 1) {
                         Toast.makeText(
-                            context,
-                            "Previamente Logueado",
-                            Toast.LENGTH_LONG
+                            context, "El usuario ya tiene una sessión activa.", Toast.LENGTH_LONG
                         ).show()
 
                         dismiss()
 
+                        return@JsonArrayRequest
                     }
                     if (desactivo == 0.0 || desactivo == 1.0) {
                         if (ultimoped.isEmpty()) {
@@ -290,9 +278,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             nroCorrelativo += 1
                             val insertar = ContentValues()
                             insertar.put("kco_numero", nroCorrelativo)
-                            insertar.put(
-                                "kco_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                            insertar.put("kco_vendedor", codUsuario.trim { it <= ' ' })
                             insertar.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correla", null, insertar)
                             //--------------------------------------------------------------------
@@ -303,9 +289,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             nroRecibo += 1
                             val insertarRec = ContentValues()
                             insertarRec.put("kcc_numero", nroRecibo)
-                            insertarRec.put(
-                                "kcc_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                            insertarRec.put("kcc_vendedor", codUsuario.trim { it <= ' ' })
                             insertarRec.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correlacxc", null, insertarRec)
                             //-------------------------------------------------------
@@ -316,9 +300,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             nroReclamo += 1
                             val insertarRcl = ContentValues()
                             insertarRcl.put("kdev_numero", nroReclamo)
-                            insertarRcl.put(
-                                "kdev_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                            insertarRcl.put("kdev_vendedor", codUsuario.trim { it <= ' ' })
                             insertarRcl.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correladev", null, insertarRcl)
                             //---------------------------------------------------------------------------
@@ -329,9 +311,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             nroCXC += 1
                             val insertarCXC = ContentValues()
                             insertarCXC.put("kcor_numero", nroCXC)
-                            insertarCXC.put(
-                                "kcor_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                            insertarCXC.put("kcor_vendedor", codUsuario.trim { it <= ' ' })
                             insertarCXC.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_corprec", null, insertarCXC)
                             //---------------------------------------------------------------------------
@@ -352,8 +332,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
                             //agrego la fecha en la cual inició sesión
                             val hoy = Calendar.getInstance().time
-                            val sdf =
-                                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                             val fechaSync = sdf.format(hoy)
                             val usuarioDatos = ContentValues()
                             usuarioDatos.put("nombre", nUsuario)
@@ -371,9 +350,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             keAndroid.setTransactionSuccessful()
                         } catch (e: Exception) {
                             Toast.makeText(
-                                context,
-                                "Error insertando correlativo $e",
-                                Toast.LENGTH_LONG
+                                context, "Error insertando correlativo $e", Toast.LENGTH_LONG
                             ).show()
                             keAndroid.endTransaction()
                         } finally {
@@ -397,18 +374,14 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
                     } else if (desactivo == 2.0) {
                         Toast.makeText(
-                            context,
-                            "Este usuario se encuentra desactivado",
-                            Toast.LENGTH_LONG
+                            context, "Este usuario se encuentra desactivado", Toast.LENGTH_LONG
                         ).show()
                         dismiss()
                     }
                 }
             } else {
                 Toast.makeText(
-                    context,
-                    "Usuario o password incorrecto",
-                    Toast.LENGTH_LONG
+                    context, "Usuario o password incorrecto", Toast.LENGTH_LONG
                 ).show()
                 dismiss()
             }
@@ -416,8 +389,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
             println("--Error--")
             error.printStackTrace()
             println("--Error--")
-            Toast.makeText(context, "No se logró el inicio de sesión", Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(context, "No se logró el inicio de sesión", Toast.LENGTH_LONG).show()
             dismiss()
         })
 

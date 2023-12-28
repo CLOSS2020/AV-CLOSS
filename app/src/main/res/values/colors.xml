@@ -64,6 +64,12 @@
 
     <color name="textColor">@color/blackColor1</color>
 
+    <color name="cxcBackgroundCliente">#BBDEFB</color>
+    <color name="cxcBackgroundDatos">#014C83</color>
+
+    <color name="cxcBackgroundClienteWokin">#FFAB91</color>
+    <color name="cxcBackgroundDatosWokin">#FF9800</color>
+
     <!--<color name="wokinPrimaryColor">#FE7700</color>-->
 
     <color name="colorVariantLite">#D9E2F3</color>

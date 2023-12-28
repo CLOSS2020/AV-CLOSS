@@ -74,18 +74,7 @@ class ListaReclamosActivity : AppCompatActivity() {
             ReclamosAdapter(listareclamo) { position -> onItemClick(position) }
         listaReclamos.adapter = reclamosAdapter
         reclamosAdapter!!.notifyDataSetChanged() //para refrescar el RecyclerView
-        getfechaSinc()
-    }
-
-    private fun getfechaSinc() {
-        val keAndroid = conn.writableDatabase
-        val fechaUltmod = keAndroid.rawQuery(
-            "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = 'ke_rclcti' AND empresa = '$codEmpresa'",
-            null
-        )
-        fechaUltmod.moveToFirst()
-        fecha_sinc = fechaUltmod.getString(0)
-        fechaUltmod.close()
+        fecha_sinc = conn.getFecha("ke_rclcti", codEmpresa!!)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -95,7 +84,7 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
                     "kee_url"
@@ -533,7 +522,7 @@ class ListaReclamosActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    fun onItemClick(position: Int) {
+    private fun onItemClick(position: Int) {
         val keAndroid = conn.writableDatabase
         llCommit = false
         val docFactura = listareclamo[position].getDocfac()

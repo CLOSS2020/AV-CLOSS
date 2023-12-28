@@ -885,3 +885,71 @@ fun Activity.direccionEmpresa(agencia: String?): List<String> {
 
     return retorno
 }
+
+fun View.cxcBackgroundCliente(agencia: String?): Int {
+
+    val nightModeFlags = this.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK
+
+    /*val retorno: Int =
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
+            color(R.color.cxcBackgroundCliente)
+        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
+            color(R.color.cxcBackgroundClienteWokin)
+        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == CLO) {
+            color(R.color.md_theme_dark_surfaceTint)
+        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == WOKIN) {
+            color(R.color.md_theme_dark_surfaceTint_wokin)
+        } else {
+            color(R.color.cxcBackgroundCliente)
+        }*/
+
+    val retorno: Int =
+        when (agencia) {
+            CLO -> {
+                color(R.color.cxcBackgroundCliente)
+            }
+            WOKIN -> {
+                color(R.color.cxcBackgroundClienteWokin)
+            }
+            else -> {
+                color(R.color.cxcBackgroundCliente)
+            }
+        }
+
+    return retorno
+}
+
+fun View.cxcBackgroundDatos(agencia: String?): Int {
+
+    val nightModeFlags = this.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK
+
+    /*val retorno: Int =
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
+            color(R.color.cxcBackgroundDatos)
+        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
+            color(R.color.cxcBackgroundDatosWokin)
+        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == CLO) {
+            color(R.color.md_theme_dark_surfaceTint)
+        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && agencia == WOKIN) {
+            color(R.color.md_theme_dark_surfaceTint_wokin)
+        } else {
+            color(R.color.cxcBackgroundCliente)
+        }*/
+
+    val retorno: Int =
+        when (agencia) {
+            CLO -> {
+                color(R.color.cxcBackgroundDatos)
+            }
+            WOKIN -> {
+                color(R.color.cxcBackgroundDatosWokin)
+            }
+            else -> {
+                color(R.color.cxcBackgroundDatos)
+            }
+        }
+
+    return retorno
+}

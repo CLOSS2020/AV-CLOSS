@@ -64,4 +64,12 @@
 
     <color name="textColor">@color/whiteColor4</color>
 
+    <color name="cxcBackgroundCliente">#80BBDEFB</color>
+    <color name="cxcBackgroundDatos">#802196F3</color>
+    <!--Color 500-->
+
+    <color name="cxcBackgroundClienteWokin">#80FFAB91</color>
+    <color name="cxcBackgroundDatosWokin">#80FF5722</color>
+    <!--Color 500-->
+
 </resources>

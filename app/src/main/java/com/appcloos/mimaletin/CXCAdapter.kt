@@ -1,20 +1,19 @@
 package com.appcloos.mimaletin
 
-import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.appcloos.mimaletin.databinding.ItemCxcMainBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
 class CXCAdapter(
     var cobranza: ArrayList<CXC>,
-    var context: Context,
+    private val codEmpresa: String,
     private val onClickListener: (String) -> Unit,
 ) : RecyclerView.Adapter<CXCAdapter.CXCHolder>() {
 
@@ -35,43 +34,36 @@ class CXCAdapter(
 
     inner class CXCHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        private val idCobranza: TextView = view.findViewById(R.id.idCxc)
-        private val fchcob: TextView = view.findViewById(R.id.tv_fecharec_cxc)
-        private val montocob: TextView = view.findViewById(R.id.tv_monto_cxc_rec)
-        private val stado: TextView = view.findViewById(R.id.tv_stat_cxc)
-        private val clCxcRec: ConstraintLayout = view.findViewById(R.id.cl_cxc_recibo)
-        val tipoDoc: TextView = view.findViewById(R.id.tvTipoRecibo)
-        private val nombreCli: TextView = view.findViewById(R.id.tvNombreCli)
-
+        private val binding: ItemCxcMainBinding = ItemCxcMainBinding.bind(view)
 
         private var fechaPago = ""
 
         fun bind(cobranza: CXC, onClickListener: (String) -> Unit) {
 
-            println(cobranza.id_recibo + " " + cobranza.edorec)
+            setColors(codEmpresa)
 
-            clCxcRec.setOnClickListener { onClickListener(cobranza.id_recibo) }
+            binding.clCxcRecibo.setOnClickListener { onClickListener(cobranza.id_recibo) }
 
-            idCobranza.text = "Codigo: " + cobranza.id_recibo
+            binding.idCxc.text = "Codigo: " + cobranza.id_recibo
             fechaPago = cobranza.fchrecibo
-            nombreCli.text = "Cliente: ${cobranza.cliente}"
+            binding.tvNombreCli.text = "Cliente: ${cobranza.cliente}"
             val monedaSel = cobranza.moneda
 
-            fchcob.text = "Fecha: " + formatoFecha(fechaPago, cobranza.tipoRecibo)
+            binding.tvFecharecCxc.text = "Fecha: " + formatoFecha(fechaPago, cobranza.tipoRecibo)
 
             if (cobranza.efectivo > 0.00) {
-                montocob.text = "Monto: ${cobranza.efectivo}$  (Monto Efectivo)"
+                binding.tvMontoCxcRec.text = "Monto: ${cobranza.efectivo}$  (Monto Efectivo)"
 
             } else if (cobranza.bcomonto > 0.00) {
 
                 if (monedaSel == "1") {
-                    montocob.text = "Monto: " + cobranza.bcomonto.toString() + "Bs."
+                    binding.tvMontoCxcRec.text = "Monto: " + cobranza.bcomonto.toString() + "Bs."
                 } else if (monedaSel == "2") {
-                    montocob.text = "Monto: " + cobranza.bcomonto.toString() + "$."
+                    binding.tvMontoCxcRec.text = "Monto: " + cobranza.bcomonto.toString() + "$."
                 }
 
             } else if (cobranza.bsretiva > 0.00 || cobranza.bsretflete > 0.00) {
-                montocob.text =
+                binding.tvMontoCxcRec.text =
                     "Monto:" +
                             (if (cobranza.bsretiva <= 0.00) "" else " (Ret IVA) ${cobranza.bsretiva} Bs. ") +
                             (if (cobranza.bsretiva <= 0.00 || cobranza.bsretflete <= 0.00) "" else "/") +
@@ -81,49 +73,49 @@ class CXCAdapter(
 
             when (cobranza.edorec) {
                 "0" -> {
-                    stado.text = "Estado: Por subir"
-                    stado.setTextColor(Color.RED)
+                    binding.tvStatCxc.text = "Estado: Por subir"
+                    binding.tvStatCxc.setTextColor(Color.RED)
                     //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 "1" -> {
-                    stado.text = "Estado: Subido"
-                    stado.setTextColor(Color.rgb(63, 197, 39))
+                    binding.tvStatCxc.text = "Estado: Subido"
+                    binding.tvStatCxc.setTextColor(Color.rgb(63, 197, 39))
                     //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 "3" -> {
-                    stado.text = "Estado: Anulado"
-                    stado.setTextColor(Color.rgb(255, 255, 255))
-                    stado.setBackgroundColor(Color.rgb(0, 0, 0))
+                    binding.tvStatCxc.text = "Estado: Anulado"
+                    binding.tvStatCxc.setTextColor(Color.rgb(255, 255, 255))
+                    binding.tvStatCxc.setBackgroundColor(Color.rgb(0, 0, 0))
                 }
 
                 "4" -> {
-                    stado.text = "Estado: Anulado - Subido"
-                    stado.setTextColor(Color.rgb(255, 255, 255))
-                    stado.setBackgroundColor(Color.rgb(0, 0, 0))
+                    binding.tvStatCxc.text = "Estado: Anulado - Subido"
+                    binding.tvStatCxc.setTextColor(Color.rgb(255, 255, 255))
+                    binding.tvStatCxc.setBackgroundColor(Color.rgb(0, 0, 0))
                 }
 
                 "9" -> {
-                    stado.text = "Estado: Anexo Creado"
-                    stado.setTextColor(Color.rgb(240, 167, 50))
+                    binding.tvStatCxc.text = "Estado: Anexo Creado"
+                    binding.tvStatCxc.setTextColor(Color.rgb(240, 167, 50))
                     //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 "10" -> {
-                    stado.text = "Estado: Actualizado"
-                    stado.setTextColor(Color.rgb(35, 169, 242))
+                    binding.tvStatCxc.text = "Estado: Actualizado"
+                    binding.tvStatCxc.setTextColor(Color.rgb(35, 169, 242))
                     //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
 
                 else -> {
-                    stado.text = "Estado: No Identificado"
-                    stado.setTextColor(Color.rgb(0, 0, 0))
+                    binding.tvStatCxc.text = "Estado: No Identificado"
+                    binding.tvStatCxc.setTextColor(Color.rgb(0, 0, 0))
                     //stado.setBackgroundColor(Color.rgb(255, 255, 255))
                 }
             }
 
-            tipoDoc.text = when (cobranza.tipoRecibo) {
+            binding.tvTipoRecibo.text = when (cobranza.tipoRecibo) {
                 "R" -> "Retención"
                 "D" -> "Deposito"
                 "W" -> "Recibo de Cobro"
@@ -131,6 +123,14 @@ class CXCAdapter(
             }
 
 
+        }
+
+        private fun setColors(codEmpresa: String) {
+            binding.apply {
+                tvNombreCli.setBackgroundColor(tvNombreCli.cxcBackgroundCliente(codEmpresa))
+                tvTipoRecibo.setBackgroundColor(tvTipoRecibo.cxcBackgroundDatos(codEmpresa))
+                tvFecharecCxc.setBackgroundColor(tvFecharecCxc.cxcBackgroundDatos(codEmpresa))
+            }
         }
 
     }

@@ -309,7 +309,7 @@ class CXCActivity : AppCompatActivity() {
 
         rvCxc.layoutManager = LinearLayoutManager(this)
         val adapter = CXCAdapter(listCobranza,
-            this,
+            codEmpresa!!,
             onClickListener = { codigoRecibo -> mensajeCXC(codigoRecibo) })
         rvCxc.adapter = adapter
         adapter.notifyDataSetChanged()

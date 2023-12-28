@@ -1,6 +1,7 @@
 package com.appcloos.mimaletin
 
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.os.Bundle
@@ -48,6 +49,8 @@ class DetalleCXCActivity : AppCompatActivity() {
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.writableDatabase
+
+        setColors()
 
         //val cursor =
         //    keAndroid.rawQuery("SELECT * FROM ke_precobranza WHERE cxcndoc = '$cxcndoc';", null)
@@ -225,13 +228,30 @@ class DetalleCXCActivity : AppCompatActivity() {
 
     private fun getClave(): String {
         var retorno = ""
+        //Bolivares o Dolares
         retorno += if (kePrecobranza.moneda == "1") "B" else "D"
+        //Completo o Abono
         retorno += if (kePrecobranza.tipoPago == "0") "C" else "A"
+        //Complemento o sin complemento
         retorno += if (kePrecobranza.complemento.isNotEmpty()) "C" else "S"
+        //Con descuento o sin descuento
         retorno += if (kePrecobradocsMain.sumOf { it.prcdsctopp } != 0.0) "C" else "S"
+        //Transferencia o efectivo
         retorno += if (kePrecobranza.efectivo == 0.0) "T" else "E"
+        //Con retencion ( anexo retenciones) o sin retencion (excluyo retenciones)
         retorno += if (kePrecobradocsMain[0].reten == 0) "C" else "S"
         return retorno
+    }
+
+    private fun setColors(){
+
+    }
+
+    override fun getTheme(): Resources.Theme {
+        val theme = super.getTheme()
+        theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
+        // you could also use a switch if you have many themes that could apply
+        return theme
     }
 
 }
