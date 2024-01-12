@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appcloos.mimaletin.databinding.ItemClientePedidoBinding
 import com.appcloos.mimaletin.domain.ClienteAlertauseCase
 
-
 class SeleccionarClientePedidoAdapter(
     private var clientes: List<Cliente>,
     private val onClickListener: (String, String) -> Unit,
@@ -23,7 +22,7 @@ class SeleccionarClientePedidoAdapter(
 ) : RecyclerView.Adapter<SeleccionarClientePedidoAdapter.SeleccionarClientePedidoHolder>() {
 
     var nightModeFlags: Int = context.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     inner class SeleccionarClientePedidoHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
@@ -38,7 +37,6 @@ class SeleccionarClientePedidoAdapter(
             onClickListener: (String, String) -> Unit,
             onLongClickListener: (String, String) -> Unit
         ) {
-
             when (cliente.contribespecial) {
                 1.0 -> {
                     binding.tvContrioEspe.text = " Activo"
@@ -52,7 +50,7 @@ class SeleccionarClientePedidoAdapter(
                     } else {
                         binding.tvContrioEspe.setTextColor(Color.rgb(64, 64, 64))
                     }
-                    //binding.tvContrioEspe.setTextColor(Color.rgb(0, 0, 0))
+                    // binding.tvContrioEspe.setTextColor(Color.rgb(0, 0, 0))
                 }
 
                 else -> {
@@ -62,7 +60,7 @@ class SeleccionarClientePedidoAdapter(
                     } else {
                         binding.tvContrioEspe.setTextColor(Color.rgb(64, 64, 64))
                     }
-                    //binding.tvContrioEspe.setTextColor(Color.rgb(0, 0, 0))
+                    // binding.tvContrioEspe.setTextColor(Color.rgb(0, 0, 0))
                 }
             }
 
@@ -89,17 +87,19 @@ class SeleccionarClientePedidoAdapter(
                 }
             }
 
-
-
             binding.tvCodigoCliente.text = cliente.codigo
             binding.tvNombreCliente.text = cliente.nombre
 
             if (cliente.status == null) {
-
                 val conn = AdminSQLiteOpenHelper(context, "ke_android", null)
 
                 val diasPedidos =
-                    conn.getCampoIntCamposVarios("cliempre", "diasultvta", listOf("codigo", "empresa"), listOf(cliente.codigo, codEmpresa))
+                    conn.getCampoIntCamposVarios(
+                        "cliempre",
+                        "diasultvta",
+                        listOf("codigo", "empresa"),
+                        listOf(cliente.codigo, codEmpresa)
+                    )
 
                 binding.tvPedidoDiasMain.text = "Dias sin hacer pedidos: "
                 binding.tvPedidoDias.text = if (diasPedidos <= 0) "0" else diasPedidos.toString()
@@ -109,17 +109,13 @@ class SeleccionarClientePedidoAdapter(
                 binding.tvPedidoDias.text = cliente.status.toInt().toString()
             }
 
-            //Icono de advertensia
+            // Icono de advertensia
             val comparar = ClienteAlertauseCase().comparar(cliente.codigo, context, codEmpresa)
             val colorIcon = ClienteAlertauseCase().compararIcon(cliente.codigo, context, codEmpresa)
             binding.ivAlerta.apply {
                 isVisible = comparar
                 setColorFilter(color(colorIcon))
             }
-
-
-
-
 
             binding.clMainSlecClientePedido.apply {
                 setOnClickListener { onClickListener(cliente.codigo!!, cliente.nombre!!) }
@@ -133,7 +129,6 @@ class SeleccionarClientePedidoAdapter(
                     cliente.codigo!!, cliente.nombre!!
                 )
             }*/
-
         }
 
         private fun diasSinPedido(diasPedidos: Int, view: TextView) {
@@ -170,9 +165,7 @@ class SeleccionarClientePedidoAdapter(
                     }
                 }
             }
-
         }
-
     }
 
     override fun onCreateViewHolder(
@@ -182,7 +175,9 @@ class SeleccionarClientePedidoAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return SeleccionarClientePedidoHolder(
             layoutInflater.inflate(
-                R.layout.item_cliente_pedido, parent, false
+                R.layout.item_cliente_pedido,
+                parent,
+                false
             )
         )
     }

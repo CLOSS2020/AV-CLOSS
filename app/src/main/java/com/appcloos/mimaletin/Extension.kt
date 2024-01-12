@@ -36,7 +36,6 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-
 fun Activity.color(@ColorRes color: Int): Int = ContextCompat.getColor(this, color)
 
 fun View.color(@ColorRes color: Int): Int = ContextCompat.getColor(context, color)
@@ -76,16 +75,15 @@ fun Fragment.snackBar(text: String, length: Int = Toast.LENGTH_SHORT) {
     Snackbar.make(this.requireView(), text, length).show()
 }
 
-
 fun Any?.isNull(): Boolean = this == null
 
 fun ImageView.setImageURL(url: String) {
     if (url.isEmpty()) {
-        Picasso.get().load(url).into(this);
+        Picasso.get().load(url).into(this)
     }
 }
 
-//Formater de numeros decimales
+// Formater de numeros decimales
 fun Double.formatoNum(): String = DecimalFormat("####.00").format(this)
 
 fun Int.formatoNum(): String = DecimalFormat("####").format(this)
@@ -95,19 +93,19 @@ fun Double.valorReal(): Double = (this * 100.00).roundToInt() / 100.00
 fun Canvas.insertarNumPDF(num: Double, x: Float, y: Float, paint: Paint) {
     val numero = num.valorReal()
 
-    //Redondeo del numero dado hacia abajo
+    // Redondeo del numero dado hacia abajo
     val numeroInt = floor(abs(numero)).toInt().formatoNum()
 
-    //Formateo del numero dado para que los ceros a la derecha del punto decimal se tomen
-    //Y captura de los dos decimales
+    // Formateo del numero dado para que los ceros a la derecha del punto decimal se tomen
+    // Y captura de los dos decimales
     val decimales = numero.formatoNum().getLastN(2)
 
-    //Imprecion del numero dado sin decimales
+    // Imprecion del numero dado sin decimales
     paint.textAlign = Paint.Align.RIGHT
     this.drawText(numeroInt, x + 25, y, paint)
-    //Impresion del punto decimal
+    // Impresion del punto decimal
     this.drawText(".", x + 28, y, paint)
-    //Imprecion de los decimales del numero dado
+    // Imprecion de los decimales del numero dado
     paint.textAlign = Paint.Align.LEFT
     this.drawText(decimales, x + 28, y, paint)
 }
@@ -119,7 +117,6 @@ fun String.toDate(): Date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).
 fun Double.toTwoDecimals(): String = DecimalFormat("#,##0.00").format(this.valorReal())
 
 fun Double.toCeroDecimals(): String = DecimalFormat("#,##0").format(this.valorReal())
-
 
 fun TextView.alertError() {
     this.apply {
@@ -176,7 +173,7 @@ fun Bitmap.redimensionarImagen(anchoNuevo: Float, altoNuevo: Float): Bitmap? {
             } else {
                 bitmap
             }
-            //si los anchos y altos son iguales
+            // si los anchos y altos son iguales
         } else if (alto == ancho) {
             return if (ancho > anchoNuevo || alto > altoNuevo) {
                 val escalaAncho = anchoNuevo / ancho
@@ -187,7 +184,7 @@ fun Bitmap.redimensionarImagen(anchoNuevo: Float, altoNuevo: Float): Bitmap? {
             } else {
                 bitmap
             }
-        }//UPDATE usuarios SET ult_sinc = '2023-05-30 08:37:25', version = '1.1.1' WHERE vendedor = 'G98';
+        } // UPDATE usuarios SET ult_sinc = '2023-05-30 08:37:25', version = '1.1.1' WHERE vendedor = 'G98';
     } catch (e: java.lang.Exception) {
         e.printStackTrace()
     }
@@ -207,10 +204,10 @@ fun Activity.windowsColor(agencia: String?) {
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
-    if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == "081196") {
+    if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         window.statusBarColor = ContextCompat.getColor(this, R.color.primaryColor)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.primaryColor)
-    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == "170122") {
+    } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
         window.statusBarColor = ContextCompat.getColor(this, R.color.wokinPrimaryColor)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.wokinColor3)
     } else {
@@ -406,8 +403,7 @@ fun View.setColorCheckBox(agencia: String): ColorStateList {
 }
 
 fun View.setColorRadioButon(agencia: String?): ColorStateList? {
-    //Estos ya tienen su modo oscuro por xml
-
+    // Estos ya tienen su modo oscuro por xml
 
     val retorno: ColorStateList? =
         when (agencia) {
@@ -435,7 +431,6 @@ fun Resources.Theme.getTheme(agencia: String) {
 }
 
 fun Activity.setProgressDialogTheme(agencia: String?): Int {
-
     val retorno: Int = when (agencia) {
         CLO -> {
             R.style.ProgressDialogCustom
@@ -453,7 +448,6 @@ fun Activity.setProgressDialogTheme(agencia: String?): Int {
 }
 
 fun Activity.setAlertDialogTheme(agencia: String?): Int {
-
     val retorno: Int = when (agencia) {
         CLO -> {
             R.style.AlertDialogCustom
@@ -488,7 +482,6 @@ fun Activity.setEditTextTheme(agencia: String?): Int {
 }
 
 fun Activity.setCheckBoxTheme(agencia: String?): Int {
-
     val retorno: Int = when (agencia) {
         CLO -> {
             R.style.BasicStyleCheckBox
@@ -551,7 +544,6 @@ fun Activity.setThemeNoBarCXCAgencia(agencia: String?): Int {
 }
 
 fun View.setBoxStrokeColorInputText(agencia: String?): ColorStateList? {
-
     val retorno: ColorStateList? =
         when (agencia) {
             CLO -> {
@@ -615,7 +607,6 @@ fun Fragment.setThemeDateFragment(agencia: String): Int {
 }
 
 fun View.changeColorMarco(agencia: String?): Int {
-
     val retorno: Int = when (agencia) {
         CLO -> {
             R.drawable.marcos
@@ -723,7 +714,6 @@ fun View.colorListaReclamo(agencia: String?): Int {
 }
 
 fun View.colorIconReclamo(agencia: String?): ColorStateList? {
-
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
     val retorno: ColorStateList? =
@@ -740,11 +730,9 @@ fun View.colorIconReclamo(agencia: String?): ColorStateList? {
         }
 
     return retorno
-
 }
 
 fun View.backgroundNavMenu(agencia: String?): Int {
-
     val retorno: Int =
         when (agencia) {
             CLO -> {
@@ -761,7 +749,6 @@ fun View.backgroundNavMenu(agencia: String?): Int {
         }
 
     return retorno
-
 }
 
 fun Activity.plantillaPDF(agencia: String?): Int {
@@ -864,7 +851,7 @@ fun Activity.direccionEmpresa(agencia: String?): List<String> {
         when (agencia) {
             CLO -> {
                 listOf(
-                    "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 6, ZONA",
+                    "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 3, ZONA",
                     "INDUSTRIAL NORTE, COMPLEJO PARQUE INDUSTRIAL NORTE,",
                     "MARACAIBO ZULIA POSTAL 4001"
                 )
@@ -872,7 +859,7 @@ fun Activity.direccionEmpresa(agencia: String?): List<String> {
 
             WOKIN -> {
                 listOf(
-                    "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 3, ZONA",
+                    "CALLE 18 CON AV GOAJIRA VIA EL MOJAN, LOCALGALPON 6, ZONA",
                     "INDUSTRIAL NORTE, COMPLEJO PARQUE INDUSTRIAL NORTE,",
                     "MARACAIBO ZULIA POSTAL 4001"
                 )
@@ -887,7 +874,6 @@ fun Activity.direccionEmpresa(agencia: String?): List<String> {
 }
 
 fun View.cxcBackgroundCliente(agencia: String?): Int {
-
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
 
@@ -909,9 +895,11 @@ fun View.cxcBackgroundCliente(agencia: String?): Int {
             CLO -> {
                 color(R.color.cxcBackgroundCliente)
             }
+
             WOKIN -> {
                 color(R.color.cxcBackgroundClienteWokin)
             }
+
             else -> {
                 color(R.color.cxcBackgroundCliente)
             }
@@ -921,7 +909,6 @@ fun View.cxcBackgroundCliente(agencia: String?): Int {
 }
 
 fun View.cxcBackgroundDatos(agencia: String?): Int {
-
     val nightModeFlags = this.resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
 
@@ -943,13 +930,24 @@ fun View.cxcBackgroundDatos(agencia: String?): Int {
             CLO -> {
                 color(R.color.cxcBackgroundDatos)
             }
+
             WOKIN -> {
                 color(R.color.cxcBackgroundDatosWokin)
             }
+
             else -> {
                 color(R.color.cxcBackgroundDatos)
             }
         }
 
     return retorno
+}
+
+fun ArrayList<String>.noRepeatList(): ArrayList<String> {
+    val returnList = ArrayList<String>()
+    val newList = this.distinct().toList()
+    newList.forEach {
+        returnList.add(it)
+    }
+    return returnList
 }

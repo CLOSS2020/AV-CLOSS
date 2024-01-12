@@ -29,7 +29,7 @@ class ReclamosAdapter(
         private val binding = ItemReclamoBinding.bind(itemView)
 
         fun asignarDatos(reclamo: Reclamo) {
-            //aqui le asigno los valores a cada elemento del item layout
+            // aqui le asigno los valores a cada elemento del item layout
             binding.apply {
                 tvCodclircl.text = reclamo.getCodcli()
                 tvNombreclircl.text = reclamo.getNombrecli()
@@ -53,8 +53,6 @@ class ReclamosAdapter(
                 textView10.setBackgroundColor(textView10.colorAgencia(Constantes.AGENCIA))
                 tvStatusrcl.setBackgroundColor(tvStatusrcl.colorAgencia(Constantes.AGENCIA))
             }
-
         }
-
     }
 }

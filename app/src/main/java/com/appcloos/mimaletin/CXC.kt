@@ -89,5 +89,4 @@ data class CXC(
     var tnetodbs: Double = 0.00,
     var cxcndoc_aux: String = "",
     var afavor: Double = 0.00
-) {
-}
+)

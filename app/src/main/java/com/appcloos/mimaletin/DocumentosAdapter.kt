@@ -20,25 +20,24 @@ class DocumentosAdapter(
 
         fun bind(documentos: Documentos, onClickListener: (Int) -> Unit) {
             binding.imageView2.setImageDrawable(colorAgencia())
-            binding.lbEstatus.text = when (documentos.getEstatusdoc()) {
+            binding.lbEstatus.text = when (documentos.estatusdoc) {
                 "0" -> "Pendiente p. pagar"
                 "1" -> "Abonado"
                 "2" -> "Totalmente Pago"
                 "3" -> "Anulado"
                 else -> "No Identificado"
             }
-            var mtoFinal = documentos.getDtotalfinal()
+            var mtoFinal = documentos.dtotalfinal
             mtoFinal = mtoFinal.valorReal()
-            binding.lbNrodoc.text = documentos.getDocumento()
-            binding.lbTipodocv.text = documentos.getTipodocv()
+            binding.lbNrodoc.text = documentos.documento
+            binding.lbTipodocv.text = documentos.tipodocv
             binding.lbMontototal.text = "$mtoFinal$"
-            binding.lbEmision.text = documentos.getEmision()
-            binding.lbRecepcion.text = documentos.getRecepcion()
-            binding.lbAceptadev.text = documentos.getAceptadev()
+            binding.lbEmision.text = documentos.emision
+            binding.lbRecepcion.text = documentos.recepcion
+            binding.lbAceptadev.text = documentos.aceptadev
 
             binding.clMain.setOnClickListener { onClickListener(absoluteAdapterPosition) }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentosHolder {
@@ -51,8 +50,6 @@ class DocumentosAdapter(
     }
 
     override fun getItemCount(): Int = listdocumentos.size
-
-
 
     /*override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
         val documentos = getItem(position) as Documentos
@@ -91,5 +88,4 @@ class DocumentosAdapter(
             ContextCompat.getDrawable(context, R.drawable.ic_baseline_article_24)
         }
     }
-
 }

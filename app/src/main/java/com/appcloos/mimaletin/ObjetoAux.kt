@@ -10,7 +10,6 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
 
-
 class ObjetoAux(val context: Context) {
     private var conn: AdminSQLiteOpenHelper = AdminSQLiteOpenHelper(context, "ke_android", null)
 
@@ -40,7 +39,6 @@ class ObjetoAux(val context: Context) {
                             } else {
                                 Toast.makeText(context, "Sesión Iniciada", Toast.LENGTH_LONG).show()
                             }
-
                         }
                     } catch (e: JSONException) {
                         e.printStackTrace()
@@ -50,14 +48,17 @@ class ObjetoAux(val context: Context) {
                 error?.printStackTrace()
                 if (sesion == 0) {
                     Toast.makeText(
-                        context, "No se pudo terminar sesión adecuadamente", Toast.LENGTH_LONG
+                        context,
+                        "No se pudo terminar sesión adecuadamente",
+                        Toast.LENGTH_LONG
                     ).show()
                 } else {
                     Toast.makeText(
-                        context, "No se pudo iniciar sesión adecuadamente", Toast.LENGTH_LONG
+                        context,
+                        "No se pudo iniciar sesión adecuadamente",
+                        Toast.LENGTH_LONG
                     ).show()
                 }
-
             }
         val requestQueue = Volley.newRequestQueue(context)
         requestQueue.add(jsonObjectRequest)
@@ -105,5 +106,4 @@ class ObjetoAux(val context: Context) {
         val requestQueue = Volley.newRequestQueue(context)
         requestQueue.add(jsonObjectRequest)
     }
-
 }

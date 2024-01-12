@@ -31,19 +31,17 @@ class DialogRetencion {
     private lateinit var rvDocs: RecyclerView
     lateinit var adapter: SimpleDocsRetAdapter
 
-    //var myBitmap: Bitmap? = null
+    // var myBitmap: Bitmap? = null
     var myBitmap: Bitmap = createBitmap(1000, 1000)
 
     var nombanco = ""
     var nomcliente = ""
-
 
     fun DialogRetencion(
         contexto: Context,
         kePrecobranza: ke_precobranza,
         kePrecobradocs: ArrayList<ke_precobradocs>,
     ) {
-
         val conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         val keAndroid: SQLiteDatabase = conn.writableDatabase
 
@@ -110,8 +108,6 @@ class DialogRetencion {
             (contexto as Activity).finish()
         }
 
-
         dialogo.show()
     }
-
 }

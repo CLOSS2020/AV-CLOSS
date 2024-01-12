@@ -12,14 +12,12 @@ import com.appcloos.mimaletin.moduloCXC.viewmodel.PlanificadorCxc
 
 class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-
     private val binding = ItemPlanificadorCxcBinding.bind(view)
 
     private val context = binding.root.context
 
     fun render(planCXC: PlanificadorCxc, onClickListener: (String, String) -> Unit) {
-
-        //Variables que guardaran texto y colores
+        // Variables que guardaran texto y colores
         val edoFact: String
         val tvDocVenceText: String
         val tvDocVenceTextColor: Int
@@ -29,13 +27,13 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val dateNow = ObjetoUtils.getDateNow()
 
-        //Formateo de la fecha de Vencimiento del Documento
+        // Formateo de la fecha de Vencimiento del Documento
         val date1 = ObjetoUtils.formatoFecha(planCXC.fechaVencimiento)
 
-        //Formateo de la fecha Hoy
+        // Formateo de la fecha Hoy
         val date2 = ObjetoUtils.formatoFecha(dateNow)
 
-        //Dias de diferencia entre la fecha de Vencimiento del Documento y la fecha hoy
+        // Dias de diferencia entre la fecha de Vencimiento del Documento y la fecha hoy
         val dias = ObjetoUtils.restarFechas(date1.time, date2.time, "dias")
 
         if (date1 == date2) {
@@ -77,16 +75,16 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
             tvFechaVencimientoModulCXCTextColor = R.color.redColor
         }
 
-        //2023-10-13 Apply sirve para indicar que todo lo que se haga deltro de las llaves le afecta
+        // 2023-10-13 Apply sirve para indicar que todo lo que se haga deltro de las llaves le afecta
         // a la view binding.tvDocVence
 
-
-        //2023-07-14 se comento ya que ahora notas y facturas pueden llevar bolivares y dolares
+        // 2023-07-14 se comento ya que ahora notas y facturas pueden llevar bolivares y dolares
         /*if (planCXC.doc.indexOf('E') != -1) {
             edoPedi = "N/E $."
             binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
         }else{
-            *//*if (planCXC.diascred != 15){
+         */
+        /*if (planCXC.diascred != 15){
                     if (planCXC.diascred == 25 && diasVencidos(planCXC.fechaVencimiento, DIAS_VALIDOS_BOLIVARES)){
                         edoPedi = "FAC $."
                         binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
@@ -117,7 +115,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
                             binding.tvEdoPediModulCXC.setTextColor(Color.rgb(96, 203, 64))
                         }
                     }
-                }*//*
+                }*/
+        /*
 
                 if(planCXC.diascred >= DIAS_VALIDOS_BOLIVARES){
                     if (!(diasVencidos(planCXC.fechaRecepcion, DIAS_VALIDOS_BOLIVARES))){
@@ -150,7 +149,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 }
 
-                *//*if (planCXC.diascred == 15){
+         */
+        /*if (planCXC.diascred == 15){
                     edoPedi = "FAC Bs."
                     if (compararFecha(planCXC.fechaVencimiento) == 0){
                         binding.tvEdoPediModulCXC.setTextColor(Color.rgb(255, 194, 34))
@@ -162,10 +162,11 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }else{
                     edoPedi = "FAC $."
                     binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
-                }*//*
+                }*/
+        /*
 
             }*/
-        //2023-06-05 Se comento para sustituir traquin por tipo de factura (si es una factura que se puede pagar en bolivares o no)
+        // 2023-06-05 Se comento para sustituir traquin por tipo de factura (si es una factura que se puede pagar en bolivares o no)
         /*edoPedi = when (planCXC.edoPedi) {
             "01" -> "Esperando por Aprobación"
             "12" -> "Ya impreso"
@@ -216,7 +217,7 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.tvClienteModulCXC.text = planCXC.cliente
         "$ ${ObjetoUtils.valorReal(planCXC.monto)}".also { binding.tvMontoModulCXC.text = it }
 
-        //Fecha de vencimiento del documento
+        // Fecha de vencimiento del documento
         val plancxcVencimiento =
             "${context.getString(R.string.plancxc_vencimiento)}: ${planCXC.fechaVencimiento.formatoFechaShow()}"
 
@@ -224,40 +225,38 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
             binding.tvFechaRecepcionModulCXC.text = it
         }
 
-        //Abonado o Por Pagar
+        // Abonado o Por Pagar
         val plancxcCuenta = "${context.getString(R.string.plancxc_cuenta)}: $edoFact"
-
 
         "${context.getString(R.string.plancxc_doc)}: $edoPedi".also {
             binding.tvEdoPediModulCXC.text = it
         }
 
-
         binding.tvDocVence.apply {
             text = tvDocVenceText
-            //Color es una funcion de extension de las View
+            // Color es una funcion de extension de las View
             setTextColor(color(tvDocVenceTextColor))
             setBackgroundResource(tvDocVenceBackground)
         }
 
         binding.tvFechaVencimientoModulCXC.apply {
             text = plancxcVencimiento
-            //Color es una funcion de extension de las View
+            // Color es una funcion de extension de las View
             setTextColor(color(tvFechaVencimientoModulCXCTextColor))
         }
 
         binding.tvEdoFactModulCXC.apply {
             text = plancxcCuenta
-            //Color es una funcion de extension de las View
+            // Color es una funcion de extension de las View
             setTextColor(color(tvEdoFactModulCXCTextColor))
         }
 
         binding.clMainModulCXC.setOnClickListener {
             onClickListener(
-                planCXC.codcliente, planCXC.cliente
+                planCXC.codcliente,
+                planCXC.cliente
             )
         }
-
     }
 
     /*private fun diferenciaFehca(fecha: String): Int {
@@ -314,5 +313,4 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
         return compararFecha(inActiveDate) >= 0
 
     }*/
-
 }

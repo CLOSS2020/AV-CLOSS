@@ -1,7 +1,6 @@
 package com.appcloos.mimaletin
 
-
-//conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()
+// conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS").toInt()
 object Constantes {
     const val FECHA_VERSION = "13.11.2023"
     const val VERSION_NAME = BuildConfig.VERSION_NAME
@@ -12,5 +11,7 @@ object Constantes {
 
     const val CLO = "081196"
 
-    const val WOKIN = "170122"
+    const val WOKIN = "753159"
+
+    const val PRUEBA = "170122"
 }

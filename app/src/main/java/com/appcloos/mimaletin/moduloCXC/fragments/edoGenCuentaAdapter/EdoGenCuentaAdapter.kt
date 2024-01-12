@@ -11,12 +11,13 @@ class EdoGenCuentaAdapter(
     private val onClickListener: (String, String) -> Unit
 ) : RecyclerView.Adapter<EdoGenCuentaHolder>() {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EdoGenCuentaHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return EdoGenCuentaHolder(
             layoutInflater.inflate(
-                R.layout.item_estado_general, parent, false
+                R.layout.item_estado_general,
+                parent,
+                false
             )
         )
     }

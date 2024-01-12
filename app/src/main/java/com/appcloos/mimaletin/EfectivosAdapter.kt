@@ -11,13 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 
 class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
 
-    //variables
+    // variables
     lateinit var recibos: ArrayList<CXC>
     lateinit var context: Context
     private var listaSelec: ArrayList<String> = ArrayList()
     private lateinit var quantityListener: RecHolder.QuantityListener
     private var estadosCheck: SparseBooleanArray = SparseBooleanArray()
-
 
     fun EfectivosAdapter(
         context: Context,
@@ -27,7 +26,6 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
         this.context = context
         this.recibos = recibos
         this.quantityListener = quantityListener
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecHolder {
@@ -41,7 +39,6 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
         )
     }
 
-
     override fun onBindViewHolder(holder: RecHolder, position: Int) {
         holder.bind(recibos[position])
         holder.isSeleccionado.tag = position
@@ -53,16 +50,11 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
 
             if (holder.isSeleccionado.isChecked && !listaSelec.contains(codigo)) {
                 listaSelec.add("\'" + codigo + "\'")
-
             } else {
                 listaSelec.remove("\'" + codigo + "\'")
-
             }
             quantityListener.onQuantityChange(listaSelec)
-
         }
-
-
     }
 
     override fun getItemCount(): Int {
@@ -78,9 +70,7 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
         private var nombreCliente: TextView = view.findViewById(R.id.tvNombreInfo)
         val isSeleccionado: CheckBox = view.findViewById(R.id.cb_recibo_selec_efectivo)
 
-
         fun bind(recibos: CXC) {
-
             nroRec.text = "N° ${recibos.id_recibo}"
             montoRec.text = "$" + recibos.efectivo.toString()
             fechaRec.text = recibos.fchrecibo
@@ -95,9 +85,7 @@ class EfectivosAdapter : RecyclerView.Adapter<EfectivosAdapter.RecHolder>() {
 
         interface QuantityListener {
             fun onQuantityChange(listaChange: ArrayList<String>) {
-
             }
         }
     }
-
 }

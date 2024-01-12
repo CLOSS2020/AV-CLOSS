@@ -1,6 +1,5 @@
 package com.appcloos.mimaletin
 
-
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
@@ -32,14 +31,14 @@ class ClientesActivity : AppCompatActivity() {
         binding = ActivityClientesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
         codigoEmpresa = preferences.getString("codigoEmpresa", null)
 
-        //instancio el recyclerview y le coloco layout
+        // instancio el recyclerview y le coloco layout
 
         clienteAdapter = ClienteAdapter(listacliente) { position -> onItemClick(position) }
 
@@ -50,7 +49,6 @@ class ClientesActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context)
             adapter = clienteAdapter
         }
-
 
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!, codigoEmpresa!!)
@@ -84,11 +82,11 @@ class ClientesActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    /** */ /*  public void Onclick(View view){
+    /** */
+    /*  public void Onclick(View view){
        BuscarClientes();
     }*/
     fun buscarClientes(busqueda: String? = null) {
-
         listacliente.clear()
         listacliente = conn.getClientes(busqueda, codigoEmpresa!!)
         clienteAdapter.updateAdapter(listacliente)
@@ -151,5 +149,4 @@ class ClientesActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

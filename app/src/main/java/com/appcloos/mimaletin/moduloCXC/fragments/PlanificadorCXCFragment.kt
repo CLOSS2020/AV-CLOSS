@@ -23,7 +23,6 @@ import com.appcloos.mimaletin.databinding.FragmentPlanificadorCxcBinding
 import com.appcloos.mimaletin.moduloCXC.fragments.planificadorCXCAdapter.PlanificadorCXCAdapter
 import com.appcloos.mimaletin.moduloCXC.viewmodel.PlanificadorCxc
 
-
 class PlanificadorCXCFragment : Fragment() {
 
     private lateinit var binding: FragmentPlanificadorCxcBinding
@@ -35,7 +34,7 @@ class PlanificadorCXCFragment : Fragment() {
     lateinit var preferences: SharedPreferences
     private lateinit var adapter: PlanificadorCXCAdapter
 
-    //declaracion de variables de texto
+    // declaracion de variables de texto
     lateinit var agencia: String
     lateinit var tipodoc: String
     lateinit var documento: String
@@ -58,7 +57,7 @@ class PlanificadorCXCFragment : Fragment() {
     var codigoCliente = ""
     var nombreCliente = ""
 
-    //declaracion de variables Double
+    // declaracion de variables Double
     var contribesp: Double = 0.0
     var tipoprecio = 0.0
     var diascred = 0.0
@@ -117,12 +116,13 @@ class PlanificadorCXCFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPlanificadorCxcBinding.inflate(layoutInflater)
         return binding.root
-        //cargo el codigo del vendedor que viene desde el activity anterior
+        // cargo el codigo del vendedor que viene desde el activity anterior
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -135,7 +135,7 @@ class PlanificadorCXCFragment : Fragment() {
         listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, null, codEmpresa!!)
         binding.rvPlanModulCXC.setHasFixedSize(true)
         binding.rvPlanModulCXC.layoutManager = LinearLayoutManager(requireContext())
-        //cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
+        // cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
 
         adapter = PlanificadorCXCAdapter(
             planificadorCxc = listaPlanificadorCxc,
@@ -143,24 +143,25 @@ class PlanificadorCXCFragment : Fragment() {
             DIAS_VALIDOS_BOLIVARES = conn.getConfigNum("DIAS_VALIDOS_BOLIVARES_DOCS", codEmpresa!!).toInt()
         )
         binding.rvPlanModulCXC.adapter = adapter
-        //consultarDocs("")
+        // consultarDocs("")
     }
 
     private fun irACXC(cliente: String, nomCliente: String) {
-        //Creacion de un Bundle que servira como contenedor para enviar datos al siguiente fragment
+        // Creacion de un Bundle que servira como contenedor para enviar datos al siguiente fragment
         val datosAEnviar = Bundle()
-        //snackBar("Accedio al cliente: $nomCliente")
+        // snackBar("Accedio al cliente: $nomCliente")
 
         val numero: Int? = null
 
-        //Guardado del codigo de vendedor
+        // Guardado del codigo de vendedor
         datosAEnviar.putString("cliente", cliente)
         datosAEnviar.putString("nomCliente", nomCliente)
 
-        //Navegacion al fagment de Vendedor
-        //El fragment vendedor de informacion mas detallada de un mendedor
+        // Navegacion al fagment de Vendedor
+        // El fragment vendedor de informacion mas detallada de un mendedor
         findNavController().navigate(
-            R.id.action_moduloCXCFragment_to_edoCuentaClienteFragment, datosAEnviar
+            R.id.action_moduloCXCFragment_to_edoCuentaClienteFragment,
+            datosAEnviar
         )
     }
 
@@ -206,13 +207,13 @@ class PlanificadorCXCFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                //buscarItem(query)
+                // buscarItem(query)
                 consultarDocs(query)
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                //buscarItem(newText)
+                // buscarItem(newText)
                 consultarDocs(newText)
                 return true
             }

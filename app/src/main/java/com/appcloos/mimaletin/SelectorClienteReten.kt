@@ -15,7 +15,7 @@ class SelectorClienteReten : AppCompatActivity() {
     private lateinit var binding: ActivitySelectorClienteRetenBinding
 
     private var clientes: ArrayList<Cliente> = ArrayList()
-    //private var clienteList:List<Cliente> = clientes.toMutableList()
+    // private var clienteList:List<Cliente> = clientes.toMutableList()
 
     private lateinit var preferences: SharedPreferences
     private lateinit var codUsuario: String
@@ -35,7 +35,6 @@ class SelectorClienteReten : AppCompatActivity() {
         codUsuario = preferences.getString("cod_usuario", null).toString()
         codEmpresa = preferences.getString("codigoEmpresa", null).toString()
 
-
         supportActionBar!!.title = "Selecione un Cliente"
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
@@ -47,7 +46,8 @@ class SelectorClienteReten : AppCompatActivity() {
         println("Cantidad de lineas -> ${clientes.size}")
 
         binding.rvMainSelctReten.layoutManager = LinearLayoutManager(this)
-        adapter = SeleccionarClientePedidoAdapter(clientes,
+        adapter = SeleccionarClientePedidoAdapter(
+            clientes,
             onClickListener = { cliente, nomCliente -> irAReten(cliente, nomCliente) },
             onLongClickListener = { cliente, nomCliente -> dialogCliente(cliente, nomCliente) },
             this,
@@ -71,8 +71,8 @@ class SelectorClienteReten : AppCompatActivity() {
     private fun buscarClintes() {
         val cursorTasas: Cursor = keAndroid.rawQuery(
             "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
-                    "WHERE status = '1' AND vendedor = '$codUsuario' AND contribespecial = '1' " +
-                    "ORDER BY nombre ASC",
+                "WHERE status = '1' AND vendedor = '$codUsuario' AND contribespecial = '1' " +
+                "ORDER BY nombre ASC",
             null
         )
 
@@ -93,5 +93,4 @@ class SelectorClienteReten : AppCompatActivity() {
         val dialog = DialogClientesDatos(this, cliente, nomCliente, codEmpresa)
         dialog.show()
     }
-
 }

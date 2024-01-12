@@ -66,12 +66,12 @@ class MainActivity : AppCompatActivity(), Serializable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la orientacion vertical
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar!!.hide() //metodo para esconder la actionbar
-        //checkForAppUpdate();
+        supportActionBar!!.hide() // metodo para esconder la actionbar
+        // checkForAppUpdate();
 
         binding.tvversion.text = "Ver. " + Constantes.VERSION_NAME
         enlace = ""
@@ -82,11 +82,11 @@ class MainActivity : AppCompatActivity(), Serializable {
         delegate.applyDayNight()
         validarSesion()
 
-        //validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
+        // validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
         setListener()
 
-        //checkForAppUpdate();
-        //obtenerVersion("https://cloccidental.com/webservice/versionapp.php?version_usuario=" + versionApp);
+        // checkForAppUpdate();
+        // obtenerVersion("https://cloccidental.com/webservice/versionapp.php?version_usuario=" + versionApp);
 
         /*bt_validar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,7 +293,7 @@ class MainActivity : AppCompatActivity(), Serializable {
         val jsonArrayRequest = JsonArrayRequest(url, { response ->
             if (response != null) { // si la respuesta no viene vacia
                 var sesion =
-                    0 //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
+                    0 // <-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
                 var codUsuario = ""
                 var nUsuario = ""
                 var nombreUsuario = ""
@@ -309,23 +309,24 @@ class MainActivity : AppCompatActivity(), Serializable {
                 var ultimorcl = ""
                 var ultimorcxc = ""
 
-                var jsonObject: JSONObject //creamos un objeto json vacio
-                for (i in 0 until response.length()) { /*pongo todo en el objeto segun lo que venga */
+                var jsonObject: JSONObject // creamos un objeto json vacio
+                for (i in 0 until response.length()) {
+                    /*pongo todo en el objeto segun lo que venga */
                     try {
                         jsonObject = response.getJSONObject(i)
-                        nUsuario = jsonObject.getString("nombre") //el nombre del vendedor
-                        codUsuario = jsonObject.getString("vendedor") //el codigo
+                        nUsuario = jsonObject.getString("nombre") // el nombre del vendedor
+                        codUsuario = jsonObject.getString("vendedor") // el codigo
                         nombreUsuario =
-                            jsonObject.getString("username") //almacenamos el nombre de usuario
+                            jsonObject.getString("username") // almacenamos el nombre de usuario
                         almacen = jsonObject.getString("almacen").trim { it <= ' ' }
                         desactivo =
-                            jsonObject.getDouble("desactivo") //este campo nos indicara si el usuario se encuentra bloqueado o no.
+                            jsonObject.getDouble("desactivo") // este campo nos indicara si el usuario se encuentra bloqueado o no.
                         fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
                         ualterprec = jsonObject.getDouble("ualterprec")
                         ultimoped =
-                            jsonObject.getString("correlativo") //obtenemos el ultimo correlativo
+                            jsonObject.getString("correlativo") // obtenemos el ultimo correlativo
                         sesionactiva =
-                            jsonObject.getString("sesionactiva") //traemos la fecha de la sesion que estamos iniciando.
+                            jsonObject.getString("sesionactiva") // traemos la fecha de la sesion que estamos iniciando.
                         superves = jsonObject.getString("superves")
                         vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
                         ultimorec = jsonObject.getString("recibocobro").trim { it <= ' ' }
@@ -372,7 +373,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                         val keAndroid = conn.writableDatabase
                         keAndroid.beginTransaction()
                         try {
-                            //preparacion e inserción del correlativo de pedidos
+                            // preparacion e inserción del correlativo de pedidos
                             val correlativoTexto = MainActivity.right(ultimoped, 4)
                             var nroCorrelativo = correlativoTexto.toInt()
                             nroCorrelativo += 1
@@ -380,12 +381,13 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertar.put("kco_numero", nroCorrelativo)
                             insertar.put(
                                 "kco_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                                codUsuario.trim { it <= ' ' }
+                            )
                             insertar.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correla", null, insertar)
-                            //--------------------------------------------------------------------
+                            // --------------------------------------------------------------------
 
-                            //preparacion e inserción del correlativo de recibos
+                            // preparacion e inserción del correlativo de recibos
                             val reciboTexto = MainActivity.right(ultimorec, 4)
                             var nroRecibo = reciboTexto.toInt()
                             nroRecibo += 1
@@ -393,12 +395,13 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertarRec.put("kcc_numero", nroRecibo)
                             insertarRec.put(
                                 "kcc_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                                codUsuario.trim { it <= ' ' }
+                            )
                             insertarRec.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correlacxc", null, insertarRec)
-                            //-------------------------------------------------------
+                            // -------------------------------------------------------
 
-                            //preparacion e inserción del correlativo de reclamos
+                            // preparacion e inserción del correlativo de reclamos
                             val reclamoTexto = MainActivity.right(ultimorcl, 4)
                             var nroReclamo = reclamoTexto.toInt()
                             nroReclamo += 1
@@ -406,12 +409,13 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertarRcl.put("kdev_numero", nroReclamo)
                             insertarRcl.put(
                                 "kdev_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                                codUsuario.trim { it <= ' ' }
+                            )
                             insertarRcl.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correladev", null, insertarRcl)
-                            //---------------------------------------------------------------------------
+                            // ---------------------------------------------------------------------------
 
-                            //preparacion e inserción del correlativo de precobranza
+                            // preparacion e inserción del correlativo de precobranza
                             val correlaCXC = MainActivity.right(ultimorcxc, 4)
                             var nroCXC = correlaCXC.toInt()
                             nroCXC += 1
@@ -419,10 +423,11 @@ class MainActivity : AppCompatActivity(), Serializable {
                             insertarCXC.put("kcor_numero", nroCXC)
                             insertarCXC.put(
                                 "kcor_vendedor",
-                                codUsuario.trim { it <= ' ' })
+                                codUsuario.trim { it <= ' ' }
+                            )
                             insertarCXC.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_corprec", null, insertarCXC)
-                            //---------------------------------------------------------------------------
+                            // ---------------------------------------------------------------------------
                             /*keAndroid.delete(
                                 "usuarios",
                                 "username = ?",
@@ -438,7 +443,7 @@ class MainActivity : AppCompatActivity(), Serializable {
 
                             keAndroid.insert("ke_enlace", null, guardarEnlaces)
 
-                            //agrego la fecha en la cual inició sesión
+                            // agrego la fecha en la cual inició sesión
                             val hoy = Calendar.getInstance().time
                             val sdf =
                                 SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -482,7 +487,6 @@ class MainActivity : AppCompatActivity(), Serializable {
                         Constantes.AGENCIA = newEmpresa.kedCodigo
 
                         iraPrincipal()
-
                     } else if (desactivo == 2.0) {
                         Toast.makeText(
                             this,
@@ -511,7 +515,6 @@ class MainActivity : AppCompatActivity(), Serializable {
     }
 
     private fun validarEmpresa(codigoEmpresa: String) {
-
         if (binding.txtEmpresa.text.isEmpty()) {
             toast("Falta código de la empresa")
             return
@@ -521,11 +524,11 @@ class MainActivity : AppCompatActivity(), Serializable {
         val keAndroid = conn.writableDatabase
         val jsonArrayRequest = JsonArrayRequest(url, { response ->
             if (response != null) {
-                val jsonObject: JSONObject //creamos un objeto json vacio
+                val jsonObject: JSONObject // creamos un objeto json vacio
                 keAndroid.beginTransaction()
 
                 try {
-                    //bajamos los datos de la empresa/sucursal
+                    // bajamos los datos de la empresa/sucursal
                     jsonObject = response.getJSONObject(0)
 
                     val codigoEmp = jsonObject.getString("codigoEmpresa")
@@ -542,12 +545,12 @@ class MainActivity : AppCompatActivity(), Serializable {
                         codigoSuc
                     )
 
-                    //en este proceso vamos a cargar los permisos
+                    // en este proceso vamos a cargar los permisos
                     var permisosJson: JSONObject
                     for (i in 0 until response.length()) {
                         permisosJson = response.getJSONObject(i)
                         val codigoModulo = permisosJson.getString("codigoModulo")
-                        //System.out.println("CODIGO DEL MODULO " + codigoModulo);
+                        // System.out.println("CODIGO DEL MODULO " + codigoModulo);
                         val activoModulo = permisosJson.getString("estadoModulo")
 
                         val guardarPermisos = ContentValues()
@@ -608,34 +611,44 @@ class MainActivity : AppCompatActivity(), Serializable {
 
     fun obtenerVersion(url: String?) {
         val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
-                if (response != null) {
-                    val jsonObject: JSONObject //creamos un objeto json vacio
-                    try {
-                        jsonObject = response.getJSONObject(0)
-                        versionNube = jsonObject.getString("kve_version").trim { it <= ' ' }
-                        caducidad = jsonObject.getString("kve_activa")
-                        if (versionNube != versionApp) {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Esta versión se encuentra obsoleta, por favor, actualice",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            binding.btIniciar.isEnabled = false
-                        } else {
-                            if (caducidad == "0") {
+            object : JsonArrayRequest(
+                url,
+                Response.Listener { response: JSONArray? ->
+                    if (response != null) {
+                        val jsonObject: JSONObject // creamos un objeto json vacio
+                        try {
+                            jsonObject = response.getJSONObject(0)
+                            versionNube = jsonObject.getString("kve_version").trim { it <= ' ' }
+                            caducidad = jsonObject.getString("kve_activa")
+                            if (versionNube != versionApp) {
                                 Toast.makeText(
                                     this@MainActivity,
                                     "Esta versión se encuentra obsoleta, por favor, actualice",
                                     Toast.LENGTH_LONG
                                 ).show()
                                 binding.btIniciar.isEnabled = false
-                            } else if (caducidad == "1") {
-                                //TODO EN ORDEN, NO TO CAMOS NADA.
+                            } else {
+                                if (caducidad == "0") {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Esta versión se encuentra obsoleta, por favor, actualice",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    binding.btIniciar.isEnabled = false
+                                } else if (caducidad == "1") {
+                                    // TODO EN ORDEN, NO TO CAMOS NADA.
+                                }
                             }
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Esta versión se encuentra obsoleta, por favor, actualice",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            binding.btIniciar.isEnabled = false
                         }
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
+                    } else {
                         Toast.makeText(
                             this@MainActivity,
                             "Esta versión se encuentra obsoleta, por favor, actualice",
@@ -643,30 +656,26 @@ class MainActivity : AppCompatActivity(), Serializable {
                         ).show()
                         binding.btIniciar.isEnabled = false
                     }
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Esta versión se encuentra obsoleta, por favor, actualice",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    binding.btIniciar.isEnabled = false
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                println("--Error--")
-                error.printStackTrace()
-                println("--Error--")
-            }) {
-                override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
-                    //donde estan guardados el usuario y password.
-                    //parametros.put("version_usuario", versionApp);
+            ) {
+                override fun getParams(): Map<String, String> { // finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+                    // donde estan guardados el usuario y password.
+                    // parametros.put("version_usuario", versionApp);
                     return HashMap()
                 }
             }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
-    //metodo de validacion
+    // metodo de validacion
     /*private fun validarUsuario(url: String) {
         println(url)
         val jsonArrayRequest: JsonArrayRequest = object : JsonArrayRequest(
@@ -677,7 +686,9 @@ class MainActivity : AppCompatActivity(), Serializable {
                         0 //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
                     println(response)
                     var jsonObject: JSONObject //creamos un objeto json vacio
-                    for (i in 0 until response.length()) { *//*pongo todo en el objeto segun lo que venga *//*
+                    for (i in 0 until response.length()) { */
+    /*pongo todo en el objeto segun lo que venga */
+    /*
                         try {
                             conn.deleteAll("usuarios")
                             jsonObject = response.getJSONObject(i)
@@ -928,13 +939,13 @@ class MainActivity : AppCompatActivity(), Serializable {
             PrincipalActivity::class.java
         ) // creamos intent hacia la clase principal
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent) //y lo iniciamos
+        startActivity(intent) // y lo iniciamos
     }
 
     override fun onResume() {
         codigo_empresa = "081196"
         super.onResume()
-        //validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
+        // validarEmpresaLicencia("https://www.cloccidental.com/webservice/validarempresa.php?codigo=$codigo_empresa")
 
         /*appUpdateManager
                 .getAppUpdateInfo()
@@ -961,10 +972,9 @@ class MainActivity : AppCompatActivity(), Serializable {
         appUpdateManager = AppUpdateManagerFactory.create(this)
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
             ) {
-
                 /*try {
                     appUpdateManager.startUpdateFlowForResult(
                             // Pass the intent that is returned by 'getAppUpdateInfo()'.
@@ -980,8 +990,8 @@ class MainActivity : AppCompatActivity(), Serializable {
                 }*/
                 try {
                     appUpdateManager.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                        appUpdateInfo,  // an activity result launcher registered via registerForActivityResult
-                        AppUpdateType.IMMEDIATE,  // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
+                        appUpdateInfo, // an activity result launcher registered via registerForActivityResult
+                        AppUpdateType.IMMEDIATE, // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
                         // flexible updates.
                         this,
                         MY_REQUEST_CODE
@@ -1052,7 +1062,7 @@ class MainActivity : AppCompatActivity(), Serializable {
         var versionApp = "2.3.3"
         private const val MY_REQUEST_CODE = 100
         fun right(valor: String?, longitud: Int): String {
-            //una función "right" utilizando la clase substring
+            // una función "right" utilizando la clase substring
             return valor!!.substring(valor.length - longitud)
         }
     }

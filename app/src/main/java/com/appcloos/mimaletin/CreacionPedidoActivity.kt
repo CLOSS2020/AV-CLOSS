@@ -63,7 +63,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private var codUsuario1: String? = null
     private var codEmpresa: String? = null
 
-    //CheckBox cb_negoespecial;
+    // CheckBox cb_negoespecial;
     var formato = DecimalFormat("#,###.00")
     private var APP_ITEMS_FACTURAS = 0
     private var APP_ITEMS_NOTAS_ENTREGA = 0
@@ -94,8 +94,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                 ).show()
                             }
                         } else {
-                            //Asignacion de precio para saber si es negociacion especial
-                            //asignarTipodePrecio();
+                            // Asignacion de precio para saber si es negociacion especial
+                            // asignarTipodePrecio();
                             iraCatalogo()
                         }
                     }
@@ -139,7 +139,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la orientacion vertical
         super.onCreate(savedInstanceState)
         binding = ActivityCreacionPedidoBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -179,22 +179,22 @@ class CreacionPedidoActivity : AppCompatActivity() {
         if (cursor.moveToFirst()) {
             nroCorrelativo = cursor.getInt(0)
             nroCorrelativo += 1
-            //CorrelativoTexto = String.valueOf(nroCorrelativo);
+            // CorrelativoTexto = String.valueOf(nroCorrelativo);
             CorrelativoTexto = "0000$nroCorrelativo"
             generarNumeroPedido()
             supportActionBar!!.title = "Pedido: $nroPedido"
         }
         cursor.close()
-        //spinner             = findViewById(R.id.sp_cliente);
-        //ibt_modificar       = findViewById(R.id.ibt_modificar);
-        //cb_negoespecial = findViewById(R.id.cb_negespecial);
+        // spinner             = findViewById(R.id.sp_cliente);
+        // ibt_modificar       = findViewById(R.id.ibt_modificar);
+        // cb_negoespecial = findViewById(R.id.cb_negespecial);
         montoMinimoTotal = obtenerMontoMinimoTotal()
         llamarFuncionesAsignacion()
         verificarDocSelected()
         binding.tvNombreCliente.text = n_cliente
         binding.radioGroup.setOnCheckedChangeListener { _: RadioGroup?, _: Int -> verificarDocSelected() }
 
-        //Prepago.setOnCheckedChangeListener((buttonView, isChecked) -> recalculoPrecio(isChecked));
+        // Prepago.setOnCheckedChangeListener((buttonView, isChecked) -> recalculoPrecio(isChecked));
         binding.RbNotaEntrega.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) {
                 /*Prepago.setChecked(false);
@@ -207,14 +207,12 @@ class CreacionPedidoActivity : AppCompatActivity() {
             }
         }
 
-
         /* Credito.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 recalculoPrecio(false);
             }
         });*/
-
 
         /*ibt_modificar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,14 +221,14 @@ class CreacionPedidoActivity : AppCompatActivity() {
             }
         });*/
 
-
         /* carritoAdapter = new CarritoAdapter(CreacionPedidoActivity.this, listacarrito);
-        listaLineas.setAdapter(carritoAdapter);*/cargarLineas()
+        listaLineas.setAdapter(carritoAdapter);*/
+        cargarLineas()
         cargarClientes()
         sumaNeto()
         recuprarSeleccion()
 
-        //obtenemos el codigo de usuario de las preferencias guardadas cuando iniciamos sesión
+        // obtenemos el codigo de usuario de las preferencias guardadas cuando iniciamos sesión
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario1 = preferences.getString("cod_usuario", null)
         /** */
@@ -269,8 +267,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
             }
         });*/
         /** */
-        //en este metodo onlistener, cuando se mantiene presionado un item, da la opcion de sacarlo del carrito
-        //y luego refrescar la lista de lineas del pedido
+        // en este metodo onlistener, cuando se mantiene presionado un item, da la opcion de sacarlo del carrito
+        // y luego refrescar la lista de lineas del pedido
         binding.ListPedido.setOnItemLongClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
             val codigo = listacarrito!![position].getCodigo()
             val ventana = AlertDialog.Builder(
@@ -291,7 +289,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 Toast.makeText(this@CreacionPedidoActivity, "Artículo borrado", Toast.LENGTH_SHORT)
                     .show()
             }
-            ventana.setNegativeButton("Cancelar") { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            ventana.setNegativeButton(
+                "Cancelar"
+            ) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
             val dialogo = ventana.create()
             dialogo.show()
 
@@ -309,7 +309,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         }
         /** */
         binding.ListPedido.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-            //-- obtiene el codigo del articulo y el descuento en la línea
+            // -- obtiene el codigo del articulo y el descuento en la línea
             val codigo = listacarrito!![position].getCodigo()
             val dctolin = listacarrito!![position].getDctolin()
             val cajatexto = EditText(
@@ -352,11 +352,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 listOf("codigo", "empresa"),
                 listOf(codigo, codEmpresa!!)
             )
-            //2023-09-14 Verificando que el articulo permita descuento
+            // 2023-09-14 Verificando que el articulo permita descuento
             if (descuentoBool > 0.0) {
-                //final CheckBox darDescuento = new CheckBox(CreacionPedidoActivity.this);
+                // final CheckBox darDescuento = new CheckBox(CreacionPedidoActivity.this);
                 darDescuento.text = "Dar Descuento del Articulo"
-                //2023-09-14 Checkeo el boton si se chekeo en catalogo
+                // 2023-09-14 Checkeo el boton si se chekeo en catalogo
                 if (dctolin > 0.0) {
                     darDescuento.isChecked = true
                 }
@@ -368,13 +368,13 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 val mensajeCantidadMultiplo = TextView(this@CreacionPedidoActivity)
                 mensajeCantidadMultiplo.textSize = 20f
                 mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD)
-                //mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
+                // mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
                 mensajeCantidadMultiplo.text = vtaMin.roundToInt().toString() + " x "
-                //mensajeCantidadMultiplo.setLayoutParams(params);
+                // mensajeCantidadMultiplo.setLayoutParams(params);
                 cajatexto.width = 1000
                 cajatexto.hint = "Cantidad de paquetes a pedir"
                 layoutVtaMinenx.addView(mensajeCantidadMultiplo)
-                //cajatexto.setLayoutParams(params2);
+                // cajatexto.setLayoutParams(params2);
                 layoutVtaMinenx.addView(cajatexto)
                 layoutH.addView(layoutVtaMinenx)
             } else {
@@ -397,11 +397,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     if (cantidad != 0) {
                         val cursor1 = keAndroid12.rawQuery(
                             "SELECT $tipoDePrecioaMostrar, (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo " +
-                                    "WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
+                                "WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
                             null
                         )
                         cursor1.moveToNext()
-                        //System.out.println("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
+                        // System.out.println("SELECT " + tipoDePrecioaMostrar + ", (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo WHERE codigo ='" + codigo + "'");
                         val precio = valorReal(cursor1.getDouble(0))
                         val existencia = cursor1.getDouble(1)
                         val ventaMax = cursor1.getDouble(3)
@@ -450,7 +450,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                             }
                                             keAndroid12.execSQL(
                                                 "UPDATE ke_carrito SET kmv_cant=$cantidadNew, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                        "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
                                             )
                                             keAndroid12.setTransactionSuccessful()
                                             keAndroid12.endTransaction()
@@ -492,7 +492,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                             }
                                             keAndroid12.execSQL(
                                                 "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                        "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
                                             )
                                             keAndroid12.setTransactionSuccessful()
                                             keAndroid12.endTransaction()
@@ -501,7 +501,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                                 "Artículo modificado",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                            //finish();
+                                            // finish();
                                         } catch (ex: Exception) {
                                             println("--Error--")
                                             ex.printStackTrace()
@@ -529,11 +529,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                     }
                                     keAndroid12.execSQL(
                                         "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                            "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
                                     )
                                     keAndroid12.setTransactionSuccessful()
                                     keAndroid12.endTransaction()
-                                    //finish();
+                                    // finish();
                                     Toast.makeText(
                                         this@CreacionPedidoActivity,
                                         "Artículo modificado",
@@ -555,7 +555,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
                             ke_android.execSQL("UPDATE ke_carrito SET kmv_cant=" + cantidad + ", kmv_stot =" + precioNuevo + ", kmv_stotdcto =" + mtoDctoNuevo + " WHERE kmv_codart ='" + codigo + "'");
                             actualizaLista();
 
-                            Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();*/actualizaLista()
+                            Toast.makeText(CreacionPedidoActivity.this, "Artículo modificado", Toast.LENGTH_SHORT).show();*/
+                            actualizaLista()
                             Toast.makeText(
                                 this@CreacionPedidoActivity,
                                 "Articulo añadido",
@@ -571,7 +572,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     }
                 }
             }
-            ventana.setNegativeButton("Cancelar") { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            ventana.setNegativeButton(
+                "Cancelar"
+            ) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
             val dialogo = ventana.create()
             dialogo.show()
 
@@ -584,7 +587,6 @@ class CreacionPedidoActivity : AppCompatActivity() {
             nbutton.apply {
                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
             }
-
         }
         binding.swNegoespecial.setOnCheckedChangeListener { compoundButton: CompoundButton, _: Boolean ->
             if (compoundButton.isChecked) {
@@ -656,7 +658,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun analizarArticulos(campo: String, listacarrito: ArrayList<Carrito>?) {
         var num = 0
-        //int numNE = 0;
+        // int numNE = 0;
         for (i in listacarrito!!.indices) {
             num = conn!!.getCampoIntCamposVarios(
                 "articulo",
@@ -664,7 +666,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 listOf("codigo", "empresa"),
                 listOf(listacarrito[i].codigo, codEmpresa!!)
             )
-            //numNE += conn.getCampoInt("articulo", "vta_solone", "codigo", listacarrito.get(i).codigo);
+            // numNE += conn.getCampoInt("articulo", "vta_solone", "codigo", listacarrito.get(i).codigo);
             if (num > 0) {
                 break
             }
@@ -686,7 +688,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         }
     }
 
-    //554
+    // 554
     private fun llamarFuncionesAsignacion() {
         asignarTipodePrecio()
         actualizarPrecios()
@@ -705,7 +707,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             tipoDePrecioaMostrar = "precio1"
             preciocliente = 1.0
 
-            //2023-06-05 se comento debido a que la opcion de prepago se borrara y ahora se llamara pago BCV y se asignara precio1 (Posiblemente precio3 se elimine)
+            // 2023-06-05 se comento debido a que la opcion de prepago se borrara y ahora se llamara pago BCV y se asignara precio1 (Posiblemente precio3 se elimine)
             /*tipoDePrecioaMostrar = "precio3";
             preciocliente = 3.0;*/
         } else {
@@ -733,7 +735,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             cursor.close()
             keAndroid.execSQL(
                 "UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo " +
-                        "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
             )
             cargarLineas()
             sumaNeto()
@@ -741,7 +743,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         cursorMain.close()
     }
 
-    /// validacion de pedidos complementarios
+    // / validacion de pedidos complementarios
     private fun validarSiHayPedidosActivos(): Boolean {
         val hoy = LocalDateTime.now()
         val ayer = hoy.minusHours(APP_DIAS_PEDIDO_COMPLEMENTO)
@@ -751,7 +753,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         val cursorPeds = keAndroid.rawQuery(
             "SELECT kti_ndoc FROM ke_opti " +
-                    "WHERE kti_codcli = '$codigoCliente' AND kti_status <> '3' AND kti_fchdoc >='$fechaAnterior' AND empresa = '$codEmpresa'",
+                "WHERE kti_codcli = '$codigoCliente' AND kti_status <> '3' AND kti_fchdoc >='$fechaAnterior' AND empresa = '$codEmpresa'",
             null
         )
         if (cursorPeds.moveToFirst()) {
@@ -814,7 +816,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         if (itemid == android.R.id.home) {
             validarSalida()
         }
-        //return super.onOptionsItemSelected(item);
+        // return super.onOptionsItemSelected(item);
         return true
     }
 
@@ -847,41 +849,46 @@ class CreacionPedidoActivity : AppCompatActivity() {
         nbutton.apply {
             setTextColor(colorTextAgencia(Constantes.AGENCIA))
         }
-
     }
 
     private fun cargarPendientes(url: String) {
         val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
-                if (response != null) {
-                    println("llegando info")
-                    val jsonObject: JSONObject
-                    try {
-                        jsonObject = response.getJSONObject(0)
-                        conteoDocs = jsonObject.getInt("conteo")
-                        fechaVence = jsonObject.getString("ultimafecha")
-                        kti_negesp = jsonObject.getString("kti_negesp")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+            object : JsonArrayRequest(
+                url,
+                Response.Listener { response: JSONArray? ->
+                    if (response != null) {
+                        println("llegando info")
+                        val jsonObject: JSONObject
+                        try {
+                            jsonObject = response.getJSONObject(0)
+                            conteoDocs = jsonObject.getInt("conteo")
+                            fechaVence = jsonObject.getString("ultimafecha")
+                            kti_negesp = jsonObject.getString("kti_negesp")
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                println("--Error--")
-                error.printStackTrace()
-            }) {
-                override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
-                    //donde estan guardados el usuario y password.
-                    //parametros.put("version_usuario", versionApp);
+            ) {
+                override fun getParams(): Map<String, String> { // finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+                    // donde estan guardados el usuario y password.
+                    // parametros.put("version_usuario", versionApp);
                     return HashMap()
                 }
             }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
     private fun funcionCaducidad() {
-        //obtengo la fecha del sistema al ejecutar la función:
-        val hoy = LocalDateTime.now() //el dia en que se hizo el grabado
+        // obtengo la fecha del sistema al ejecutar la función:
+        val hoy = LocalDateTime.now() // el dia en que se hizo el grabado
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val fechaHoy = hoy.format(formatter)
         val keAndroid = conn!!.writableDatabase
@@ -908,9 +915,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
             precioTotalporArticulo = precioTotalporArticulo!!.valorReal()
             descuentoTotal = cursor.getDouble(1)
 
-            //2023-09-16 Aqui guardo el monto con descuento,
-            //como casualmente en el mismo campo guardo el monto sin descuento cuando no se selecciona
-            //aqui tambien se guarda el total con y sin descuento dependiendo la seleccion
+            // 2023-09-16 Aqui guardo el monto con descuento,
+            // como casualmente en el mismo campo guardo el monto sin descuento cuando no se selecciona
+            // aqui tambien se guarda el total con y sin descuento dependiendo la seleccion
             montoNetoConDescuento = cursor.getDouble(2)
             binding.tvNeto.text = "$" + precioTotalporArticulo!!.toTwoDecimals()
             if (descuentoTotal!! > 0.0) {
@@ -929,7 +936,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             binding.tvSubcondcto.visibility = View.INVISIBLE
             binding.tvNetocondescuento.visibility = View.INVISIBLE
 
-            //---aqui tambien se coloca algo en caso de que sea 0 con descuento
+            // ---aqui tambien se coloca algo en caso de que sea 0 con descuento
         }
         cursor.close()
         if (negociacionIsActiva()) {
@@ -946,22 +953,22 @@ class CreacionPedidoActivity : AppCompatActivity() {
             documento = "1"
             if (binding.RbCredito.isChecked) {
                 formaPago = "2"
-                //asignarTipodePrecio();
+                // asignarTipodePrecio();
             } else if (binding.RbPrepago.isChecked) {
                 formaPago = "1"
-                //tipoDePrecioaMostrar = "precio3";
+                // tipoDePrecioaMostrar = "precio3";
             }
         } else if (binding.RbNotaEntrega.isChecked) {
             documento = "2"
             if (binding.RbCredito.isChecked) {
                 formaPago = "2"
-                //asignarTipodePrecio();
+                // asignarTipodePrecio();
             } else if (binding.RbPrepago.isChecked) {
                 formaPago = "1"
-                //tipoDePrecioaMostrar = "precio3";
+                // tipoDePrecioaMostrar = "precio3";
             }
         }
-        //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
+        // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
     }
 
     private fun cargarClientes() {
@@ -972,8 +979,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val cursor =
             keAndroid.rawQuery(
                 "SELECT codigo, nombre FROM cliempre " +
-                        "WHERE vendedor ='$codUsuario1' AND empresa = '$codEmpresa' " +
-                        "ORDER BY nombre ASC",
+                    "WHERE vendedor ='$codUsuario1' AND empresa = '$codEmpresa' " +
+                    "ORDER BY nombre ASC",
                 null
             )
         while (cursor.moveToNext()) {
@@ -985,9 +992,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
         cursor.close()
         keAndroid.close()
         obtenerlistaCliente()
-        //ArrayAdapter<CharSequence> adapterSpinner = new ArrayAdapter(getBaseContext(), R.layout.spinner_items , listainfoClientes);
-        //spinner.setAdapter(adapterSpinner);
-        //adapterSpinner.notifyDataSetChanged();
+        // ArrayAdapter<CharSequence> adapterSpinner = new ArrayAdapter(getBaseContext(), R.layout.spinner_items , listainfoClientes);
+        // spinner.setAdapter(adapterSpinner);
+        // adapterSpinner.notifyDataSetChanged();
     }
 
     private fun obtenerlistaCliente() {
@@ -1001,7 +1008,6 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private fun cargarLineas() {
         carritoCompras()
         if (listacarrito!!.isNotEmpty()) {
-
             // adapter.notifyDataSetChanged();
             val carritoAdapter =
                 CarritoAdapter(this@CreacionPedidoActivity, listacarrito, enlaceEmpresa)
@@ -1011,7 +1017,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             val carritoAdapter =
                 CarritoAdapter(this@CreacionPedidoActivity, ArrayList(), enlaceEmpresa)
             binding.ListPedido.adapter = carritoAdapter
-            //Toast.makeText(CreacionPedidoActivity.this, "Por favor, agrega lineas al pedido", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(CreacionPedidoActivity.this, "Por favor, agrega lineas al pedido", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1036,7 +1042,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito " +
-                    "WHERE empresa = '$codEmpresa'",
+                "WHERE empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -1056,7 +1062,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun obtenerCondicionesEspeciales() {
-        //CON ESTA FUNCION IDENTIFICO SI EL CLIENTE POSEE O NO LA POSIBLIDAD DE LLEVAR A CABO UNA NEGOCIACIÓN ESPECIAL
+        // CON ESTA FUNCION IDENTIFICO SI EL CLIENTE POSEE O NO LA POSIBLIDAD DE LLEVAR A CABO UNA NEGOCIACIÓN ESPECIAL
         val keAndroid = conn!!.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT kne_activa, kne_mtomin FROM cliempre WHERE codigo ='$codigoCliente' AND empresa = '$codEmpresa' and direccion IS NOT NULL and telefonos IS NOT NULL",
@@ -1065,7 +1071,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         while (cursor.moveToNext()) {
             negociacionActiva = cursor.getString(0)
             montoMinimo =
-                cursor.getDouble(1) //IMPORTANTE: EL CLIENTE CUENTA CON UN MONTO MINIMO PARA LA NEG. ESPECIAL
+                cursor.getDouble(1) // IMPORTANTE: EL CLIENTE CUENTA CON UN MONTO MINIMO PARA LA NEG. ESPECIAL
         }
         cursor.close()
         if (negociacionActiva == "0") {
@@ -1134,26 +1140,26 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun guardarDatosDelPedido() {
         val keAndroid = conn!!.writableDatabase
-        //Cursor cursor1 = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_stotdcto FROM ke_carrito WHERE 1", null);
+        // Cursor cursor1 = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_stotdcto FROM ke_carrito WHERE 1", null);
         val cursor2 = keAndroid.rawQuery(
             "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_stotdcto FROM ke_carrito " +
-                    "WHERE empresa = '$codEmpresa'",
+                "WHERE empresa = '$codEmpresa'",
             null
         )
         binding.menuCreacion.isEnabled = false
         if (cursor2.moveToFirst()) {
             pedidoCondicion()
             sumaNeto()
-            val ktiCodcli = codigoCliente //obtenemos el codigo del cliente
-            //System.out.println(kti_codcli);
+            val ktiCodcli = codigoCliente // obtenemos el codigo del cliente
+            // System.out.println(kti_codcli);
             val ktiDocsolicitado = documento
-            //System.out.println(documento);
+            // System.out.println(documento);
             val ktiCondicion = formaPago
-            //System.out.println(formaPago);
+            // System.out.println(formaPago);
             val ktiCodven = codUsuario1!!.trim { it <= ' ' }
             val ktiTdoc = tipoDoc
             val ktiTotneto = precioTotalporArticulo
-            //System.out.println(precioTotalporArticulo);
+            // System.out.println(precioTotalporArticulo);
             kti_precio = preciocliente
             val ktiNdoc = nroPedido
             val tmpNombrecli = n_cliente
@@ -1162,11 +1168,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
             val formatoFechaTabla = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val ktiFchdoc = formatoFechaTabla.format(fechaTabla)
             try {
-                //cargamos un content values para la cabecera
+                // cargamos un content values para la cabecera
                 val cvCabecera = ContentValues()
-                keAndroid.beginTransaction() //iniciamos la tranasaccion
+                keAndroid.beginTransaction() // iniciamos la tranasaccion
 
-                //cargamos la informacion en el contentvalues
+                // cargamos la informacion en el contentvalues
                 cvCabecera.put("kti_codcli", ktiCodcli)
                 cvCabecera.put("kti_codven", ktiCodven)
                 cvCabecera.put("kti_docsol", ktiDocsolicitado)
@@ -1181,12 +1187,13 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 cvCabecera.put("fechamodifi", ktiFchdoc)
                 cvCabecera.put("kti_negesp", ktiNegesp)
                 cvCabecera.put(
-                    "kti_totnetodcto", valorReal(
+                    "kti_totnetodcto",
+                    valorReal(
                         montoNetoConDescuento!!
                     )
                 )
                 cvCabecera.put("empresa", codEmpresa)
-                //insertamos la cabecera del pedido
+                // insertamos la cabecera del pedido
                 keAndroid.insert("ke_opti", null, cvCabecera)
                 for (i in listacarrito!!.indices) {
                     val cvLineas = ContentValues()
@@ -1201,9 +1208,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     cvLineas.put("kmv_dctolin", listacarrito!![i].getDctolin())
                     cvLineas.put("kmv_stotdcto", listacarrito!![i].getStotNeto())
                     cvLineas.put("empresa", codEmpresa)
-                    //insertamos las lineas
+                    // insertamos las lineas
                     keAndroid.insert("ke_opmv", null, cvLineas)
-                    keAndroid.execSQL("UPDATE ke_limitart SET status = '1' WHERE kli_codart = '${listacarrito!![i].getCodigo()}' AND kli_codven ='$codUsuario1' AND kli_codcli = '$codigoCliente' AND kli_track ='$nroPedido' AND empresa = '$codEmpresa'")
+                    keAndroid.execSQL(
+                        "UPDATE ke_limitart SET status = '1' WHERE kli_codart = '${listacarrito!![i].getCodigo()}' AND kli_codven ='$codUsuario1' AND kli_codcli = '$codigoCliente' AND kli_track ='$nroPedido' AND empresa = '$codEmpresa'"
+                    )
 
                     /*
                    COMPROMETIDO
@@ -1221,18 +1230,18 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     System.out.println("hola " + (comprometido + listacarrito.get(i).getCantidad()));
 
                     ke_android.execSQL("UPDATE articulo SET comprometido = '" + (comprometido + listacarrito.get(i).getCantidad()) + "' WHERE codigo = '"+ listacarrito.get(i).getCodigo() +"' ;");
-                    */
+                     */
                 }
-                //limpiamos ke_carrito
+                // limpiamos ke_carrito
                 keAndroid.delete("ke_carrito", "empresa = '$codEmpresa'", null)
 
-                //aumentamos el correlativo del pedido
+                // aumentamos el correlativo del pedido
                 val aumentarCorrelatiov = ContentValues()
                 aumentarCorrelatiov.put("kco_numero", nroCorrelativo)
                 aumentarCorrelatiov.put("kco_vendedor", codUsuario1)
                 aumentarCorrelatiov.put("empresa", codEmpresa)
 
-                //insertamos el correlativo
+                // insertamos el correlativo
                 keAndroid.insert("ke_correla", null, aumentarCorrelatiov)
                 keAndroid.setTransactionSuccessful()
             } catch (ex: Exception) {
@@ -1262,8 +1271,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val sharpref = getSharedPreferences("sharpref", MODE_PRIVATE)
         indexposicion = sharpref.getInt("Dato", 0)
         println(indexposicion)
-        //Mueve a esa posición el Spinner
-        //spinner.setSelection(indexposicion);
+        // Mueve a esa posición el Spinner
+        // spinner.setSelection(indexposicion);
     }
 
     private fun asignarTipodePrecio() {
@@ -1303,7 +1312,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             val cantidadCarrito = cursorcarrito.getDouble(1)
             val cursorprecio = keAndroid.rawQuery(
                 "SELECT $tipoDePrecioaMostrar FROM articulo " +
-                        "WHERE codigo ='$codigoArticuloCarrito' AND empresa = '$codEmpresa'",
+                    "WHERE codigo ='$codigoArticuloCarrito' AND empresa = '$codEmpresa'",
                 null
             )
             while (cursorprecio.moveToNext()) {
@@ -1311,7 +1320,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 precioNuevo = precioNuevo.valorReal()
                 var subTotalNuevo = precioNuevo * cantidadCarrito
                 subTotalNuevo = subTotalNuevo.valorReal()
-                keAndroid.execSQL("UPDATE ke_carrito SET kmv_artprec =$precioNuevo, kmv_stot =$subTotalNuevo WHERE kmv_codart='$codigoArticuloCarrito' AND empresa = '$codEmpresa'")
+                keAndroid.execSQL(
+                    "UPDATE ke_carrito SET kmv_artprec =$precioNuevo, kmv_stot =$subTotalNuevo WHERE kmv_codart='$codigoArticuloCarrito' AND empresa = '$codEmpresa'"
+                )
             }
             cursorprecio.close()
         }
@@ -1342,7 +1353,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val keAndroid = conn!!.readableDatabase
         val cuComp = keAndroid.rawQuery(
             "SELECT SUM(kli_cant) FROM ke_limitart " +
-                    "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa'",
+                "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa'",
             null
         )
         while (cuComp.moveToNext()) {
@@ -1404,7 +1415,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         var nuevoVencimiento: String? = null
         var kti_negesp: String? = null
         fun right(valor: String?, longitud: Int): String {
-            //una función "right" utilizando la clase substring
+            // una función "right" utilizando la clase substring
             return valor!!.substring(valor.length - longitud)
         }
     }
@@ -1424,7 +1435,6 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
             menuCreacion.itemTextColor = menuCreacion.colorIconReclamo(Constantes.AGENCIA)
             menuCreacion.itemIconTintList = menuCreacion.colorIconReclamo(Constantes.AGENCIA)
-
         }
     }
 
@@ -1434,5 +1444,4 @@ class CreacionPedidoActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

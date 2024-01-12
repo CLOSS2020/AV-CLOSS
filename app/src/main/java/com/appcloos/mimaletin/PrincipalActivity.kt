@@ -67,7 +67,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.system.exitProcess
 
-class PrincipalActivity : AppCompatActivity(), Serializable,
+class PrincipalActivity :
+    AppCompatActivity(),
+    Serializable,
     NavigationView.OnNavigationItemSelectedListener {
 
     private var toggle: ActionBarDrawerToggle? = null
@@ -76,10 +78,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     var tvEstadosync: TextView? = null
     var tvPcreados: TextView? = null
 
-
     var lvPedidosLista: ListView? = null
 
-    //BottomNavigationView menunav ;
+    // BottomNavigationView menunav ;
     var btSincact: ImageButton? = null
     var ibtClientes: ImageButton? = null
     var ibtCatalogo: ImageButton? = null
@@ -108,10 +109,8 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         super.onCreate(savedInstanceState)
-
-
 
         binding = ActivityPrincipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -170,7 +169,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             tvFechaVersion.text = "Actualización " + Constantes.FECHA_VERSION
         }
 
-        //los botones para ir a las diferentes activities
+        // los botones para ir a las diferentes activities
         navView.setNavigationItemSelectedListener(this)
         val headerView = navView.getHeaderView(0)
         tvNombreu = headerView.findViewById(R.id.tv_nombreu)
@@ -187,25 +186,27 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 .show()
         }
 
-
-        //conteoPedidosCreados();
+        // conteoPedidosCreados();
         obtenerPermisos()
         try {
             validarSesionActiva()
         } catch (e: ParseException) {
             e.printStackTrace()
         }
-        //2023-08-04 Antigua forma de pedir permisos
-        //solicitarPermisosInternos();
-        //2023-08-04 Nueva forma de pedir permisos
+        // 2023-08-04 Antigua forma de pedir permisos
+        // solicitarPermisosInternos();
+        // 2023-08-04 Nueva forma de pedir permisos
         checkPermissions()
-        //obtenerVersion("https://cloccidental.com/webservice/versionapp.php/?version_usuario=" + versionApp + "");
-        this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                finish()
-                exitProcess(0)
+        // obtenerVersion("https://cloccidental.com/webservice/versionapp.php/?version_usuario=" + versionApp + "");
+        this.onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    finish()
+                    exitProcess(0)
+                }
             }
-        })
+        )
 
         setColors()
     }
@@ -218,7 +219,6 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
             llHeaderNavMenu.setBackgroundResource(llHeaderNavMenu.backgroundNavMenu(Constantes.AGENCIA))
         }
-
     }
 
     private fun carousel() {
@@ -243,8 +243,8 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             override fun onClick(position: Int, carouselItem: CarouselItem) {
                 val imagen = ImageView(this@PrincipalActivity)
                 val enlace = list[position].imageUrl
-                //int ancho = conn.getSizeImage("ancho", position);
-                //int alto = conn.getSizeImage("alto", position);
+                // int ancho = conn.getSizeImage("ancho", position);
+                // int alto = conn.getSizeImage("alto", position);
                 Picasso.get().load(enlace).resize(1000, 1000).centerCrop().into(imagen)
                 val ventana = AlertDialog.Builder(
                     ContextThemeWrapper(
@@ -270,7 +270,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            //Permiso no aceptado
+            // Permiso no aceptado
             requestPermisos()
         }
     }
@@ -281,7 +281,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         ) {
-            //Pedir permisos
+            // Pedir permisos
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -300,13 +300,13 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permiso Aceptado", Toast.LENGTH_SHORT).show()
             } else {
-                //Toast.makeText(this, "Seleccionó el boton de \"Rechazar Permisos\"", LENGTH_LONG).show();
+                // Toast.makeText(this, "Seleccionó el boton de \"Rechazar Permisos\"", LENGTH_LONG).show();
             }
         }
     }
 
     private fun cargarUtilmaTasa() {
-        //descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim());
+        // descargarTasas("https://" + enlaceEmpresa + "/webservice/tasas.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim());
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT kecxc_tasa, kecxc_fchyhora FROM kecxc_tasas WHERE empresa = '$codEmpresa' ORDER BY kecxc_fchyhora DESC LIMIT 1",
@@ -339,70 +339,75 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             e.printStackTrace()
         }
         if (diferencia >= 2) {
-            //ib_alert.setVisibility(View.VISIBLE);
+            // ib_alert.setVisibility(View.VISIBLE);
         } else {
-            //ib_alert.setVisibility(View.INVISIBLE);
+            // ib_alert.setVisibility(View.INVISIBLE);
         }
     }
 
     private fun descargarTasas(url: String) {
         val jsonArrayRequest: JsonObjectRequest =
-            object : JsonObjectRequest(url, Response.Listener { response: JSONObject ->
-                if (response.getString("tasas") != "null") {
-                    try {
-                        val tasas = response.getJSONArray("tasas")
-                        for (i in 0 until tasas.length()) {
-                            val jsonObject = tasas.getJSONObject(i)
+            object : JsonObjectRequest(
+                url,
+                Response.Listener { response: JSONObject ->
+                    if (response.getString("tasas") != "null") {
+                        try {
+                            val tasas = response.getJSONArray("tasas")
+                            for (i in 0 until tasas.length()) {
+                                val jsonObject = tasas.getJSONObject(i)
 
-                            val id = jsonObject.getString("id")
-                            val fecha = jsonObject.getString("fecha")
-                            val tasa = jsonObject.getDouble("tasa")
-                            val ip = jsonObject.getString("ip")
-                            val fchyhora = jsonObject.getString("fechayhora")
-                            val fechamod = jsonObject.getString("fechamodifi")
+                                val id = jsonObject.getString("id")
+                                val fecha = jsonObject.getString("fecha")
+                                val tasa = jsonObject.getDouble("tasa")
+                                val ip = jsonObject.getString("ip")
+                                val fchyhora = jsonObject.getString("fechayhora")
+                                val fechamod = jsonObject.getString("fechamodifi")
 
-                            val cv = ContentValues()
-                            cv.put("kecxc_id", id)
-                            cv.put("kecxc_fecha", fecha)
-                            cv.put("kecxc_tasa", tasa)
-                            cv.put("kecxc_ip", ip)
-                            cv.put("kecxc_fchyhora", fchyhora)
-                            cv.put("fechamodifi", fechamod)
-                            cv.put("empresa", codEmpresa)
+                                val cv = ContentValues()
+                                cv.put("kecxc_id", id)
+                                cv.put("kecxc_fecha", fecha)
+                                cv.put("kecxc_tasa", tasa)
+                                cv.put("kecxc_ip", ip)
+                                cv.put("kecxc_fchyhora", fchyhora)
+                                cv.put("fechamodifi", fechamod)
+                                cv.put("empresa", codEmpresa)
 
-                            if (conn.validarExistenciaCamposVarios(
-                                    "kecxc_tasas", ArrayList(
-                                        mutableListOf("kecxc_id", "empresa")
-                                    ), arrayListOf(id, codEmpresa!!)
-                                )
-                            ) {
-                                conn.updateJSONCamposVarios(
-                                    "kecxc_tasas",
-                                    cv,
-                                    "kecxc_id = ? AND empresa = ?",
-                                    arrayOf(id, codEmpresa!!)
-                                )
-                            } else {
-                                conn.insertJSON("kecxc_tasas", cv)
+                                if (conn.validarExistenciaCamposVarios(
+                                        "kecxc_tasas",
+                                        ArrayList(
+                                            mutableListOf("kecxc_id", "empresa")
+                                        ),
+                                        arrayListOf(id, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
+                                        "kecxc_tasas",
+                                        cv,
+                                        "kecxc_id = ? AND empresa = ?",
+                                        arrayOf(id, codEmpresa!!)
+                                    )
+                                } else {
+                                    conn.insertJSON("kecxc_tasas", cv)
+                                }
                             }
-
+                            conn.updateTablaAux("kecxc_tasas", codEmpresa!!)
+                            llCommit = true
+                            cargarUtilmaTasa()
+                        } catch (exception: Exception) {
+                            cargarUtilmaTasa()
+                            exception.printStackTrace()
                         }
-                        conn.updateTablaAux("kecxc_tasas", codEmpresa!!)
-                        llCommit = true
+                    } else {
                         cargarUtilmaTasa()
-                    } catch (exception: Exception) {
-                        cargarUtilmaTasa()
-                        exception.printStackTrace()
                     }
-                } else {
+                },
+                Response.ErrorListener { error: VolleyError ->
                     cargarUtilmaTasa()
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                cargarUtilmaTasa()
-                println("--Error--")
-                error.printStackTrace()
-                println("--Error--")
-            }) {
+            ) {
                 override fun getParams(): Map<String, String>? {
                     val parametros: MutableMap<String, String> = HashMap()
                     parametros["cod_usuario"] = cod_usuario!!
@@ -423,7 +428,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }*/
     private fun cargarModulosActivos() {
         val keAndroid = conn.writableDatabase
-        //Cursor cursor = ke_android.rawQuery("SELECT kmo_codigo FROM ke_modulos WHERE kmo_status = '1' AND ked_codigo='" + codigoEmpresa + "'", null);
+        // Cursor cursor = ke_android.rawQuery("SELECT kmo_codigo FROM ke_modulos WHERE kmo_status = '1' AND ked_codigo='" + codigoEmpresa + "'", null);
         val cursor = keAndroid.rawQuery(
             "SELECT cnfg_idconfig FROM ke_wcnf_conf WHERE cnfg_clase = 'M' AND cnfg_valsino = '1' AND empresa = '$codEmpresa';",
             null
@@ -462,7 +467,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                     navView.menu.getItem(4).isVisible = true
                 }
 
-                "APP_MODULO_CXC_OLD" ->                     //cobranzas viejas
+                "APP_MODULO_CXC_OLD" -> // cobranzas viejas
                     if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_CXC_OLD_USER",
                             cod_usuario!!,
@@ -472,9 +477,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                         navView.menu.getItem(7).isVisible = true
                     }
 
-                "APP_MODULO_CXC" ->                     //navView.getMenu().getItem(4).setVisible(true);
+                "APP_MODULO_CXC" -> // navView.getMenu().getItem(4).setVisible(true);
 
-                    //cobranzas nuevas
+                    // cobranzas nuevas
                     if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_CXC_USER",
                             cod_usuario!!,
@@ -539,10 +544,10 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             null
         )
         while (cursor.moveToNext()) {
-            //cargo los datos de la empresa
+            // cargo los datos de la empresa
             nombreEmpresa = cursor.getString(0)
             enlaceEmpresa = cursor.getString(1)
-            //sucursalEmpresa = cursor.getString(2);
+            // sucursalEmpresa = cursor.getString(2);
         }
         cursor.close()
     }
@@ -558,34 +563,43 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }*/
     private fun obtenerVersion(url: String?) {
         val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, { response: JSONArray? ->
-                if (response != null) {
-                    val jsonObject: JSONObject //creamos un objeto json vacio
-                    try {
-                        jsonObject = response.getJSONObject(0)
-                        versionNube = jsonObject.getString("kve_version").trim { it <= ' ' }
-                        caducidad = jsonObject.getString("kve_activa")
-                        if (versionNube != versionApp) {
-                            Toast.makeText(
-                                this@PrincipalActivity,
-                                "Esta versión se encuentra obsoleta, por favor, actualice",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            cerrarsesion()
-                        } else if (versionNube == versionApp) {
-                            if (caducidad == "0") {
+            object : JsonArrayRequest(
+                url, { response: JSONArray? ->
+                    if (response != null) {
+                        val jsonObject: JSONObject // creamos un objeto json vacio
+                        try {
+                            jsonObject = response.getJSONObject(0)
+                            versionNube = jsonObject.getString("kve_version").trim { it <= ' ' }
+                            caducidad = jsonObject.getString("kve_activa")
+                            if (versionNube != versionApp) {
                                 Toast.makeText(
                                     this@PrincipalActivity,
                                     "Esta versión se encuentra obsoleta, por favor, actualice",
                                     Toast.LENGTH_LONG
                                 ).show()
                                 cerrarsesion()
-                            } else if (caducidad == "1") {
-                                //TODO EN ORDEN, NO TO CAMOS NADA.
+                            } else if (versionNube == versionApp) {
+                                if (caducidad == "0") {
+                                    Toast.makeText(
+                                        this@PrincipalActivity,
+                                        "Esta versión se encuentra obsoleta, por favor, actualice",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    cerrarsesion()
+                                } else if (caducidad == "1") {
+                                    // TODO EN ORDEN, NO TO CAMOS NADA.
+                                }
                             }
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                            Toast.makeText(
+                                this@PrincipalActivity,
+                                "Esta versión se encuentra obsoleta, por favor, actualice",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            cerrarsesion()
                         }
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
+                    } else {
                         Toast.makeText(
                             this@PrincipalActivity,
                             "Esta versión se encuentra obsoleta, por favor, actualice",
@@ -593,34 +607,30 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                         ).show()
                         cerrarsesion()
                     }
-                } else {
-                    Toast.makeText(
-                        this@PrincipalActivity,
-                        "Esta versión se encuentra obsoleta, por favor, actualice",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    cerrarsesion()
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                println("--Error--")
-                error.printStackTrace()
-                println("--Error--")
-            }) {
-                override fun getParams(): Map<String, String>? {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
-                    //donde estan guardados el usuario y password.
-                    //parametros.put("version_usuario", versionApp);
+            ) {
+                override fun getParams(): Map<String, String>? { // finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+                    // donde estan guardados el usuario y password.
+                    // parametros.put("version_usuario", versionApp);
                     return HashMap()
                 }
             }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
     private fun solicitarPermisosInternos() {
         val permisoAlmacenamiento =
             ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if (permisoAlmacenamiento == PackageManager.PERMISSION_GRANTED) {
-            //DO NOTHING
+            // DO NOTHING
         } else {
             requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
         }
@@ -653,7 +663,6 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     private fun iraModuloCXC() {
-
         /*SharedPreferences.Editor editor = preferences.edit();
         editor.putString("cod_usuario", cod_usuario);
         editor.putString("origin", "CXC");
@@ -676,13 +685,13 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             intent.putExtra("cod_usuario", cod_usuario)
             startActivity(intent)
         } else if (desactivo == 1.0) {
-            //Toast.makeText(getApplicationContext(), "Usuario bloqueado", Toast.LENGTH_LONG).show();
+            // Toast.makeText(getApplicationContext(), "Usuario bloqueado", Toast.LENGTH_LONG).show();
         }
     }
 
     private fun iraSync() {
         val intent = Intent(applicationContext, SincronizacionActivity::class.java)
-        //Intent intent = new Intent(getApplicationContext(), SincronizarActivity.class);
+        // Intent intent = new Intent(getApplicationContext(), SincronizarActivity.class);
         startActivity(intent)
     }
 
@@ -691,9 +700,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         startActivity(intent)
     }
 
-    //este es el metodo para cerrar sesion
+    // este es el metodo para cerrar sesion
     private fun cerrarsesion() {
-        //conn.deleteAll("usuarios")
+        // conn.deleteAll("usuarios")
         conn.deleteCamposVarios(
             "usuarios",
             "vendedor = ? AND empresa = ?",
@@ -762,7 +771,6 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             Constantes.AGENCIA = codigoEmpresa
 
             recargarEmpresa()
-
         } else {
             val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
             preferences.edit().clear().apply()
@@ -772,7 +780,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         }
     }
 
-    //este es el metodo para ir al catalogo
+    // este es el metodo para ir al catalogo
     private fun iraCatalogo() {
         val intent = Intent(applicationContext, CatalogoActivity::class.java)
         val seleccion = 1
@@ -807,8 +815,8 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             cerrarsesion()
         }
 
-        //REVISAR ESTO, ESTÁ GENERANDO QUE EL USUARIO SE SALGA LUEGO DE SINCRONIZAR:
-        //obtengo la fecha de hoy puesto que voy a comparar con la ultima sincronizacion mas reciente
+        // REVISAR ESTO, ESTÁ GENERANDO QUE EL USUARIO SE SALGA LUEGO DE SINCRONIZAR:
+        // obtengo la fecha de hoy puesto que voy a comparar con la ultima sincronizacion mas reciente
         /*Date hoy         = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -838,7 +846,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     override fun onResume() {
-        //conteoPedidosCreados();
+        // conteoPedidosCreados();
         permisos = ArrayList()
         cargarEnlace()
         cargarModulosActivos()
@@ -873,10 +881,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             }
 
             R.id.icpedidos -> {
-
-                //IF que se ayuda de la Funcion PedidoBloq() que valida la fecha de la ultima vez que sincroonizo el vendedor
-                //En caso de ser true el vendedor puede hacer pedido
-                //En caso de ser false se le notificara al vendedor por una alerta
+                // IF que se ayuda de la Funcion PedidoBloq() que valida la fecha de la ultima vez que sincroonizo el vendedor
+                // En caso de ser true el vendedor puede hacer pedido
+                // En caso de ser false se le notificara al vendedor por una alerta
                 if (pedidoBloq()) {
                     iraPedidos()
                 } else {
@@ -984,7 +991,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
     }
 
     private fun iraReten() {
-        //Intent intent = new Intent(getApplicationContext(), SelectorClienteReten.class);
+        // Intent intent = new Intent(getApplicationContext(), SelectorClienteReten.class);
         val intent = Intent(applicationContext, ModuloRetenActivity::class.java)
         intent.putExtra("cod_usuario", cod_usuario)
         startActivity(intent)
@@ -1004,7 +1011,7 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
 
     override fun onPointerCaptureChanged(hasCapture: Boolean) {}
 
-    //Funcion que crea y muestra el DialogAlert
+    // Funcion que crea y muestra el DialogAlert
     private fun pedidosDialogAlert() {
         AlertDialog.Builder(ContextThemeWrapper(this@PrincipalActivity, R.style.AlertDialogCustom))
             .setTitle("Alerta")
@@ -1013,16 +1020,16 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
             .show()
     }
 
-    //Funcion que valida el tiempo que lleva el vendedor sin sincroonizar
+    // Funcion que valida el tiempo que lleva el vendedor sin sincroonizar
     private fun pedidoBloq(): Boolean {
-        //Ejecucion de la seleccion de la fechas mas actual dentro de articulo
+        // Ejecucion de la seleccion de la fechas mas actual dentro de articulo
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT ult_sinc FROM usuarios WHERE vendedor = '$cod_usuario' AND empresa = '$codEmpresa'",
             null
         )
 
-        //Declaracion de variables
+        // Declaracion de variables
         var fechamodifi: String? = null
         val fechaActual = LocalDate.now()
         val fechamodifi2: LocalDate
@@ -1032,21 +1039,20 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         }
         cursor.close()
 
-
-        //TRY para el guardado, formateo y comparacion de las fechas (Se crea para los casos en los que el vendedor nunca ha sincroonizado)
+        // TRY para el guardado, formateo y comparacion de las fechas (Se crea para los casos en los que el vendedor nunca ha sincroonizado)
         try {
             fechamodifi2 = LocalDate.parse(fechamodifi, DateTimeFormatter.ISO_LOCAL_DATE)
             diferencia = ChronoUnit.DAYS.between(fechamodifi2, fechaActual).toInt()
-            //CATCH para el alor de diferencia en caso de error
+            // CATCH para el alor de diferencia en caso de error
         } catch (e: Exception) {
             diferencia = 3
         }
-        //System.out.println(fechamodifi2);
-        //System.out.println(fecha_actual);
-        //System.out.println("hola" + diferencia);
+        // System.out.println(fechamodifi2);
+        // System.out.println(fecha_actual);
+        // System.out.println("hola" + diferencia);
 
-        //IF que valida con ayuda de diferencia (Variable que guarda la resta entre la ultima fecha en la base de datos y la actual del tlf) si la fecha en mayor a 2
-        //En caso de ser mayor a 2 envia false impidiendo el paso a pedido
+        // IF que valida con ayuda de diferencia (Variable que guarda la resta entre la ultima fecha en la base de datos y la actual del tlf) si la fecha en mayor a 2
+        // En caso de ser mayor a 2 envia false impidiendo el paso a pedido
         return diferencia <= 2
     }
 
@@ -1056,10 +1062,9 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         appUpdateManager = AppUpdateManagerFactory.create(this)
         val appUpdateInfoTask = appUpdateManager!!.appUpdateInfo
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
             ) {
-
                 /*try {
                     appUpdateManager.startUpdateFlowForResult(
                             // Pass the intent that is returned by 'getAppUpdateInfo()'.
@@ -1076,8 +1081,8 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
                 try {
                     println("ACTUALIZACION")
                     appUpdateManager!!.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                        appUpdateInfo,  // an activity result launcher registered via registerForActivityResult
-                        AppUpdateType.IMMEDIATE,  // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
+                        appUpdateInfo, // an activity result launcher registered via registerForActivityResult
+                        AppUpdateType.IMMEDIATE, // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
                         // flexible updates.
                         this,
                         MY_REQUEST_CODE
@@ -1160,6 +1165,5 @@ class PrincipalActivity : AppCompatActivity(), Serializable,
         var enlaceEmpresa = ""
         var codigoSucursal: String? = ""
         var instance: PrincipalActivity? = null
-
     }
 }

@@ -26,7 +26,6 @@ class DialogChangeAccount(context: Context, private val onClick: () -> Unit) :
 
     private lateinit var conn: AdminSQLiteOpenHelper
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         super.onCreate(savedInstanceState)
@@ -37,14 +36,11 @@ class DialogChangeAccount(context: Context, private val onClick: () -> Unit) :
 
         listaEmpresas = conn.getEmpresas(Constantes.AGENCIA)
 
-
-
         binding.rvEmpresa.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = DialogChangeAccountAdapter(listaEmpresas){ position -> cambiarEmpresa(position) }
+            adapter = DialogChangeAccountAdapter(listaEmpresas) { position -> cambiarEmpresa(position) }
         }
-
 
         /*binding.checkEmpresa1.imageTintList =
             if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && Constantes.AGENCIA == 1) {
@@ -126,5 +122,4 @@ class DialogChangeAccount(context: Context, private val onClick: () -> Unit) :
         this.dismiss()
         onClick()
     }
-
 }

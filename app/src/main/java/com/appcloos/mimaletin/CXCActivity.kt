@@ -47,15 +47,14 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-
 class CXCActivity : AppCompatActivity() {
-    //2023-06-19 Variable global para la activity Numerica que dice los dias que son vigentes antes
+    // 2023-06-19 Variable global para la activity Numerica que dice los dias que son vigentes antes
     // de que el recibo de cobro en efectivo se anule por antiguedad (Valor default 4 dias)
-    //private var APP_W_VIGENCIA_EFECTIVO : Double = 4.0
+    // private var APP_W_VIGENCIA_EFECTIVO : Double = 4.0
 
     private val requestCodeResponse = 200
 
-    private lateinit var rvCxc: RecyclerView //variable para el RecyclerV.
+    private lateinit var rvCxc: RecyclerView // variable para el RecyclerV.
     private lateinit var preferences: SharedPreferences // preferences para cargar los datos de la princ.
     private var codUsuario: String? = ""
     private var codEmpresa: String? = ""
@@ -63,34 +62,38 @@ class CXCActivity : AppCompatActivity() {
     private lateinit var conn: AdminSQLiteOpenHelper
     private lateinit var keAndroid: SQLiteDatabase
     private lateinit var listCobranza: ArrayList<CXC>
-    //2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
-    //lateinit var fab_newcxc: ExtendedFloatingActionButton
+    // 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+    // lateinit var fab_newcxc: ExtendedFloatingActionButton
 
-    //animaciones
+    // animaciones
     private val rotateOpen: Animation by lazy {
         AnimationUtils.loadAnimation(
-            this, R.anim.rotate_open_anim
+            this,
+            R.anim.rotate_open_anim
         )
     }
     private val rotateClose: Animation by lazy {
         AnimationUtils.loadAnimation(
-            this, R.anim.rotate_close_anim
+            this,
+            R.anim.rotate_close_anim
         )
     }
     private val fromBottom: Animation by lazy {
         AnimationUtils.loadAnimation(
-            this, R.anim.from_bottom_anim
+            this,
+            R.anim.from_bottom_anim
         )
     }
     private val toBottom: Animation by lazy {
         AnimationUtils.loadAnimation(
-            this, R.anim.to_bottom_anim
+            this,
+            R.anim.to_bottom_anim
         )
     }
 
     var RESULT_LOAD_DOCUMENT = 1
 
-    //bool
+    // bool
     private var clicked = false
 
     private lateinit var binding: ActivityCxcactivityBinding
@@ -100,30 +103,28 @@ class CXCActivity : AppCompatActivity() {
         binding = ActivityCxcactivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        // Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
         windowsColor(Constantes.AGENCIA)
         setColors()
 
-        //instanciamiento del conector a la bdd
+        // instanciamiento del conector a la bdd
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
-        //APP_W_VIGENCIA_EFECTIVO = conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO")
+        // APP_W_VIGENCIA_EFECTIVO = conn.getConfigNum("APP_W_VIGENCIA_EFECTIVO")
 
         /* val builder = StrictMode.VmPolicy.Builder()
          StrictMode.setVmPolicy(builder.build())
          builder.detectFileUriExposure()*/
-        //declaracion del boton en el Layout
-        //2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
-        //fab_newcxc  = findViewById<ExtendedFloatingActionButton>(R.id.fab_addcxc)
+        // declaracion del boton en el Layout
+        // 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+        // fab_newcxc  = findViewById<ExtendedFloatingActionButton>(R.id.fab_addcxc)
 
-        //dclaracion del RecyclerView
+        // dclaracion del RecyclerView
         rvCxc = findViewById(R.id.rv_cxc)
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
         listCobranza = ArrayList()
-
-
 
         binding.fbtAddcxc.setOnClickListener {
             onAddButtonClicked()
@@ -132,7 +133,7 @@ class CXCActivity : AppCompatActivity() {
         binding.fabAdddeposit.setOnClickListener {
             iraCreacionDeposito()
         }
-//2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+// 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
         /*fab_newcxc.setOnClickListener {
             iraCreacionCobranza()
         }*/
@@ -140,7 +141,7 @@ class CXCActivity : AppCompatActivity() {
         cargarCobranzas()
 
         if (checkPermission()) {
-            //Toast.makeText(this, "Permiso aceptado", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(this, "Permiso aceptado", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissions()
         }
@@ -148,15 +149,16 @@ class CXCActivity : AppCompatActivity() {
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
 
-        //Retroceder Activity
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val intent = Intent(applicationContext, PrincipalActivity::class.java)
-                startActivity(intent)
+        // Retroceder Activity
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val intent = Intent(applicationContext, PrincipalActivity::class.java)
+                    startActivity(intent)
+                }
             }
-
-        })
-
+        )
     }
 
     private fun checkPermission(): Boolean {
@@ -170,7 +172,9 @@ class CXCActivity : AppCompatActivity() {
 
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(
-            this, arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE), requestCodeResponse
+            this,
+            arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE),
+            requestCodeResponse
         )
     }
 
@@ -186,10 +190,10 @@ class CXCActivity : AppCompatActivity() {
                 val readStorage = grantResults[1] == PackageManager.PERMISSION_GRANTED
 
                 if (writeStorage && readStorage) {
-                    //Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show()
                 } else {
-                    //Toast.makeText(this, "Permisos rechazados", Toast.LENGTH_SHORT).show()
-                    //finish()
+                    // Toast.makeText(this, "Permisos rechazados", Toast.LENGTH_SHORT).show()
+                    // finish()
                 }
             }
         }
@@ -200,19 +204,17 @@ class CXCActivity : AppCompatActivity() {
         setAnimation(clicked)
 
         clicked = !clicked
-
     }
 
     private fun setAnimation(clicked: Boolean) {
         if (!clicked) {
-            //2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
-            //fab_newcxc.startAnimation(fromBottom)
+            // 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+            // fab_newcxc.startAnimation(fromBottom)
             binding.fabAdddeposit.startAnimation(fromBottom)
             binding.fbtAddcxc.startAnimation(rotateOpen)
-
         } else {
-            //2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
-            //fab_newcxc.startAnimation(toBottom)
+            // 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+            // fab_newcxc.startAnimation(toBottom)
             binding.fabAdddeposit.startAnimation(toBottom)
             binding.fbtAddcxc.startAnimation(rotateClose)
         }
@@ -220,19 +222,17 @@ class CXCActivity : AppCompatActivity() {
 
     private fun setVisibility(clicked: Boolean) {
         if (!clicked) {
-            //2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
-            //fab_newcxc.visibility = View.VISIBLE
+            // 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+            // fab_newcxc.visibility = View.VISIBLE
             binding.fabAdddeposit.visibility = View.VISIBLE
-
         } else {
-            //2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
-            //fab_newcxc.visibility = View.INVISIBLE
+            // 2023-04-25 Se comenta el boton de recibo de cobro para que los recibos hechos sean a tras del planificador
+            // fab_newcxc.visibility = View.INVISIBLE
             binding.fabAdddeposit.visibility = View.INVISIBLE
-
         }
     }
 
-    //funcion para ir a la ventana de creacion de cobranza
+    // funcion para ir a la ventana de creacion de cobranza
     private fun iraCreacionCobranza() {
         val intent = Intent(this, creacionCobranzaActivity::class.java).apply {
             intent.putExtra("codigoUsuario", codUsuario)
@@ -261,7 +261,7 @@ class CXCActivity : AppCompatActivity() {
             "bsretiva",
             "bsretflete"
         )
-        //var seleccion = "codvend='${cod_usuario}' AND edorec != 3 AND edorec != 8"
+        // var seleccion = "codvend='${cod_usuario}' AND edorec != 3 AND edorec != 8"
         val seleccion = "codvend='$codUsuario' AND empresa = '$codEmpresa'"
 
         cursorCobranza =
@@ -271,7 +271,8 @@ class CXCActivity : AppCompatActivity() {
             val cursor = keAndroid.rawQuery(
                 "SELECT nombrecli FROM ke_precobradocs WHERE cxcndoc = '${
                     cursorCobranza.getString(0)
-                }' AND empresa = '$codEmpresa';", null
+                }' AND empresa = '$codEmpresa';",
+                null
             )
 
             val cobranza = CXC()
@@ -296,7 +297,7 @@ class CXCActivity : AppCompatActivity() {
             cobranza.bsretiva = cursorCobranza.getDouble(7)
             cobranza.bsretflete = cursorCobranza.getDouble(8)
 
-            //2023-06-15 vericifarVijenciaCXC sirve para revisar los recibos de cobro W que sean en efectivo y
+            // 2023-06-15 vericifarVijenciaCXC sirve para revisar los recibos de cobro W que sean en efectivo y
             // de no ser cambiado su edorec (que se anexxe a un deposito) este sera anulado en los dias que tenga dentro
             cobranza.edorec = verificarVijenciaCXC(
                 cobranza.fchrecibo, cobranza.efectivo, cobranza.id_recibo, cobranza.edorec
@@ -304,16 +305,16 @@ class CXCActivity : AppCompatActivity() {
 
             listCobranza.add(cobranza)
             cursor.close()
-
         }
 
         rvCxc.layoutManager = LinearLayoutManager(this)
-        val adapter = CXCAdapter(listCobranza,
+        val adapter = CXCAdapter(
+            listCobranza,
             codEmpresa!!,
-            onClickListener = { codigoRecibo -> mensajeCXC(codigoRecibo) })
+            onClickListener = { codigoRecibo -> mensajeCXC(codigoRecibo) }
+        )
         rvCxc.adapter = adapter
         adapter.notifyDataSetChanged()
-
     }
 
     private fun verificarVijenciaCXC(
@@ -333,12 +334,13 @@ class CXCActivity : AppCompatActivity() {
     private fun mensajeCXC(codigoRecibo: String) {
         val builder = AlertDialog.Builder(
             ContextThemeWrapper(
-                this, setAlertDialogTheme(Constantes.AGENCIA)
+                this,
+                setAlertDialogTheme(Constantes.AGENCIA)
             )
         )
         builder.setTitle("Opciones del Recibo")
         builder.setMessage("Recibo: $codigoRecibo")
-        //builder.setPositiveButton("OK", DialogInterface.OnClickListener(function = x))
+        // builder.setPositiveButton("OK", DialogInterface.OnClickListener(function = x))
 
         builder.setPositiveButton("Detalles") { _, _ ->
             irADestalleCXC(codigoRecibo)
@@ -359,13 +361,14 @@ class CXCActivity : AppCompatActivity() {
 
         cursorRecibo.close()
 
-        //estado == "1" || estado == "10"
+        // estado == "1" || estado == "10"
         if (estado == "0") {
             builder.setNegativeButton("Borrar") { _, _ ->
 
                 val subbuilder = AlertDialog.Builder(
                     ContextThemeWrapper(
-                        this, setAlertDialogTheme(Constantes.AGENCIA)
+                        this,
+                        setAlertDialogTheme(Constantes.AGENCIA)
                     )
                 )
                 subbuilder.setTitle("Borrado de Recibo")
@@ -376,7 +379,6 @@ class CXCActivity : AppCompatActivity() {
                 }
 
                 subbuilder.setNeutralButton("No") { _, _ ->
-
                 }
 
                 val subventana = subbuilder.create()
@@ -397,7 +399,7 @@ class CXCActivity : AppCompatActivity() {
         }
 
         builder.setNeutralButton("Generar Documento PDF") { _, _ ->
-            //toast("Le di al boton")
+            // toast("Le di al boton")
             val validarCampo =
                 conn.getCampoStringCamposVarios(
                     "ke_precobradocs",
@@ -414,7 +416,6 @@ class CXCActivity : AppCompatActivity() {
                     e.printStackTrace()
                     toast("No se puedo crear el recibo")
                 }
-
             }
         }
 
@@ -465,7 +466,6 @@ class CXCActivity : AppCompatActivity() {
 
     /*Este proceso debe colocarse solo para los recibos que ya esten subidos */
     private fun crearPDF(codigoRecibo: String) {
-
         val tabla = "ke_precobranza"
         val columna = arrayOf("edorec")
         val seleccion = "cxcndoc='$codigoRecibo' AND empresa = '$codEmpresa'"
@@ -481,7 +481,7 @@ class CXCActivity : AppCompatActivity() {
 
         cursorRecibo.close()
 
-        //estado == "1" || estado == "10"
+        // estado == "1" || estado == "10"
         if (true) {
             val listaDocumentos = arrayListOf<String>()
             val nombreEmpresa = nombreEmpresa(codEmpresa)
@@ -543,8 +543,6 @@ class CXCActivity : AppCompatActivity() {
                 keAndroid.query(tabla, columna, seleccion, null, null, null, null)
 
             if (cursorRecibo.moveToFirst()) {
-
-
                 vendedorRecibo = cursorRecibo.getString(1)
                 monedaRecibo = cursorRecibo.getString(4)
                 tasaDia = cursorRecibo.getString(6)
@@ -552,7 +550,6 @@ class CXCActivity : AppCompatActivity() {
                 banco = cursorRecibo.getString(9)
                 refBanco = cursorRecibo.getString(10)
                 tipoRecibo = cursorRecibo.getString(13)
-
 
                 subTipoDoc = when (tipoRecibo) {
                     "W" -> "Recibo de Cobro"
@@ -564,23 +561,22 @@ class CXCActivity : AppCompatActivity() {
                 when (cursorRecibo.getString(8)) {
                     "1" -> {
                         moneda = "Bolívares"
-                        //totalCobrado = cursorRecibo.getString(11)
+                        // totalCobrado = cursorRecibo.getString(11)
                         monedaSigno = "Bs."
                     }
 
                     "2" -> {
                         moneda = "Dólar"
-                        //totalCobrado = cursorRecibo.getString(12)
+                        // totalCobrado = cursorRecibo.getString(12)
                         monedaSigno = "$"
                     }
 
                     else -> {
                         moneda = "No identificado"
-                        //totalCobrado = "No identificado"
+                        // totalCobrado = "No identificado"
                         monedaSigno = "N/I"
                     }
                 }
-
 
                 val tablaT = "kecxc_tasas"
                 val columnaT = arrayOf("kecxc_fchyhora")
@@ -591,18 +587,16 @@ class CXCActivity : AppCompatActivity() {
 
                 if (cursorTasa.moveToFirst()) {
                     val ldt: LocalDateTime = LocalDateTime.parse(
-                        cursorTasa.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                        cursorTasa.getString(0),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                     )
                     val writingFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a")
                     fechaTasa = ldt.format(writingFormatter)
-
                 } else {
                     "No identificado"
                 }
 
                 cursorTasa.close()
-
-
 
                 if (tipoRecibo == "W" || tipoRecibo == "R") {
                     val readingFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -618,25 +612,22 @@ class CXCActivity : AppCompatActivity() {
                     fechaRecibo = ldt.format(writingFormatter)
                 }
 
-
-                //IF para validar si el documento fue pagado con efectivo o transferencia
+                // IF para validar si el documento fue pagado con efectivo o transferencia
 
                 if (cursorRecibo.getDouble(5) > 0.0) {
-                    //Llenando el valor total con el fectivo dado
-                    //montoRecibo = cursorRecibo.getDouble(3)
+                    // Llenando el valor total con el fectivo dado
+                    // montoRecibo = cursorRecibo.getDouble(3)
                     tipoPago = "Efectivo"
                     totalCobrado = cursorRecibo.getDouble(5)
-
                 } else if (cursorRecibo.getDouble(3) > 0.0) {
-                    //Llenando el valor total con la transferencia realizada
-                    //montoRecibo = cursorRecibo.getDouble(5)
+                    // Llenando el valor total con la transferencia realizada
+                    // montoRecibo = cursorRecibo.getDouble(5)
                     tipoPago = "Transferencia"
 
                     totalCobrado = cursorRecibo.getDouble(3)
-
                 } else if (cursorRecibo.getDouble(14) > 0.0) {
-                    //Llenando el valor total con la transferencia realizada
-                    //montoRecibo = cursorRecibo.getDouble(5)
+                    // Llenando el valor total con la transferencia realizada
+                    // montoRecibo = cursorRecibo.getDouble(5)
                     tipoPago = "Retencion"
 
                     totalCobrado = cursorRecibo.getDouble(14)
@@ -650,7 +641,13 @@ class CXCActivity : AppCompatActivity() {
                     val seleccionBanco = "codbanco='$banco' AND empresa = '$codEmpresa'"
 
                     val cursorBanco: Cursor = keAndroid.query(
-                        tablaBanco, columnaBanco, seleccionBanco, null, null, null, null
+                        tablaBanco,
+                        columnaBanco,
+                        seleccionBanco,
+                        null,
+                        null,
+                        null,
+                        null
                     )
 
                     if (cursorBanco.moveToNext()) {
@@ -662,7 +659,6 @@ class CXCActivity : AppCompatActivity() {
                     }
 
                     cursorBanco.close()
-
                 } else {
                     if (tipoRecibo == "W") {
                         nomBanco = "Efectivo"
@@ -672,14 +668,13 @@ class CXCActivity : AppCompatActivity() {
                     codBanco = ""
                 }
 
-
                 val cursorDocs = keAndroid.rawQuery(
                     "SELECT nombrecli, documento, codcliente, tasadoc, tnetodbs, tnetoddol, bsretiva, bsretfte, bsmtoiva, bsmtofte, refret, refretfte, reten, prcdsctopp, afavor, kecxc_idd, fchemiret, fchemirfte FROM ke_precobradocs WHERE cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa';",
                     null
                 )
                 while (cursorDocs.moveToNext()) {
                     listaDocumentos.add(cursorDocs.getString(1))
-                    //nombreCliente.add(cursorDocs.getString(0))
+                    // nombreCliente.add(cursorDocs.getString(0))
                     codCliente.add(cursorDocs.getString(2))
                     tasaDoc.add(cursorDocs.getDouble(3))
                     cobradoBS.add(cursorDocs.getDouble(4))
@@ -701,14 +696,13 @@ class CXCActivity : AppCompatActivity() {
                     emiRetIva.add(cursorDocs.getString(16))
                     emiRetFle.add(cursorDocs.getString(17))
 
-
                     /*if (tipoRecibo == "W"){
                         cobradoDol.add(cursorDocs.getDouble(5))
                     } else if (tipoRecibo == "D"){
                         cobradoDol.add(cursorDocs.getDouble(8))
                     }*/
 
-                    //Para acortar el nombre del cliente
+                    // Para acortar el nombre del cliente
                     if (cursorDocs.getString(0).length > 50 && tipoRecibo == "D") {
                         var cliente = ""
                         for (i in 0..49) {
@@ -726,11 +720,8 @@ class CXCActivity : AppCompatActivity() {
                     } else {
                         nombreCliente.add(cursorDocs.getString(0))
                     }
-
-
                 }
                 cursorDocs.close()
-
             } else {
                 Toast.makeText(this, "No hay datos del recibo", Toast.LENGTH_SHORT).show()
 
@@ -744,40 +735,37 @@ class CXCActivity : AppCompatActivity() {
                 monedaRecibo = "$"
             }
 
-
             val reciboPDF = PdfDocument()
             val paint = Paint()
-            //conf inicial de la pag
+            // conf inicial de la pag
             val myInfo = PdfDocument.PageInfo.Builder(612, 792, 1).create()
             val pagina: PdfDocument.Page = reciboPDF.startPage(myInfo)
             val canvas = pagina.canvas
-            //del obj paint
+            // del obj paint
             paint.textAlign = Paint.Align.LEFT
             paint.textSize = 16f
             paint.color = Color.BLACK
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
 
-
-            //CABECERA
-            //imagen del la cabecera
+            // CABECERA
+            // imagen del la cabecera
             val bmp = BitmapFactory.decodeResource(this.resources, plantillaPDF(codEmpresa))
             val scaledBitmap = Bitmap.createScaledBitmap(bmp, 612, 792, false)
             canvas.drawBitmap(scaledBitmap, 0f, 0f, paint)
 
-            //ICONO DE LA EMPRESA
+            // ICONO DE LA EMPRESA
             val iconEmpresa = BitmapFactory.decodeResource(this.resources, logoPDF(codEmpresa))
             val scaledBtmpEmpresa = Bitmap.createScaledBitmap(iconEmpresa, 100, 100, false)
             canvas.drawBitmap(scaledBtmpEmpresa, 5f, 15f, paint)
 
-
-            //titulos de la cabecera
+            // titulos de la cabecera
             canvas.drawText(nombreEmpresa, 105f, 35f, paint)
 
-            //RIF Empresa
+            // RIF Empresa
             paint.textSize = 10f
             canvas.drawText(rifEmpresa, 105f, 45f, paint)
 
-            //Direccion Empresa
+            // Direccion Empresa
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
             var y = 55f
@@ -785,22 +773,22 @@ class CXCActivity : AppCompatActivity() {
                 canvas.drawText(direc, 105f, y, paint)
                 y += 10
             }
-            //canvas.drawText(direccion, 105f, 55f, paint)
-            //canvas.drawText(dirEmpresa2, 105f, 65f, paint)
-            //canvas.drawText(dirEmpresa3, 105f, 75f, paint)
+            // canvas.drawText(direccion, 105f, 55f, paint)
+            // canvas.drawText(dirEmpresa2, 105f, 65f, paint)
+            // canvas.drawText(dirEmpresa3, 105f, 75f, paint)
 
-            //Tipo de documento
+            // Tipo de documento
             paint.textAlign = Paint.Align.RIGHT
             paint.textSize = 15f
             paint.color = Color.rgb(7, 4, 97)
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText(tipoDoc, 597f, 60f, paint)
 
-            //Subtipo de documento
+            // Subtipo de documento
             paint.textSize = 13f
             canvas.drawText(subTipoDoc, 597f, 75f, paint)
 
-            //Numero de Rrecibo
+            // Numero de Rrecibo
             paint.color = Color.RED
             paint.textSize = 16f
             canvas.drawText(
@@ -810,7 +798,7 @@ class CXCActivity : AppCompatActivity() {
                 paint
             )
 
-            //Fecha de creacion
+            // Fecha de creacion
             paint.textSize = 12f
             paint.color = Color.BLACK
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
@@ -820,22 +808,21 @@ class CXCActivity : AppCompatActivity() {
                 canvas.drawText("Emisión", 450f, 115f, paint)
             }
 
-
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
             canvas.drawText(fechaRecibo, 597f, 115f, paint)
 
-            //Tasa
+            // Tasa
             if (tipoRecibo == "W") {
                 paint.textSize = 14f
                 canvas.drawText("Tasa: $tasaDia Bs./$", 597f, 130f, paint)
             }
 
-            //Fecha Tasa
+            // Fecha Tasa
             if (tipoRecibo == "W") {
                 canvas.drawText("de $fechaTasa", 597f, 145f, paint)
             }
 
-            //Tipo de moneda
+            // Tipo de moneda
             if (tipoRecibo == "W") {
                 paint.textSize = 12f
                 canvas.drawText("Moneda del Recibo: $moneda", 597f, 160f, paint)
@@ -845,7 +832,7 @@ class CXCActivity : AppCompatActivity() {
             }
 
             paint.textAlign = Paint.Align.LEFT
-            //Marco de los datos del deposito/transferencia
+            // Marco de los datos del deposito/transferencia
             val iconMarco = BitmapFactory.decodeResource(this.resources, R.drawable.marco)
             val scaledBtmpMarco = Bitmap.createScaledBitmap(iconMarco, 360, 60, false)
             canvas.drawBitmap(scaledBtmpMarco, 15f, 126f, paint)
@@ -854,7 +841,7 @@ class CXCActivity : AppCompatActivity() {
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText("[ Datos del Depósito o Transferencia ]", 30f, 131f, paint)
 
-            //Datos del deposito/transferencia
+            // Datos del deposito/transferencia
             paint.textSize = 13f
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
             if (tipoRecibo == "R") {
@@ -866,12 +853,12 @@ class CXCActivity : AppCompatActivity() {
                 )
             } else {
                 canvas.drawText(
-                    "$codBanco $nomBanco", 40f, 150f, paint
+                    "$codBanco $nomBanco",
+                    40f,
+                    150f,
+                    paint
                 )
-
             }
-
-
 
             if (refBanco != "") {
                 canvas.drawText("REF:", 40f, 170f, paint)
@@ -889,11 +876,8 @@ class CXCActivity : AppCompatActivity() {
                     170f,
                     paint
                 )
-                //canvas.drawText("${retenRef[0]} / ${retenRef[1]}", 75f, 170f, paint)
-
+                // canvas.drawText("${retenRef[0]} / ${retenRef[1]}", 75f, 170f, paint)
             }
-
-
 
             paint.textSize = 11f
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
@@ -904,11 +888,9 @@ class CXCActivity : AppCompatActivity() {
                 paint
             )
 
-
             paint.textSize = 14f
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
             canvas.drawText("Monto Total", 400f, 220f, paint)
-
 
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText(
@@ -940,7 +922,7 @@ class CXCActivity : AppCompatActivity() {
                     canvas.drawText("Ret. IVA", 325f, 245f, paint)
                     canvas.drawText("Ret. Fle", 380f, 245f, paint)
                     canvas.drawText("Dto %", 450f, 245f, paint)
-                    //canvas.drawText("A Favor", 375f, 245f, paint)
+                    // canvas.drawText("A Favor", 375f, 245f, paint)
                 }
             } else {
                 canvas.drawText("Ret. IVA", 100f, 245f, paint)
@@ -949,11 +931,9 @@ class CXCActivity : AppCompatActivity() {
                 canvas.drawText("Emi. Ret. F.", 285f, 245f, paint)
             }
 
-
             var counter = 265f
 
-
-            //ESTAS INTENTANDO QUE LA SUMA DEL DOCUMENTO EN BS Y DOLARES ESTE BIEN EN LA MONEDA QUE SE SOLICITA
+            // ESTAS INTENTANDO QUE LA SUMA DEL DOCUMENTO EN BS Y DOLARES ESTE BIEN EN LA MONEDA QUE SE SOLICITA
             for (i in listaDocumentos.indices) {
                 val campoWhere: List<String> = listOf("cxcndoc", "documento", "empresa")
                 val respuestaWhere: List<String> =
@@ -975,7 +955,7 @@ class CXCActivity : AppCompatActivity() {
                 val valorCobrado = if (moneda == "Dólar") cobradoDol[i] else cobradoBS[i]
                 val ivaCobrado = validarMoneda(
                     moneda,
-                    ivaBS[i] + retenIvaBD, //<- Aunque hay un +, la verdad se resta la retencion
+                    ivaBS[i] + retenIvaBD, // <- Aunque hay un +, la verdad se resta la retencion
                     tasaDoc[i]
                 )
                 val fleteCobrado = validarMoneda(
@@ -983,11 +963,11 @@ class CXCActivity : AppCompatActivity() {
                     fleteBS[i] + retenFleteBD,
                     tasaDoc[i]
                 )
-                //val neto = redondeo(valorCobrado - ivaCobrado - fleteCobrado)
+                // val neto = redondeo(valorCobrado - ivaCobrado - fleteCobrado)
                 val neto =
                     redondeo(redondeo(valorCobrado) - redondeo(ivaCobrado) - redondeo(fleteCobrado))
 
-                //variables totaltes
+                // variables totaltes
                 totalCobrad += valorCobrado
                 totalNeto += neto
                 totalIva += ivaCobrado
@@ -997,31 +977,36 @@ class CXCActivity : AppCompatActivity() {
                 totalRetFle += redondeo(if (monedaSigno == "Bs.") retenFleBS[i] else retenFleBS[i] / tasaDoc[i])
                 totalRetIva += redondeo(if (monedaSigno == "Bs.") retenIvaBS[i] else retenIvaBS[i] / tasaDoc[i])
 
-                //solo aplica para anexos de deposito
-                //totalEfectivo += conn.getEfectivoDoc(docPrevio[i])
+                // solo aplica para anexos de deposito
+                // totalEfectivo += conn.getEfectivoDoc(docPrevio[i])
 
-                //println("En neto --> ${valorCobrado - (ivaBS[i] - abs(retenIvaBS[i])) - (fleteBS[i] - abs(retenFleBS[i]))}")
-                //println("En neto --> $valorCobrado - (${ivaBS[i]} - abs(retenIvaBS[i]) - (fleteBS[i] - abs(retenFleBS[i])))")
+                // println("En neto --> ${valorCobrado - (ivaBS[i] - abs(retenIvaBS[i])) - (fleteBS[i] - abs(retenFleBS[i]))}")
+                // println("En neto --> $valorCobrado - (${ivaBS[i]} - abs(retenIvaBS[i]) - (fleteBS[i] - abs(retenFleBS[i])))")
 
                 if (tipoRecibo != "R") {
                     canvas.drawText(listaDocumentos[i], 25f, counter, paint)
 
-
                     if (tipoRecibo == "D") {
                         canvas.insertarNumPDF(valorCobrado, 100f, counter, paint)
                         canvas.drawText(
-                            "${codCliente[i]} ${nombreCliente[i]}", 155f, counter, paint
+                            "${codCliente[i]} ${nombreCliente[i]}",
+                            155f,
+                            counter,
+                            paint
                         )
-                        //Para saber si estoy al final del ciclo voy a agregar una linea extra de saldos a favor
+                        // Para saber si estoy al final del ciclo voy a agregar una linea extra de saldos a favor
                         if (i == listaDocumentos.size - 1) {
                             counter = counter.plus(15f)
                             canvas.insertarNumPDF(aFavor.sumOf { it }, 100f, counter, paint)
                             canvas.drawText(
-                                "Saldos a favor", 155f, counter, paint
+                                "Saldos a favor",
+                                155f,
+                                counter,
+                                paint
                             )
                         }
                     } else {
-                        //Compruebo si la retencion la muestro en Bs. o Dolares
+                        // Compruebo si la retencion la muestro en Bs. o Dolares
                         val retenIva =
                             if (monedaSigno == "Bs.") retenIvaBS[i] else retenIvaBS[i] / tasaDoc[i]
                         val retenFlete =
@@ -1042,7 +1027,7 @@ class CXCActivity : AppCompatActivity() {
                         canvas.drawText(redondeo(if (monedaSigno == "Bs.") retenIvaBS[i] else retenIvaBS[i] / tasaDoc[i]).toString(), 320f, counter, paint)
                         canvas.drawText(redondeo(if (monedaSigno == "Bs.") retenFleBS[i] else retenFleBS[i] / tasaDoc[i]).toString(), 375f, counter, paint)
                         canvas.drawText(redondeo(descuento[i]).toString(), 430f, counter, paint)*/
-                        //canvas.drawText(redondeo(aFavor[i]).toString(), 375f, counter, paint)
+                        // canvas.drawText(redondeo(aFavor[i]).toString(), 375f, counter, paint)
                     }
                 } else {
                     canvas.drawText(listaDocumentos[i], 25f, counter, paint)
@@ -1052,10 +1037,10 @@ class CXCActivity : AppCompatActivity() {
                     canvas.drawText(emiRetFle[i], 285f, counter, paint)
                 }
 
-                //canvas.drawText("${codCliente[i]} ${nombreCliente[i]}", 200f, counter, paint)
+                // canvas.drawText("${codCliente[i]} ${nombreCliente[i]}", 200f, counter, paint)
                 counter = counter.plus(15f)
             }
-            //canvas.drawBitmap(scaledBtmpLinea, 5f, counter - 13, paint)
+            // canvas.drawBitmap(scaledBtmpLinea, 5f, counter - 13, paint)
             canvas.drawBitmap(scaledBtmpLineaD, 18f, counter - 13, paint)
             if (tipoRecibo == "W" || tipoRecibo == "R") {
                 canvas.drawBitmap(scaledBtmpLinea, 5f, counter - 13 + 20, paint)
@@ -1068,16 +1053,21 @@ class CXCActivity : AppCompatActivity() {
                     canvas.insertarNumPDF(totalRetIva, 325f, counter + 3, paint)
                     canvas.insertarNumPDF(totalRetFle, 380f, counter + 3, paint)
                     canvas.insertarNumPDF(
-                        totalDescuento / listaDocumentos.size, 435f, counter + 3, paint
+                        totalDescuento / listaDocumentos.size,
+                        435f,
+                        counter + 3,
+                        paint
                     )
                     canvas.drawText(
-                        "Saldo a Favor: ${totalAFavor.valorReal()}", 485f, counter + 3, paint
+                        "Saldo a Favor: ${totalAFavor.valorReal()}",
+                        485f,
+                        counter + 3,
+                        paint
                     )
                 } else {
                     canvas.drawText(redondeo(totalRetIva).toString(), 100f, counter + 3, paint)
                     canvas.drawText(redondeo(totalRetFle).toString(), 155f, counter + 3, paint)
                 }
-
 
                 paint.textSize = 11f
                 paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
@@ -1102,7 +1092,7 @@ class CXCActivity : AppCompatActivity() {
                     paint
                 )
 
-                //Deuda pendiente, eliminado por que aun no saca bien los calculos
+                // Deuda pendiente, eliminado por que aun no saca bien los calculos
                 /*if (tipoRecibo == "W") {
                     paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
                     canvas.drawText(
@@ -1116,14 +1106,13 @@ class CXCActivity : AppCompatActivity() {
                         ).toString() + "$", 375f, counter + 25, paint
                     )
                 }*/
-
             } else {
                 canvas.drawBitmap(scaledBtmpLinea, 5f, counter - 13 + 20, paint)
                 canvas.drawText("Total", 25f, counter + 3, paint)
                 canvas.insertarNumPDF(totalCobrad + totalAFavor, 100f, counter + 3, paint)
             }
 
-            //2023-11-06 se comento por que no cuadra con las notas
+            // 2023-11-06 se comento por que no cuadra con las notas
             /*if (tipoRecibo == "W" && reten[0] == 0) {
                 paint.textSize = 14f
                 paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
@@ -1138,11 +1127,13 @@ class CXCActivity : AppCompatActivity() {
             paint.textSize = 14f
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText(
-                "*Va sin Enmienda*", 455f, counter + 25, paint
+                "*Va sin Enmienda*",
+                455f,
+                counter + 25,
+                paint
             )
 
-
-            //NOMBRE DEL CLIENTE retencion
+            // NOMBRE DEL CLIENTE retencion
 //        paint.textAlign = Paint.Align.LEFT
 //        paint.color = Color.BLACK
 //
@@ -1185,11 +1176,9 @@ class CXCActivity : AppCompatActivity() {
 //            counter = counter.plus(10f)
 //        }
 
-
             reciboPDF.finishPage(pagina)
             val numeroRecibo = "RECIBO_NRO_$codigoRecibo.pdf"
-            //este sera el nombre del documento al momento de crearlo y guardarlo en el almacenamiento
-
+            // este sera el nombre del documento al momento de crearlo y guardarlo en el almacenamiento
 
             val path = getExternalFilesDir(null)!!.absoluteFile.toString() + "/" + numeroRecibo
             val file = File(path)
@@ -1201,7 +1190,6 @@ class CXCActivity : AppCompatActivity() {
             } catch (e: IOException) {
                 Toast.makeText(this.applicationContext, "PDF No Generado", Toast.LENGTH_LONG).show()
                 println("error en ${e.printStackTrace()}")
-
             }
 
             reciboPDF.close()
@@ -1209,25 +1197,23 @@ class CXCActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Debe subir el recibo ", Toast.LENGTH_SHORT).show()
         }
-
-
     }
 
     private fun verificarReten(reten: Int, campo: String, documento: String): Double {
         return if (reten == 1) {
-            0.0 //<- retorno
+            0.0 // <- retorno
         } else {
             val cursor = keAndroid.rawQuery(
                 "SELECT $campo FROM ke_precobradocs WHERE documento = '$documento' AND empresa = '$codEmpresa'",
                 null
             )
             val regreso: Double = if (cursor.moveToFirst()) {
-                cursor.getDouble(0) //<- valor adquirido por "regreso"
+                cursor.getDouble(0) // <- valor adquirido por "regreso"
             } else {
-                0.0 //<- valor adquirido por "regreso"
+                0.0 // <- valor adquirido por "regreso"
             }
             cursor.close()
-            regreso //<- retorno
+            regreso // <- retorno
         }
     }
 
@@ -1244,9 +1230,9 @@ class CXCActivity : AppCompatActivity() {
     }
 
     private fun abrirRecibo(file: File) {
-        //val ruta = "$rutaRaiz/$nombreArchivo"
-        //println("La ruta -> $ruta")
-        //val file = File(ruta.substring(1))
+        // val ruta = "$rutaRaiz/$nombreArchivo"
+        // println("La ruta -> $ruta")
+        // val file = File(ruta.substring(1))
 
         if (!file.exists()) {
             Toast.makeText(
@@ -1256,8 +1242,6 @@ class CXCActivity : AppCompatActivity() {
             ).show()
         } else {
             try {
-
-
                 val builder = VmPolicy.Builder()
                 StrictMode.setVmPolicy(builder.build())
 
@@ -1265,14 +1249,16 @@ class CXCActivity : AppCompatActivity() {
                 shareIntent.type = "application/pdf"
 
                 val outputPdfUri = FileProvider.getUriForFile(
-                    this, this.packageName + ".provider", file
+                    this,
+                    this.packageName + ".provider",
+                    file
                 )
 
                 shareIntent.putExtra(Intent.EXTRA_STREAM, outputPdfUri)
 
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                //Write Permission might not be necessary
-                //Write Permission might not be necessary
+                // Write Permission might not be necessary
+                // Write Permission might not be necessary
                 shareIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
                 startActivity(Intent.createChooser(shareIntent, "Share PDF using.."))
@@ -1287,11 +1273,10 @@ class CXCActivity : AppCompatActivity() {
                 startActivity(share)
                 println("despues del intent")*/
 
-
                 /* println("1")
                  val intentShare = Intent(Intent.ACTION_SEND)
                  println("2")*/
-                //intentShare.type = "*/*"
+                // intentShare.type = "*/*"
                 /*println("3")
                 intentShare.addFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -1301,15 +1286,11 @@ class CXCActivity : AppCompatActivity() {
                 println("5")
                 startActivity(Intent.createChooser(intentShare, "Compartir Archivo..."))
                 println("6")*/
-
             } catch (e: Exception) {
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
             }
         }
-
-
     }
-
 
     private fun clearAdapter() {
         cargarCobranzas()
@@ -1338,7 +1319,6 @@ class CXCActivity : AppCompatActivity() {
         }
     }
 
-
     private fun getFechaHoy(): String {
         val fechaHoy: String
         val fechaSinConvertir: Calendar = Calendar.getInstance()
@@ -1347,9 +1327,7 @@ class CXCActivity : AppCompatActivity() {
         return fechaHoy
     }
 
-
     private fun compararFecha(fchrecibo: String): Int {
-
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val current = LocalDateTime.now().format(formatter)
 
@@ -1361,13 +1339,11 @@ class CXCActivity : AppCompatActivity() {
             sdf.parse(fchrecibo) as Date
         )
 
-        //vence > fecha = 1
-        //vence = fecha = 0
-        //vence < fecha = -1
-
+        // vence > fecha = 1
+        // vence = fecha = 0
+        // vence < fecha = -1
 
         return firstDate.compareTo(secondDate)
-
     }
 
     private fun sumarDias(dias: Int, fecha: Date): Date {
@@ -1394,8 +1370,5 @@ class CXCActivity : AppCompatActivity() {
             fabAdddeposit.rippleColor =
                 ColorStateList.valueOf(fabAdddeposit.colorTextAgencia(Constantes.AGENCIA))
         }
-
     }
-
-
 }

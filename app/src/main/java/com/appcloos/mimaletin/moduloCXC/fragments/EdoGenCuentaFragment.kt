@@ -22,7 +22,6 @@ import com.appcloos.mimaletin.databinding.FragmentEdoGenCuentaBinding
 import com.appcloos.mimaletin.moduloCXC.fragments.edoGenCuentaAdapter.EdoGenCuentaAdapter
 import com.appcloos.mimaletin.moduloCXC.viewmodel.EdoGeneralCxc
 
-
 /**
 
  */
@@ -59,7 +58,7 @@ class EdoGenCuentaFragment : Fragment() {
     var codigoCliente = ""
     var nombreCliente = ""
 
-    //declaracion de variables Double
+    // declaracion de variables Double
     var contribesp: Double = 0.0
     var tipoprecio = 0.0
     var diascred = 0.0
@@ -105,7 +104,8 @@ class EdoGenCuentaFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentEdoGenCuentaBinding.inflate(layoutInflater)
@@ -127,16 +127,17 @@ class EdoGenCuentaFragment : Fragment() {
         binding.rvEstadoGencxc.setHasFixedSize(true)
         binding.rvEstadoGencxc.layoutManager = LinearLayoutManager(requireContext())
 
-        adapter = EdoGenCuentaAdapter(edogencxc = listaEstadoGen,
-            onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) })
+        adapter = EdoGenCuentaAdapter(
+            edogencxc = listaEstadoGen,
+            onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) }
+        )
         binding.rvEstadoGencxc.adapter = adapter
-        //cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
-        //adapter = EdoGenCuentaAdapter(edogencxc = listaEstadoGen, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) })
-        //binding.rvEstadoGencxc.adapter = adapter
+        // cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
+        // adapter = EdoGenCuentaAdapter(edogencxc = listaEstadoGen, onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) })
+        // binding.rvEstadoGencxc.adapter = adapter
     }
 
     private fun cargarEnlace() {
-
         val columnas = arrayOf(
             "kee_nombre," + "kee_url," + "kee_sucursal"
         )
@@ -342,17 +343,18 @@ class EdoGenCuentaFragment : Fragment() {
     }
 
     private fun irACXC(cliente: String, nomCliente: String) {
-        //Creacion de un Bundle que servira como contenedor para enviar datos al siguiente fragment
+        // Creacion de un Bundle que servira como contenedor para enviar datos al siguiente fragment
         val datosAEnviar = Bundle()
 
-        //Guardado del codigo de vendedor
+        // Guardado del codigo de vendedor
         datosAEnviar.putString("cliente", cliente)
         datosAEnviar.putString("nomCliente", nomCliente)
 
-        //Navegacion al fagment de Vendedor
-        //El fragment vendedor de informacion mas detallada de un mendedor
+        // Navegacion al fagment de Vendedor
+        // El fragment vendedor de informacion mas detallada de un mendedor
         findNavController().navigate(
-            R.id.action_moduloCXCFragment_to_edoCuentaClienteFragment, datosAEnviar
+            R.id.action_moduloCXCFragment_to_edoCuentaClienteFragment,
+            datosAEnviar
         )
     }
 
@@ -369,13 +371,13 @@ class EdoGenCuentaFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                //buscarItem(query)
+                // buscarItem(query)
                 consultarEstadoClientes(query)
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                //buscarItem(newText)
+                // buscarItem(newText)
                 consultarEstadoClientes(newText)
                 return true
             }
@@ -396,5 +398,4 @@ class EdoGenCuentaFragment : Fragment() {
             adapter.actualizarFact(listaEstadoGen)
         }
     }*/
-
 }

@@ -18,11 +18,11 @@ class KardexActivity : AppCompatActivity() {
     private lateinit var listaKardex: ListView
     private var listacatalogo: ArrayList<Catalogo>? = null
     private lateinit var conn: AdminSQLiteOpenHelper
-    lateinit var codEmpresa:String
+    lateinit var codEmpresa: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         setContentView(R.layout.activity_kardex)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         val codUsuario = preferences.getString("cod_usuario", null)
@@ -56,7 +56,10 @@ class KardexActivity : AppCompatActivity() {
             }
         }
         consultarArticulosNormal()
-        val catalogoAdapter = CatalogoAdapter(this@KardexActivity, listacatalogo, enlaceEmpresa
+        val catalogoAdapter = CatalogoAdapter(
+            this@KardexActivity,
+            listacatalogo,
+            enlaceEmpresa
         )
         listaKardex.adapter = catalogoAdapter
         val objetoAux = ObjetoAux(this)
@@ -72,8 +75,7 @@ class KardexActivity : AppCompatActivity() {
             null
         )
 
-
-        //select codigo, nombre from articulo
+        // select codigo, nombre from articulo
         while (cursor.moveToNext()) {
             catalogo = Catalogo()
             catalogo.setCodigo(cursor.getString(0))
@@ -99,8 +101,8 @@ class KardexActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
-                    "kee_url," +
-                    "kee_sucursal"
+                "kee_url," +
+                "kee_sucursal"
         )
         val cursor = keAndroid.query("ke_enlace", columnas, "kee_codigo = '$codEmpresa'", null, null, null, null)
         while (cursor.moveToNext()) {

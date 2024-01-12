@@ -27,7 +27,6 @@ import com.appcloos.mimaletin.databinding.ActivityDocumentosBinding
 import org.json.JSONArray
 import org.json.JSONObject
 
-
 class DocumentosActivity : AppCompatActivity() {
     private lateinit var conn: AdminSQLiteOpenHelper
     private var llCommit: Boolean? = null
@@ -46,7 +45,7 @@ class DocumentosActivity : AppCompatActivity() {
         binding = ActivityDocumentosBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         cargarEnlace()
         val intent = intent
@@ -56,8 +55,8 @@ class DocumentosActivity : AppCompatActivity() {
         codEmpresa = intent.getStringExtra("codigoEmpresa")
         permisos = ArrayList()
         supportActionBar!!.title = nombreCliente
-        //getfechaDocs()
-        //evaluacionDeCargas()
+        // getfechaDocs()
+        // evaluacionDeCargas()
         consultarDocs()
         cargarModulos()
         documentosAdapter =
@@ -66,8 +65,7 @@ class DocumentosActivity : AppCompatActivity() {
         binding.lvDocumentos.adapter = documentosAdapter
         documentosAdapter.notifyDataSetChanged()
 
-
-        //al presionar en un documento, abro un alertdialog
+        // al presionar en un documento, abro un alertdialog
         /* binding.lvDocumentos.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
              println(permisos)
              val documentoP = listadocs[position].getDocumento()
@@ -143,13 +141,13 @@ class DocumentosActivity : AppCompatActivity() {
 
     private fun verDoc(position: Int) {
         println(permisos)
-        val documentoP = listadocs[position].getDocumento()
-        val totnetoP = (listadocs[position].getDtotneto()).valorReal()
-        val totimpuestP = (listadocs[position].getDtotimpuest()).valorReal()
-        val totalfinalP = (listadocs[position].getDtotalfinal()).valorReal()
-        val totdescup = (listadocs[position].getDtotdescuen()).valorReal()
-        val aceptaDevoluciones = listadocs[position].getAceptadev()
-        val estadoDoc = listadocs[position].getEstatusdoc()
+        val documentoP = listadocs[position].documento
+        val totnetoP = (listadocs[position].dtotneto).valorReal()
+        val totimpuestP = (listadocs[position].dtotimpuest).valorReal()
+        val totalfinalP = (listadocs[position].dtotalfinal).valorReal()
+        val totdescup = (listadocs[position].dtotdescuen).valorReal()
+        val aceptaDevoluciones = listadocs[position].aceptadev
+        val estadoDoc = listadocs[position].estatusdoc
         println(estadoDoc)
         if (!permisos!!.contains("REC001")) {
             val ventana =
@@ -167,10 +165,10 @@ class DocumentosActivity : AppCompatActivity() {
     Descuentos  :       $totdescup$
     Monto Total :       $totalfinalP$
     
-    """.trimIndent()
+                """.trimIndent()
             )
-            val dialogo = ventana.create() //creamos el dialogo en base a la ventana diseñada
-            dialogo.show() //mostrar el dialogo
+            val dialogo = ventana.create() // creamos el dialogo en base a la ventana diseñada
+            dialogo.show() // mostrar el dialogo
             val messageText = dialogo.findViewById<TextView>(android.R.id.message)
             messageText!!.gravity = Gravity.END
         } else {
@@ -189,7 +187,7 @@ class DocumentosActivity : AppCompatActivity() {
     Descuentos  :       $totdescup$
     Monto Total :       $totalfinalP$
     
-    """.trimIndent()
+                """.trimIndent()
             )
             ventana.setNeutralButton("Generar Reclamo") { _: DialogInterface?, _: Int ->
                 if (estadoDoc == "2") {
@@ -210,8 +208,8 @@ class DocumentosActivity : AppCompatActivity() {
                     }
                 }
             }
-            val dialogo = ventana.create() //creamos el dialogo en base a la ventana diseñada
-            dialogo.show() //mostrar el dialogo
+            val dialogo = ventana.create() // creamos el dialogo en base a la ventana diseñada
+            dialogo.show() // mostrar el dialogo
             val nbutton: Button = dialogo.getButton(DialogInterface.BUTTON_NEUTRAL)
             nbutton.apply {
                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
@@ -239,8 +237,8 @@ class DocumentosActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
-                    "kee_url," +
-                    "kee_sucursal"
+                "kee_url," +
+                "kee_sucursal"
         )
         val cursor = keAndroid.query(
             "ke_enlace",
@@ -288,7 +286,7 @@ class DocumentosActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         keAndroid.beginTransaction()
         try {
-            keAndroid.execSQL("DELETE FROM ke_devlmtmp") //<-- se deja sin codigo de la empresa
+            keAndroid.execSQL("DELETE FROM ke_devlmtmp") // <-- se deja sin codigo de la empresa
             // por que es una tabla temporal auxiliar
             keAndroid.setTransactionSuccessful()
             keAndroid.endTransaction()
@@ -300,7 +298,7 @@ class DocumentosActivity : AppCompatActivity() {
     private fun iraReclamos(documentoP: String, codigoCliente: String?, nombreCliente: String?) {
         vaciarTmp()
         val intent = Intent(applicationContext, ReclamosActivity::class.java)
-        //coloco los datos que necesito llevarme al siguiente Activity
+        // coloco los datos que necesito llevarme al siguiente Activity
         intent.putExtra("documentoP", documentoP)
         intent.putExtra("codigoCliente", codigoCliente)
         intent.putExtra("nombreCliente", nombreCliente)
@@ -312,7 +310,7 @@ class DocumentosActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
         builder.setTitle("Detalle del Doc. $documentoP")
         val lvDetalledoc = ListView(this@DocumentosActivity)
-        //verLineasDocumento(documentoP)
+        // verLineasDocumento(documentoP)
         lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc!!)
         lvDetalledoc.adapter = lineasAdapter
         lineasAdapter!!.notifyDataSetChanged()
@@ -354,102 +352,107 @@ class DocumentosActivity : AppCompatActivity() {
 
     private fun cargarLineasDocumento(url: String) {
         val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
-                if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    var jsonObject: JSONObject //creamos un objeto json vacio
-                    llCommit = false
-                    for (i in 0 until response.length()) {
-                        try {
+            object : JsonArrayRequest(
+                url,
+                Response.Listener { response: JSONArray? ->
+                    if (response != null) {
+                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        var jsonObject: JSONObject // creamos un objeto json vacio
+                        llCommit = false
+                        for (i in 0 until response.length()) {
+                            try {
+                                // obtengo de la respuesta los datos en un json object
+                                jsonObject = response.getJSONObject(i)
+                                // preparo los campos para las operaciones
+                                val agencia = jsonObject.getString("agencia")
+                                val tipodoc = jsonObject.getString("tipodoc")
+                                val documento = jsonObject.getString("documento")
+                                val tipodocv = jsonObject.getString("tipodocv")
+                                val grupo = jsonObject.getString("grupo")
+                                val subgrupo = jsonObject.getString("subgrupo")
+                                val origen = jsonObject.getDouble("origen")
+                                val codigo = jsonObject.getString("codigo")
+                                val codhijo = jsonObject.getString("codhijo")
+                                val pid = jsonObject.getString("pid")
+                                val nombre = jsonObject.getString("nombre")
+                                val cantidad = jsonObject.getDouble("cantidad")
+                                val cntdevuelt = jsonObject.getDouble("cntdevuelt")
+                                val vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
+                                val dvndmtototal = jsonObject.getDouble("dvndmtototal")
+                                val dpreciofin = jsonObject.getDouble("dpreciofin")
+                                val dpreciounit = jsonObject.getDouble("dpreciounit")
+                                val dmontoneto = jsonObject.getDouble("dmontoneto")
+                                val dmontototal = jsonObject.getDouble("dmontototal")
+                                val timpueprc = jsonObject.getDouble("timpueprc")
+                                val unidevuelt = jsonObject.getDouble("unidevuelt")
+                                val fechadoc = jsonObject.getString("fechadoc")
+                                val vendedor = jsonObject.getString("vendedor")
+                                val codcoord = jsonObject.getString("codcoord")
+                                val fechamodifi = jsonObject.getString("fechamodifi")
 
-                            //obtengo de la respuesta los datos en un json object
-                            jsonObject = response.getJSONObject(i)
-                            //preparo los campos para las operaciones
-                            val agencia = jsonObject.getString("agencia")
-                            val tipodoc = jsonObject.getString("tipodoc")
-                            val documento = jsonObject.getString("documento")
-                            val tipodocv = jsonObject.getString("tipodocv")
-                            val grupo = jsonObject.getString("grupo")
-                            val subgrupo = jsonObject.getString("subgrupo")
-                            val origen = jsonObject.getDouble("origen")
-                            val codigo = jsonObject.getString("codigo")
-                            val codhijo = jsonObject.getString("codhijo")
-                            val pid = jsonObject.getString("pid")
-                            val nombre = jsonObject.getString("nombre")
-                            val cantidad = jsonObject.getDouble("cantidad")
-                            val cntdevuelt = jsonObject.getDouble("cntdevuelt")
-                            val vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
-                            val dvndmtototal = jsonObject.getDouble("dvndmtototal")
-                            val dpreciofin = jsonObject.getDouble("dpreciofin")
-                            val dpreciounit = jsonObject.getDouble("dpreciounit")
-                            val dmontoneto = jsonObject.getDouble("dmontoneto")
-                            val dmontototal = jsonObject.getDouble("dmontototal")
-                            val timpueprc = jsonObject.getDouble("timpueprc")
-                            val unidevuelt = jsonObject.getDouble("unidevuelt")
-                            val fechadoc = jsonObject.getString("fechadoc")
-                            val vendedor = jsonObject.getString("vendedor")
-                            val codcoord = jsonObject.getString("codcoord")
-                            val fechamodifi = jsonObject.getString("fechamodifi")
+                                val cv = ContentValues()
+                                cv.put("agencia", agencia)
+                                cv.put("tipodoc", tipodoc)
+                                cv.put("documento", documento)
+                                cv.put("tipodocv", tipodocv)
+                                cv.put("grupo", grupo)
+                                cv.put("subgrupo", subgrupo)
+                                cv.put("origen", origen)
+                                cv.put("codigo", codigo)
+                                cv.put("codhijo", codhijo)
+                                cv.put("pid", pid)
+                                cv.put("nombre", nombre)
+                                cv.put("cantidad", cantidad)
+                                cv.put("cntdevuelt", cntdevuelt)
+                                cv.put("vndcntdevuelt", vndcntdevuelt)
+                                cv.put("dvndmtototal", dvndmtototal)
+                                cv.put("dpreciofin", dpreciofin)
+                                cv.put("dpreciounit", dpreciounit)
+                                cv.put("dmontoneto", dmontoneto)
+                                cv.put("dmontototal", dmontototal)
+                                cv.put("timpueprc", timpueprc)
+                                cv.put("unidevuelt", unidevuelt)
+                                cv.put("fechadoc", fechadoc)
+                                cv.put("vendedor", vendedor)
+                                cv.put("codcoord", codcoord)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("empresa", codEmpresa)
 
-                            val cv = ContentValues()
-                            cv.put("agencia", agencia)
-                            cv.put("tipodoc", tipodoc)
-                            cv.put("documento", documento)
-                            cv.put("tipodocv", tipodocv)
-                            cv.put("grupo", grupo)
-                            cv.put("subgrupo", subgrupo)
-                            cv.put("origen", origen)
-                            cv.put("codigo", codigo)
-                            cv.put("codhijo", codhijo)
-                            cv.put("pid", pid)
-                            cv.put("nombre", nombre)
-                            cv.put("cantidad", cantidad)
-                            cv.put("cntdevuelt", cntdevuelt)
-                            cv.put("vndcntdevuelt", vndcntdevuelt)
-                            cv.put("dvndmtototal", dvndmtototal)
-                            cv.put("dpreciofin", dpreciofin)
-                            cv.put("dpreciounit", dpreciounit)
-                            cv.put("dmontoneto", dmontoneto)
-                            cv.put("dmontototal", dmontototal)
-                            cv.put("timpueprc", timpueprc)
-                            cv.put("unidevuelt", unidevuelt)
-                            cv.put("fechadoc", fechadoc)
-                            cv.put("vendedor", vendedor)
-                            cv.put("codcoord", codcoord)
-                            cv.put("fechamodifi", fechamodifi)
-                            cv.put("empresa", codEmpresa)
+                                if (conn.validarExistenciaCamposVarios(
+                                        "ke_doclmv",
+                                        ArrayList(
+                                            mutableListOf("pid", "empresa")
+                                        ),
+                                        arrayListOf(pid, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
+                                        "ke_doclmv",
+                                        cv,
+                                        "pid = ? AND empresa = ?",
+                                        arrayOf(pid, codEmpresa!!)
+                                    )
+                                } else {
+                                    conn.insertJSON("ke_doclmv", cv)
+                                }
 
-                            if (conn.validarExistenciaCamposVarios(
-                                    "ke_doclmv", ArrayList(
-                                        mutableListOf("pid", "empresa")
-                                    ), arrayListOf(pid, codEmpresa!!)
-                                )
-                            ) {
-                                conn.updateJSONCamposVarios(
-                                    "ke_doclmv",
-                                    cv,
-                                    "pid = ? AND empresa = ?",
-                                    arrayOf(pid, codEmpresa!!)
-                                )
-                            } else {
-                                conn.insertJSON("ke_doclmv", cv)
-                            }
-
-                            llCommit = true
-                        } catch (e: Exception) {
-                            println("Error de inserción: $e")
-                            llCommit = false
-                            if (!llCommit!!) {
-                                return@Listener
+                                llCommit = true
+                            } catch (e: Exception) {
+                                println("Error de inserción: $e")
+                                llCommit = false
+                                if (!llCommit!!) {
+                                    return@Listener
+                                }
                             }
                         }
                     }
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                println("--Error--")
-                error.printStackTrace()
-                println("--Error--")
-            }) {
+            ) {
                 override fun getParams(): Map<String, String> {
                     val parametros: MutableMap<String, String> = HashMap()
                     parametros["documento"] = documento!!
@@ -457,7 +460,9 @@ class DocumentosActivity : AppCompatActivity() {
                 }
             }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
     private fun consultarDocs() {
@@ -470,16 +475,16 @@ class DocumentosActivity : AppCompatActivity() {
         )
         while (cursor.moveToNext()) {
             documentos = Documentos()
-            documentos.setDocumento(cursor.getString(0))
-            documentos.setTipodocv(cursor.getString(1))
-            documentos.setEstatusdoc(cursor.getString(2))
-            documentos.setDtotalfinal(cursor.getDouble(3))
-            documentos.setEmision(cursor.getString(4))
-            documentos.setRecepcion(cursor.getString(5))
-            documentos.setDtotneto(cursor.getDouble(6))
-            documentos.setDtotimpuest(cursor.getDouble(7))
-            documentos.setDtotdescuen(cursor.getDouble(8))
-            documentos.setAceptadev(cursor.getString(9))
+            documentos.documento = cursor.getString(0)
+            documentos.tipodocv = cursor.getString(1)
+            documentos.estatusdoc = cursor.getString(2)
+            documentos.dtotalfinal = cursor.getDouble(3)
+            documentos.emision = cursor.getString(4)
+            documentos.recepcion = cursor.getString(5)
+            documentos.dtotneto = cursor.getDouble(6)
+            documentos.dtotimpuest = cursor.getDouble(7)
+            documentos.dtotdescuen = cursor.getDouble(8)
+            documentos.aceptadev = cursor.getString(9)
             listadocs.add(documentos)
         }
         documentosAdapter =
@@ -487,7 +492,7 @@ class DocumentosActivity : AppCompatActivity() {
         binding.lvDocumentos.layoutManager = LinearLayoutManager(this)
         binding.lvDocumentos.adapter = documentosAdapter
         documentosAdapter.notifyDataSetChanged()
-        //ke_android.close();
+        // ke_android.close();
         cursor.close()
     }
 
@@ -635,7 +640,7 @@ class DocumentosActivity : AppCompatActivity() {
     }*/
 
     override fun onResume() {
-        //evaluacionDeCargas()
+        // evaluacionDeCargas()
         consultarDocs()
         super.onResume()
     }

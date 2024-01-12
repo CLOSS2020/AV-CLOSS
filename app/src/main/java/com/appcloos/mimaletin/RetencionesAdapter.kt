@@ -14,8 +14,7 @@ class RetencionesAdapter : RecyclerView.Adapter<RetencionesAdapter.RetHolder>() 
     lateinit var context: Context
     private var listaSelec: ArrayList<Retenciones> = ArrayList()
     private lateinit var quantityListener: RetHolder.QuantityListener
-    //private var estadosCheck: SparseBooleanArray = SparseBooleanArray()
-
+    // private var estadosCheck: SparseBooleanArray = SparseBooleanArray()
 
     fun retencionAdapter(
         context: Context,
@@ -27,19 +26,17 @@ class RetencionesAdapter : RecyclerView.Adapter<RetencionesAdapter.RetHolder>() 
         this.quantityListener = quantityListener
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RetHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
 
         return RetHolder(layoutInflater.inflate(R.layout.item_retenciones, parent, false))
-
     }
 
     override fun onBindViewHolder(holder: RetHolder, position: Int) {
         holder.bind(retenciones[position])
-        //holder.isSeleccionado.tag = position
+        // holder.isSeleccionado.tag = position
 
-        //holder.isSeleccionado.isClickable = estadosCheck.get(holder.isSeleccionado.getTag() as Int)
+        // holder.isSeleccionado.isClickable = estadosCheck.get(holder.isSeleccionado.getTag() as Int)
         holder.isSeleccionado.setOnClickListener {
             /*var codigo = retenciones[position].tiporet
             listaSelec.remove(retenciones[position])
@@ -51,10 +48,8 @@ class RetencionesAdapter : RecyclerView.Adapter<RetencionesAdapter.RetHolder>() 
         }
     }
 
-
     override fun getItemCount(): Int {
         return retenciones.size
-
     }
 
     class RetHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -74,16 +69,11 @@ class RetencionesAdapter : RecyclerView.Adapter<RetencionesAdapter.RetHolder>() 
             refret.text = "REF: " + retenciones.refret
             tiporet.text = "TIPO: " + retenciones.tiporet
             montoret.text = "MONTO: $montoRet Bs."
-
         }
-
 
         interface QuantityListener {
             fun onQuantityChange(listaChange: Int) {
-
             }
         }
     }
-
-
 }

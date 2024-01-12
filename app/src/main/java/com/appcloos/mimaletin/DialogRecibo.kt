@@ -27,7 +27,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-
 class DialogRecibo {
 
     lateinit var aceptar: Button
@@ -50,7 +49,7 @@ class DialogRecibo {
     private lateinit var rvDocs: RecyclerView
     val adapter: SimpleDocsAdapter = SimpleDocsAdapter()
 
-    //var myBitmap: Bitmap? = null
+    // var myBitmap: Bitmap? = null
     var myBitmap: Bitmap = createBitmap(1000, 1000)
 
     var nombanco = ""
@@ -59,12 +58,11 @@ class DialogRecibo {
     private lateinit var conn: AdminSQLiteOpenHelper
     private lateinit var keAndroid: SQLiteDatabase
 
-
     fun DialogRecibo(contexto: Context, datos: ArrayList<CXC>, codEmpresa: String?) {
         conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
 
-        //conf basica del dialogo
+        // conf basica del dialogo
         val dialogo = Dialog(contexto, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialogo.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialogo.setCancelable(false)
@@ -110,7 +108,6 @@ class DialogRecibo {
             rref = datos[i].bcoref
             rcli = datos[i].cliente
             mtoefec = datos[i].efectivo
-
         }
 
         // segun la moneda que llegue, coloco el tipo
@@ -120,11 +117,9 @@ class DialogRecibo {
             moneda.text = "Bs."
         }
 
-
-
         keAndroid = conn.writableDatabase
         val buscaBanco: Cursor =
-            keAndroid.rawQuery("SELECT nombanco FROM listbanc WHERE codbanco = '${rbanco}'", null)
+            keAndroid.rawQuery("SELECT nombanco FROM listbanc WHERE codbanco = '$rbanco'", null)
 
         while (buscaBanco.moveToNext()) {
             nombanco = buscaBanco.getString(0)
@@ -132,7 +127,7 @@ class DialogRecibo {
         buscaBanco.close()
 
         val buscaCliente: Cursor =
-            keAndroid.rawQuery("SELECT nombre FROM cliempre WHERE codigo = '${rcli}'", null)
+            keAndroid.rawQuery("SELECT nombre FROM cliempre WHERE codigo = '$rcli'", null)
 
         while (buscaCliente.moveToNext()) {
             nomcliente = buscaCliente.getString(0)
@@ -140,7 +135,7 @@ class DialogRecibo {
         buscaCliente.close()
 
         val buscarDocs: Cursor = keAndroid.rawQuery(
-            "SELECT documento, nombrecli FROM ke_precobradocs WHERE cxcndoc = '${rid}'",
+            "SELECT documento, nombrecli FROM ke_precobradocs WHERE cxcndoc = '$rid'",
             null
         )
 
@@ -157,10 +152,8 @@ class DialogRecibo {
         id.text = rid
         fecha.text = rfecha
 
-
         if (mtoefec > 0.00) {
             monto.text = mtoefec.toString()
-
         } else {
             rmonto = Math.round(rmonto * 100.00) / 100.00
             monto.text = rmonto.toString()
@@ -168,15 +161,14 @@ class DialogRecibo {
             referencia.text = rref
         }
 
-        //mostrar los docs en el pago
+        // mostrar los docs en el pago
         rvDocs = dialogo.findViewById(R.id.rv_docs_recibo)
         rvDocs.layoutManager = LinearLayoutManager(contexto)
         adapter.SimpleDocsAdapter(contexto, listadocs)
         rvDocs.adapter = adapter
         adapter.notifyDataSetChanged()
 
-
-        //cerrar el dialogo
+        // cerrar el dialogo
         aceptar.setOnClickListener {
             /*   var viewDialog: View = dialogo.window!!.decorView.rootView
                myBitmap = captureScreen(viewDialog)*/
@@ -196,10 +188,8 @@ class DialogRecibo {
             (contexto as Activity).finish()
         }
 
-
         dialogo.show()
     }
-
 
     fun savePdfFile(
         contexto: Context,
@@ -211,96 +201,88 @@ class DialogRecibo {
         fechaRecibo: String,
         vendedorRecibo: String
     ) {
-
         val reciboPDF = PdfDocument()
         val paint = Paint()
-        //conf inicial de la pag
+        // conf inicial de la pag
         val myInfo = PageInfo.Builder(300, 500, 1).create()
         val pagina: PdfDocument.Page = reciboPDF.startPage(myInfo)
         val canvas = pagina.canvas
-        //del obj paint
+        // del obj paint
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = 12f
         paint.color = Color.BLACK
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arialbd.ttf")
 
-
-        //CABECERA
-        //imagen del la cabecera
+        // CABECERA
+        // imagen del la cabecera
         val bmp = BitmapFactory.decodeResource(contexto.resources, R.drawable.plantillasello)
         val scaledBitmap = Bitmap.createScaledBitmap(bmp, 300, 500, false)
         canvas.drawBitmap(scaledBitmap, 0f, 0f, paint)
 
-        //titulos de la cabecera
+        // titulos de la cabecera
 
-        //titulos de la cabecera
+        // titulos de la cabecera
         canvas.drawText(nombreEmpresa, 150f, 60f, paint)
         canvas.drawText("Recibo de Pago", 150f, 80f, paint)
-        canvas.drawText("Estimado(s), ${nombreCliente}, se ha generado", 150f, 100f, paint)
+        canvas.drawText("Estimado(s), $nombreCliente, se ha generado", 150f, 100f, paint)
         canvas.drawText("un recibo de pago con los siguientes datos:", 150f, 110f, paint)
         canvas.drawRect(0f, 130f, 300f, 133f, paint)
 
-        //lineas
+        // lineas
         paint.textSize = 12f
 
         paint.color = Color.BLACK
         paint.textAlign = Paint.Align.LEFT
 
-        //Codigo del cliente
+        // Codigo del cliente
 
-
-        //Codigo del cliente
+        // Codigo del cliente
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arialbd.ttf")
         canvas.drawText("Código del Cliente: ", 30f, 160f, paint)
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arial.ttf")
         canvas.drawText(codigoCliente, 30f, 180f, paint)
 
-        //NOMBRE DEL CLIENTE
+        // NOMBRE DEL CLIENTE
 
-        //NOMBRE DEL CLIENTE
+        // NOMBRE DEL CLIENTE
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arialbd.ttf")
         canvas.drawText("Cliente: ", 30f, 220f, paint)
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arial.ttf")
         canvas.drawText(nombreCliente, 30f, 240f, paint)
 
-        //Monto del Recibo
+        // Monto del Recibo
 
-        //Monto del Recibo
+        // Monto del Recibo
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arialbd.ttf")
         canvas.drawText("Monto Pagado: ", 30f, 280f, paint)
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arial.ttf")
         canvas.drawText("$$montoRecibo", 30f, 300f, paint)
 
-        //Fecha del Recibo
+        // Fecha del Recibo
 
-        //Fecha del Recibo
+        // Fecha del Recibo
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arialbd.ttf")
         canvas.drawText("Fecha del Recibo: ", 30f, 340f, paint)
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arial.ttf")
         canvas.drawText(fechaRecibo, 30f, 360f, paint)
 
-        //vendedor
+        // vendedor
 
-        //vendedor
+        // vendedor
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arialbd.ttf")
         canvas.drawText("Vendedor: ", 30f, 400f, paint)
         paint.typeface = Typeface.createFromAsset(contexto.assets, "font/arial.ttf")
         canvas.drawText(vendedorRecibo, 30f, 420f, paint)
 
-
-
-
         reciboPDF.finishPage(pagina)
         VerRecibos.reciboNum =
             "recibo + $codigoRecibo.pdf"
-        //este sera el nombre del documento al momento de crearlo y guardarlo en el almacenamiento
-
+        // este sera el nombre del documento al momento de crearlo y guardarlo en el almacenamiento
 
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
             VerRecibos.reciboNum
         )
-
 
         try {
             reciboPDF.writeTo(FileOutputStream(file))
@@ -312,8 +294,6 @@ class DialogRecibo {
         }
 
         reciboPDF.close()
-
-
     }
 
     private fun abrirRecibo(nombreArchivo: String, context: Context) {
@@ -340,8 +320,6 @@ class DialogRecibo {
             )
         )
         val chooser = Intent.createChooser(intent, "Compartir recibo...")
-
-
     }
 
     private fun setColors(codEmpresa: String?) {
@@ -355,6 +333,4 @@ class DialogRecibo {
 
         aceptar.setBackgroundColor(aceptar.colorButtonAgencia(codEmpresa))
     }
-
-
 }

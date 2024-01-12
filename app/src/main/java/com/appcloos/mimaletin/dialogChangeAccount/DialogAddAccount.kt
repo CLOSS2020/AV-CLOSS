@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
     AlertDialog(context) {
 
@@ -43,14 +42,15 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
     private lateinit var preferences: SharedPreferences
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         super.onCreate(savedInstanceState)
         binding = DialogAddAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        this.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
+        this.window?.clearFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+        )
 
         this.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
@@ -61,7 +61,6 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
         setListener()
 
         setColor()
-
     }
 
     private fun setListener() {
@@ -70,7 +69,6 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
     }
 
     private fun validarEmpresa(codigoEmpresa: String) {
-
         if (binding.etCodigo.text.isNullOrEmpty()) {
             Toast.makeText(context, "Falta codigo de la empresa", Toast.LENGTH_SHORT).show()
             return
@@ -80,7 +78,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
         if (flag) {
             Toast.makeText(
-                context, "Ya posee una sesion iniciada con esa empresa", Toast.LENGTH_SHORT
+                context,
+                "Ya posee una sesion iniciada con esa empresa",
+                Toast.LENGTH_SHORT
             ).show()
             return
         }
@@ -89,11 +89,11 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
         val keAndroid = conn.writableDatabase
         val jsonArrayRequest = JsonArrayRequest(url, { response ->
             if (response != null) {
-                val jsonObject: JSONObject //creamos un objeto json vacio
+                val jsonObject: JSONObject // creamos un objeto json vacio
                 keAndroid.beginTransaction()
 
                 try {
-                    //bajamos los datos de la empresa/sucursal
+                    // bajamos los datos de la empresa/sucursal
                     jsonObject = response.getJSONObject(0)
 
                     val codigoEmp = jsonObject.getString("codigoEmpresa")
@@ -115,12 +115,12 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
                     keAndroid.insert("ke_enlace", null, guardarEnlaces)*/
 
-                    //en este proceso vamos a cargar los permisos
+                    // en este proceso vamos a cargar los permisos
                     var permisosJson: JSONObject
                     for (i in 0 until response.length()) {
                         permisosJson = response.getJSONObject(i)
                         val codigoModulo = permisosJson.getString("codigoModulo")
-                        //System.out.println("CODIGO DEL MODULO " + codigoModulo);
+                        // System.out.println("CODIGO DEL MODULO " + codigoModulo);
                         val activoModulo = permisosJson.getString("estadoModulo")
 
                         val guardarPermisos = ContentValues()
@@ -144,7 +144,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(
-                        context, "No se pudo validar el codigo", Toast.LENGTH_LONG
+                        context,
+                        "No se pudo validar el codigo",
+                        Toast.LENGTH_LONG
                     ).show()
                     keAndroid.endTransaction()
                 }
@@ -154,7 +156,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
             error.printStackTrace()
             println("--Error--")
             Toast.makeText(
-                context, "No se pudo validar el codigo, intente más tarde", Toast.LENGTH_LONG
+                context,
+                "No se pudo validar el codigo, intente más tarde",
+                Toast.LENGTH_LONG
             ).show()
         })
 
@@ -192,7 +196,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
         val jsonArrayRequest = JsonArrayRequest(url, { response ->
             if (response != null) { // si la respuesta no viene vacia
                 var sesion =
-                    0 //<-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
+                    0 // <-----Variable de logueo previo, 1 = Esta logueado, 0 = No esta nadie logueado
                 var codUsuario = ""
                 var nUsuario = ""
                 var nombreUsuario = ""
@@ -208,23 +212,24 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                 var ultimorcl = ""
                 var ultimorcxc = ""
 
-                var jsonObject: JSONObject //creamos un objeto json vacio
-                for (i in 0 until response.length()) { /*pongo todo en el objeto segun lo que venga */
+                var jsonObject: JSONObject // creamos un objeto json vacio
+                for (i in 0 until response.length()) {
+                    /*pongo todo en el objeto segun lo que venga */
                     try {
                         jsonObject = response.getJSONObject(i)
-                        nUsuario = jsonObject.getString("nombre") //el nombre del vendedor
-                        codUsuario = jsonObject.getString("vendedor") //el codigo
+                        nUsuario = jsonObject.getString("nombre") // el nombre del vendedor
+                        codUsuario = jsonObject.getString("vendedor") // el codigo
                         nombreUsuario =
-                            jsonObject.getString("username") //almacenamos el nombre de usuario
+                            jsonObject.getString("username") // almacenamos el nombre de usuario
                         almacen = jsonObject.getString("almacen").trim { it <= ' ' }
                         desactivo =
-                            jsonObject.getDouble("desactivo") //este campo nos indicara si el usuario se encuentra bloqueado o no.
+                            jsonObject.getDouble("desactivo") // este campo nos indicara si el usuario se encuentra bloqueado o no.
                         fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
                         ualterprec = jsonObject.getDouble("ualterprec")
                         ultimoped =
-                            jsonObject.getString("correlativo") //obtenemos el ultimo correlativo
+                            jsonObject.getString("correlativo") // obtenemos el ultimo correlativo
                         sesionactiva =
-                            jsonObject.getString("sesionactiva") //traemos la fecha de la sesion que estamos iniciando.
+                            jsonObject.getString("sesionactiva") // traemos la fecha de la sesion que estamos iniciando.
                         superves = jsonObject.getString("superves")
                         vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
                         ultimorec = jsonObject.getString("recibocobro").trim { it <= ' ' }
@@ -241,15 +246,18 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                 }
                 if (codUsuario.isEmpty()) {
                     Toast.makeText(
-                        context, "Usuario o contraseña incorrecto", Toast.LENGTH_LONG
+                        context,
+                        "Usuario o contraseña incorrecto",
+                        Toast.LENGTH_LONG
                     ).show()
 
                     dismiss()
-
                 } else {
                     if (sesion == 1) {
                         Toast.makeText(
-                            context, "El usuario ya tiene una sessión activa.", Toast.LENGTH_LONG
+                            context,
+                            "El usuario ya tiene una sessión activa.",
+                            Toast.LENGTH_LONG
                         ).show()
 
                         dismiss()
@@ -272,7 +280,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                         val keAndroid = conn.writableDatabase
                         keAndroid.beginTransaction()
                         try {
-                            //preparacion e inserción del correlativo de pedidos
+                            // preparacion e inserción del correlativo de pedidos
                             val correlativoTexto = MainActivity.right(ultimoped, 4)
                             var nroCorrelativo = correlativoTexto.toInt()
                             nroCorrelativo += 1
@@ -281,9 +289,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertar.put("kco_vendedor", codUsuario.trim { it <= ' ' })
                             insertar.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correla", null, insertar)
-                            //--------------------------------------------------------------------
+                            // --------------------------------------------------------------------
 
-                            //preparacion e inserción del correlativo de recibos
+                            // preparacion e inserción del correlativo de recibos
                             val reciboTexto = MainActivity.right(ultimorec, 4)
                             var nroRecibo = reciboTexto.toInt()
                             nroRecibo += 1
@@ -292,9 +300,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertarRec.put("kcc_vendedor", codUsuario.trim { it <= ' ' })
                             insertarRec.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correlacxc", null, insertarRec)
-                            //-------------------------------------------------------
+                            // -------------------------------------------------------
 
-                            //preparacion e inserción del correlativo de reclamos
+                            // preparacion e inserción del correlativo de reclamos
                             val reclamoTexto = MainActivity.right(ultimorcl, 4)
                             var nroReclamo = reclamoTexto.toInt()
                             nroReclamo += 1
@@ -303,9 +311,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertarRcl.put("kdev_vendedor", codUsuario.trim { it <= ' ' })
                             insertarRcl.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_correladev", null, insertarRcl)
-                            //---------------------------------------------------------------------------
+                            // ---------------------------------------------------------------------------
 
-                            //preparacion e inserción del correlativo de precobranza
+                            // preparacion e inserción del correlativo de precobranza
                             val correlaCXC = MainActivity.right(ultimorcxc, 4)
                             var nroCXC = correlaCXC.toInt()
                             nroCXC += 1
@@ -314,7 +322,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             insertarCXC.put("kcor_vendedor", codUsuario.trim { it <= ' ' })
                             insertarCXC.put("empresa", newEmpresa.kedCodigo)
                             keAndroid.insert("ke_corprec", null, insertarCXC)
-                            //---------------------------------------------------------------------------
+                            // ---------------------------------------------------------------------------
                             /*keAndroid.delete(
                                 "usuarios",
                                 "username = ?",
@@ -330,7 +338,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
 
                             keAndroid.insert("ke_enlace", null, guardarEnlaces)
 
-                            //agrego la fecha en la cual inició sesión
+                            // agrego la fecha en la cual inició sesión
                             val hoy = Calendar.getInstance().time
                             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                             val fechaSync = sdf.format(hoy)
@@ -350,7 +358,9 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                             keAndroid.setTransactionSuccessful()
                         } catch (e: Exception) {
                             Toast.makeText(
-                                context, "Error insertando correlativo $e", Toast.LENGTH_LONG
+                                context,
+                                "Error insertando correlativo $e",
+                                Toast.LENGTH_LONG
                             ).show()
                             keAndroid.endTransaction()
                         } finally {
@@ -371,17 +381,20 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                         Constantes.AGENCIA = newEmpresa.kedCodigo
 
                         onAddClick()
-
                     } else if (desactivo == 2.0) {
                         Toast.makeText(
-                            context, "Este usuario se encuentra desactivado", Toast.LENGTH_LONG
+                            context,
+                            "Este usuario se encuentra desactivado",
+                            Toast.LENGTH_LONG
                         ).show()
                         dismiss()
                     }
                 }
             } else {
                 Toast.makeText(
-                    context, "Usuario o password incorrecto", Toast.LENGTH_LONG
+                    context,
+                    "Usuario o password incorrecto",
+                    Toast.LENGTH_LONG
                 ).show()
                 dismiss()
             }
@@ -407,5 +420,4 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
             btnIngresar.setBackgroundColor(btnIngresar.colorButtonAgencia(Constantes.AGENCIA))
         }
     }
-
 }

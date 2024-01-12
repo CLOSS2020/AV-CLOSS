@@ -22,7 +22,7 @@ class PedidosArchivadosActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pedidos_archivados)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la orientacion vertical
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn!!.writableDatabase
         lvArchivados = findViewById(R.id.lv_archivados)
@@ -37,11 +37,11 @@ class PedidosArchivadosActivity : AppCompatActivity() {
         val tabla = "ke_opti"
         val consulta = arrayOf(
             "kti_ndoc," +
-                    "kti_nombrecli," +
-                    "kti_totneto," +
-                    "kti_nroped," +
-                    "datetime('now','start of month','-1 month') as principiomes," +
-                    "datetime('now','start of month','-1 day') as finalmes"
+                "kti_nombrecli," +
+                "kti_totneto," +
+                "kti_nroped," +
+                "datetime('now','start of month','-1 month') as principiomes," +
+                "datetime('now','start of month','-1 day') as finalmes"
         )
         val condicion =
             "kti_codven = '$codUsuario' AND empresa = '$codEmpresa' AND kti_fchdoc BETWEEN principiomes AND finalmes"
@@ -61,7 +61,7 @@ class PedidosArchivadosActivity : AppCompatActivity() {
             lvArchivados!!.adapter = pedidosArchivadosAdapter
             pedidosArchivadosAdapter!!.notifyDataSetChanged()
         } else {
-            //en caso de que no llegue
+            // en caso de que no llegue
             println("pedidos vacios")
         }
     }

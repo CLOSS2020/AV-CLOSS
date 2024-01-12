@@ -14,7 +14,6 @@ import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.appcloos.mimaletin.databinding.ActivitySeleccionarClientePedidoBinding
 
-
 class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySeleccionarClientePedidoBinding
@@ -56,8 +55,6 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             codEmpresa
         )
         binding.rvMainPedido.adapter = adapter
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -87,7 +84,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
             val cursorca = keAndroid.rawQuery(
                 "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
-                        "WHERE status = '1' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa' ORDER BY diasultvta DESC",
+                    "WHERE status = '1' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa' ORDER BY diasultvta DESC",
                 null
             )
 
@@ -102,7 +99,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 clientes.add(cliente)
             }
             cursorca.close()
-            //ke_android.close();
+            // ke_android.close();
             adapter = SeleccionarClientePedidoAdapter(
                 clientes,
                 onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
@@ -118,9 +115,9 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
 
             val cursorca = keAndroid.rawQuery(
                 "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
-                        "WHERE status = '1' AND " +
-                        "vendedor = '$codUsuario' AND (nombre LIKE '%$busqueda%' OR " +
-                        "codigo LIKE '%$busqueda%') ORDER BY diasultvta DESC",
+                    "WHERE status = '1' AND " +
+                    "vendedor = '$codUsuario' AND (nombre LIKE '%$busqueda%' OR " +
+                    "codigo LIKE '%$busqueda%') ORDER BY diasultvta DESC",
                 null
             )
 
@@ -135,7 +132,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
                 clientes.add(cliente)
             }
             cursorca.close()
-            //ke_android.close();
+            // ke_android.close();
             adapter = SeleccionarClientePedidoAdapter(
                 clientes,
                 onClickListener = { cliente, nomCliente -> irACXC(cliente, nomCliente) },
@@ -153,9 +150,7 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
     private fun irACXC(cliente: String, nomCliente: String) {
-
         if (false) {
             Toast.makeText(this, "El cliente tiene una deuda pendiente", Toast.LENGTH_SHORT).show()
         } else {
@@ -164,13 +159,12 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
             intent.putExtra("nombre_cliente", nomCliente)
             startActivity(intent)
         }
-
     }
 
     private fun guardarClintes() {
         val cursorTasas: Cursor = keAndroid.rawQuery(
             "SELECT codigo, nombre, contribespecial, kne_activa FROM cliempre " +
-                    "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY nombre ASC",
+                "WHERE status = '1' AND vendedor = '$codUsuario' ORDER BY nombre ASC",
             null
         )
 
@@ -193,5 +187,4 @@ class SeleccionarClientePedidoActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

@@ -24,13 +24,12 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
     private lateinit var listaRecsSeleccionados: ArrayList<String>
     private lateinit var binding: ActivityDepositoBinding
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDepositoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        // Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
         windowsColor(Constantes.AGENCIA)
         setColors()
         supportActionBar!!.title = "Seleccione un Deposito"
@@ -65,7 +64,7 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
         val tabla = "ke_precobranza"
         val columna = arrayOf("cxcndoc," + "fchrecibo," + "edorec," + "efectivo")
         val seleccion = "codvend='$codUsuario' AND empresa = '$codEmpresa' AND edorec != '3' AND edorec != '4' " +
-                "AND edorec !='8' AND edorec !='9' AND edorec !='10' AND efectivo > 0.00 "
+            "AND edorec !='8' AND edorec !='9' AND edorec !='10' AND efectivo > 0.00 "
 
         cursorCobranza = keAndroid.query(tabla, columna, seleccion, null, null, null, null)
 
@@ -82,7 +81,6 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
                 arrayListOf(cobranza.id_recibo, codEmpresa!!)
             )
             listRecibos.add(cobranza)
-
         }
 
         println(listRecibos)
@@ -94,33 +92,26 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
     }
 
     override fun onQuantityChange(listaChange: ArrayList<String>) {
-        //Toast.makeText(this, listaChange.toString(), Toast.LENGTH_LONG).show()
+        // Toast.makeText(this, listaChange.toString(), Toast.LENGTH_LONG).show()
         println(listaChange.toString())
         evaluarLista(listaChange)
-
-
     }
 
     override fun onResume() {
         super.onResume()
         listaRecsSeleccionados.clear()
         onQuantityChange(listaRecsSeleccionados)
-
-
     }
 
     private fun evaluarLista(listaChange: ArrayList<String>) {
-
         if (listaChange.isEmpty()) {
             binding.btSigte.visibility = View.INVISIBLE
             listaRecsSeleccionados = listaChange
-
         } else {
             binding.btSigte.visibility = View.VISIBLE
             listaRecsSeleccionados = listaChange
         }
     }
-
 
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
@@ -135,7 +126,5 @@ class DepositoActivity : AppCompatActivity(), EfectivosAdapter.RecHolder.Quantit
             btSigte.backgroundTintList =
                 ColorStateList.valueOf(btSigte.colorAgencia(Constantes.AGENCIA))
         }
-
     }
-
 }

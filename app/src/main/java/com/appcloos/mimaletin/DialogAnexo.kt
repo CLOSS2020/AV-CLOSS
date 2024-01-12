@@ -37,7 +37,6 @@ class DialogAnexo {
     private lateinit var keAndroid: SQLiteDatabase
     val adapter: SimpleDocsAdapter = SimpleDocsAdapter()
 
-
     fun DialogAnexo(contexto: Context, datos: ArrayList<CXC>, codEmpresa: String?) {
         conn = AdminSQLiteOpenHelper(contexto, "ke_android", null)
         keAndroid = conn.writableDatabase
@@ -65,7 +64,7 @@ class DialogAnexo {
 
         setColors(codEmpresa)
 
-        //variables
+        // variables
         var rfecha = ""
         var rmonto = 0.00
         var rid = ""
@@ -79,11 +78,10 @@ class DialogAnexo {
             rfecha = datos[i].fchrecibo
             rbanco = datos[i].bcocod
             rref = datos[i].bcoref
-
         }
 
         val buscaBanco: Cursor =
-            keAndroid.rawQuery("SELECT nombanco FROM listbanc WHERE codbanco = '${rbanco}'", null)
+            keAndroid.rawQuery("SELECT nombanco FROM listbanc WHERE codbanco = '$rbanco'", null)
 
         while (buscaBanco.moveToNext()) {
             nombanco = buscaBanco.getString(0)
@@ -96,9 +94,8 @@ class DialogAnexo {
         banco.text = nombanco
         referencia.text = rref
 
-
         val buscarDocs: Cursor = keAndroid.rawQuery(
-            "SELECT documento, nombrecli FROM ke_precobradocs WHERE cxcndoc = '${rid}'",
+            "SELECT documento, nombrecli FROM ke_precobradocs WHERE cxcndoc = '$rid'",
             null
         )
 
@@ -110,15 +107,14 @@ class DialogAnexo {
         }
         buscarDocs.close()
 
-        //mostrar los docs en el pago
+        // mostrar los docs en el pago
         rvDocs = dialogo.findViewById(R.id.rv_docs_deposito)
         rvDocs.layoutManager = LinearLayoutManager(contexto)
         adapter.SimpleDocsAdapter(contexto, listadocs)
         rvDocs.adapter = adapter
         adapter.notifyDataSetChanged()
 
-
-        //cerrar el dialogo
+        // cerrar el dialogo
         aceptar.setOnClickListener {
             dialogo.dismiss()
 
@@ -140,5 +136,4 @@ class DialogAnexo {
 
         aceptar.setBackgroundColor(aceptar.colorButtonAgencia(codEmpresa))
     }
-
 }

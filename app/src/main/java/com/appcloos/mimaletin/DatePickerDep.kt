@@ -9,16 +9,15 @@ import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 import java.util.Date
 
-class DatePickerDep(val listener: (day: Int, month: Int, year: Int) -> Unit) : DialogFragment(),
+class DatePickerDep(val listener: (day: Int, month: Int, year: Int) -> Unit) :
+    DialogFragment(),
     DatePickerDialog.OnDateSetListener {
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         listener(dayOfMonth, month + 1, year)
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calen: Calendar = Calendar.getInstance()
-
 
         /*WTF Java y Kotlin se la mamaron con empezar a contar los
         meses en 0 XD, osea hay que sumarle 1*/
@@ -31,10 +30,10 @@ class DatePickerDep(val listener: (day: Int, month: Int, year: Int) -> Unit) : D
 
         picker.datePicker.maxDate = calen.timeInMillis
 
-        //calculo la fecha anterior de 3 dias (por los momentos, parametrizar despues)
+        // calculo la fecha anterior de 3 dias (por los momentos, parametrizar despues)
         val date = Date()
         /*calen.time = date*/
-        calen.add(Calendar.DATE, -20) //reduje los dias
+        calen.add(Calendar.DATE, -20) // reduje los dias
         picker.datePicker.minDate = calen.timeInMillis
         return picker
     }

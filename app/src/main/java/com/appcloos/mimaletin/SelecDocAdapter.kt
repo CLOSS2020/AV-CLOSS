@@ -19,7 +19,6 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
     private lateinit var quantityListener: DocHolder.QuantityListener
     private var estadosCheck: SparseBooleanArray = SparseBooleanArray()
 
-
     fun SelecDocAdapter(
         context: Context,
         documentos: ArrayList<Documentos>,
@@ -30,7 +29,6 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
         this.quantityListener = quantityListener
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return DocHolder(layoutInflater.inflate(R.layout.item_check_docs, parent, false))
@@ -39,7 +37,6 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
     override fun onBindViewHolder(holder: DocHolder, position: Int) {
         holder.bind(documentos[position])
         holder.isSeleccionado.tag = position
-
 
         holder.isSeleccionado.isChecked = estadosCheck.get(holder.isSeleccionado.tag as Int)
         holder.isSeleccionado.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -50,24 +47,20 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
 
             if (holder.isSeleccionado.isChecked && !listaSelec.contains(codigo)) {
                 listaSelec.add("\'" + codigo + "\'")
-
             } else {
                 listaSelec.remove("\'" + codigo + "\'")
-
             }
             quantityListener.onQuantityChange(listaSelec)
         }
-
     }
 
     override fun getItemCount(): Int {
         return documentos.size
     }
 
-
     class DocHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        //aqui va la identificacion de los elementos ubicados en el item
+        // aqui va la identificacion de los elementos ubicados en el item
         private var nroDoc: TextView = view.findViewById(R.id.tv_nrodoc)
         private var tipoDocs: TextView = view.findViewById(R.id.tv_tipodocC)
         private var montoTot: TextView = view.findViewById(R.id.tv_montototal)
@@ -83,12 +76,11 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
 
             if (tipodeDocumento == "FAC") {
                 tipodeDocumentoVisual = "FACTURA"
-
             } else if (tipodeDocumento == "N/E") {
                 tipodeDocumentoVisual = "NOTA DE ENTREGA"
             }
 
-            //asginacion de valores
+            // asginacion de valores
             nroDoc.text = "Nº " + documentos.documento
             tipoDocs.text = tipodeDocumentoVisual
             var montoTotal: Double = documentos.dtotalfinal
@@ -113,10 +105,7 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
 
         interface QuantityListener {
             fun onQuantityChange(listaChange: ArrayList<String>) {
-
             }
         }
-
-
     }
 }

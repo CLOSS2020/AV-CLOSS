@@ -11,11 +11,9 @@ class DescuentosAdapter : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolde
     lateinit var descuento: ArrayList<Descuentos>
     lateinit var context: Context
 
-
     fun DescuentosAdapter(context: Context, descuento: ArrayList<Descuentos>) {
         this.context = context
         this.descuento = descuento
-
     }
 
     override fun onCreateViewHolder(
@@ -34,7 +32,6 @@ class DescuentosAdapter : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolde
 
     override fun onBindViewHolder(holder: DescuentosHolder, position: Int) {
         holder.bind(descuento[position])
-
     }
 
     override fun getItemCount(): Int {
@@ -54,7 +51,6 @@ class DescuentosAdapter : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolde
             nrodoc.text = descuento.nrodoc
             porcentaje.text = porcenDec.toString()
             monto.text = montoDesc.toString()
-
         }
     }
 }

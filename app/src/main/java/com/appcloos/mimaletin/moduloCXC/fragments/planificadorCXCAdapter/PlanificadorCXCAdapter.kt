@@ -21,7 +21,9 @@ class PlanificadorCXCAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return PlanificadorCXCHolder(
             layoutInflater.inflate(
-                R.layout.item_planificador_cxc, parent, false
+                R.layout.item_planificador_cxc,
+                parent,
+                false
             )
         )
     }
@@ -31,6 +33,4 @@ class PlanificadorCXCAdapter(
     }
 
     override fun getItemCount(): Int = planificadorCxc.size
-
-
 }

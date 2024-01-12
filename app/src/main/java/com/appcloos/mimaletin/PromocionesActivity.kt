@@ -30,9 +30,9 @@ class PromocionesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_promociones)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
 
-        //Creacion del BackButton
+        // Creacion del BackButton
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = "Promociones"
 
@@ -53,18 +53,17 @@ class PromocionesActivity : AppCompatActivity() {
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
         enlaceEmpresa = conn.getCampoStringCamposVarios("ke_enlace", "kee_url", listOf("kee_codigo"), listOf(codEmpresa!!))
 
-        //APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
-        //APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));
-        //APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS");
+        // APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
+        // APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));
+        // APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS");
 
-
-        //declaro el listview
+        // declaro el listview
         listaArticulos = findViewById(R.id.lv_articulosPromo)
         obtenerArticulosPromo()
 
-        //coloco el adaptador personalizado a la lista del elementos que van al listview
+        // coloco el adaptador personalizado a la lista del elementos que van al listview
         catalogoAdapter = CatalogoAdapter(this, listacatalogo, enlaceEmpresa)
-        listaArticulos.adapter = catalogoAdapter //refresco el listview
+        listaArticulos.adapter = catalogoAdapter // refresco el listview
         listaArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
@@ -78,13 +77,13 @@ class PromocionesActivity : AppCompatActivity() {
         }
     }
 
-    //busqueda de articulo
+    // busqueda de articulo
     fun buscarArticulo(busqueda: String) {
         listaArticulos.adapter = null
         val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         if (busqueda == "") {
-            //Toast.makeText(CatalogoActivity.this, "Debes introducir una palabra o código", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(CatalogoActivity.this, "Debes introducir una palabra o código", Toast.LENGTH_SHORT).show();
         } else {
             listacatalogo = ArrayList()
             // System.out.println("IMPRIMIENDO EL NOMBRE " + busqueda);
@@ -126,11 +125,11 @@ class PromocionesActivity : AppCompatActivity() {
                 catalogo.setMultiplo(cursorca!!.getInt(10))
                 catalogo.setVta_solofac(cursorca!!.getInt(11))
                 catalogo.setVta_solone(cursorca!!.getInt(12))
-                vtaMin = cursorca!!.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
-                vtaMax = cursorca!!.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
+                vtaMin = cursorca!!.getDouble(6) // VARIABLE EN DOUBLE DE VTA MIN
+                vtaMax = cursorca!!.getDouble(7) // VARIABLE EN DOUBLE DE VTA MAX
                 listacatalogo!!.add(catalogo)
             }
-            //ke_android.close();
+            // ke_android.close();
             catalogoAdapter = CatalogoAdapter(this, listacatalogo, enlaceEmpresa)
             listaArticulos.adapter = catalogoAdapter
             catalogoAdapter!!.notifyDataSetChanged()
@@ -188,5 +187,4 @@ class PromocionesActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

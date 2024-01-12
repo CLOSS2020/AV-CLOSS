@@ -111,7 +111,7 @@ class EdoCuentaClienteRetenFragment : Fragment(), EdoCuentaClienteRetenAdapter.Q
             documentos.recepcion = cursorDocs.getString(10)
             documentos.vence = cursorDocs.getString(11)
             documentos.agencia = cursorDocs.getString(12)
-            documentos.setdFlete(cursorDocs.getDouble(13))
+            documentos.dFlete = cursorDocs.getDouble(13)
             documentos.bsflete = cursorDocs.getDouble(14)
             documentos.dtotpagos = cursorDocs.getDouble(15)
             documentos.diascred = cursorDocs.getDouble(16)

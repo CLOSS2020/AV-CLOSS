@@ -49,7 +49,7 @@ import java.util.Hashtable
 import java.util.Locale
 
 class ReclamosActivity : AppCompatActivity() {
-    //DECLARACION DE TODOS LOS ELEMENTOS USADOS EN EL ACTIVITY Y DE LAS VARIABLES.
+    // DECLARACION DE TODOS LOS ELEMENTOS USADOS EN EL ACTIVITY Y DE LAS VARIABLES.
     lateinit var conn: AdminSQLiteOpenHelper
     var codigoCliente: String? = null
     var nombreCliente: String? = null
@@ -93,7 +93,7 @@ class ReclamosActivity : AppCompatActivity() {
                             setAlertDialogTheme(Constantes.AGENCIA)
                         )
                     )
-                    //dialogolineas.setTitle("Elige el o los articulos a devolver");
+                    // dialogolineas.setTitle("Elige el o los articulos a devolver");
                     val title = TextView(this@ReclamosActivity)
                     title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
                     title.typeface = Typeface.DEFAULT_BOLD
@@ -178,13 +178,12 @@ class ReclamosActivity : AppCompatActivity() {
                             val ventanalineas = dialogocantidad.create()
                             ventanalineas.show()
 
-                            //Cambio de color a los botones del alert
+                            // Cambio de color a los botones del alert
                             val pbutton: Button =
                                 ventanalineas.getButton(DialogInterface.BUTTON_POSITIVE)
                             pbutton.apply {
                                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
                             }
-
                         }
 
                     /*dialogolineas.setPositiveButton("Devolución Completa", new DialogInterface.OnClickListener() {
@@ -230,7 +229,9 @@ class ReclamosActivity : AppCompatActivity() {
                         )
                     )
                     builderNota.setTitle("Introduce una Nota complementaria")
-                    builderNota.setMessage("Cuentas con un máximo de 250 caracteres para detallar el motivo del reclamo.")
+                    builderNota.setMessage(
+                        "Cuentas con un máximo de 250 caracteres para detallar el motivo del reclamo."
+                    )
                     builderNota.setView(textomotivo)
                     builderNota.setPositiveButton("Guardar") { _: DialogInterface?, _: Int ->
                         NotaReclamo = textomotivo.text.toString()
@@ -239,7 +240,7 @@ class ReclamosActivity : AppCompatActivity() {
                     }
                     val dialogo = builderNota.create()
                     dialogo.show()
-                    //Cambio de color a los botones del alert
+                    // Cambio de color a los botones del alert
                     val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
                     pbutton.apply {
                         setTextColor(colorTextAgencia(Constantes.AGENCIA))
@@ -287,7 +288,7 @@ class ReclamosActivity : AppCompatActivity() {
                         codSeleccionado = codigosClasif[which]
                         motivoSeleccionado = motivosClasif[which]
                         posicionClasif = which
-                        //Toast.makeText(ReclamosActivity.this, "Elegiste " + motivoSeleccionado + "con codigo " + codSeleccionado,  Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(ReclamosActivity.this, "Elegiste " + motivoSeleccionado + "con codigo " + codSeleccionado,  Toast.LENGTH_SHORT).show();
                         dialog.dismiss()
                     }
                     builder.show()
@@ -311,12 +312,12 @@ class ReclamosActivity : AppCompatActivity() {
         binding = ActivityReclamosBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codEmpresa = preferences.getString("codigoEmpresa", null)
 
-        //de la actividad de documentos, traigo los datos necesarios
+        // de la actividad de documentos, traigo los datos necesarios
         val intent = intent
         codigoCliente = intent.getStringExtra("codigoCliente")
         nombreCliente = intent.getStringExtra("nombreCliente")
@@ -330,7 +331,7 @@ class ReclamosActivity : AppCompatActivity() {
 
         setColors()
 
-        //instancia del objeto de conexion a base de datos
+        // instancia del objeto de conexion a base de datos
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
         APP_RECLAMO_MONTO_MINIMO = conn.getConfigNum("APP_RECLAMO_MONTO_MINIMO", codEmpresa!!)
@@ -338,7 +339,7 @@ class ReclamosActivity : AppCompatActivity() {
             conn.getConfigNum("APP_RECLAMO_FOTOS_MINIMAS", codEmpresa!!).toInt()
 
         val keAndroid = conn.writableDatabase
-        //valido el numero de la dev para obtener el nuevo correlativo
+        // valido el numero de la dev para obtener el nuevo correlativo
         val cursor = keAndroid.rawQuery(
             "SELECT MAX(kdev_numero) FROM ke_correladev WHERE kdev_vendedor ='$cod_usuario' AND empresa = '$codEmpresa'",
             null
@@ -346,7 +347,7 @@ class ReclamosActivity : AppCompatActivity() {
         if (cursor.moveToFirst()) {
             nroCorrelativo = cursor.getInt(0)
             nroCorrelativo += 1
-            //CorrelativoTexto = String.valueOf(nroCorrelativo);
+            // CorrelativoTexto = String.valueOf(nroCorrelativo);
             CorrelativoTexto = "0000$nroCorrelativo"
             generarNumeroDevolucion(cod_usuario)
             supportActionBar!!.title = "Devo.:$nroDev"
@@ -357,7 +358,11 @@ class ReclamosActivity : AppCompatActivity() {
         binding.tvClientedoc.text = "Cliente: $codigoCliente $nombreCliente"
         binding.tvDocumentodoc.text = "Nº DOC: $documento"
         binding.tvMontodev.text = "Monto Devolución: $$montoDev"
-        cargarLineasDocumento("https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documento!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+        cargarLineasDocumento(
+            "https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documento!!.trim {
+                it <= ' '
+            } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
+        )
         consultarLineas()
         lineasTmpAdapter = LineasTmpAdapter(this@ReclamosActivity, listalineas)
         binding.lvLineasR.adapter = lineasTmpAdapter
@@ -366,7 +371,7 @@ class ReclamosActivity : AppCompatActivity() {
         gridfotos = findViewById(R.id.gridfotos)
         cargarCodigos()
         binding.lvLineasR.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-            //obtengo los valores que me interesan de la lista en la posicion elegida
+            // obtengo los valores que me interesan de la lista en la posicion elegida
             val pid = listalineas!![position].getPid()
             val codigo = listalineas!![position].getCodigo()
             val cantidad = listalineas!![position].getCantidad()
@@ -390,7 +395,9 @@ class ReclamosActivity : AppCompatActivity() {
             builder.setNegativeButton("Borrar articulo") { _: DialogInterface?, _: Int ->
                 keAndroid.beginTransaction()
                 try {
-                    keAndroid.execSQL("DELETE FROM ke_devlmtmp WHERE kdel_pid ='$pid' AND kdel_codart = '$codigo' AND empresa = '$codEmpresa'")
+                    keAndroid.execSQL(
+                        "DELETE FROM ke_devlmtmp WHERE kdel_pid ='$pid' AND kdel_codart = '$codigo' AND empresa = '$codEmpresa'"
+                    )
                     keAndroid.setTransactionSuccessful()
                     keAndroid.endTransaction()
                     sumaNeto()
@@ -406,7 +413,7 @@ class ReclamosActivity : AppCompatActivity() {
                         this@ReclamosActivity,
                         setAlertDialogTheme(Constantes.AGENCIA)
                     )
-                ) //aqui lo llamo igual
+                ) // aqui lo llamo igual
                 dialogocantidad.setTitle("Introduce una cantidad")
                 dialogocantidad.setView(cajacantidad)
                 dialogocantidad.setPositiveButton("Aceptar") { _: DialogInterface?, _: Int ->
@@ -430,7 +437,9 @@ class ReclamosActivity : AppCompatActivity() {
                             val lnMtolinea = cantidadN * precioFin
                             try {
                                 keAndroid.beginTransaction()
-                                keAndroid.execSQL("UPDATE ke_devlmtmp SET kdel_cantdev = $cantidadN, kdel_mtolinea =$lnMtolinea WHERE kdel_pid ='$pid' and kdel_codart ='$codigo' AND empresa = '$codEmpresa'")
+                                keAndroid.execSQL(
+                                    "UPDATE ke_devlmtmp SET kdel_cantdev = $cantidadN, kdel_mtolinea =$lnMtolinea WHERE kdel_pid ='$pid' and kdel_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                )
                                 keAndroid.setTransactionSuccessful()
                             } catch (ex: Exception) {
                                 ex.printStackTrace()
@@ -445,7 +454,7 @@ class ReclamosActivity : AppCompatActivity() {
                 val dialogocant = dialogocantidad.create()
                 dialogocant.show()
 
-                //Cambio de color a los botones del alert
+                // Cambio de color a los botones del alert
                 val pbutton: Button = dialogocant.getButton(DialogInterface.BUTTON_POSITIVE)
                 pbutton.apply {
                     setTextColor(colorTextAgencia(Constantes.AGENCIA))
@@ -454,7 +463,7 @@ class ReclamosActivity : AppCompatActivity() {
             val alertDialog = builder.create()
             alertDialog.show()
 
-            //Cambio de color a los botones del alert
+            // Cambio de color a los botones del alert
             val pbutton: Button = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)
             pbutton.apply {
                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
@@ -471,8 +480,8 @@ class ReclamosActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
-                    "kee_url," +
-                    "kee_sucursal"
+                "kee_url," +
+                "kee_sucursal"
         )
         val cursor = keAndroid.query("ke_enlace", columnas, "1", null, null, null, null)
         while (cursor.moveToNext()) {
@@ -481,7 +490,7 @@ class ReclamosActivity : AppCompatActivity() {
             codigoSucursal = cursor.getString(2)
         }
         cursor.close()
-        //ke_android.close();
+        // ke_android.close();
     }
 
     private fun generarNumeroDevolucion(codUsuario: String?) {
@@ -497,69 +506,76 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun cargarCodigos() {
-        cargarTiposReclamos("https://" + enlaceEmpresa + "/webservice/obtenertiposclasif_V2.php" + "?agencia=" + codigoSucursal.trim { it <= ' ' })
+        cargarTiposReclamos(
+            "https://" + enlaceEmpresa + "/webservice/obtenertiposclasif_V2.php" + "?agencia=" + codigoSucursal.trim { it <= ' ' }
+        )
     }
 
     private fun cargarTiposReclamos(url: String) {
         val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
-                if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    val keAndroid = conn.writableDatabase
-                    var jsonObject: JSONObject //creamos un objeto json vacio
-                    ll_commit = false
-                    keAndroid.beginTransaction()
-                    keAndroid.delete("ke_tiporecl", "empresa = ?", arrayOf(codEmpresa!!))
-                    for (i in 0 until response.length()) {
-                        try {
+            object : JsonArrayRequest(
+                url,
+                Response.Listener { response: JSONArray? ->
+                    if (response != null) {
+                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        val keAndroid = conn.writableDatabase
+                        var jsonObject: JSONObject // creamos un objeto json vacio
+                        ll_commit = false
+                        keAndroid.beginTransaction()
+                        keAndroid.delete("ke_tiporecl", "empresa = ?", arrayOf(codEmpresa!!))
+                        for (i in 0 until response.length()) {
+                            try {
+                                // obtengo de la respuesta los datos en un json object
+                                jsonObject = response.getJSONObject(i)
+                                // preparo los campos para las operaciones
+                                codigoTipo = jsonObject.getString("kdv_codclasif").trim { it <= ' ' }
+                                nomWeb = jsonObject.getString("kdv_nomclaweb").trim { it <= ' ' }
+                                nomRecl = jsonObject.getString("kdv_nomclasif").trim { it <= ' ' }
+                                helpRec = jsonObject.getString("kdv_hlpclasif").trim { it <= ' ' }
+                                fechaMod = jsonObject.getString("fechamodifi").trim { it <= ' ' }
 
-                            //obtengo de la respuesta los datos en un json object
-                            jsonObject = response.getJSONObject(i)
-                            //preparo los campos para las operaciones
-                            codigoTipo = jsonObject.getString("kdv_codclasif").trim { it <= ' ' }
-                            nomWeb = jsonObject.getString("kdv_nomclaweb").trim { it <= ' ' }
-                            nomRecl = jsonObject.getString("kdv_nomclasif").trim { it <= ' ' }
-                            helpRec = jsonObject.getString("kdv_hlpclasif").trim { it <= ' ' }
-                            fechaMod = jsonObject.getString("fechamodifi").trim { it <= ' ' }
+                                val cv = ContentValues()
+                                cv.put("kdv_codclasif", codigoTipo)
+                                cv.put("kdv_nomclaweb", nomWeb)
+                                cv.put("kdv_nomclasif", nomRecl)
+                                cv.put("kdv_hlpclasif", helpRec)
+                                cv.put("fechamodifi", fechaMod)
+                                cv.put("empresa", codEmpresa)
 
-                            val cv = ContentValues()
-                            cv.put("kdv_codclasif", codigoTipo)
-                            cv.put("kdv_nomclaweb", nomWeb)
-                            cv.put("kdv_nomclasif", nomRecl)
-                            cv.put("kdv_hlpclasif", helpRec)
-                            cv.put("fechamodifi", fechaMod)
-                            cv.put("empresa", codEmpresa)
-
-                            keAndroid.insert("ke_tiporecl", null, cv)
-                            ll_commit = true
-                        } catch (e: Exception) {
-                            println("Error de inserción: $e")
-                            ll_commit = false
-                            return@Listener
+                                keAndroid.insert("ke_tiporecl", null, cv)
+                                ll_commit = true
+                            } catch (e: Exception) {
+                                println("Error de inserción: $e")
+                                ll_commit = false
+                                return@Listener
+                            }
+                        }
+                        if (ll_commit!!) {
+                            keAndroid.setTransactionSuccessful()
+                            keAndroid.endTransaction()
+                        } else {
+                            keAndroid.endTransaction()
                         }
                     }
-                    if (ll_commit!!) {
-                        keAndroid.setTransactionSuccessful()
-                        keAndroid.endTransaction()
-                    } else {
-                        keAndroid.endTransaction()
-                    }
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                println("--Error--")
-                error.printStackTrace()
-                println("--Error--")
-            }) {
+            ) {
                 override fun getParams(): Map<String, String> {
-                    //parametros.put("documento", documento);
+                    // parametros.put("documento", documento);
                     return HashMap()
                 }
             }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
-    //metodo para abrir la galeria y traer las fotos
+    // metodo para abrir la galeria y traer las fotos
     private fun abrirGaleria() {
         val intent = Intent()
         intent.type = "image/jpeg"
@@ -595,7 +611,7 @@ class ReclamosActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "No se seleccionó una imágen", Toast.LENGTH_LONG).show()
         }
-        //super.onActivityResult(requestCode, resultCode, data);
+        // super.onActivityResult(requestCode, resultCode, data);
         baseAdapter = GridViewAdapter(this@ReclamosActivity, listaImagenes)
         gridfotos!!.adapter = baseAdapter
     }
@@ -691,7 +707,6 @@ class ReclamosActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-
                 if (listaImagenes.size < APP_RECLAMO_FOTOS_MINIMAS) {
                     Toast.makeText(
                         this@ReclamosActivity,
@@ -716,7 +731,7 @@ class ReclamosActivity : AppCompatActivity() {
                         }
                         cursorti.close()
 
-                        //generamos la fecha para la creacion y la primera actualización de fechamodifi
+                        // generamos la fecha para la creacion y la primera actualización de fechamodifi
                         val fechaTabla = Date(Calendar.getInstance().timeInMillis)
                         val formatoFechaTabla =
                             SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
@@ -741,42 +756,43 @@ class ReclamosActivity : AppCompatActivity() {
                         cvCabecera.put("empresa", codEmpresa)
 
                         while (cursor.moveToNext()) {
-
                             val cvLineas = ContentValues()
                             cvLineas.put("krti_ndoc", nroDev)
                             cvLineas.put("krmv_tipprec", tipoprecio)
                             cvLineas.put("krmv_pid", cursor.getString(2).trim { it <= ' ' })
                             cvLineas.put(
                                 "krmv_codart",
-                                cursor.getString(3).trim { it <= ' ' })
+                                cursor.getString(3).trim { it <= ' ' }
+                            )
                             cvLineas.put("krmv_cant", cursor.getDouble(4))
                             cvLineas.put(
                                 "krmv_nombre",
-                                cursor.getString(6).trim { it <= ' ' })
+                                cursor.getString(6).trim { it <= ' ' }
+                            )
                             cvLineas.put("krmv_artprec", cursor.getDouble(0))
                             cvLineas.put("krmv_stot", cursor.getDouble(1))
                             cvLineas.put("fechamodifi", formatoFechaTabla.format(fechaTabla))
                             cvLineas.put("empresa", codEmpresa)
 
-                            //insertamos las lineas del reclamo
+                            // insertamos las lineas del reclamo
                             keAndroid.insert("ke_rcllmv", null, cvLineas)
                         }
-                        //insertamos la cabercera del reclamo
+                        // insertamos la cabercera del reclamo
                         keAndroid.insert("ke_rclcti", null, cvCabecera)
 
-                        //aumentamos el correlativo en la tabla de correlativos de reclamos
+                        // aumentamos el correlativo en la tabla de correlativos de reclamos
                         val aumentarCorrelatiodev = ContentValues()
                         aumentarCorrelatiodev.put("kdev_numero", nroCorrelativo)
                         aumentarCorrelatiodev.put("kdev_vendedor", cod_usuario)
                         aumentarCorrelatiodev.put("empresa", codEmpresa)
 
-                        //insertamos el correlativo
+                        // insertamos el correlativo
                         keAndroid.insert("ke_correladev", null, aumentarCorrelatiodev)
 
-                        //limpiamos la tabla de temporal
+                        // limpiamos la tabla de temporal
                         keAndroid.delete("ke_devlmtmp", "empresa = ?", arrayOf(codEmpresa!!))
 
-                        //insertamos las imagenes en la tabla de imagenes
+                        // insertamos las imagenes en la tabla de imagenes
                         val imagenesreclamo = ContentValues()
                         for (i in listaImagenes.indices) {
                             imagenesreclamo.put("krti_ndoc", nroDev)
@@ -784,7 +800,6 @@ class ReclamosActivity : AppCompatActivity() {
                             imagenesreclamo.put("empresa", codEmpresa)
                             keAndroid.insert("ke_imgrcl", null, imagenesreclamo)
                         }
-
 
                         // y actualizamos la fecha y el campo de aceptadev en la tabla de los documentos:
                         val bloquearReclamo = ContentValues()
@@ -805,12 +820,12 @@ class ReclamosActivity : AppCompatActivity() {
                         println("--Error--")
                         ex.printStackTrace()
                         println("--Error--")
-                        llCommit = false //al haber exception, tira a falso
+                        llCommit = false // al haber exception, tira a falso
                         keAndroid.endTransaction()
                         Toast.makeText(this@ReclamosActivity, ex.toString(), Toast.LENGTH_LONG)
                             .show()
                     }
-                    if (llCommit) { //si las acciones se ejecutaron bien, hago commit
+                    if (llCommit) { // si las acciones se ejecutaron bien, hago commit
                         keAndroid.setTransactionSuccessful()
                         keAndroid.endTransaction()
                         Toast.makeText(
@@ -821,7 +836,7 @@ class ReclamosActivity : AppCompatActivity() {
                         subirReclamo()
                         subirImagenes(nroDev)
                         finish()
-                    } else { //pero si no, hago rollback
+                    } else { // pero si no, hago rollback
                         return
                     }
                 }
@@ -840,20 +855,20 @@ class ReclamosActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
-                    "krti_status, " +
-                    "krti_codcli, " +
-                    "krti_docfac, " +
-                    "krti_nombrecli, " +
-                    "krti_totneto, " +
-                    "krti_fchdoc," +
-                    "fechamodifi," +
-                    "krti_agefac," +
-                    "krti_tipfac," +
-                    "krti_codvend," +
-                    "krti_codcoor," +
-                    "krti_tipprec," +
-                    "krti_notas," +
-                    "kdv_codclasif"
+                "krti_status, " +
+                "krti_codcli, " +
+                "krti_docfac, " +
+                "krti_nombrecli, " +
+                "krti_totneto, " +
+                "krti_fchdoc," +
+                "fechamodifi," +
+                "krti_agefac," +
+                "krti_tipfac," +
+                "krti_codvend," +
+                "krti_codcoor," +
+                "krti_tipprec," +
+                "krti_notas," +
+                "kdv_codclasif"
         )
         val condicion = "krti_status = '0' AND krti_ndoc = '$nroDev' AND empresa = '$codEmpresa'"
         val cursor = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
@@ -871,20 +886,20 @@ class ReclamosActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
-                    "krti_status, " +
-                    "krti_codcli, " +
-                    "krti_docfac, " +
-                    "krti_nombrecli, " +
-                    "krti_totneto, " +
-                    "krti_fchdoc," +
-                    "fechamodifi," +
-                    "krti_agefac," +
-                    "krti_tipfac," +
-                    "krti_codvend," +
-                    "krti_codcoor," +
-                    "krti_tipprec," +
-                    "krti_notas," +
-                    "kdv_codclasif"
+                "krti_status, " +
+                "krti_codcli, " +
+                "krti_docfac, " +
+                "krti_nombrecli, " +
+                "krti_totneto, " +
+                "krti_fchdoc," +
+                "fechamodifi," +
+                "krti_agefac," +
+                "krti_tipfac," +
+                "krti_codvend," +
+                "krti_codcoor," +
+                "krti_tipprec," +
+                "krti_notas," +
+                "kdv_codclasif"
         )
         val condicion = "krti_status = '0' AND krti_ndoc = '$nroDev' AND empresa = '$codEmpresa'"
         val cursorti = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
@@ -925,14 +940,14 @@ class ReclamosActivity : AppCompatActivity() {
                 objetoCabecera.put("kdv_codclasif", codSeleccionado)
                 val camposLineas = arrayOf(
                     "krti_ndoc," +
-                            "krmv_tipprec," +
-                            "krmv_codart," +
-                            "krmv_nombre," +
-                            "krmv_cant," +
-                            "krmv_artprec," +
-                            "krmv_stot," +
-                            "krmv_pid," +
-                            "fechamodifi"
+                        "krmv_tipprec," +
+                        "krmv_codart," +
+                        "krmv_nombre," +
+                        "krmv_cant," +
+                        "krmv_artprec," +
+                        "krmv_stot," +
+                        "krmv_pid," +
+                        "fechamodifi"
                 )
                 val condicionLineas = "krti_ndoc = '$krti_ndoc' AND empresa = '$codEmpresa'"
                 val cursormv = keAndroid.query(
@@ -979,7 +994,7 @@ class ReclamosActivity : AppCompatActivity() {
             contadorReclamos++
         }
         cursorti.close()
-        val jsonRCL = JSONObject() //vamos a hacer un solo objeto de tipo json
+        val jsonRCL = JSONObject() // vamos a hacer un solo objeto de tipo json
         try {
             jsonRCL.put("Cabecera", arrayTi)
             jsonRCL.put("Lineas", arrayMV)
@@ -995,14 +1010,16 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun insertarReclamo(jsonStrRCL: String) {
-        //genero un request queue y luego un strig request
+        // genero un request queue y luego un strig request
         val requestQueue = Volley.newRequestQueue(this@ReclamosActivity)
-        //el string request llamara al webservice
+        // el string request llamara al webservice
         val stringRequest: StringRequest = object : StringRequest(
             Method.POST,
             "https://$enlaceEmpresa/webservice/Reclamos.php",
             Response.Listener { response: String ->
-                if (response.trim { it <= ' ' } == "OK") { //si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
+                if (response.trim {
+                        it <= ' '
+                    } == "OK") { // si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
                     cambiarEstadoReclamo()
                     Toast.makeText(
                         this@ReclamosActivity,
@@ -1017,7 +1034,8 @@ class ReclamosActivity : AppCompatActivity() {
                 println("--Error--")
                 Toast.makeText(this@ReclamosActivity, "Error en la subida", Toast.LENGTH_SHORT)
                     .show()
-            }) {
+            }
+        ) {
             override fun getParams(): Map<String, String>? {
                 val params: MutableMap<String, String> = HashMap()
                 params["jsonrcl"] = jsonStrRCL
@@ -1025,7 +1043,7 @@ class ReclamosActivity : AppCompatActivity() {
                 return params
             }
         }
-        requestQueue.add(stringRequest) //importante añadir el string request al request queue
+        requestQueue.add(stringRequest) // importante añadir el string request al request queue
     }
 
     private fun cambiarEstadoReclamo() {
@@ -1035,7 +1053,9 @@ class ReclamosActivity : AppCompatActivity() {
             try {
                 val objetodeCabeza = arrayTi!!.getJSONObject(i)
                 val codigoDelReclamoenArray = objetodeCabeza.getString("krti_ndoc")
-                keAndroid.execSQL("UPDATE ke_rclcti SET krti_status = '1' WHERE krti_ndoc ='$codigoDelReclamoenArray' AND empresa = '$codEmpresa'")
+                keAndroid.execSQL(
+                    "UPDATE ke_rclcti SET krti_status = '1' WHERE krti_ndoc ='$codigoDelReclamoenArray' AND empresa = '$codEmpresa'"
+                )
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
@@ -1079,7 +1099,11 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun cargarLineasDoc() {
-        cargarLineasDocumento("https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documento!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+        cargarLineasDocumento(
+            "https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documento!!.trim {
+                it <= ' '
+            } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
+        )
         consultarLineasDoc()
     }
 
@@ -1089,7 +1113,8 @@ class ReclamosActivity : AppCompatActivity() {
         listalineasdoc = ArrayList()
         val cursor = keAndroid.rawQuery(
             "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='$documento' AND empresa = '$codEmpresa' AND pid NOT IN " +
-                    "(SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')", null
+                "(SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')",
+            null
         )
 
         // Cursor cursor = ke_android.rawQuery("SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='" + documento + "'", null);
@@ -1106,112 +1131,117 @@ class ReclamosActivity : AppCompatActivity() {
         cursor.close()
     }
 
-    //este metodo se acciona al pulsar agregar y llama a un webservice
+    // este metodo se acciona al pulsar agregar y llama a un webservice
     private fun cargarLineasDocumento(url: String) {
         val jsonArrayRequest: JsonArrayRequest =
-            object : JsonArrayRequest(url, Response.Listener { response: JSONArray? ->
-                if (response != null) {
-                    conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-                    val keAndroid = conn!!.writableDatabase
-                    var jsonObject: JSONObject //creamos un objeto json vacio
-                    ll_commit = false
-                    keAndroid.beginTransaction()
-                    for (i in 0 until response.length()) {
-                        try {
+            object : JsonArrayRequest(
+                url,
+                Response.Listener { response: JSONArray? ->
+                    if (response != null) {
+                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        val keAndroid = conn!!.writableDatabase
+                        var jsonObject: JSONObject // creamos un objeto json vacio
+                        ll_commit = false
+                        keAndroid.beginTransaction()
+                        for (i in 0 until response.length()) {
+                            try {
+                                // obtengo de la respuesta los datos en un json object
+                                jsonObject = response.getJSONObject(i)
+                                // preparo los campos para las operaciones
+                                val agencia = jsonObject.getString("agencia").trim { it <= ' ' }
+                                val tipodoc = jsonObject.getString("tipodoc").trim { it <= ' ' }
+                                val documento = jsonObject.getString("documento").trim { it <= ' ' }
+                                val tipodocv = jsonObject.getString("tipodocv").trim { it <= ' ' }
+                                val grupo = jsonObject.getString("grupo").trim { it <= ' ' }
+                                val subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
+                                val origen = jsonObject.getDouble("origen")
+                                val codigo = jsonObject.getString("codigo").trim { it <= ' ' }
+                                val codhijo = jsonObject.getString("codhijo").trim { it <= ' ' }
+                                val pid = jsonObject.getString("pid").trim { it <= ' ' }
+                                val nombre = jsonObject.getString("nombre").trim { it <= ' ' }
+                                val cantidad = jsonObject.getDouble("cantidad")
+                                val cntdevuelt = jsonObject.getDouble("cntdevuelt")
+                                val vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
+                                val dvndmtototal = jsonObject.getDouble("dvndmtototal")
+                                val dpreciofin = jsonObject.getDouble("dpreciofin")
+                                val dpreciounit = jsonObject.getDouble("dpreciounit")
+                                val dmontoneto = jsonObject.getDouble("dmontoneto")
+                                val dmontototal = jsonObject.getDouble("dmontototal")
+                                val timpueprc = jsonObject.getDouble("timpueprc")
+                                val unidevuelt = jsonObject.getDouble("unidevuelt")
+                                val fechadoc = jsonObject.getString("fechadoc").trim { it <= ' ' }
+                                val vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
+                                val codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
+                                val fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
 
-                            //obtengo de la respuesta los datos en un json object
-                            jsonObject = response.getJSONObject(i)
-                            //preparo los campos para las operaciones
-                            val agencia = jsonObject.getString("agencia").trim { it <= ' ' }
-                            val tipodoc = jsonObject.getString("tipodoc").trim { it <= ' ' }
-                            val documento = jsonObject.getString("documento").trim { it <= ' ' }
-                            val tipodocv = jsonObject.getString("tipodocv").trim { it <= ' ' }
-                            val grupo = jsonObject.getString("grupo").trim { it <= ' ' }
-                            val subgrupo = jsonObject.getString("subgrupo").trim { it <= ' ' }
-                            val origen = jsonObject.getDouble("origen")
-                            val codigo = jsonObject.getString("codigo").trim { it <= ' ' }
-                            val codhijo = jsonObject.getString("codhijo").trim { it <= ' ' }
-                            val pid = jsonObject.getString("pid").trim { it <= ' ' }
-                            val nombre = jsonObject.getString("nombre").trim { it <= ' ' }
-                            val cantidad = jsonObject.getDouble("cantidad")
-                            val cntdevuelt = jsonObject.getDouble("cntdevuelt")
-                            val vndcntdevuelt = jsonObject.getDouble("vndcntdevuelt")
-                            val dvndmtototal = jsonObject.getDouble("dvndmtototal")
-                            val dpreciofin = jsonObject.getDouble("dpreciofin")
-                            val dpreciounit = jsonObject.getDouble("dpreciounit")
-                            val dmontoneto = jsonObject.getDouble("dmontoneto")
-                            val dmontototal = jsonObject.getDouble("dmontototal")
-                            val timpueprc = jsonObject.getDouble("timpueprc")
-                            val unidevuelt = jsonObject.getDouble("unidevuelt")
-                            val fechadoc = jsonObject.getString("fechadoc").trim { it <= ' ' }
-                            val vendedor = jsonObject.getString("vendedor").trim { it <= ' ' }
-                            val codcoord = jsonObject.getString("codcoord").trim { it <= ' ' }
-                            val fechamodifi = jsonObject.getString("fechamodifi").trim { it <= ' ' }
+                                val cv = ContentValues()
+                                cv.put("agencia", agencia)
+                                cv.put("tipodoc", tipodoc)
+                                cv.put("documento", documento)
+                                cv.put("tipodocv", tipodocv)
+                                cv.put("grupo", grupo)
+                                cv.put("subgrupo", subgrupo)
+                                cv.put("origen", origen)
+                                cv.put("codigo", codigo)
+                                cv.put("codhijo", codhijo)
+                                cv.put("pid", pid)
+                                cv.put("nombre", nombre)
+                                cv.put("cantidad", cantidad)
+                                cv.put("cntdevuelt", cntdevuelt)
+                                cv.put("vndcntdevuelt", vndcntdevuelt)
+                                cv.put("dvndmtototal", dvndmtototal)
+                                cv.put("dpreciofin", dpreciofin)
+                                cv.put("dpreciounit", dpreciounit)
+                                cv.put("dmontoneto", dmontoneto)
+                                cv.put("dmontototal", dmontototal)
+                                cv.put("timpueprc", timpueprc)
+                                cv.put("unidevuelt", unidevuelt)
+                                cv.put("fechadoc", fechadoc)
+                                cv.put("vendedor", vendedor)
+                                cv.put("codcoord", codcoord)
+                                cv.put("fechamodifi", fechamodifi)
+                                cv.put("empresa", codEmpresa)
 
-                            val cv = ContentValues()
-                            cv.put("agencia", agencia)
-                            cv.put("tipodoc", tipodoc)
-                            cv.put("documento", documento)
-                            cv.put("tipodocv", tipodocv)
-                            cv.put("grupo", grupo)
-                            cv.put("subgrupo", subgrupo)
-                            cv.put("origen", origen)
-                            cv.put("codigo", codigo)
-                            cv.put("codhijo", codhijo)
-                            cv.put("pid", pid)
-                            cv.put("nombre", nombre)
-                            cv.put("cantidad", cantidad)
-                            cv.put("cntdevuelt", cntdevuelt)
-                            cv.put("vndcntdevuelt", vndcntdevuelt)
-                            cv.put("dvndmtototal", dvndmtototal)
-                            cv.put("dpreciofin", dpreciofin)
-                            cv.put("dpreciounit", dpreciounit)
-                            cv.put("dmontoneto", dmontoneto)
-                            cv.put("dmontototal", dmontototal)
-                            cv.put("timpueprc", timpueprc)
-                            cv.put("unidevuelt", unidevuelt)
-                            cv.put("fechadoc", fechadoc)
-                            cv.put("vendedor", vendedor)
-                            cv.put("codcoord", codcoord)
-                            cv.put("fechamodifi", fechamodifi)
-                            cv.put("empresa", codEmpresa)
+                                if (conn.validarExistenciaCamposVarios(
+                                        "ke_doclmv",
+                                        ArrayList(
+                                            mutableListOf("pid", "empresa")
+                                        ),
+                                        arrayListOf(pid, codEmpresa!!)
+                                    )
+                                ) {
+                                    conn.updateJSONCamposVarios(
+                                        "ke_doclmv",
+                                        cv,
+                                        "pid = ? AND empresa = ?",
+                                        arrayOf(pid, codEmpresa!!)
+                                    )
+                                } else {
+                                    conn.insertJSON("ke_doclmv", cv)
+                                }
 
-                            if (conn.validarExistenciaCamposVarios(
-                                    "ke_doclmv", ArrayList(
-                                        mutableListOf("pid", "empresa")
-                                    ), arrayListOf(pid, codEmpresa!!)
-                                )
-                            ) {
-                                conn.updateJSONCamposVarios(
-                                    "ke_doclmv",
-                                    cv,
-                                    "pid = ? AND empresa = ?",
-                                    arrayOf(pid, codEmpresa!!)
-                                )
-                            } else {
-                                conn.insertJSON("ke_doclmv", cv)
+                                ll_commit = true
+                            } catch (e: Exception) {
+                                println("Error de inserción: $e")
+                                ll_commit = false
+                                return@Listener
                             }
-
-                            ll_commit = true
-                        } catch (e: Exception) {
-                            println("Error de inserción: $e")
-                            ll_commit = false
-                            return@Listener
+                        }
+                        if (ll_commit!!) {
+                            keAndroid.setTransactionSuccessful()
+                            keAndroid.endTransaction()
+                            consultarLineas()
+                        } else {
+                            keAndroid.endTransaction()
                         }
                     }
-                    if (ll_commit!!) {
-                        keAndroid.setTransactionSuccessful()
-                        keAndroid.endTransaction()
-                        consultarLineas()
-                    } else {
-                        keAndroid.endTransaction()
-                    }
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
                 }
-            }, Response.ErrorListener { error: VolleyError ->
-                println("--Error--")
-                error.printStackTrace()
-                println("--Error--")
-            }) {
+            ) {
                 override fun getParams(): Map<String, String>? {
                     val parametros: MutableMap<String, String> = HashMap()
                     parametros["documento"] = documento!!
@@ -1219,7 +1249,9 @@ class ReclamosActivity : AppCompatActivity() {
                 }
             }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
     private fun consultarLineas() {
@@ -1252,20 +1284,20 @@ class ReclamosActivity : AppCompatActivity() {
         var codigoRclImg = ""
         var rutafoto: String
         listaBase64Imagenes.clear()
-        //preparo los parametros del query
+        // preparo los parametros del query
         val tabla = "ke_imgrcl"
         val columnas = arrayOf(
             "krti_ndoc, " +
-                    "kircl_rutafoto"
+                "kircl_rutafoto"
         )
         val condicion = "krti_ndoc='$nrodev' AND empresa = '$codEmpresa'"
 
-        //genero un cursor en base al query
+        // genero un cursor en base al query
         val cursor = keAndroid.query(tabla, columnas, condicion, null, null, null, null)
         while (cursor.moveToNext()) {
             codigoRclImg = cursor.getString(0)
             rutafoto = cursor.getString(1)
-            //listaImagenesTabla.add(Uri.parse(rutafoto));
+            // listaImagenesTabla.add(Uri.parse(rutafoto));
         }
         cursor.close()
         for (i in listaImagenes.indices) {
@@ -1285,7 +1317,7 @@ class ReclamosActivity : AppCompatActivity() {
         }
     }
 
-    //mtodo para redimensionar/reescalar la imagen
+    // mtodo para redimensionar/reescalar la imagen
     /*
      * ESTE METODO SE ESTA REVISANDO PUESTO QUE ES PROBABLE QUE ESTE GENERANDO PROBLEMAS
      * PARA LA CARGA DE LOS RECLAMOS.*/
@@ -1313,7 +1345,7 @@ class ReclamosActivity : AppCompatActivity() {
                 } else {
                     bitmap
                 }
-                //si los anchos y altos son iguales
+                // si los anchos y altos son iguales
             } else if (alto == ancho) {
                 return if (ancho > anchoNuevo || alto > altoNuevo) {
                     val escalaAncho = anchoNuevo / ancho
@@ -1333,16 +1365,20 @@ class ReclamosActivity : AppCompatActivity() {
 
     private fun enviarImagenes(nombre: String, cadena: String, docReclamo: String?) {
         val requestQueue = Volley.newRequestQueue(this)
-        val stringRequest: StringRequest = object : StringRequest(Method.POST, URL_UPLOAD_IMAGENES,
+        val stringRequest: StringRequest = object : StringRequest(
+            Method.POST,
+            URL_UPLOAD_IMAGENES,
             Response.Listener { response: String ->
                 if (response == "Subido") {
                     println(response)
                 }
-            }, Response.ErrorListener { error: VolleyError ->
+            },
+            Response.ErrorListener { error: VolleyError ->
                 println("--Error--")
                 error.printStackTrace()
                 println("--Error--")
-            }) {
+            }
+        ) {
             override fun getParams(): Map<String, String>? {
                 val params: MutableMap<String, String> = Hashtable()
                 params["nombre"] = nombre
@@ -1363,7 +1399,7 @@ class ReclamosActivity : AppCompatActivity() {
 
     override fun onResume() {
         consultarLineas()
-        //NotaReclamo = "";
+        // NotaReclamo = "";
         super.onResume()
     }
 

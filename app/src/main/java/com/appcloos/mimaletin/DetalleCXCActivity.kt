@@ -15,17 +15,16 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 class DetalleCXCActivity : AppCompatActivity() {
 
-    //var codigoRecibo = intent.getStringExtra("codigoRecibo") as String
+    // var codigoRecibo = intent.getStringExtra("codigoRecibo") as String
 
     private lateinit var binding: ActivityDetalleCxcactivityBinding
     private lateinit var keAndroid: SQLiteDatabase
     private lateinit var conn: AdminSQLiteOpenHelper
 
-    //val bundle = intent.extras
-    //val dato = bundle?.getString("codigoRecibo")
+    // val bundle = intent.extras
+    // val dato = bundle?.getString("codigoRecibo")
 
     lateinit var preferences: SharedPreferences
     lateinit var codEmpresa: String
@@ -33,7 +32,7 @@ class DetalleCXCActivity : AppCompatActivity() {
 
     private var kePrecobranza = ke_precobranza()
 
-    //var kePrecobradoc = ke_precobradocs()
+    // var kePrecobradoc = ke_precobradocs()
     private lateinit var kePrecobradocsMain: MutableList<ke_precobradocs>
 
     private var documentos = Documentos()
@@ -52,7 +51,7 @@ class DetalleCXCActivity : AppCompatActivity() {
 
         setColors()
 
-        //val cursor =
+        // val cursor =
         //    keAndroid.rawQuery("SELECT * FROM ke_precobranza WHERE cxcndoc = '$cxcndoc';", null)
 
         kePrecobranza = getPrecobranza(cxcndoc)
@@ -60,10 +59,10 @@ class DetalleCXCActivity : AppCompatActivity() {
         getDocs(cxcndoc)
 
         if (kePrecobranza.cxcndoc.isNotEmpty()) {
-
             val fechaEmision: String = if (kePrecobranza.tiporecibo == "D") {
                 val ldt: LocalDateTime = LocalDateTime.parse(
-                    kePrecobranza.fchrecibo, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    kePrecobranza.fchrecibo,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 )
                 val writingFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a")
                 ldt.format(writingFormatter)
@@ -98,7 +97,7 @@ class DetalleCXCActivity : AppCompatActivity() {
                 )
 
             if (nombreBanco.isNotEmpty()) {
-                binding.tvBanco.text = "${kePrecobranza.bcocod} ${nombreBanco}"
+                binding.tvBanco.text = "${kePrecobranza.bcocod} $nombreBanco"
                 binding.tvReferencia.text = "REF: ${kePrecobranza.bcoref}"
                 binding.tvMonto.text =
                     "Monto: ${kePrecobranza.bcomonto} ${if (kePrecobranza.moneda == "2") "$" else "Bs."}"
@@ -119,22 +118,22 @@ class DetalleCXCActivity : AppCompatActivity() {
             if (kePrecobranza.tiporecibo == "W") {
                 binding.tvClave.text = getClave()
             }
-
         } else {
             Toast.makeText(this, "Recibo no Existe", Toast.LENGTH_SHORT).show()
         }
 
-        //println("Intent -> $dato")
+        // println("Intent -> $dato")
         println("Intent -> $cxcndoc")
-
-
     }
 
     private fun getPrecobranza(cxcndoc: String): ke_precobranza {
         val kePrecobranza = ke_precobranza()
         try {
-            keAndroid.rawQuery("SELECT * FROM ke_precobranza " +
-                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';", null)
+            keAndroid.rawQuery(
+                "SELECT * FROM ke_precobranza " +
+                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
+                null
+            )
                 .use { cursor ->
                     if (cursor.moveToFirst()) {
                         kePrecobranza.cxcndoc = cursor.getString(0)
@@ -144,7 +143,7 @@ class DetalleCXCActivity : AppCompatActivity() {
                         kePrecobranza.efectivo = cursor.getDouble(27)
                         kePrecobranza.bcocod = cursor.getString(29)
                         kePrecobranza.bcomonto = cursor.getDouble(32)
-                        kePrecobranza.bcoref = cursor.getString(33)//59
+                        kePrecobranza.bcoref = cursor.getString(33) // 59
                         kePrecobranza.tipoPago = cursor.getString(59)
                         kePrecobranza.complemento = cursor.getString(60)
                     }
@@ -158,8 +157,11 @@ class DetalleCXCActivity : AppCompatActivity() {
     private fun getDocs(cxcndoc: String) {
         kePrecobradocsMain = arrayListOf()
         try {
-            keAndroid.rawQuery("SELECT * FROM ke_precobradocs " +
-                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';", null)
+            keAndroid.rawQuery(
+                "SELECT * FROM ke_precobradocs " +
+                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
+                null
+            )
                 .use { cursor ->
                     while (cursor.moveToNext()) {
                         val kePrecobradocs = ke_precobradocs()
@@ -205,7 +207,7 @@ class DetalleCXCActivity : AppCompatActivity() {
         } catch (error: SQLiteException) {
             error.printStackTrace()
         }
-        //return kePrecobradocs
+        // return kePrecobradocs
     }
 
     private fun getCliente(cxcndoc: String): Documentos {
@@ -213,7 +215,8 @@ class DetalleCXCActivity : AppCompatActivity() {
         try {
             keAndroid.rawQuery(
                 "SELECT nombrecli, codcliente FROM ke_precobradocs " +
-                        "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",null
+                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
+                null
             ).use { cursor ->
                 if (cursor.moveToFirst()) {
                     documentos.nombrecli = cursor.getString(0)
@@ -228,23 +231,22 @@ class DetalleCXCActivity : AppCompatActivity() {
 
     private fun getClave(): String {
         var retorno = ""
-        //Bolivares o Dolares
+        // Bolivares o Dolares
         retorno += if (kePrecobranza.moneda == "1") "B" else "D"
-        //Completo o Abono
+        // Completo o Abono
         retorno += if (kePrecobranza.tipoPago == "0") "C" else "A"
-        //Complemento o sin complemento
+        // Complemento o sin complemento
         retorno += if (kePrecobranza.complemento.isNotEmpty()) "C" else "S"
-        //Con descuento o sin descuento
+        // Con descuento o sin descuento
         retorno += if (kePrecobradocsMain.sumOf { it.prcdsctopp } != 0.0) "C" else "S"
-        //Transferencia o efectivo
+        // Transferencia o efectivo
         retorno += if (kePrecobranza.efectivo == 0.0) "T" else "E"
-        //Con retencion ( anexo retenciones) o sin retencion (excluyo retenciones)
+        // Con retencion ( anexo retenciones) o sin retencion (excluyo retenciones)
         retorno += if (kePrecobradocsMain[0].reten == 0) "C" else "S"
         return retorno
     }
 
-    private fun setColors(){
-
+    private fun setColors() {
     }
 
     override fun getTheme(): Resources.Theme {
@@ -253,5 +255,4 @@ class DetalleCXCActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

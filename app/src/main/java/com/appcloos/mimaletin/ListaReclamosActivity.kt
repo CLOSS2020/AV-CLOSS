@@ -48,32 +48,32 @@ class ListaReclamosActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_reclamos)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
 
-        //establecemos los detalles de la conexion a la base de datos
+        // establecemos los detalles de la conexion a la base de datos
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
-        //enlazo la parte logica a la grafica del recyclerview
+        // enlazo la parte logica a la grafica del recyclerview
         listaReclamos = findViewById(R.id.lv_reclamoslist)
         listaReclamos.layoutManager = LinearLayoutManager(this)
 
-        //PREFERENCIAS PARA TRAER POR EJEMPLO,EL CODIGO DEL USUARIO ACTUAL
+        // PREFERENCIAS PARA TRAER POR EJEMPLO,EL CODIGO DEL USUARIO ACTUAL
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
 
-        //enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
+        // enlaceEmpresa = conn.getCampoString("ke_enlace", "kee_url", "kee_codigo", codEmpresa!!)
 
         cargarEnlace()
 
-        //llamo al metodo para consultar si hay reclamos creados (seran mostrados en recycleview)
+        // llamo al metodo para consultar si hay reclamos creados (seran mostrados en recycleview)
         consultarReclamos()
 
-        //preparamos el adapter pasandole la lista que usará luego de la consulta y el contexto
+        // preparamos el adapter pasandole la lista que usará luego de la consulta y el contexto
         reclamosAdapter =
             ReclamosAdapter(listareclamo) { position -> onItemClick(position) }
         listaReclamos.adapter = reclamosAdapter
-        reclamosAdapter!!.notifyDataSetChanged() //para refrescar el RecyclerView
+        reclamosAdapter!!.notifyDataSetChanged() // para refrescar el RecyclerView
         fecha_sinc = conn.getFecha("ke_rclcti", codEmpresa!!)
     }
 
@@ -87,7 +87,7 @@ class ListaReclamosActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
-                    "kee_url"
+                "kee_url"
         )
         val cursor = keAndroid.query(
             "ke_enlace",
@@ -106,31 +106,30 @@ class ListaReclamosActivity : AppCompatActivity() {
         keAndroid.close()
     }
 
-    //metodo para consultar los reclamos creados (2021-12-10)-- revisar si es conveniente un switch
+    // metodo para consultar los reclamos creados (2021-12-10)-- revisar si es conveniente un switch
     private fun consultarReclamos() {
         val keAndroid = conn.writableDatabase
         var reclamo: Reclamo
         listareclamo = ArrayList()
 
-        //preparamos los campos y la condicion para el query de los reclamos
+        // preparamos los campos y la condicion para el query de los reclamos
         val campos = arrayOf(
             "krti_ndoc, " +
-                    "krti_status, " +
-                    "krti_codcli, " +
-                    "krti_docfac, " +
-                    "krti_nombrecli, " +
-                    "krti_docdev, " +
-                    "krti_totneto, " +
-                    "krti_totnetodef, " +
-                    "krti_docnc, " +
-                    "krti_fchdoc," +
-                    "fechamodifi"
+                "krti_status, " +
+                "krti_codcli, " +
+                "krti_docfac, " +
+                "krti_nombrecli, " +
+                "krti_docdev, " +
+                "krti_totneto, " +
+                "krti_totnetodef, " +
+                "krti_docnc, " +
+                "krti_fchdoc," +
+                "fechamodifi"
         )
         val condicion =
             "krti_status != '9' AND krti_codvend='$cod_usuario' AND empresa = '$codEmpresa'"
         val cursor = keAndroid.query("ke_rclcti", campos, condicion, null, null, null, null)
         while (cursor.moveToNext()) {
-
             /*estas variables son para validar si vienen vacias
             o que se debe reflejar en el estatus...
              */
@@ -149,7 +148,7 @@ class ListaReclamosActivity : AppCompatActivity() {
             val reclamoDev: String = nroDevEval ?: "Pendiente"
             val reclamoNotac: String = notaCEval ?: "Pendiente"
 
-            //creamos un objeto reclamo y agregamos valores.
+            // creamos un objeto reclamo y agregamos valores.
             reclamo = Reclamo()
             reclamo.setNdoc(cursor.getString(0))
             reclamo.setStatus(reclamoStatus)
@@ -162,18 +161,20 @@ class ListaReclamosActivity : AppCompatActivity() {
             reclamo.setDocnc(reclamoNotac)
             reclamo.setFechadoc(cursor.getString(9))
             reclamo.setFechamodifi(cursor.getString(10))
-            listareclamo.add(reclamo) //añado los campos a una lista
+            listareclamo.add(reclamo) // añado los campos a una lista
         }
         cursor.close()
         keAndroid.close()
 
-        //Cursor cursor = ke_android.rawQuery("SELECT * FROM ke_rclcti WHERE krti_codven ='" + cod_usuario.trim() + "'", null);
+        // Cursor cursor = ke_android.rawQuery("SELECT * FROM ke_rclcti WHERE krti_codven ='" + cod_usuario.trim() + "'", null);
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.subir_reclamos -> subirReclamos()
-            R.id.actu_reclamos -> actualizarReclamos("https://$enlaceEmpresa/webservice/obtenerdatosreclamos.php?cod_usuario=$cod_usuario&&fecha_sinc=$fecha_sinc")
+            R.id.actu_reclamos -> actualizarReclamos(
+                "https://$enlaceEmpresa/webservice/obtenerdatosreclamos.php?cod_usuario=$cod_usuario&&fecha_sinc=$fecha_sinc"
+            )
         }
         return super.onOptionsItemSelected(item)
     }
@@ -181,15 +182,16 @@ class ListaReclamosActivity : AppCompatActivity() {
     private fun actualizarReclamos(url: String) {
         val jsonArrayRequest: JsonArrayRequest = object : JsonArrayRequest(
             url,
-            { response: JSONArray? ->  //a traves de un json array request, traemos la informacion que viene del webservice
+            { response: JSONArray? -> // a traves de un json array request, traemos la informacion que viene del webservice
                 if (response != null) { // si la respuesta no viene vacia
                     conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
                     val keAndroid = conn!!.writableDatabase
-                    var jsonObjecthead: JSONObject //creamos un objeto json vacio para la cabecera
-                    var jsonObjectlineas: JSONObject //creamos un objeto json vacio para las lineas
+                    var jsonObjecthead: JSONObject // creamos un objeto json vacio para la cabecera
+                    var jsonObjectlineas: JSONObject // creamos un objeto json vacio para las lineas
                     llCommit = false
                     keAndroid.beginTransaction()
-                    for (i in 0 until response.length()) { /*pongo todo en el objeto segun lo que venga */
+                    for (i in 0 until response.length()) {
+                        /*pongo todo en el objeto segun lo que venga */
                         try {
                             jsonObjecthead = response.getJSONObject(i)
                             codigorcl = jsonObjecthead.getString("krti_ndoc")
@@ -217,8 +219,8 @@ class ListaReclamosActivity : AppCompatActivity() {
                                     "ke_rcllmv",
                                     actualizarLineas,
                                     "krti_ndoc ='$codigorcl' AND " +
-                                            "krmv_pid ='$pid' AND " +
-                                            "empresa = '$codEmpresa'",
+                                        "krmv_pid ='$pid' AND " +
+                                        "empresa = '$codEmpresa'",
                                     null
                                 )
                             }
@@ -241,7 +243,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                             )
                             llCommit = true
 
-                            //actualizamos la fecha de la tabla de
+                            // actualizamos la fecha de la tabla de
                             val fechaReclamos = Calendar.getInstance()
                             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                             val fechareclamos = sdf.format(fechaReclamos.time)
@@ -273,7 +275,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                         finish()
                         overridePendingTransition(0, 0)
                         startActivity(intent)
-                        overridePendingTransition(0, 0) //para refrescar el RecyclerView
+                        overridePendingTransition(0, 0) // para refrescar el RecyclerView
                     } else if (!llCommit) {
                         keAndroid.endTransaction()
                         Toast.makeText(
@@ -291,34 +293,37 @@ class ListaReclamosActivity : AppCompatActivity() {
                     "Sin Actualización",
                     Toast.LENGTH_LONG
                 ).show()
-            }) {
-            override fun getParams(): Map<String, String> {  //finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
-                //donde estan guardados las fechas
+            }
+        ) {
+            override fun getParams(): Map<String, String> { // finalmente, estos son los parametros que le enviaremos al webservice, partiendo de las variables
+                // donde estan guardados las fechas
                 // parametros.put("fecha_sinc", fecha_sinc);
                 return HashMap()
             }
         }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
     private fun subirReclamos() {
         val keAndroid = conn!!.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
-                    "krti_status, " +
-                    "krti_codcli, " +
-                    "krti_docfac, " +
-                    "krti_nombrecli, " +
-                    "krti_totneto, " +
-                    "krti_fchdoc," +
-                    "fechamodifi," +
-                    "krti_agefac," +
-                    "krti_tipfac," +
-                    "krti_codvend," +
-                    "krti_codcoor," +
-                    "krti_tipprec," +
-                    "krti_notas"
+                "krti_status, " +
+                "krti_codcli, " +
+                "krti_docfac, " +
+                "krti_nombrecli, " +
+                "krti_totneto, " +
+                "krti_fchdoc," +
+                "fechamodifi," +
+                "krti_agefac," +
+                "krti_tipfac," +
+                "krti_codvend," +
+                "krti_codcoor," +
+                "krti_tipprec," +
+                "krti_notas"
         )
         val condicion =
             "krti_status = '0' AND krti_codvend = '$cod_usuario' AND empresa = '$codEmpresa'"
@@ -340,19 +345,19 @@ class ListaReclamosActivity : AppCompatActivity() {
         val keAndroid = conn!!.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
-                    "krti_status, " +
-                    "krti_codcli, " +
-                    "krti_docfac, " +
-                    "krti_nombrecli, " +
-                    "krti_totneto, " +
-                    "krti_fchdoc," +
-                    "fechamodifi," +
-                    "krti_agefac," +
-                    "krti_tipfac," +
-                    "krti_codvend," +
-                    "krti_codcoor," +
-                    "krti_tipprec," +
-                    "krti_notas"
+                "krti_status, " +
+                "krti_codcli, " +
+                "krti_docfac, " +
+                "krti_nombrecli, " +
+                "krti_totneto, " +
+                "krti_fchdoc," +
+                "fechamodifi," +
+                "krti_agefac," +
+                "krti_tipfac," +
+                "krti_codvend," +
+                "krti_codcoor," +
+                "krti_tipprec," +
+                "krti_notas"
         )
         val condicion =
             "krti_status = '0' AND krti_codvend = '$cod_usuario' AND empresa = '$codEmpresa'"
@@ -393,14 +398,14 @@ class ListaReclamosActivity : AppCompatActivity() {
                 objetoCabecera.put("krti_notas", krti_notas)
                 val camposLineas = arrayOf(
                     "krti_ndoc," +
-                            "krmv_tipprec," +
-                            "krmv_codart," +
-                            "krmv_nombre," +
-                            "krmv_cant," +
-                            "krmv_artprec," +
-                            "krmv_stot," +
-                            "krmv_pid," +
-                            "fechamodifi"
+                        "krmv_tipprec," +
+                        "krmv_codart," +
+                        "krmv_nombre," +
+                        "krmv_cant," +
+                        "krmv_artprec," +
+                        "krmv_stot," +
+                        "krmv_pid," +
+                        "fechamodifi"
                 )
                 val condicionLineas = "krti_ndoc = '$krti_ndoc' AND empresa = '$codEmpresa'"
                 val cursormv = keAndroid.query(
@@ -447,7 +452,7 @@ class ListaReclamosActivity : AppCompatActivity() {
             contadorReclamos++
         }
         cursorti.close()
-        val jsonRCL = JSONObject() //vamos a hacer un solo objeto de tipo json
+        val jsonRCL = JSONObject() // vamos a hacer un solo objeto de tipo json
         try {
             jsonRCL.put("Cabecera", arrayTi)
             jsonRCL.put("Lineas", arrayMV)
@@ -463,14 +468,16 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     private fun insertarReclamo(jsonStrRCL: String) {
-        //genero un request queue y luego un strig request
+        // genero un request queue y luego un strig request
         val requestQueue = Volley.newRequestQueue(this@ListaReclamosActivity)
-        //el string request llamara al webservice
+        // el string request llamara al webservice
         val stringRequest: StringRequest = object : StringRequest(
             Method.POST,
             "https://$enlaceEmpresa/webservice/Reclamos.php",
             Response.Listener { response: String ->
-                if (response.trim { it <= ' ' } == "OK") { //si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
+                if (response.trim {
+                        it <= ' '
+                    } == "OK") { // si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
                     cambiarEstadoReclamo()
                     Toast.makeText(
                         this@ListaReclamosActivity,
@@ -478,28 +485,29 @@ class ListaReclamosActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     listaReclamos.adapter = reclamosAdapter
-                    reclamosAdapter!!.notifyDataSetChanged() //para refrescar el RecyclerView
+                    reclamosAdapter!!.notifyDataSetChanged() // para refrescar el RecyclerView
                     finish()
                     overridePendingTransition(0, 0)
                     startActivity(intent)
-                    overridePendingTransition(0, 0) //para refrescar el RecyclerView*/
+                    overridePendingTransition(0, 0) // para refrescar el RecyclerView*/
                 }
             },
             Response.ErrorListener { error: VolleyError ->
                 error.printStackTrace()
                 Toast.makeText(this@ListaReclamosActivity, "Error en la subida", Toast.LENGTH_SHORT)
                     .show()
-            }) {
+            }
+        ) {
             override fun getParams(): Map<String, String> {
                 val params: MutableMap<String, String> = HashMap()
                 params["jsonrcl"] = jsonStrRCL
                 return params
             }
         }
-        requestQueue.add(stringRequest) //importante añadir el string request al request queue
+        requestQueue.add(stringRequest) // importante añadir el string request al request queue
     }
 
-    //si los reclamos subieron bien, hago el cambio de estado de los que subieron
+    // si los reclamos subieron bien, hago el cambio de estado de los que subieron
     private fun cambiarEstadoReclamo() {
         val keAndroid = conn!!.writableDatabase
         println(arrayTi)
@@ -509,7 +517,7 @@ class ListaReclamosActivity : AppCompatActivity() {
                 val codigoDelReclamoenArray = objetodeCabeza.getString("krti_ndoc")
                 keAndroid.execSQL(
                     "UPDATE ke_rclcti SET krti_status = '1' " +
-                            "WHERE krti_ndoc ='$codigoDelReclamoenArray' AND empresa = '$codEmpresa'"
+                        "WHERE krti_ndoc ='$codigoDelReclamoenArray' AND empresa = '$codEmpresa'"
                 )
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -563,7 +571,7 @@ class ListaReclamosActivity : AppCompatActivity() {
         }
         ventana.setNeutralButton("Borrar Reclamo") { _: DialogInterface?, _: Int ->
             if ((docStatus == "Por Subir")) {
-                //SI EL RECLAMO NO HA SIDO SUBIDO, LO BORRO Y DESBLOQUEO EL DOCUMENTO
+                // SI EL RECLAMO NO HA SIDO SUBIDO, LO BORRO Y DESBLOQUEO EL DOCUMENTO
                 val subventana = AlertDialog.Builder(
                     ContextThemeWrapper(
                         this@ListaReclamosActivity,
@@ -577,9 +585,9 @@ class ListaReclamosActivity : AppCompatActivity() {
                 ) { _: DialogInterface?, _: Int ->
                     keAndroid.beginTransaction()
                     try {
-                        //ACA EL METODO DE BORRADO
+                        // ACA EL METODO DE BORRADO
                         borrarReclamo(codReclamo)
-                        //actualizamos de nuevo el registro del documento donde acepta o no devoluciones (solo si no se han subido reclamos pertenecientes a ese doc).
+                        // actualizamos de nuevo el registro del documento donde acepta o no devoluciones (solo si no se han subido reclamos pertenecientes a ese doc).
                         val actualizarAceptarDev = ContentValues()
                         actualizarAceptarDev.put("aceptadev", "0")
                         keAndroid.update(
@@ -594,11 +602,11 @@ class ListaReclamosActivity : AppCompatActivity() {
                             "Reclamo borrado",
                             Toast.LENGTH_LONG
                         ).show()
-                        reclamosAdapter!!.notifyDataSetChanged() //para refrescar el RecyclerView
+                        reclamosAdapter!!.notifyDataSetChanged() // para refrescar el RecyclerView
                         finish()
                         overridePendingTransition(0, 0)
                         startActivity(intent)
-                        overridePendingTransition(0, 0) //para refrescar el RecyclerView
+                        overridePendingTransition(0, 0) // para refrescar el RecyclerView
                     } catch (e: Exception) {
                         keAndroid.endTransaction()
                         e.printStackTrace()
@@ -633,7 +641,6 @@ class ListaReclamosActivity : AppCompatActivity() {
                 nbutton.apply {
                     setTextColor(colorTextAgencia(Constantes.AGENCIA))
                 }
-
             } else {
                 Toast.makeText(
                     this@ListaReclamosActivity,
@@ -732,26 +739,27 @@ class ListaReclamosActivity : AppCompatActivity() {
         llCommit = false
         keAndroid.beginTransaction()
         try {
-            //borro las lineas pero cambio la cabecera a 9 (anulado/borrado)
+            // borro las lineas pero cambio la cabecera a 9 (anulado/borrado)
             keAndroid.execSQL(
                 "UPDATE ke_rclcti SET krti_status = '9' " +
-                        "WHERE krti_ndoc = '$codReclamo' AND empresa = '$codEmpresa'"
+                    "WHERE krti_ndoc = '$codReclamo' AND empresa = '$codEmpresa'"
             )
             keAndroid.execSQL("DELETE FROM ke_rcllmv WHERE krti_ndoc = '$codReclamo' AND empresa = '$codEmpresa'")
-            //si se efectuo correctamente, digo que el commit fue verdadero
+            // si se efectuo correctamente, digo que el commit fue verdadero
             llCommit = true
         } catch (e: Exception) {
             keAndroid.endTransaction()
             e.printStackTrace()
-            llCommit = false //de producirse un error, digo que el commit es falso
+            llCommit = false // de producirse un error, digo que el commit es falso
             if (!llCommit) {
                 keAndroid.endTransaction()
-                return  //si el commit es falso, cancelo la transacción y regreso (me salgo del proceso)
+                return // si el commit es falso, cancelo la transacción y regreso (me salgo del proceso)
             }
         }
         if (true.also {
                 llCommit = it
-            }) { //si es verdadero, digo que la transaccion fue satisfactoria.
+            }
+        ) { // si es verdadero, digo que la transaccion fue satisfactoria.
             keAndroid.setTransactionSuccessful()
             keAndroid.endTransaction()
             println("Reclamo borrado")
@@ -810,5 +818,4 @@ class ListaReclamosActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

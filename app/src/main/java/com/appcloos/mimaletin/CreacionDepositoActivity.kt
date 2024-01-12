@@ -34,7 +34,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-
 class CreacionDepositoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreacionDepositoBinding
@@ -73,8 +72,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
         binding = ActivityCreacionDepositoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
-
+        // Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
 
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         keAndroid = conn.writableDatabase
@@ -95,24 +93,22 @@ class CreacionDepositoActivity : AppCompatActivity() {
         recibosSelecc = intent.getStringArrayListExtra("listRecibos") as ArrayList<String>
 
         // -- query de los bancos
-        //getBancos("USD")
+        // getBancos("USD")
         cargarBancosDep("USD")
         // --
 
         sumarSaldos(recibosSelecc)
 
-
         val cursorCorrelativo = keAndroid.rawQuery(
             "SELECT MAX(kcor_numero) FROM ke_corprec WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'",
             null
         )
-        //----
+        // ----
         if (cursorCorrelativo.moveToFirst()) {
             nroCorrelativo = cursorCorrelativo.getInt(0)
             nroCorrelativo += 1
             correlativoTexto = nroCorrelativo.toString()
             correlativoTexto = "0000$correlativoTexto"
-
         } else {
             nroCorrelativo = cursorCorrelativo.getInt(0)
             nroCorrelativo += 1
@@ -120,7 +116,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
             correlativoTexto = "0000$correlativoTexto"
         }
         cursorCorrelativo.close()
-        //generacion del correlativo completo
+        // generacion del correlativo completo
         nroDeposito = generarNroPrecobranza()
         fechaActual = getFechaHoy()
         fechaDep = fechaActual
@@ -141,8 +137,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
                     binding.etDepRef.text = editable
                     binding.etDepRef.isEnabled = true
                 }
-
-
             } else if (position == 0) {
                 codigoBancoDep = ""
             }
@@ -173,7 +167,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
     }
 
     private fun setColors() {
-
         binding.apply {
             tvDepMontot.setDrawableCobranzaAgencia(Constantes.AGENCIA)
             btDepProc.setBackgroundColor(btDepProc.colorButtonAgencia(Constantes.AGENCIA))
@@ -182,7 +175,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
             tilDepSpbanco.setColorModel(Constantes.AGENCIA)
             tilDepRef.setColorModel(Constantes.AGENCIA)
-
         }
     }
 
@@ -194,9 +186,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
         return fechaHoy
     }
 
-
     private fun procesarDeposito() {
-
         var llCommit = false
 
         val listaCabeceraNueva: ArrayList<CXC> = ArrayList()
@@ -212,13 +202,13 @@ class CreacionDepositoActivity : AppCompatActivity() {
             return
         }
 
-        //valido la fecha
+        // valido la fecha
         if (fechaDep.isEmpty()) {
             Toast.makeText(this, "Debe elegir la fecha del depósito", Toast.LENGTH_SHORT).show()
             return
         }
 
-        //valido el banco
+        // valido el banco
         if (codigoBancoDep.isEmpty()) {
             Toast.makeText(this, "Debe elegir el banco", Toast.LENGTH_SHORT).show()
             return
@@ -231,9 +221,9 @@ class CreacionDepositoActivity : AppCompatActivity() {
             return
         }
 
-        //2023-07-06 Verificacion de referencia bancaria en deposito
+        // 2023-07-06 Verificacion de referencia bancaria en deposito
         var numVerificador = 0
-        //numVerificador += verificacionReferencia(referenciaBanco, "ke_precobranza", codigoBancoDep)
+        // numVerificador += verificacionReferencia(referenciaBanco, "ke_precobranza", codigoBancoDep)
         numVerificador += verificacionReferencia(referenciaBanco, "ke_referencias", codigoBancoDep)
 
         if (numVerificador != 0) {
@@ -249,7 +239,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
         dep.tipoRecibo = "D"
         dep.codigoVend = codUsuario.toString()
         dep.fchrecibo = fechaDep
-        dep.clicontesp = "" //esto lo jalo de  la lista de docs?
+        dep.clicontesp = "" // esto lo jalo de  la lista de docs?
         dep.moneda = "2"
         dep.bcomonto = montoTotal
         dep.bcoref = referenciaBanco
@@ -257,12 +247,12 @@ class CreacionDepositoActivity : AppCompatActivity() {
         dep.edorec = "0"
         dep.fchhr = fechaActual
 
-
-        //RECORRO LAS LINEAS DE LOS NUEVOS DOCS.
-        //for(i in listaRecibos.indices){
+        // RECORRO LAS LINEAS DE LOS NUEVOS DOCS.
+        // for(i in listaRecibos.indices){
         val cursorH: Cursor = keAndroid.rawQuery(
             "SELECT * FROM ke_precobradocs WHERE empresa = '$codEmpresa' AND cxcndoc IN (" + recibosSelecc.toString()
-                .replace("[", "").replace("]", "") + ")", null
+                .replace("[", "").replace("]", "") + ")",
+            null
         )
 
         while (cursorH.moveToNext()) {
@@ -332,9 +322,9 @@ class CreacionDepositoActivity : AppCompatActivity() {
         }
         cursorH.close()
 
-        //}
+        // }
 
-        //estos dependen de las lineas totales
+        // estos dependen de las lineas totales
         dep.bsneto = valorReal(listaRecibos.sumOf { it.bsneto })
         dep.bsretiva = valorReal(listaRecibos.sumOf { it.bsretiva })
         dep.bsiva = valorReal(listaRecibos.sumOf { it.bsiva })
@@ -381,7 +371,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 qcabecera.put("doltotal", listaCabeceraNueva[i].doltotal)
                 qcabecera.put("moneda", listaCabeceraNueva[i].moneda)
                 qcabecera.put("netocob", listaCabeceraNueva[i].netocob)
-                //qcabecera.put("efectivo", listaCabeceraNueva[i].efectivo)
+                // qcabecera.put("efectivo", listaCabeceraNueva[i].efectivo)
                 qcabecera.put("bcocod", listaCabeceraNueva[i].bcocod)
                 qcabecera.put("bcomonto", listaCabeceraNueva[i].bcomonto)
                 qcabecera.put("bcoref", listaCabeceraNueva[i].bcoref)
@@ -439,7 +429,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                             listOf(listaLineasNueva[j].documento, codEmpresa!!)
                         )
                     )
-                    //2023-10-19 esto es mal pero debido a la falta de tiempo va asi
+                    // 2023-10-19 esto es mal pero debido a la falta de tiempo va asi
                     qlineas.put(
                         "cbsretiva",
                         conn.getCampoDoubleCamposVarios(
@@ -460,7 +450,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                     )
                     qlineas.put("empresa", codEmpresa)
 
-                    //qlineas.put("monto_aux_pdf", listaRecibos[j].efectivo)
+                    // qlineas.put("monto_aux_pdf", listaRecibos[j].efectivo)
                     keAndroid.insert("ke_precobradocs", null, qlineas)
                 }
 
@@ -480,7 +470,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
                 keAndroid.insert("ke_corprec", null, qcorrelativo)
 
-                //mato los recibos
+                // mato los recibos
                 val estado = ContentValues()
                 estado.put("edorec", "9")
                 estado.put("fechamodifi", getFechaHoy())
@@ -494,11 +484,8 @@ class CreacionDepositoActivity : AppCompatActivity() {
                     null
                 )
 
-
                 llCommit = true
-
             }
-
         } catch (exception: SQLException) {
             println(exception.message)
             llCommit = false
@@ -520,11 +507,9 @@ class CreacionDepositoActivity : AppCompatActivity() {
             dialog.DialogAnexo(this, listadatos, codEmpresa)
 
             Toast.makeText(this, "Depósito creado", Toast.LENGTH_SHORT).show()
-
         } else {
             keAndroid.endTransaction()
         }
-
     }
 
     private fun valorReal(monto: Double): Double {
@@ -532,7 +517,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
         valor = Math.round(valor * 100.00) / 100.00
         return valor
     }
-
 
     private fun fechaSuma(fechaOld: String, cantDias: Long): String {
         val fechaNueva: String
@@ -550,7 +534,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
         return fechaNueva
     }
 
-
     private fun sumarSaldos(listaRecibosSel: ArrayList<String>) {
         sumaTotal = 0.00
         listaRecibos = ArrayList()
@@ -558,8 +541,8 @@ class CreacionDepositoActivity : AppCompatActivity() {
         var cobranza: CXC
         val query = arrayOf(
             "cxcndoc," + "efectivo," + "bsneto," + "bsretiva," + "bsiva," + "bsflete," + "dolflete," +
-                    "bstotal," + "dolneto," + "doliva," + "doltotal," + "netocob," + "bsretflete," +
-                    "retmun_sbi," + "retmun_sbs"
+                "bstotal," + "dolneto," + "doliva," + "doltotal," + "netocob," + "bsretflete," +
+                "retmun_sbi," + "retmun_sbs"
         )
         val tabla = "ke_precobranza"
         val condicion =
@@ -592,19 +575,16 @@ class CreacionDepositoActivity : AppCompatActivity() {
                 arrayListOf(cobranza.id_recibo, codEmpresa!!)
             )
             listaRecibos.add(cobranza)
-
         }
         cursorRec.close()
-        //coloco la suma total del monto de los recs.
+        // coloco la suma total del monto de los recs.
         sumaTotal = listaRecibos.sumOf { it.efectivo }
         binding.tvDepMontot.text = sumaTotal.toString()
-
 
         binding.rvContenidoDep.layoutManager = LinearLayoutManager(this)
         val adapter = RecsAdapter()
         adapter.RecsAdapter(this, listaRecibos)
         binding.rvContenidoDep.adapter = adapter
-
     }
 
     private fun cargarEnlace() {
@@ -622,13 +602,11 @@ class CreacionDepositoActivity : AppCompatActivity() {
         cursorE.close()
     }
 
-
     private fun getBancos(monedaBanco: String) {
-        //descargarBancos("https://"+ enlaceEmpresa + "/webservice/bancos.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim(), monedaBanco)
+        // descargarBancos("https://"+ enlaceEmpresa + "/webservice/bancos.php?fecha_sinc=" + fecha_auxiliar.trim() + "&&agencia=" + codigoSucursal.trim(), monedaBanco)
     }
 
     private fun descargarBancos(URL: String, monedaBanco: String) {
-
         var llCommit: Boolean
 
         var codbanco: String
@@ -650,7 +628,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
                     keAndroid.beginTransaction()
                     var jsonObject: JSONObject?
                     try {
-
                         // loop through the array elements
                         for (i in 0 until response.length()) {
                             jsonObject = response.getJSONObject(i)
@@ -668,11 +645,11 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
                             val qcodigoLocal: Cursor = keAndroid.rawQuery(
                                 "SELECT count(codbanco) FROM listbanc " +
-                                        "WHERE codbanco ='$codbanco' AND empresa = '$codEmpresa'",
+                                    "WHERE codbanco ='$codbanco' AND empresa = '$codEmpresa'",
                                 null
                             )
                             qcodigoLocal.moveToFirst()
-                            //variable para obtener el conteo de documentos que ya esten en el telf
+                            // variable para obtener el conteo de documentos que ya esten en el telf
                             val codigoExistente = qcodigoLocal.getInt(0)
                             qcodigoLocal.close()
 
@@ -687,9 +664,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                                 keAndroid.insert("listbanc", null, qBancos)
                             }
                             llCommit = true
-
                         }
-
                     } catch (ex: Exception) {
                         println("--Error--")
                         ex.printStackTrace()
@@ -700,8 +675,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
                         keAndroid.setTransactionSuccessful()
                         keAndroid.endTransaction()
                         cargarBancosDep(monedaBanco)
-
-
                     } else if (!llCommit) {
                         keAndroid.endTransaction()
                     }
@@ -715,7 +688,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
         val requestQueue: RequestQueue = Volley.newRequestQueue(applicationContext)
         requestQueue.add(jsonArrayRequest)
         cargarBancosDep(monedaBanco)
-
     }
 
     private fun cargarBancosDep(monedaSelec: String) {
@@ -728,14 +700,13 @@ class CreacionDepositoActivity : AppCompatActivity() {
 
         if (monedaSelec == "USD") {
             moneda = 2.00
-
         } else if (monedaSelec == "BSS") {
             moneda = 1.00
         }
 
         val cursorBancos: Cursor = keAndroid.rawQuery(
             "SELECT DISTINCT codbanco, nombanco,cuentanac, inactiva, fechamodifi FROM listbanc " +
-                    "WHERE inactiva = 0 AND cuentanac = $moneda AND empresa = '$codEmpresa'",
+                "WHERE inactiva = 0 AND cuentanac = $moneda AND empresa = '$codEmpresa'",
             null
         )
         while (cursorBancos.moveToNext()) {
@@ -746,7 +717,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
             bancos.inactiva = cursorBancos.getDouble(3)
             bancos.fechamodifi = cursorBancos.getString(4)
             listaBancosDep.add(bancos)
-
         }
         cursorBancos.close()
         binding.spDepBanco.setText("Seleccione un banco...")
@@ -756,11 +726,9 @@ class CreacionDepositoActivity : AppCompatActivity() {
         binding.spDepBanco.setAdapter(adapterBancos)
 
         adapterBancos.notifyDataSetChanged()
-
     }
 
     private fun actualizarBancos() {
-
         listaInfoBancos = ArrayList()
         listaInfoBancos.add("Seleccione un banco...")
 
@@ -770,7 +738,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
             listaInfoBancos.add(listaBancosDep[i].nombanco)
         }
     }
-
 
     private fun generarNroPrecobranza(): String {
         val fechaHoy = Date(Calendar.getInstance().timeInMillis)
@@ -809,7 +776,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
     ): Int {
         val cursor = keAndroid.rawQuery(
             "SELECT COUNT(*) FROM $tabla " +
-                    "WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco' AND empresa = '$codEmpresa';",
+                "WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco' AND empresa = '$codEmpresa';",
             null
         )
         if (cursor.moveToFirst()) {
@@ -843,7 +810,6 @@ class CreacionDepositoActivity : AppCompatActivity() {
         creacion.show()
         btnAceptar.setBackgroundColor(btnAceptar.colorAgencia(Constantes.AGENCIA))
         btnAceptar.setOnClickListener { _: View? -> creacion.dismiss() }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -874,6 +840,4 @@ class CreacionDepositoActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
-
 }

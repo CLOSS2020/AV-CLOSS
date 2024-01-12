@@ -8,14 +8,12 @@ import android.view.Window
 import android.widget.TextView
 import com.appcloos.mimaletin.databinding.DialogDatosClientesBinding
 
-
 class DialogClientesDatos(
     context: Context,
     private val codigoCliente: String,
     private val nombreCliente: String,
     private val codEmpresa: String
 ) : AlertDialog(context) {
-
 
     private lateinit var binding: DialogDatosClientesBinding
 
@@ -62,7 +60,6 @@ class DialogClientesDatos(
             tvPrcdpagdiaCliente.text = clientes.prcdpagdia.toTwoDecimals()
             tvPromdiaspCLiente.text = clientes.promdiasp.toTwoDecimals()
             tvRiesgocrdCliente.text = clientes.riesgocrd.toCeroDecimals()
-
         }
 
         if ((clientes.diasultvta > clientes.promdiasvta) && (clientes.promdiasvta > 0)) {
@@ -143,5 +140,4 @@ class DialogClientesDatos(
             btnVerDocs.setTextColor(btnVerDocs.colorTextAgencia(codEmpresa))
         }
     }
-
 }

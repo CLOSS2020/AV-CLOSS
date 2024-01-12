@@ -5,7 +5,6 @@ import android.text.Spanned
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
 internal class DecimalDigitsInputFilter(digitsBeforeZero: Int, digitsAfterZero: Int) : InputFilter {
     private val mPattern: Pattern
 

@@ -1,6 +1,5 @@
 package com.appcloos.mimaletin.moduloCXC
 
-
 import android.content.res.Resources
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +14,6 @@ import com.appcloos.mimaletin.colorToolBarAux
 import com.appcloos.mimaletin.databinding.ActivityModuloCxcBinding
 import com.appcloos.mimaletin.setThemeNoBarCXCAgencia
 import com.appcloos.mimaletin.windowsColor
-
 
 class ModuloCXCActivity : AppCompatActivity() {
 
@@ -45,7 +43,6 @@ class ModuloCXCActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-
         /*navController = findNavController(R.id.fragment)
         drawerLayout = findViewById(R.id.drawer_layout)
 
@@ -55,12 +52,10 @@ class ModuloCXCActivity : AppCompatActivity() {
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
 
-        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
-        //Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        // Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
+        // Edicion de los colores del Bar de arriba de notificacion de las app y el bar de abajo de los 3 botones
         windowsColor(Constantes.AGENCIA)
         setColors()
-
-
     }
 
     private fun setColors() {
@@ -81,5 +76,4 @@ class ModuloCXCActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }*/
-
 }

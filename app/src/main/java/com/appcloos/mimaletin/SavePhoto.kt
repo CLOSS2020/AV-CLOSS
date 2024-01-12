@@ -39,13 +39,10 @@ class SavePhoto(val activity: AppCompatActivity) {
                             listaImagenes.add(clipData.getItemAt(i).uri)
                         }
                     }
-
                 } catch (e: Exception) {
                     e.printStackTrace()
                     listaImagenes = mutableListOf()
                 }
-
             }
         }
-
 }

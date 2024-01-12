@@ -1851,7 +1851,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
 
             documentos.documento        = cursorDocs.getString(0)
             documentos.contribesp       = cursorDocs.getDouble(1)
-            documentos.ruta_parme       = cursorDocs.getString(2)
+            documentos.rutaParme       = cursorDocs.getString(2)
             documentos.vence            = cursorDocs.getString(3)
             documentos.tipodocv         = cursorDocs.getString(4)
             documentos.diascred         = cursorDocs.getDouble(5)
@@ -1881,7 +1881,7 @@ class CreacionPrecobranzaActivity : AppCompatActivity() {
             documentos.agencia          = cursorDocs.getString(29)
             documentos.bsmtoiva         = cursorDocs.getDouble(30)
             documentos.bsmtofte         = cursorDocs.getDouble(31)
-            documentos.retmun_mto       = cursorDocs.getDouble(32)
+            documentos.retmunMto       = cursorDocs.getDouble(32)
             documentos.emision          = cursorDocs.getString(33)
             documentos.codcliente       = cursorDocs.getString(34)
             listaDocumentos.add(documentos)

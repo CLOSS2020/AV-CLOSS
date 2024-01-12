@@ -66,19 +66,19 @@ class CatalogoActivity : AppCompatActivity() {
     private var APP_DESCUENTOS_PEDIDOS = false
 
     private lateinit var preferences: SharedPreferences
-    private lateinit var codEmpresa:String
-    private lateinit var codUsuario:String
+    private lateinit var codEmpresa: String
+    private lateinit var codUsuario: String
 
     private lateinit var binding: ActivityCatalogoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         binding = ActivityCatalogoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Creacion del BackButton
+        // Creacion del BackButton
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
@@ -93,7 +93,8 @@ class CatalogoActivity : AppCompatActivity() {
         nroPedido = intent.getStringExtra("nroPedido")
         factura = intent.getBooleanExtra("factura", false)
         /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
-          el activyty */conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+          el activyty */
+            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         APP_ITEMS_FACTURAS = conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa).toInt()
         APP_ITEMS_NOTAS_ENTREGA = conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa).toInt()
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa)
@@ -105,24 +106,23 @@ class CatalogoActivity : AppCompatActivity() {
             listOf(codEmpresa)
         )
 
-        //cargarEnlace()
-        //declaro el listview
-        consultarArticulosNormal(preciomostrar) //consulto los articulos
+        // cargarEnlace()
+        // declaro el listview
+        consultarArticulosNormal(preciomostrar) // consulto los articulos
 
-        //coloco el adaptador personalizado a la lista del elementos que van al listview
+        // coloco el adaptador personalizado a la lista del elementos que van al listview
         catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
-        //ArrayAdapter adaptador = new ArrayAdapter(CatalogoActivity.this, R.layout.list_catalogo_personalizado, listainfo);
-        binding.lvArticulos.adapter = catalogoAdapter //refresco el listview
+        // ArrayAdapter adaptador = new ArrayAdapter(CatalogoActivity.this, R.layout.list_catalogo_personalizado, listainfo);
+        binding.lvArticulos.adapter = catalogoAdapter // refresco el listview
         binding.lvArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
 
-
-        //corro actDirect
+        // corro actDirect
         actDirec()
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(codUsuario, codEmpresa)
     }
 
-    //este metodo inicializa un menu con el searchview y el selector de precios   SLECT
+    // este metodo inicializa un menu con el searchview y el selector de precios   SLECT
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.menu_catalogo, menu)
@@ -147,7 +147,7 @@ class CatalogoActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    //y este es el selector de precios que segun la seleccion, consulta los articulos por precios
+    // y este es el selector de precios que segun la seleccion, consulta los articulos por precios
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val itemid = item.itemId
 
@@ -178,8 +178,9 @@ class CatalogoActivity : AppCompatActivity() {
             catalogoAdapter.notifyDataSetChanged();
 
 
-        }else */if (itemid == android.R.id.home) {
-            //Valida que se le da al backbutton y se regresa
+        }else */
+            if (itemid == android.R.id.home) {
+            // Valida que se le da al backbutton y se regresa
             finish()
         }
         return super.onOptionsItemSelected(item)
@@ -197,13 +198,14 @@ class CatalogoActivity : AppCompatActivity() {
         keAndroid.close()
     }*/
 
-    //metodo para ver la seleccion del activity
+    // metodo para ver la seleccion del activity
     private fun actDirec() {
-        if (seleccionado == 2) { /*viene de pedidos, para indicar si es el catalogo de seleccion
+        if (seleccionado == 2) {
+            /*viene de pedidos, para indicar si es el catalogo de seleccion
                                 o solo para mostrar los articulos*/
             consultarArticulosenPedido()
 
-            //el listener en este caso sirve para agregar el articulo en el pedido
+            // el listener en este caso sirve para agregar el articulo en el pedido
             binding.lvArticulos.onItemClickListener =
                 OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                     val codArticulo = listacatalogo!![position].getCodigo()
@@ -217,7 +219,7 @@ class CatalogoActivity : AppCompatActivity() {
                     val keAndroid = conn.writableDatabase
                     val cursorMul = keAndroid.rawQuery(
                         "SELECT vta_minenx, vta_solofac, vta_solone FROM articulo " +
-                                "WHERE codigo ='$codArticulo' AND empresa = '$codEmpresa';",
+                            "WHERE codigo ='$codArticulo' AND empresa = '$codEmpresa';",
                         null
                     )
                     cursorMul.moveToFirst()
@@ -267,16 +269,16 @@ class CatalogoActivity : AppCompatActivity() {
                         )
                         cajaDescuento.inputType = InputType.TYPE_CLASS_NUMBER
                         cajatexto.inputType = InputType.TYPE_CLASS_NUMBER
-                        //cajatexto.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)}); -- como referencia para  campos de notas
+                        // cajatexto.setFilters(new InputFilter[] {new InputFilter.LengthFilter(250)}); -- como referencia para  campos de notas
 
-                        //un alert dialogo builder que va a servir para introducir cantidad de articulos
+                        // un alert dialogo builder que va a servir para introducir cantidad de articulos
                         val ventana = AlertDialog.Builder(
                             ContextThemeWrapper(
                                 this@CatalogoActivity,
                                 setAlertDialogTheme(codEmpresa)
                             )
                         )
-                        //declaramos textviews porque vamos a usar layout
+                        // declaramos textviews porque vamos a usar layout
                         val titulo = TextView(this@CatalogoActivity)
                         val mensaje = TextView(this@CatalogoActivity)
                         val montoEnPedido = TextView(this@CatalogoActivity)
@@ -287,29 +289,29 @@ class CatalogoActivity : AppCompatActivity() {
                                 setCheckBoxTheme(codEmpresa)
                             )
                         )
-                        //final TextView mensajeCantidadMultiplo = new TextView(CatalogoActivity.this);
+                        // final TextView mensajeCantidadMultiplo = new TextView(CatalogoActivity.this);
 
-                        //declaramos las propiedades de cada textview
+                        // declaramos las propiedades de cada textview
                         mensaje.textSize = 15f
-                        //mensaje.setTextColor(Color.parseColor("#313131"));
+                        // mensaje.setTextColor(Color.parseColor("#313131"));
                         mensajecantidad.textSize = 15f
-                        //mensajecantidad.setTextColor(Color.parseColor("#313131"));
+                        // mensajecantidad.setTextColor(Color.parseColor("#313131"));
                         montoEnPedido.textSize = 15f
-                        //montoEnPedido.setTextColor(Color.parseColor("#313131"));
+                        // montoEnPedido.setTextColor(Color.parseColor("#313131"));
                         titulo.text = "Selección del artículo"
-                        //titulo.setTextColor(Color.parseColor("#313131"));
+                        // titulo.setTextColor(Color.parseColor("#313131"));
                         titulo.textSize = 22f
                         titulo.setTypeface(null, Typeface.BOLD)
                         layout.addView(titulo)
 
-                        //si el articulo no posee descuento, entonces escondo la opción y asumo que es 0 el descuento
+                        // si el articulo no posee descuento, entonces escondo la opción y asumo que es 0 el descuento
                         if (dctotope > 0 && APP_DESCUENTOS_PEDIDOS) {
-                            //de resto, permito elegir el descuento
+                            // de resto, permito elegir el descuento
                             mensaje.text = "Porfavor, elige el descuento"
-                            //layout.addView(mensaje);
+                            // layout.addView(mensaje);
                             darDescuento.text = "Dar Descuento del Articulo"
                             layout.addView(darDescuento)
-                            //layout.addView(cajaDescuento);
+                            // layout.addView(cajaDescuento);
                         } else {
                             mensaje.visibility = View.INVISIBLE
                             cajaDescuento.visibility = View.INVISIBLE
@@ -325,7 +327,7 @@ class CatalogoActivity : AppCompatActivity() {
                         montoEnPedido.text = """
                 Monto del Pedido: ${"$"}$precioTotalporArticulo
                 Cantidad Disponible: $existencia
-                """.trimIndent()
+                        """.trimIndent()
                         layout.addView(mensajecantidad)
                         layout.addView(montoEnPedido)
                         if (vtaMinenx == 1) {
@@ -334,26 +336,25 @@ class CatalogoActivity : AppCompatActivity() {
                             val mensajeCantidadMultiplo = TextView(this@CatalogoActivity)
                             val mensajeMultiplo = TextView(this@CatalogoActivity)
                             mensajeMultiplo.textSize = 15f
-                            //mensajeMultiplo.setTextColor(Color.parseColor("#313131"));
+                            // mensajeMultiplo.setTextColor(Color.parseColor("#313131"));
                             mensajeMultiplo.text =
                                 "Cantidad de paquetes: " + floor(existencia / ventaMin).toInt()
 
+                            // LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                            // params.weight = 1.0f;
 
-                            //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            //params.weight = 1.0f;
-
-                            //LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            //params2.weight = 50.0f;
+                            // LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                            // params2.weight = 50.0f;
                             mensajeCantidadMultiplo.textSize = 20f
                             mensajeCantidadMultiplo.setTypeface(null, Typeface.BOLD)
-                            //mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
+                            // mensajeCantidadMultiplo.setTextColor(Color.parseColor("#313131"));
                             mensajeCantidadMultiplo.text =
                                 Math.round(ventaMin).toInt().toString() + " x "
-                            //mensajeCantidadMultiplo.setLayoutParams(params);
+                            // mensajeCantidadMultiplo.setLayoutParams(params);
                             cajatexto.width = 1000
                             cajatexto.hint = "Cantidad de paquetes a pedir"
                             layoutH.addView(mensajeCantidadMultiplo)
-                            //cajatexto.setLayoutParams(params2);
+                            // cajatexto.setLayoutParams(params2);
                             layoutH.addView(cajatexto)
                             layout.addView(mensajeMultiplo)
                             layout.addView(layoutH)
@@ -362,10 +363,10 @@ class CatalogoActivity : AppCompatActivity() {
                         }
                         ventana.setView(layout)
 
-                        //el boton procesar que servira para procesar el agregado del articulo
+                        // el boton procesar que servira para procesar el agregado del articulo
                         ventana.setPositiveButton("Aceptar") { _: DialogInterface?, _: Int ->
 
-                            //validadciones para procesar
+                            // validadciones para procesar
                             if (cajatexto.text.toString().isEmpty()) {
                                 Toast.makeText(
                                     this@CatalogoActivity,
@@ -376,7 +377,7 @@ class CatalogoActivity : AppCompatActivity() {
                                 existenciaGuardar = cajatexto.text.toString()
                                 cantidad = existenciaGuardar.toInt()
                                 if (cantidad in 1..existencia) {
-                                    //si la cantidad de venta maxima es mayor a 0, debo hacer validadciones adicionales
+                                    // si la cantidad de venta maxima es mayor a 0, debo hacer validadciones adicionales
                                     if (ventaMax > 0) {
                                         if (cantidad > ventaMax) {
                                             Toast.makeText(
@@ -400,20 +401,20 @@ class CatalogoActivity : AppCompatActivity() {
                                                     ).show()
                                                 } else {
                                                     val hoy =
-                                                        LocalDateTime.now() //el dia en que se hizo el grabado
+                                                        LocalDateTime.now() // el dia en que se hizo el grabado
                                                     val formatter =
                                                         DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
                                                     val vencimiento =
-                                                        hoy.plusDays(7) //cuando se vence
+                                                        hoy.plusDays(7) // cuando se vence
 
-                                                    //las fechas formateadas
+                                                    // las fechas formateadas
                                                     val fechaHoy = hoy.format(formatter)
                                                     val fechaVence = vencimiento.format(formatter)
                                                     val descuentoTexto =
                                                         cajaDescuento.text.toString()
                                                     val aprobarDescuento = darDescuento.isChecked
 
-                                                    //if (descuentoTexto.equals("")) {
+                                                    // if (descuentoTexto.equals("")) {
                                                     dctonumerico = if (!aprobarDescuento) {
                                                         0.00
                                                     } else {
@@ -456,7 +457,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                                 cv
                                                             )
 
-                                                            //llamo al metodo guardar limites si el articulo posee limites
+                                                            // llamo al metodo guardar limites si el articulo posee limites
                                                             guardarLimite(
                                                                 tracking,
                                                                 codUsuario,
@@ -474,7 +475,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                                 "Artículo añadido",
                                                                 Toast.LENGTH_SHORT
                                                             ).show()
-                                                            //finish();
+                                                            // finish();
                                                         } catch (ex: Exception) {
                                                             println("--Error--")
                                                             ex.printStackTrace()
@@ -492,7 +493,7 @@ class CatalogoActivity : AppCompatActivity() {
                                             }
                                         }
 
-                                        //de no tener un limite de venta maxima, sigo y guardo el articulo.
+                                        // de no tener un limite de venta maxima, sigo y guardo el articulo.
                                     } else if (ventaMin > 0) {
                                         if (vtaMinenx == 1) {
                                             if (cantidad * ventaMin > existencia) {
@@ -508,7 +509,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                 val descuentoTexto = cajaDescuento.text.toString()
                                                 val aprobarDescuento = darDescuento.isChecked
 
-                                                //if (descuentoTexto.equals("")) {
+                                                // if (descuentoTexto.equals("")) {
                                                 dctonumerico = if (!aprobarDescuento) {
                                                     0.00
                                                 } else {
@@ -545,7 +546,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                         )
                                                         keAndroid.setTransactionSuccessful()
                                                         keAndroid.endTransaction()
-                                                        //finish();
+                                                        // finish();
                                                         Toast.makeText(
                                                             this@CatalogoActivity,
                                                             "Artículo añadido",
@@ -572,7 +573,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                 val descuentoTexto = cajaDescuento.text.toString()
                                                 val aprobarDescuento = darDescuento.isChecked
 
-                                                //if (descuentoTexto.equals("")) {
+                                                // if (descuentoTexto.equals("")) {
                                                 dctonumerico = if (!aprobarDescuento) {
                                                     0.00
                                                 } else {
@@ -609,7 +610,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                         )
                                                         keAndroid.setTransactionSuccessful()
                                                         keAndroid.endTransaction()
-                                                        //finish();
+                                                        // finish();
                                                         Toast.makeText(
                                                             this@CatalogoActivity,
                                                             "Artículo añadido",
@@ -630,7 +631,7 @@ class CatalogoActivity : AppCompatActivity() {
                                         val descuentoTexto = cajaDescuento.text.toString()
                                         val aprobarDescuento = darDescuento.isChecked
 
-                                        //if (descuentoTexto.equals("")) {
+                                        // if (descuentoTexto.equals("")) {
                                         dctonumerico = if (!aprobarDescuento) {
                                             0.00
                                         } else {
@@ -669,7 +670,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                     Toast.LENGTH_SHORT
                                                 ).show()
 
-                                                //finish();
+                                                // finish();
                                             } catch (ex: Exception) {
                                                 println("--Error--")
                                                 ex.printStackTrace()
@@ -700,22 +701,20 @@ class CatalogoActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                        val dialogo = ventana.create() //creo el alertdialog en funcion al builder
+                        val dialogo = ventana.create() // creo el alertdialog en funcion al builder
                         dialogo.show() // y lo muestro
 
                         val pbutton: Button = dialogo.getButton(DialogInterface.BUTTON_POSITIVE)
                         pbutton.apply {
                             setTextColor(colorTextAgencia(codEmpresa))
                         }
-
-
                     }
                     cursor.close()
                 }
 
-            //si viene desde el menu principal, entonces solo voy a mostrar el catalogo
+            // si viene desde el menu principal, entonces solo voy a mostrar el catalogo
         } else if (seleccionado == 1) {
-            //un listener que, por los momentos, me permitira mostrar una imagen (mas adelante se debe desarrollar la ficha)
+            // un listener que, por los momentos, me permitira mostrar una imagen (mas adelante se debe desarrollar la ficha)
             binding.lvArticulos.onItemClickListener =
                 OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                     val codArticulo = listacatalogo!![position].getCodigo().trim { it <= ' ' }
@@ -723,7 +722,7 @@ class CatalogoActivity : AppCompatActivity() {
                     val enlace = "https://$enlaceEmpresa/img/$codArticulo.jpg"
                     Picasso.get().load(enlace).resize(1000, 1000).centerCrop().into(imagen)
 
-                    //este builder mostrara la ficha del articulo
+                    // este builder mostrara la ficha del articulo
                     val ventana = AlertDialog.Builder(
                         ContextThemeWrapper(
                             this@CatalogoActivity,
@@ -740,13 +739,12 @@ class CatalogoActivity : AppCompatActivity() {
                     pbutton.apply {
                         setTextColor(colorTextAgencia(codEmpresa))
                     }
-
                 }
             consultarArticulosNormal(preciomostrar)
         }
     }
 
-    //este metodo permite guardar los limites de articulos que se encuentran en pedidos
+    // este metodo permite guardar los limites de articulos que se encuentran en pedidos
     private fun guardarLimite(
         tracking: String?,
         codUsuario: String?,
@@ -772,7 +770,7 @@ class CatalogoActivity : AppCompatActivity() {
         keAndroid.insert("ke_limitart", null, guardarArticulo)
     }
 
-    //funcion para consultar la disponiblidad de un articulo según este limitado o no.
+    // funcion para consultar la disponiblidad de un articulo según este limitado o no.
     private fun consultarDisponibilidad(
         codUsuario: String?,
         codCliente: String?,
@@ -782,8 +780,8 @@ class CatalogoActivity : AppCompatActivity() {
         val keAndroid = conn.readableDatabase
         val cuComp = keAndroid.rawQuery(
             "SELECT SUM(kli_cant) FROM ke_limitart " +
-                    "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND " +
-                    "kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa';",
+                "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND " +
+                "kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa';",
             null
         )
         while (cuComp.moveToNext()) {
@@ -793,13 +791,13 @@ class CatalogoActivity : AppCompatActivity() {
         return resultado
     }
 
-    //busqueda de articulo
+    // busqueda de articulo
     fun buscarArticulo(busqueda: String) {
         binding.lvArticulos.adapter = null
         val keAndroid = conn.writableDatabase
         var catalogo: Catalogo
         if (busqueda == "") {
-            //Toast.makeText(CatalogoActivity.this, "Debes introducir una palabra o código", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(CatalogoActivity.this, "Debes introducir una palabra o código", Toast.LENGTH_SHORT).show();
         } else {
             listacatalogo = ArrayList()
             // System.out.println("IMPRIMIENDO EL NOMBRE " + busqueda);
@@ -841,12 +839,12 @@ class CatalogoActivity : AppCompatActivity() {
                 catalogo.setMultiplo(cursorca!!.getInt(10))
                 catalogo.setVta_solofac(cursorca!!.getInt(11))
                 catalogo.setVta_solone(cursorca!!.getInt(12))
-                vtaMin = cursorca!!.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
-                vtaMax = cursorca!!.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
+                vtaMin = cursorca!!.getDouble(6) // VARIABLE EN DOUBLE DE VTA MIN
+                vtaMax = cursorca!!.getDouble(7) // VARIABLE EN DOUBLE DE VTA MAX
                 catalogo.setReferencia(cursorca!!.getString(13))
                 listacatalogo!!.add(catalogo)
             }
-            //ke_android.close();
+            // ke_android.close();
             catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
             binding.lvArticulos.adapter = catalogoAdapter
             catalogoAdapter!!.notifyDataSetChanged()
@@ -874,7 +872,7 @@ class CatalogoActivity : AppCompatActivity() {
             )
         }
 
-        //select codigo, nombre from articulo
+        // select codigo, nombre from articulo
         // Cursor cursor = ke_android.rawQuery("SELECT articulo.codigo, articulo.nombre, articulo." + precioparametro + ", articulo.existencia, articulo.fechamodifi, ke_kardex.kde_codart, articulo.vta_min, articulo.vta_max, articulo.dctotope   FROM articulo LEFT JOIN  ke_kardex ON articulo.codigo = ke_kardex.kde_codart WHERE existencia > 0 AND discont = 0.0 AND enpreventa ='" + enpreventa + "'", null);
         cursor!!.moveToFirst()
         while (!cursor.isAfterLast) {
@@ -897,8 +895,8 @@ class CatalogoActivity : AppCompatActivity() {
             catalogo.setVta_solofac(cursor.getInt(11))
             catalogo.setVta_solone(cursor.getInt(12))
             catalogo.setReferencia(cursor.getString(13))
-            vtaMin = cursor.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
-            vtaMax = cursor.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
+            vtaMin = cursor.getDouble(6) // VARIABLE EN DOUBLE DE VTA MIN
+            vtaMax = cursor.getDouble(7) // VARIABLE EN DOUBLE DE VTA MAX
             listacatalogo!!.add(catalogo)
             cursor.moveToNext()
         }
@@ -935,7 +933,7 @@ class CatalogoActivity : AppCompatActivity() {
             )
         }
 
-        //select codigo, nombre from articulo
+        // select codigo, nombre from articulo
         while (cursor!!.moveToNext()) {
             catalogo = Catalogo()
             catalogo.setCodigo(cursor.getString(0))
@@ -956,8 +954,8 @@ class CatalogoActivity : AppCompatActivity() {
             catalogo.setVta_solofac(cursor.getInt(11))
             catalogo.setVta_solone(cursor.getInt(12))
             catalogo.setReferencia(cursor.getString(13))
-            vtaMin = cursor.getDouble(6) //VARIABLE EN DOUBLE DE VTA MIN
-            vtaMax = cursor.getDouble(7) //VARIABLE EN DOUBLE DE VTA MAX
+            vtaMin = cursor.getDouble(6) // VARIABLE EN DOUBLE DE VTA MIN
+            vtaMax = cursor.getDouble(7) // VARIABLE EN DOUBLE DE VTA MAX
             listacatalogo!!.add(catalogo)
         }
         cursor.close()
@@ -988,5 +986,4 @@ class CatalogoActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

@@ -32,7 +32,6 @@ class DialogImgAdapter(
                 }
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DialogImgHolder {
@@ -52,5 +51,4 @@ class DialogImgAdapter(
     override fun onBindViewHolder(holder: DialogImgHolder, position: Int) {
         holder.render(imgList[position], onClickListener)
     }
-
 }

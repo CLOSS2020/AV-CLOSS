@@ -24,7 +24,6 @@ class RecsAdapter : RecyclerView.Adapter<RecsAdapter.RecHolder>() {
 
     override fun onBindViewHolder(holder: RecHolder, position: Int) {
         holder.bind(cobranza[position])
-
     }
 
     override fun getItemCount(): Int {
@@ -42,5 +41,4 @@ class RecsAdapter : RecyclerView.Adapter<RecsAdapter.RecHolder>() {
             tvNombreClienteInfo.text = cobranza.cliente
         }
     }
-
 }

@@ -32,7 +32,6 @@ class SimpleDocsAdapter : RecyclerView.Adapter<SimpleDocsAdapter.SDocsHolder>() 
 
     override fun onBindViewHolder(holder: SDocsHolder, position: Int) {
         holder.bind(cobranza[position])
-
     }
 
     override fun getItemCount(): Int {
@@ -42,7 +41,6 @@ class SimpleDocsAdapter : RecyclerView.Adapter<SimpleDocsAdapter.SDocsHolder>() 
     class SDocsHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val nrodoc: TextView = view.findViewById(R.id.tv_nrodoc_sdocs)
         val cliente: TextView = view.findViewById(R.id.tv_nocli_sdocs)
-
 
         fun bind(cobranza: CXC) {
             nrodoc.text = cobranza.documento

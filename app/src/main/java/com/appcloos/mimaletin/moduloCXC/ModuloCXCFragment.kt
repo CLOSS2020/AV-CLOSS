@@ -14,14 +14,14 @@ import com.appcloos.mimaletin.databinding.FragmentModuloCxcBinding
 import com.appcloos.mimaletin.moduloCXC.fragments.EdoGenCuentaFragment
 import com.appcloos.mimaletin.moduloCXC.fragments.PlanificadorCXCFragment
 
-
 class ModuloCXCFragment : Fragment() {
     private lateinit var binding: FragmentModuloCxcBinding
     private lateinit var preferences: SharedPreferences
     private var codEmpresa: String? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentModuloCxcBinding.inflate(layoutInflater)

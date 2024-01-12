@@ -48,7 +48,6 @@ class DetalleCXCAdapter(
                     "Ret. IVA: " + ObjetoUtils.valorReal(kePrecobradocs.bsretiva).toString()
                 binding.tvRetFlete.text =
                     "Ret. Flete: " + ObjetoUtils.valorReal(kePrecobradocs.bsretfte).toString()
-
             } else {
                 binding.tvTotal.text =
                     "Total: " + ObjetoUtils.valorReal(kePrecobradocs.tnetoddol).toString()
@@ -65,7 +64,6 @@ class DetalleCXCAdapter(
                     "Ret. Flete: " + ObjetoUtils.valorReal(kePrecobradocs.bsretfte / tasa)
                         .toString()
             }
-
         }
     }
 
@@ -73,7 +71,9 @@ class DetalleCXCAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return DetalleCXCHolder(
             layoutInflater.inflate(
-                R.layout.item_detalles_cxc, parent, false
+                R.layout.item_detalles_cxc,
+                parent,
+                false
             )
         )
     }

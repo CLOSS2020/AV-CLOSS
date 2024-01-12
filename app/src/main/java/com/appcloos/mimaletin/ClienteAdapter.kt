@@ -57,7 +57,6 @@ class ClienteAdapter(
                 normalColor(binding.mainContainer)
             }
 
-
             binding.mainContainer.setOnClickListener {
                 onClickListener(absoluteAdapterPosition)
             }
@@ -80,8 +79,5 @@ class ClienteAdapter(
                 setBackgroundColor(color(R.color.basicStyleRecicleView))
             }
         }
-
     }
-
-
 }

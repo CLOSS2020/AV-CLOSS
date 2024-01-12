@@ -1,0 +1,55 @@
+package com.appcloos.mimaletin
+
+class Documentos {
+    var codcliente: String = ""
+    var nombrecli: String = ""
+    var agencia: String = ""
+    var tipodoc: String = ""
+    var documento: String = ""
+    var tipodocv: String = ""
+    var fchvencedcto: String = ""
+    var mtodcto: Double = 0.0
+    var tienedcto: String = ""
+    var cbsretencion: Double = 0.0
+    var cdretencion: Double = 0.0
+    var cbsretencioniva: Double = 0.0
+    var cdretencioniva: Double = 0.0
+    var cbsretparme: Double = 0.0
+    var cdretparme: Double = 0.0
+    var cdretflete: Double = 0.0
+    var cbsretflete: Double = 0.0
+    var bsmtoiva: Double = 0.0
+    var bsmtofte: Double = 0.0
+    var retmunMto: Double = 0.0
+    var saldo: Double = 0.0
+    var netorestante: Double = 0.0
+    var rutaParme: String = ""
+    var emision: String = ""
+    var recepcion: String = ""
+    var vence: String = ""
+    var estatusdoc: String = ""
+    var vendedor: String = ""
+    var codcoord: String = ""
+    var tasadoc: Double = 0.0
+    var fechamodifi: String = ""
+    var aceptadev: String = ""
+    var fechaDocs: String = ""
+    var ktiNegesp: String = ""
+    var contribesp: Double = 0.0
+    var tipoprecio: Double = 0.0
+    var diascred: Double = 0.0
+    var dtotneto: Double = 0.0
+    var dtotimpuest: Double = 0.0
+    var dtotalfinal: Double = 0.0
+    var dtotpagos: Double = 0.0
+    var dtotdescuen: Double = 0.0
+    var dFlete: Double = 0.0
+    var dtotdev: Double = 0.0
+    var dvndmtototal: Double = 0.0
+    var dretencion: Double = 0.0
+    var dretencioniva: Double = 0.0
+    var bsiva: Double = 0.0
+    var bsflete: Double = 0.0
+    var bsretencioniva: Double = 0.0
+    var bsretencion: Double = 0.0
+}

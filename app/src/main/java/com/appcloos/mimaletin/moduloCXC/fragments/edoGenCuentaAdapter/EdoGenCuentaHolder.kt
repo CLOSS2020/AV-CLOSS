@@ -13,7 +13,6 @@ class EdoGenCuentaHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemEstadoGeneralBinding.bind(view)
 
     fun render(edoGen: EdoGeneralCxc, onClickListener: (String, String) -> Unit) {
-
         val fechaVencimiento = if (edoGen.fechaVencimiento.diferenciaFehca().toInt() > 0) {
             "${edoGen.fechaVencimiento.diferenciaFehca()} días"
         } else {
@@ -22,7 +21,7 @@ class EdoGenCuentaHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         binding.tvCodcliEstGen.setDrawableHeadVariantAgencia(Constantes.AGENCIA)
 
-        //asignacion de variables a los campos de texto a mostrar
+        // asignacion de variables a los campos de texto a mostrar
         binding.tvCodcliEstGen.text = edoGen.codigocliente
         binding.tvNomclieEstGen.text = edoGen.nomcliente
         binding.tvDeudaEstGen.text = edoGen.montoTotal.toString()
@@ -32,7 +31,8 @@ class EdoGenCuentaHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         binding.itemEdoGenCuenta.setOnClickListener {
             onClickListener(
-                edoGen.codigocliente, edoGen.nomcliente
+                edoGen.codigocliente,
+                edoGen.nomcliente
             )
         }
     }

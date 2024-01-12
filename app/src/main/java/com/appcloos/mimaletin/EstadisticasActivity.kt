@@ -33,13 +33,13 @@ class EstadisticasActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEstadisticasBinding
 
-    //TableRow rw_porcentaje;
+    // TableRow rw_porcentaje;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEstadisticasBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la activity en vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         listavendedores = findViewById(R.id.listaVendedores)
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
@@ -96,10 +96,10 @@ class EstadisticasActivity : AppCompatActivity() {
         listadeestadisticas = ArrayList()
         val cursor = keAndroid.rawQuery(
             "SELECT vendedor, nombrevend, prcmeta, fecha_estad FROM ke_estadc01 " +
-                    "WHERE $campo = '$cod_usuario' AND " +
-                    "(vendedor LIKE '%$busqueda%' OR nombrevend LIKE '%$busqueda%') AND " +
-                    "empresa = '$codEmpresa' " +
-                    "ORDER BY prcmeta desc",
+                "WHERE $campo = '$cod_usuario' AND " +
+                "(vendedor LIKE '%$busqueda%' OR nombrevend LIKE '%$busqueda%') AND " +
+                "empresa = '$codEmpresa' " +
+                "ORDER BY prcmeta desc",
             null
         )
         while (cursor.moveToNext()) {
@@ -123,16 +123,18 @@ class EstadisticasActivity : AppCompatActivity() {
         val itemid = item.itemId
         if (itemid == R.id.sync_estad) {
             fecha
-            bajarEstadisticas("https://$enlaceEmpresa/webservice/estadisticas_V2.php?campo=$campo&&cod_usuario=$cod_usuario&&fecha_sinc=$fechaEstadis")
+            bajarEstadisticas(
+                "https://$enlaceEmpresa/webservice/estadisticas_V2.php?campo=$campo&&cod_usuario=$cod_usuario&&fecha_sinc=$fechaEstadis"
+            )
         }
         return super.onOptionsItemSelected(item)
     }
 
     private val fecha: Unit
         get() {
-            //Calendar hoy = Calendar.getInstance();
-            //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            //fechaEstadis = sdf.format(hoy.getTime());
+            // Calendar hoy = Calendar.getInstance();
+            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            // fechaEstadis = sdf.format(hoy.getTime());
             fechaEstadis = "0001-01-01"
         }
 
@@ -140,8 +142,8 @@ class EstadisticasActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
-                    "kee_url," +
-                    "kee_sucursal"
+                "kee_url," +
+                "kee_sucursal"
         )
         val cursor = keAndroid.query(
             "ke_enlace",
@@ -168,7 +170,9 @@ class EstadisticasActivity : AppCompatActivity() {
                 println(response)
                 if (response.getString("estadisticas") != "null") {
                     Toast.makeText(
-                        applicationContext, "Descargando Estadísticas", Toast.LENGTH_SHORT
+                        applicationContext,
+                        "Descargando Estadísticas",
+                        Toast.LENGTH_SHORT
                     ).show()
 
                     val estadisticas = response.getJSONArray("estadisticas")
@@ -201,8 +205,8 @@ class EstadisticasActivity : AppCompatActivity() {
                             val devdolTotneto = jsonObject.getDouble("devdol_totneto")
                             val defdolTotneto = jsonObject.getDouble("defdol_totneto")
                             val totdolcob = jsonObject.getDouble("totdolcob")
-                            //val cntrecl = jsonObject.getDouble("cntrecl")
-                            //val mtorecl = jsonObject.getDouble("mtorecl")
+                            // val cntrecl = jsonObject.getDouble("cntrecl")
+                            // val mtorecl = jsonObject.getDouble("mtorecl")
 
                             val cv = ContentValues()
                             cv.put("codcoord", codcoord)
@@ -229,14 +233,16 @@ class EstadisticasActivity : AppCompatActivity() {
                             cv.put("devdol_totneto", devdolTotneto)
                             cv.put("defdol_totneto", defdolTotneto)
                             cv.put("totdolcob", totdolcob)
-                            //cv.put("cntrecl", cntrecl)
-                            //cv.put("mtorecl", mtorecl)
+                            // cv.put("cntrecl", cntrecl)
+                            // cv.put("mtorecl", mtorecl)
                             cv.put("empresa", codEmpresa)
 
                             if (conn.validarExistenciaCamposVarios(
-                                    "ke_estadc01", ArrayList(
+                                    "ke_estadc01",
+                                    ArrayList(
                                         mutableListOf("vendedor", "empresa")
-                                    ), arrayListOf(vendedor, codEmpresa)
+                                    ),
+                                    arrayListOf(vendedor, codEmpresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
@@ -250,7 +256,9 @@ class EstadisticasActivity : AppCompatActivity() {
                             }
 
                             Toast.makeText(
-                                this@EstadisticasActivity, "Datos actualizados.", Toast.LENGTH_SHORT
+                                this@EstadisticasActivity,
+                                "Datos actualizados.",
+                                Toast.LENGTH_SHORT
                             ).show()
                         } catch (e: SQLException) {
                             Toast.makeText(
@@ -265,7 +273,7 @@ class EstadisticasActivity : AppCompatActivity() {
                                 Toast.LENGTH_LONG
                             ).show()
                         }
-                        } //aca cierra el for
+                    } // aca cierra el for
 
                     actualizarLista()
                 } else {
@@ -283,13 +291,16 @@ class EstadisticasActivity : AppCompatActivity() {
                     "Sin actualización",
                     Toast.LENGTH_LONG
                 ).show()
-            }) {
+            }
+        ) {
             override fun getParams(): Map<String, String> {
                 return HashMap()
             }
         }
         val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(jsonArrayRequest) //esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba
     }
 
     private fun actualizarLista() {
@@ -316,14 +327,14 @@ class EstadisticasActivity : AppCompatActivity() {
         }
     }
 
-    //el metodo para consultar los vendedores segun el coordinador
+    // el metodo para consultar los vendedores segun el coordinador
     private fun consultarVendedores(campo: String?, codUsuario: String?) {
         val keAndroid = conn.writableDatabase
         var estadistica: Estadistica
         listadeestadisticas = ArrayList()
         val cursor = keAndroid.rawQuery(
             "SELECT vendedor, nombrevend, prcmeta, fecha_estad FROM ke_estadc01 " +
-                    "WHERE $campo = '$codUsuario' AND empresa = '$codEmpresa' ORDER BY prcmeta desc",
+                "WHERE $campo = '$codUsuario' AND empresa = '$codEmpresa' ORDER BY prcmeta desc",
             null
         )
         while (cursor.moveToNext()) {
@@ -379,5 +390,4 @@ class EstadisticasActivity : AppCompatActivity() {
         // you could also use a switch if you have many themes that could apply
         return theme
     }
-
 }

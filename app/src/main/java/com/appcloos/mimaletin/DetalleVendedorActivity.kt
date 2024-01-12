@@ -9,7 +9,6 @@ import com.appcloos.mimaletin.databinding.ActivityDetalleVendedorBinding
 class DetalleVendedorActivity : AppCompatActivity() {
     var conn: AdminSQLiteOpenHelper? = null
 
-
     private lateinit var binding: ActivityDetalleVendedorBinding
     private lateinit var codEmpresa: String
 
@@ -18,14 +17,14 @@ class DetalleVendedorActivity : AppCompatActivity() {
         binding = ActivityDetalleVendedorBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //mantener la orientacion vertical
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la orientacion vertical
         val intent = intent
         val codigoVendedor = intent.getStringExtra("codigoVend")
         val nombreVendedor = intent.getStringExtra("nombreVend")
         codEmpresa = intent.getStringExtra("codigoEmpresa").toString()
         supportActionBar!!.title = nombreVendedor
 
-        //declaracion de campos de la tabla que van a ser llenados por el resultado de la consulta.
+        // declaracion de campos de la tabla que van a ser llenados por el resultado de la consulta.
 
         llenarDatosDeFicha(codigoVendedor)
 
@@ -33,14 +32,14 @@ class DetalleVendedorActivity : AppCompatActivity() {
     }
 
     private fun llenarDatosDeFicha(codigoVendedor: String?) {
-        //Locale es = new Locale("es");
+        // Locale es = new Locale("es");
 
-        //NumberFormat formatoMoneda     = NumberFormat.getCurrencyInstance();
+        // NumberFormat formatoMoneda     = NumberFormat.getCurrencyInstance();
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn!!.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT cntpedidos, mtopedidos, cntfacturas, mtofacturas, metavend, prcmeta, cntclientes, clivisit, prcvisitas, lom_montovtas, lom_prcvtas, lom_prcvisit, rlom_montovtas, rlom_prcvtas, rlom_prcvisit, ppgdol_totneto, devdol_totneto, defdol_totneto, totdolcob FROM ke_estadc01 " +
-                    "WHERE vendedor ='$codigoVendedor' AND empresa = '$codEmpresa'",
+                "WHERE vendedor ='$codigoVendedor' AND empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -103,7 +102,6 @@ class DetalleVendedorActivity : AppCompatActivity() {
 
             val totdolcob = cursor.getDouble(18)
             binding.tvTotdolcob.text = "$ " + totdolcob.toTwoDecimals()
-
         }
         cursor.close()
     }
@@ -119,8 +117,6 @@ class DetalleVendedorActivity : AppCompatActivity() {
         binding.apply {
             trTableRow1.setBackgroundColor(trTableRow1.colorAgencia(Constantes.AGENCIA))
             trTableRow2.setBackgroundColor(trTableRow2.colorAgencia(Constantes.AGENCIA))
-
         }
-
     }
 }

@@ -13,7 +13,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-
 class DatePickerFragment(
     private val actividad: String,
     private val nroDoc: String? = null,
@@ -21,15 +20,12 @@ class DatePickerFragment(
     val listener: (day: Int, month: Int, year: Int) -> Unit,
 ) : DialogFragment(), DatePickerDialog.OnDateSetListener {
 
-
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         listener(dayOfMonth, month + 1, year)
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calen: Calendar = Calendar.getInstance()
-
 
         /*WTF Java y Kotlin se la mamaron con empezar a contar los
         meses en 0 XD, osea hay que sumarle 1*/
@@ -48,11 +44,11 @@ class DatePickerFragment(
 
         picker.datePicker.maxDate = calen.timeInMillis
 
-        //calculo la fecha anterior de 3 dias (por los momentos, parametrizar despues)
-        Date()/*calen.time = date*/
+        // calculo la fecha anterior de 3 dias (por los momentos, parametrizar despues)
+        Date() /*calen.time = date*/
         when (actividad) {
             "cxcReportActivity" -> {
-                calen.add(Calendar.DATE, -2) //reduje los dias
+                calen.add(Calendar.DATE, -2) // reduje los dias
                 picker.datePicker.minDate = calen.timeInMillis
             }
 
@@ -65,12 +61,14 @@ class DatePickerFragment(
                     val keAndroid: SQLiteDatabase = conn.writableDatabase
 
                     val cursor = keAndroid.rawQuery(
-                        "SELECT emision FROM ke_doccti WHERE documento ='$nroDoc'", null
+                        "SELECT emision FROM ke_doccti WHERE documento ='$nroDoc'",
+                        null
                     )
 
                     if (cursor.moveToFirst()) {
                         val date1 = SimpleDateFormat(
-                            "yyyy-MM-dd", Locale.getDefault()
+                            "yyyy-MM-dd",
+                            Locale.getDefault()
                         ).parse(cursor.getString(0))
                         cursor.close()
 
@@ -78,7 +76,6 @@ class DatePickerFragment(
                         calendar.time = date1!! // Configuramos la fecha que se recibe
 
                         picker.datePicker.minDate = calendar.timeInMillis
-
                     } else {
                         dismiss()
                         Toast.makeText(
@@ -91,12 +88,9 @@ class DatePickerFragment(
             }
 
             else -> {
-
             }
         }
 
         return picker
     }
-
-
 }
