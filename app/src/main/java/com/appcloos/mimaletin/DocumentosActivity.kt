@@ -149,46 +149,53 @@ class DocumentosActivity : AppCompatActivity() {
         val aceptaDevoluciones = listadocs[position].aceptadev
         val estadoDoc = listadocs[position].estatusdoc
         println(estadoDoc)
-        if (!permisos!!.contains("REC001")) {
-            val ventana =
-                AlertDialog.Builder(
-                    ContextThemeWrapper(
-                        this,
-                        setAlertDialogTheme(Constantes.AGENCIA)
-                    )
+        // if (!permisos!!.contains("REC001")) {
+        /*val ventana =
+            AlertDialog.Builder(
+                ContextThemeWrapper(
+                    this,
+                    setAlertDialogTheme(Constantes.AGENCIA)
                 )
-            ventana.setTitle("Doc Nº: $documentoP")
-            ventana.setMessage(
-                """
+            )
+        ventana.setTitle("Doc Nº: $documentoP")
+        ventana.setMessage(
+            """
+Monto Neto  :       $totnetoP$
+Monto IVA   :       $totimpuestP$
+Descuentos  :       $totdescup$
+Monto Total :       $totalfinalP$
+
+            """.trimIndent()
+        )
+        val dialogo = ventana.create() // creamos el dialogo en base a la ventana diseñada
+        dialogo.show() // mostrar el dialogo
+        val messageText = dialogo.findViewById<TextView>(android.R.id.message)
+        messageText!!.gravity = Gravity.END*/
+        // } else {
+        val ventana =
+            AlertDialog.Builder(
+                ContextThemeWrapper(
+                    this,
+                    setAlertDialogTheme(Constantes.AGENCIA)
+                )
+            )
+        ventana.setTitle("Doc Nº: $documentoP")
+        ventana.setMessage(
+            """
     Monto Neto  :       $totnetoP$
     Monto IVA   :       $totimpuestP$
     Descuentos  :       $totdescup$
     Monto Total :       $totalfinalP$
     
-                """.trimIndent()
+            """.trimIndent()
+        )
+        // IF para que aparezca el boton de generar reclamo
+        if (!conn.getConfigBoolUsuario(
+                "APP_MODULO_RECLAMOS_GENERAR",
+                cod_usuario!!,
+                codEmpresa!!
             )
-            val dialogo = ventana.create() // creamos el dialogo en base a la ventana diseñada
-            dialogo.show() // mostrar el dialogo
-            val messageText = dialogo.findViewById<TextView>(android.R.id.message)
-            messageText!!.gravity = Gravity.END
-        } else {
-            val ventana =
-                AlertDialog.Builder(
-                    ContextThemeWrapper(
-                        this,
-                        setAlertDialogTheme(Constantes.AGENCIA)
-                    )
-                )
-            ventana.setTitle("Doc Nº: $documentoP")
-            ventana.setMessage(
-                """
-    Monto Neto  :       $totnetoP$
-    Monto IVA   :       $totimpuestP$
-    Descuentos  :       $totdescup$
-    Monto Total :       $totalfinalP$
-    
-                """.trimIndent()
-            )
+        ) {
             ventana.setNeutralButton("Generar Reclamo") { _: DialogInterface?, _: Int ->
                 if (estadoDoc == "2") {
                     Toast.makeText(
@@ -208,16 +215,17 @@ class DocumentosActivity : AppCompatActivity() {
                     }
                 }
             }
-            val dialogo = ventana.create() // creamos el dialogo en base a la ventana diseñada
-            dialogo.show() // mostrar el dialogo
-            val nbutton: Button = dialogo.getButton(DialogInterface.BUTTON_NEUTRAL)
-            nbutton.apply {
-                setTextColor(colorTextAgencia(Constantes.AGENCIA))
-            }
-
-            val messageText = dialogo.findViewById<TextView>(android.R.id.message)
-            messageText!!.gravity = Gravity.END
         }
+        val dialogo = ventana.create() // creamos el dialogo en base a la ventana diseñada
+        dialogo.show() // mostrar el dialogo
+        val nbutton: Button = dialogo.getButton(DialogInterface.BUTTON_NEUTRAL)
+        nbutton.apply {
+            setTextColor(colorTextAgencia(Constantes.AGENCIA))
+        }
+
+        val messageText = dialogo.findViewById<TextView>(android.R.id.message)
+        messageText!!.gravity = Gravity.END
+        // }
     }
 
     private fun cargarModulos() {
@@ -237,8 +245,8 @@ class DocumentosActivity : AppCompatActivity() {
         val keAndroid = conn.writableDatabase
         val columnas = arrayOf(
             "kee_nombre," +
-                "kee_url," +
-                "kee_sucursal"
+                    "kee_url," +
+                    "kee_sucursal"
         )
         val cursor = keAndroid.query(
             "ke_enlace",
@@ -324,31 +332,31 @@ class DocumentosActivity : AppCompatActivity() {
         consultarLineasDoc()*/
     }
 
-   /* private fun consultarLineasDoc() {
-        val keAndroid = conn.writableDatabase
-        var lineas: Lineas
-        listalineasdoc = ArrayList()
-        val cursor = keAndroid.rawQuery(
-            "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin FROM ke_doclmv " +
-                    "WHERE documento = '$documento' AND " +
-                    "empresa = '$codEmpresa' AND " +
-                    "pid NOT IN (SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')",
-            null
-        )
-        while (cursor.moveToNext()) {
-            lineas = Lineas()
-            lineas.setPid(cursor.getString(0))
-            lineas.setCodigo(cursor.getString(1))
-            lineas.setNombre(cursor.getString(2))
-            lineas.setCantidad(cursor.getDouble(3))
-            lineas.setDmontototal(cursor.getDouble(4))
-            lineas.setDpreciofin(cursor.getDouble(5))
-            listalineasdoc!!.add(lineas)
-        }
-        lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc)
-        lineasAdapter!!.notifyDataSetChanged()
-        cursor.close()
-    }*/
+    /* private fun consultarLineasDoc() {
+         val keAndroid = conn.writableDatabase
+         var lineas: Lineas
+         listalineasdoc = ArrayList()
+         val cursor = keAndroid.rawQuery(
+             "SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin FROM ke_doclmv " +
+                     "WHERE documento = '$documento' AND " +
+                     "empresa = '$codEmpresa' AND " +
+                     "pid NOT IN (SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')",
+             null
+         )
+         while (cursor.moveToNext()) {
+             lineas = Lineas()
+             lineas.setPid(cursor.getString(0))
+             lineas.setCodigo(cursor.getString(1))
+             lineas.setNombre(cursor.getString(2))
+             lineas.setCantidad(cursor.getDouble(3))
+             lineas.setDmontototal(cursor.getDouble(4))
+             lineas.setDpreciofin(cursor.getDouble(5))
+             listalineasdoc!!.add(lineas)
+         }
+         lineasAdapter = LineasAdapter(this@DocumentosActivity, listalineasdoc)
+         lineasAdapter!!.notifyDataSetChanged()
+         cursor.close()
+     }*/
 
     private fun cargarLineasDocumento(url: String) {
         val jsonArrayRequest: JsonArrayRequest =

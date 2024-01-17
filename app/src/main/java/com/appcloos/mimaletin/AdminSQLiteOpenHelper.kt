@@ -1419,7 +1419,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             )} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND username = '$user' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
             null
         )
-        // System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
+        println("SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND username = '$user' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';")
         if (cursor.moveToFirst()) {
             flag = cursor.getInt(0) == 1
         }

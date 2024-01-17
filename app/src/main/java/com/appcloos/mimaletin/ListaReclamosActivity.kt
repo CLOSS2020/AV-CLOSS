@@ -477,7 +477,8 @@ class ListaReclamosActivity : AppCompatActivity() {
             Response.Listener { response: String ->
                 if (response.trim {
                         it <= ' '
-                    } == "OK") { // si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
+                    } == "OK"
+                ) { // si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
                     cambiarEstadoReclamo()
                     Toast.makeText(
                         this@ListaReclamosActivity,

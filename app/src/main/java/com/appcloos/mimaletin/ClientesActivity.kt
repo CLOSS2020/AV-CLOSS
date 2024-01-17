@@ -24,6 +24,7 @@ class ClientesActivity : AppCompatActivity() {
     var adaptador: ArrayAdapter<*>? = null
     private lateinit var preferences: SharedPreferences
     private lateinit var clienteAdapter: ClienteAdapter
+    private lateinit var enlaceEmpresa: String
 
     private lateinit var binding: ActivityClientesBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +38,12 @@ class ClientesActivity : AppCompatActivity() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
         codigoEmpresa = preferences.getString("codigoEmpresa", null)
+        enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codigoEmpresa!!)
+        )
 
         // instancio el recyclerview y le coloco layout
 
@@ -51,7 +58,7 @@ class ClientesActivity : AppCompatActivity() {
         }
 
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario!!, codigoEmpresa!!)
+        objetoAux.descargaDesactivo(cod_usuario!!, codigoEmpresa!!, enlaceEmpresa)
     }
 
     /*    private fun iraDocumentos(codigoCliente: String, nombreCliente: String) {

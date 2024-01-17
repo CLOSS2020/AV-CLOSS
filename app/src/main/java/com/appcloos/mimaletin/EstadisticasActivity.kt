@@ -60,7 +60,7 @@ class EstadisticasActivity : AppCompatActivity() {
             iraDetalleVendedor(codigoVend, nombreVendedor)
         }
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario, codEmpresa)
+        objetoAux.descargaDesactivo(cod_usuario, codEmpresa, enlaceEmpresa)
     }
 
     private fun iraDetalleVendedor(codigoVend: String, nombreVendedor: String) {

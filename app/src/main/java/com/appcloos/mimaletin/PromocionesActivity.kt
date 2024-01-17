@@ -66,7 +66,7 @@ class PromocionesActivity : AppCompatActivity() {
         listaArticulos.adapter = catalogoAdapter // refresco el listview
         listaArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!, enlaceEmpresa!!)
     }
 
     private fun obtenerArticulosPromo() {

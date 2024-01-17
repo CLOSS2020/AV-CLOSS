@@ -359,7 +359,7 @@ class ReclamosActivity : AppCompatActivity() {
         binding.tvDocumentodoc.text = "Nº DOC: $documento"
         binding.tvMontodev.text = "Monto Devolución: $$montoDev"
         cargarLineasDocumento(
-            "https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documento!!.trim {
+            "https://$enlaceEmpresa/webservice/lineasdocs.php?documento=" + documento!!.trim {
                 it <= ' '
             } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
         )
@@ -1002,6 +1002,8 @@ class ReclamosActivity : AppCompatActivity() {
             ex.printStackTrace()
         }
         val jsonStrRCL = jsonRCL.toString()
+        println(jsonStrRCL)
+        println("https://$enlaceEmpresa/webservice/Reclamos.php")
         try {
             insertarReclamo(jsonStrRCL)
         } catch (ex: Exception) {
@@ -1019,7 +1021,8 @@ class ReclamosActivity : AppCompatActivity() {
             Response.Listener { response: String ->
                 if (response.trim {
                         it <= ' '
-                    } == "OK") { // si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
+                    } == "OK"
+                ) { // si la respuesta obtenida es igual a ok, entonces cambio el estado del reclamo
                     cambiarEstadoReclamo()
                     Toast.makeText(
                         this@ReclamosActivity,
@@ -1040,6 +1043,7 @@ class ReclamosActivity : AppCompatActivity() {
                 val params: MutableMap<String, String> = HashMap()
                 params["jsonrcl"] = jsonStrRCL
                 params["agencia"] = codigoSucursal
+                println(params)
                 return params
             }
         }
@@ -1100,7 +1104,7 @@ class ReclamosActivity : AppCompatActivity() {
 
     private fun cargarLineasDoc() {
         cargarLineasDocumento(
-            "https://" + enlaceEmpresa + "/webservice/lineasdocs.php?documento=" + documento!!.trim {
+            "https://$enlaceEmpresa/webservice/lineasdocs.php?documento=" + documento!!.trim {
                 it <= ' '
             } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
         )

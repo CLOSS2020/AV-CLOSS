@@ -119,7 +119,7 @@ class CatalogoActivity : AppCompatActivity() {
         // corro actDirect
         actDirec()
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(codUsuario, codEmpresa)
+        objetoAux.descargaDesactivo(codUsuario, codEmpresa, enlaceEmpresa!!)
     }
 
     // este metodo inicializa un menu con el searchview y el selector de precios   SLECT

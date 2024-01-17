@@ -1,74 +1,59 @@
-package com.appcloos.mimaletin;
+package com.appcloos.mimaletin
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
+import android.content.pm.ActivityInfo
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
 
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.os.Bundle;
+class CobranzasActivity : AppCompatActivity() {
+    private lateinit var tabLayout: TabLayout
+    lateinit var viewPager: ViewPager
+    var pagerAdapter: PagerController? = null
+    var reciboCobranza = ReciboCobranza()
+    var verRecibos = VerRecibos()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_cobranzas)
+        requestedOrientation =
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la orientacion vertical
+        tabLayout = findViewById(R.id.TabLayout)
+        viewPager = findViewById(R.id.ViewPager)
 
-import com.google.android.material.tabs.TabItem;
-import com.google.android.material.tabs.TabLayout;
+        val conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
 
-public class CobranzasActivity extends AppCompatActivity {
-
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    PagerController pagerAdapter;
-
-    ReciboCobranza reciboCobranza = new ReciboCobranza();
-    VerRecibos verRecibos         = new VerRecibos();
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cobranzas);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //mantener la orientacion vertical
-
-        tabLayout = findViewById(R.id.TabLayout);
-        viewPager = findViewById(R.id.ViewPager);
-
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String cod_usuario = preferences.getString("cod_usuario", null);
-        String codEmpresa = preferences.getString("codigoEmpresa", null);
-
-        pagerAdapter = new PagerController(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(pagerAdapter);
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-
-                if(tab.getPosition() == 0){
-                    pagerAdapter.notifyDataSetChanged();
-
+        val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
+        val codUsuario = preferences.getString("cod_usuario", null)
+        val codEmpresa = preferences.getString("codigoEmpresa", null)
+        val enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codEmpresa!!)
+        )
+        pagerAdapter = PagerController(supportFragmentManager, tabLayout.tabCount)
+        viewPager.adapter = pagerAdapter
+        tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewPager.currentItem = tab.position
+                if (tab.position == 0) {
+                    pagerAdapter!!.notifyDataSetChanged()
                 }
-
-                if(tab.getPosition() == 1){
-                    pagerAdapter.notifyDataSetChanged();
-
+                if (tab.position == 1) {
+                    pagerAdapter!!.notifyDataSetChanged()
                 }
-
-                if(tab.getPosition() == 2){
-                    pagerAdapter.notifyDataSetChanged();
+                if (tab.position == 2) {
+                    pagerAdapter!!.notifyDataSetChanged()
                 }
             }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-        ObjetoAux objetoAux = new ObjetoAux(this);
-        objetoAux.descargaDesactivo(cod_usuario, codEmpresa);
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+        viewPager.addOnPageChangeListener(TabLayoutOnPageChangeListener(tabLayout))
+        val objetoAux = ObjetoAux(this)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa, enlaceEmpresa)
     }
 }

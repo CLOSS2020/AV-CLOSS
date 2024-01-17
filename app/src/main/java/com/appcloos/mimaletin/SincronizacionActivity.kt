@@ -159,7 +159,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
 
         // bt_subirprecob.setVisibility(View.INVISIBLE);
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!)
+        objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!, enlaceEmpresa)
         SINCRONIZO = conn.sincronizoPriVez(
             cod_usuario!!,
             codEmpresa!!

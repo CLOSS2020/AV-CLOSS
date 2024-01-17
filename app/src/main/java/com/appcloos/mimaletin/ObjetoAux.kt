@@ -64,8 +64,8 @@ class ObjetoAux(val context: Context) {
         requestQueue.add(jsonObjectRequest)
     }
 
-    fun descargaDesactivo(codUsuario: String, codEmpresa: String) {
-        val url = "https://cloccidental.com/webservice/desactivo.php?cod_usuario=$codUsuario"
+    fun descargaDesactivo(codUsuario: String, codEmpresa: String, enlaceEmpresa: String) {
+        val url = "https://$enlaceEmpresa/webservice/desactivo.php?cod_usuario=$codUsuario"
 
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject? ->

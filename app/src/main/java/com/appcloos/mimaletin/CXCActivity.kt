@@ -58,6 +58,7 @@ class CXCActivity : AppCompatActivity() {
     private lateinit var preferences: SharedPreferences // preferences para cargar los datos de la princ.
     private var codUsuario: String? = ""
     private var codEmpresa: String? = ""
+    private lateinit var enlaceEmpresa: String
     private lateinit var cursorCobranza: Cursor
     private lateinit var conn: AdminSQLiteOpenHelper
     private lateinit var keAndroid: SQLiteDatabase
@@ -124,6 +125,12 @@ class CXCActivity : AppCompatActivity() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
+        enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codEmpresa!!)
+        )
         listCobranza = ArrayList()
 
         binding.fbtAddcxc.setOnClickListener {
@@ -147,7 +154,7 @@ class CXCActivity : AppCompatActivity() {
         }
 
         val objetoAux = ObjetoAux(this)
-        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!)
+        objetoAux.descargaDesactivo(codUsuario!!, codEmpresa!!, enlaceEmpresa)
 
         // Retroceder Activity
         onBackPressedDispatcher.addCallback(
