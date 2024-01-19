@@ -257,7 +257,7 @@ class CxcReportActivity : AppCompatActivity() {
         // validacion del correlativo para la cobranza
         val cursorCorrelativo = keAndroid.rawQuery(
             "SELECT MAX(kcor_numero) FROM ke_corprec " +
-                    "WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'",
+                "WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'",
             null
         )
         cargarSaldos("USD", listaDocsSeleccionados)
@@ -1190,7 +1190,7 @@ class CxcReportActivity : AppCompatActivity() {
 
         val cursorBancos: Cursor = keAndroid.rawQuery(
             "SELECT DISTINCT codbanco, nombanco,cuentanac, inactiva, fechamodifi FROM listbanc " +
-                    "WHERE inactiva = 0 AND cuentanac = $moneda AND empresa = '$codEmpresa'",
+                "WHERE inactiva = 0 AND cuentanac = $moneda AND empresa = '$codEmpresa'",
             null
         )
         while (cursorBancos.moveToNext()) {
@@ -1486,9 +1486,9 @@ class CxcReportActivity : AppCompatActivity() {
         }
         // Valida que lo puesto en la referencia bancaria no este en blanco
         if ((
-                    binding.etCxcRefMain.text.toString() == "" || binding.etCxcRefMain.text.toString()
-                        .equals(null)
-                    ) && !ignore
+                binding.etCxcRefMain.text.toString() == "" || binding.etCxcRefMain.text.toString()
+                    .equals(null)
+                ) && !ignore
         ) {
             // Si ignore es false significa que no se ha puesto en banco para terminar la transaccion
             Toast.makeText(
@@ -1862,6 +1862,11 @@ class CxcReportActivity : AppCompatActivity() {
                             if (listaReciboPrLineas[i].agencia == "002" && (listaReciboPrLineas[i].documento == listaDocumentos[i].documento)) {
                                 listaDocumentos[i].cbsretflete = 0.00
                             }
+
+                            //inicializando las fechas para evitar errores en la subida de datos
+                            listaReciboPrLineas[i].fchemiret = "0000-00-00"
+                            listaReciboPrLineas[i].fchemirfte = "0000-00-00"
+                            listaReciboPrLineas[i].retmun_fch = "0000-00-00"
 
                             // llenado de campos de retenciones
                             // retenciones fase 1
@@ -2303,12 +2308,12 @@ class CxcReportActivity : AppCompatActivity() {
                                 listaReciboPrLineas.sumOf {
                                     it.bsneto
                                 } + (
-                                        listaReciboPrLineas.sumOf {
-                                            it.bsmtoiva
-                                        } + listaReciboPrLineas.sumOf {
-                                            it.bsretiva
-                                        }
-                                        ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                                    listaReciboPrLineas.sumOf {
+                                        it.bsmtoiva
+                                    } + listaReciboPrLineas.sumOf {
+                                        it.bsretiva
+                                    }
+                                    ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                             )
                         // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                         cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -2743,6 +2748,11 @@ class CxcReportActivity : AppCompatActivity() {
                         listaDocumentos[i].cbsretflete = 0.00
                     }
 
+                    //inicializando las fechas para evitar errores en la subida de datos
+                    listaReciboPrLineas[i].fchemiret = "0000-00-00"
+                    listaReciboPrLineas[i].fchemirfte = "0000-00-00"
+                    listaReciboPrLineas[i].retmun_fch = "0000-00-00"
+
                     // llenado de campos de retenciones
                     // retenciones fase 2
                     for (j in listaRetGuardada.indices) {
@@ -3008,12 +3018,12 @@ class CxcReportActivity : AppCompatActivity() {
                         listaReciboPrLineas.sumOf {
                             it.bsneto
                         } + (
-                                listaReciboPrLineas.sumOf {
-                                    it.bsmtoiva
-                                } + listaReciboPrLineas.sumOf {
-                                    it.bsretiva
-                                }
-                                ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                            listaReciboPrLineas.sumOf {
+                                it.bsmtoiva
+                            } + listaReciboPrLineas.sumOf {
+                                it.bsretiva
+                            }
+                            ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                     )
                 // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                 cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -3466,6 +3476,11 @@ class CxcReportActivity : AppCompatActivity() {
                                 listaDocumentos[i].cbsretflete = 0.00
                             }
 
+                            //inicializando las fechas para evitar errores en la subida de datos
+                            listaReciboPrLineas[i].fchemiret = "0000-00-00"
+                            listaReciboPrLineas[i].fchemirfte = "0000-00-00"
+                            listaReciboPrLineas[i].retmun_fch = "0000-00-00"
+
                             // llenado de campos de retenciones
                             // retenciones fase 3
                             for (j in listaRetGuardada.indices) {
@@ -3866,12 +3881,12 @@ class CxcReportActivity : AppCompatActivity() {
                                 listaReciboPrLineas.sumOf {
                                     it.bsneto
                                 } + (
-                                        listaReciboPrLineas.sumOf {
-                                            it.bsmtoiva
-                                        } + listaReciboPrLineas.sumOf {
-                                            it.bsretiva
-                                        }
-                                        ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                                    listaReciboPrLineas.sumOf {
+                                        it.bsmtoiva
+                                    } + listaReciboPrLineas.sumOf {
+                                        it.bsretiva
+                                    }
+                                    ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                             )
                         // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                         cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -4256,6 +4271,10 @@ class CxcReportActivity : AppCompatActivity() {
                         listaDocumentos[i].cbsretflete = 0.00
                     }
 
+
+                    listaReciboPrLineas[i].fchemiret = "0000-00-00"
+                    listaReciboPrLineas[i].fchemirfte = "0000-00-00"
+                    listaReciboPrLineas[i].retmun_fch = "0000-00-00"
                     // llenado de campos de retenciones
                     // retenciones fase 4
                     for (j in listaRetGuardada.indices) {
@@ -4504,9 +4523,9 @@ class CxcReportActivity : AppCompatActivity() {
                                     // para que si aun queda un poco de dinero sobrante se guarde futuramente como saldo a favor
                                     // montoRec -= netocobrado
                                     montoRec -= (
-                                            netocobrado - binding.tvCxcDctos.text.toString()
-                                                .toDouble()
-                                            )
+                                        netocobrado - binding.tvCxcDctos.text.toString()
+                                            .toDouble()
+                                        )
                                 } else if (netoDesc > montoRec && montoRec > 0) {
                                     val cobroAbono = montoRec * listaDocumentos[i].tasadoc
 
@@ -4586,12 +4605,12 @@ class CxcReportActivity : AppCompatActivity() {
                         listaReciboPrLineas.sumOf {
                             it.bsneto
                         } + (
-                                listaReciboPrLineas.sumOf {
-                                    it.bsmtoiva
-                                } + listaReciboPrLineas.sumOf {
-                                    it.bsretiva
-                                }
-                                ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                            listaReciboPrLineas.sumOf {
+                                it.bsmtoiva
+                            } + listaReciboPrLineas.sumOf {
+                                it.bsretiva
+                            }
+                            ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                     )
                 // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                 cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -4805,7 +4824,7 @@ class CxcReportActivity : AppCompatActivity() {
         }
         val cursor = keAndroid.rawQuery(
             "SELECT COUNT(*) FROM $tabla " +
-                    "WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco' AND empresa = '$codEmpresa';",
+                "WHERE bcoref = '$referencia' AND bcoref != '' AND bcocod = '$codigoBanco' AND empresa = '$codEmpresa';",
             null
         )
         if (cursor.moveToFirst()) {
@@ -5038,11 +5057,11 @@ class CxcReportActivity : AppCompatActivity() {
     private fun calcularDescuentos2(moneda: String) {
         if (binding.cbCxcDescuentos.isChecked && // se seleccionó descuento
             (
-                    conn.validarExistenciaDescuento(
-                        codigoBancoCompleto,
-                        codEmpresa!!
-                    ) || binding.rbCxcEfectivoMain.isChecked
-                    ) && // validar que exista un descuento activo
+                conn.validarExistenciaDescuento(
+                    codigoBancoCompleto,
+                    codEmpresa!!
+                ) || binding.rbCxcEfectivoMain.isChecked
+                ) && // validar que exista un descuento activo
             !binding.cbCxcComplemento.isChecked // validar que no se selecciono complemento
         ) {
             var descuentos: Descuentos
@@ -5285,7 +5304,7 @@ class CxcReportActivity : AppCompatActivity() {
         var cdretflete = 0.00
         val cursor: Cursor = keAndroid.rawQuery(
             "SELECT contribespecial FROM cliempre " +
-                    "WHERE codigo= '$codigoCliente' AND empresa = '$codEmpresa'",
+                "WHERE codigo= '$codigoCliente' AND empresa = '$codEmpresa'",
             null
         )
         var esConEspecial = "0"
@@ -5929,8 +5948,8 @@ class CxcReportActivity : AppCompatActivity() {
 
             val cursorTasas: Cursor = keAndroid.rawQuery(
                 "SELECT kecxc_id, kecxc_fecha, kecxc_tasa, kecxc_fchyhora, kecxc_tasaib FROM kecxc_tasas " +
-                        "WHERE kecxc_fchyhora LIKE '%$fechaQuery%' AND empresa = '$codEmpresa' " +
-                        "ORDER BY kecxc_fchyhora DESC LIMIT 1",
+                    "WHERE kecxc_fchyhora LIKE '%$fechaQuery%' AND empresa = '$codEmpresa' " +
+                    "ORDER BY kecxc_fchyhora DESC LIMIT 1",
                 null
             )
 
@@ -6144,7 +6163,7 @@ class CxcReportActivity : AppCompatActivity() {
 
                             val qcodigoLocal: Cursor = keAndroid.rawQuery(
                                 "SELECT count(kecxc_id) FROM kecxc_tasas " +
-                                        "WHERE kecxc_id ='$idTasa' AND empresa = '$codEmpresa'",
+                                    "WHERE kecxc_id ='$idTasa' AND empresa = '$codEmpresa'",
                                 null
                             )
                             qcodigoLocal.moveToFirst()
@@ -6286,7 +6305,7 @@ class CxcReportActivity : AppCompatActivity() {
 
         val cursorBancos: Cursor = keAndroid.rawQuery(
             "SELECT DISTINCT codbanco, nombanco, cuentanac, inactiva, fechamodifi FROM listbanc " +
-                    "WHERE inactiva = '0' AND cuentanac = '$moneda' AND empresa = '$codEmpresa'",
+                "WHERE inactiva = '0' AND cuentanac = '$moneda' AND empresa = '$codEmpresa'",
             null
         )
         while (cursorBancos.moveToNext()) {
@@ -6342,6 +6361,7 @@ class CxcReportActivity : AppCompatActivity() {
                         // println(listaImagenes)
                     }
                 }
+                toast("Imagen(es) Anexada(s).")
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
                 Toast.makeText(this, "Algo salió mal", Toast.LENGTH_LONG).show()
@@ -6490,6 +6510,7 @@ class CxcReportActivity : AppCompatActivity() {
         }
         adapterDialog.updateAdapter(listaImagenes)
         val btnAceptar = customView.findViewById<Button>(R.id.btnAceptar)
+        btnAceptar.setBackgroundColor(btnAceptar.colorButtonAgencia(Constantes.AGENCIA))
         val rvlistaImg = customView.findViewById<RecyclerView>(R.id.rvListaImg)
 
         rvlistaImg.apply {

@@ -5,10 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import androidx.core.view.isVisible
+import com.appcloos.mimaletin.Constantes
 import com.appcloos.mimaletin.Documentos
 import com.appcloos.mimaletin.R
+import com.appcloos.mimaletin.colorAgencia
 import com.appcloos.mimaletin.databinding.ItemCheckDocsCxcBinding
 import com.appcloos.mimaletin.noRepeatList
+import com.appcloos.mimaletin.setDrawableAgencia
 import com.appcloos.mimaletin.valorReal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -45,6 +48,8 @@ class EdoCuentaClienteAdapterList(
         val a = LayoutInflater.from(parent!!.context).inflate(R.layout.item_check_docs_cxc, null)
 
         val binding = ItemCheckDocsCxcBinding.bind(a!!)
+
+        setColors(binding)
 
         listaSelec.noRepeatList()
 
@@ -191,6 +196,11 @@ class EdoCuentaClienteAdapterList(
         }
 
         return binding.root
+    }
+
+    private fun setColors(binding: ItemCheckDocsCxcBinding) {
+        binding.clParent.setDrawableAgencia(Constantes.AGENCIA)
+        binding.tvMontodebe.setTextColor(binding.tvMontodebe.colorAgencia(Constantes.AGENCIA))
     }
 
     private fun diferenciaFehca(fecha: String?): String {

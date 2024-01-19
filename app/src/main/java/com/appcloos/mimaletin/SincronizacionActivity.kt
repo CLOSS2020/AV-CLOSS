@@ -1931,6 +1931,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 } else {
                                     conn.insertJSON("listvend", cv)
                                 }
+
+                                contadorvend++
+
                             } catch (e: JSONException) {
                                 Toast.makeText(
                                     applicationContext,
@@ -4649,7 +4652,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val requestQueue = Volley.newRequestQueue(this@SincronizacionActivity)
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "https://$enlaceEmpresa:5001/precobranzas2",
+            "http://$enlaceEmpresa:5001/precobranzas2",
             jsoncxc,
             { response: JSONObject? ->
                 if (response != null) {
@@ -4741,7 +4744,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         // Respuesta positiva del url
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "https://$enlaceEmpresa:5001/pedido",
+            "http://$enlaceEmpresa:5001/pedido",
             jsonpe,
             { response: JSONObject? ->
                 if (response != null) {

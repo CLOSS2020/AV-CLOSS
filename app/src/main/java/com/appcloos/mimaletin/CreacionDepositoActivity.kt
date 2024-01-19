@@ -825,6 +825,7 @@ class CreacionDepositoActivity : AppCompatActivity() {
                         listaImagenes.add(clipData.getItemAt(i).uri)
                     }
                 }
+                toast("Imagen(es) Anexada(s).")
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
                 Toast.makeText(this, "Algo salió mal", Toast.LENGTH_LONG).show()
