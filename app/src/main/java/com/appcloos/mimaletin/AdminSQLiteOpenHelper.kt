@@ -22,12 +22,13 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.appcloos.mimaletin.ObjetoUtils.Companion.valorReal
 import com.appcloos.mimaletin.dialogChangeAccount.model.keDataconex
 import com.appcloos.mimaletin.model.cliente.ClientesKt
-import com.appcloos.mimaletin.model.pedidos.keOpmv
-import com.appcloos.mimaletin.model.pedidos.keOpti
+import com.appcloos.mimaletin.model.pedidos.KeOpmv
+import com.appcloos.mimaletin.model.pedidos.KeOpti
 import com.appcloos.mimaletin.moduloCXC.viewmodel.EdoGeneralCxc
 import com.appcloos.mimaletin.moduloCXC.viewmodel.PlanificadorCxc
 import com.appcloos.mimaletin.sincronizar.dataClass.articulos.ArticulosResponse
@@ -42,7 +43,7 @@ import java.util.Locale
 class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
 // CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
 (val context: Context?, val name: String?, val factory: CursorFactory?) :
-    SQLiteOpenHelper(context, name, factory, 55) { // <-- 46 para pruebas / 55
+    SQLiteOpenHelper(context, name, factory, 57) { // <-- 46 para pruebas / 55
 
     // private lateinit var dataBase: SQLiteDatabase
     // aqui se define la estructura de la base de datos al instalar la app (no cambia, solo se le agrega)
@@ -278,25 +279,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             keAndroid.execSQL("ALTER TABLE usuarios ADD empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}';")
             keAndroid.execSQL("ALTER TABLE usuarios RENAME TO old_usuarios;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS usuarios(" +
-                    "nombre TEXT DEFAULT ''," +
-                    "username TEXT DEFAULT ''," +
-                    "password TEXT DEFAULT ''," +
-                    "vendedor TEXT DEFAULT ''," +
-                    "almacen TEXT DEFAULT ''," +
-                    "desactivo REAL DEFAULT ''," +
-                    "fechamodifi NUMERIC DEFAULT ''," +
-                    "ualterprec REAL DEFAULT ''," +
-                    "sesionactiva NUMERIC DEFAULT 0," +
-                    "superves TEXT DEFAULT ''," +
-                    "ult_sinc NUMERIC DEFAULT '0001-01-01'," +
-                    "sinc_primera NUMERIC NOT NULL DEFAULT 0," +
-                    "empresa TEXT NOT NULL DEFAULT '081196'," +
-                    "PRIMARY KEY(empresa));"
+                "CREATE TABLE IF NOT EXISTS usuarios(" + "nombre TEXT DEFAULT ''," + "username TEXT DEFAULT ''," + "password TEXT DEFAULT ''," + "vendedor TEXT DEFAULT ''," + "almacen TEXT DEFAULT ''," + "desactivo REAL DEFAULT ''," + "fechamodifi NUMERIC DEFAULT ''," + "ualterprec REAL DEFAULT ''," + "sesionactiva NUMERIC DEFAULT 0," + "superves TEXT DEFAULT ''," + "ult_sinc NUMERIC DEFAULT '0001-01-01'," + "sinc_primera NUMERIC NOT NULL DEFAULT 0," + "empresa TEXT NOT NULL DEFAULT '081196'," + "PRIMARY KEY(empresa));"
             )
             keAndroid.execSQL(
-                "INSERT INTO usuarios \n" +
-                    "SELECT * FROM old_usuarios;"
+                "INSERT INTO usuarios \n" + "SELECT * FROM old_usuarios;"
             )
             keAndroid.execSQL("DROP TABLE old_usuarios;")
             keAndroid.setTransactionSuccessful()
@@ -373,15 +359,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
             keAndroid.execSQL("ALTER TABLE tabla_aux RENAME TO old_tabla_aux;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS tabla_aux(" +
-                    "tabla TEXT NOT NULL DEFAULT ''," +
-                    "fchhn_ultmod TEXT NOT NULL DEFAULT ''," +
-                    "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                    "PRIMARY KEY(tabla, empresa));"
+                "CREATE TABLE IF NOT EXISTS tabla_aux(" + "tabla TEXT NOT NULL DEFAULT ''," + "fchhn_ultmod TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(tabla, empresa));"
             )
             keAndroid.execSQL(
-                "INSERT INTO tabla_aux \n" +
-                    "SELECT * FROM old_tabla_aux;"
+                "INSERT INTO tabla_aux \n" + "SELECT * FROM old_tabla_aux;"
             )
             keAndroid.execSQL("DROP TABLE old_tabla_aux;")
             keAndroid.setTransactionSuccessful()
@@ -396,16 +377,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
             keAndroid.execSQL("ALTER TABLE grupos RENAME TO old_grupos;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS grupos(" +
-                    "codigo TEXT NOT NULL DEFAULT ''," +
-                    "nombre TEXT NOT NULL DEFAULT ''," +
-                    "fechamodifi TEXT NOT NULL DEFAULT ''," +
-                    "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                    "PRIMARY KEY(codigo, empresa));"
+                "CREATE TABLE IF NOT EXISTS grupos(" + "codigo TEXT NOT NULL DEFAULT ''," + "nombre TEXT NOT NULL DEFAULT ''," + "fechamodifi TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(codigo, empresa));"
             )
             keAndroid.execSQL(
-                "INSERT INTO grupos \n" +
-                    "SELECT * FROM old_grupos;"
+                "INSERT INTO grupos \n" + "SELECT * FROM old_grupos;"
             )
             keAndroid.execSQL("DROP TABLE old_grupos;")
             keAndroid.setTransactionSuccessful()
@@ -420,16 +395,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
             keAndroid.execSQL("ALTER TABLE sectores RENAME TO old_sectores;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS sectores(" +
-                    "codigo TEXT NOT NULL DEFAULT ''," +
-                    "zona TEXT NOT NULL DEFAULT ''," +
-                    "fechamodifi TEXT NOT NULL DEFAULT ''," +
-                    "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                    "PRIMARY KEY(codigo, empresa));"
+                "CREATE TABLE IF NOT EXISTS sectores(" + "codigo TEXT NOT NULL DEFAULT ''," + "zona TEXT NOT NULL DEFAULT ''," + "fechamodifi TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(codigo, empresa));"
             )
             keAndroid.execSQL(
-                "INSERT INTO sectores \n" +
-                    "SELECT * FROM old_sectores;"
+                "INSERT INTO sectores \n" + "SELECT * FROM old_sectores;"
             )
             keAndroid.execSQL("DROP TABLE old_sectores;")
             keAndroid.setTransactionSuccessful()
@@ -444,38 +413,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
             keAndroid.execSQL("ALTER TABLE articulo RENAME TO old_articulo;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS articulo(" +
-                    "codigo varchar(25) NOT NULL DEFAULT '',\n" +
-                    "subgrupo varchar(6) NOT NULL DEFAULT '',\n" +
-                    "grupo varchar(6) NOT NULL DEFAULT '',\n" +
-                    "nombre char(150) NOT NULL DEFAULT '',\n" +
-                    "referencia varchar(20) NOT NULL DEFAULT '',\n" +
-                    "marca varchar(20) NOT NULL DEFAULT '',\n" +
-                    "unidad varchar(15) NOT NULL DEFAULT '',\n" +
-                    "existencia double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio1 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio2 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio3 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio4 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio5 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio6 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "precio7 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" +
-                    "discont double(4,0) NOT NULL DEFAULT '0',\n" +
-                    "vta_min double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "vta_max double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "dctotope double(4,2) NOT NULL DEFAULT '0.00',\n" +
-                    "enpreventa char(1) NOT NULL DEFAULT '0',\n" +
-                    "comprometido double(24,7) NOT NULL DEFAULT '0.0000000',\n" +
-                    "vta_minenx double(15,3) NOT NULL DEFAULT '0.000',\n" +
-                    "vta_solofac int NOT NULL DEFAULT '0',\n" +
-                    "vta_solone int NOT NULL DEFAULT '0'," +
-                    "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                    "PRIMARY KEY(codigo, empresa));"
+                "CREATE TABLE IF NOT EXISTS articulo(" + "codigo varchar(25) NOT NULL DEFAULT '',\n" + "subgrupo varchar(6) NOT NULL DEFAULT '',\n" + "grupo varchar(6) NOT NULL DEFAULT '',\n" + "nombre char(150) NOT NULL DEFAULT '',\n" + "referencia varchar(20) NOT NULL DEFAULT '',\n" + "marca varchar(20) NOT NULL DEFAULT '',\n" + "unidad varchar(15) NOT NULL DEFAULT '',\n" + "existencia double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio1 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio2 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio3 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio4 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio5 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio6 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio7 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" + "discont double(4,0) NOT NULL DEFAULT '0',\n" + "vta_min double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "vta_max double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "dctotope double(4,2) NOT NULL DEFAULT '0.00',\n" + "enpreventa char(1) NOT NULL DEFAULT '0',\n" + "comprometido double(24,7) NOT NULL DEFAULT '0.0000000',\n" + "vta_minenx double(15,3) NOT NULL DEFAULT '0.000',\n" + "vta_solofac int NOT NULL DEFAULT '0',\n" + "vta_solone int NOT NULL DEFAULT '0'," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(codigo, empresa));"
             )
             keAndroid.execSQL(
-                "INSERT INTO articulo \n" +
-                    "SELECT * FROM old_articulo;"
+                "INSERT INTO articulo \n" + "SELECT * FROM old_articulo;"
             )
             keAndroid.execSQL("DROP TABLE old_articulo;")
             keAndroid.setTransactionSuccessful()
@@ -490,16 +431,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
             keAndroid.execSQL("ALTER TABLE ke_kardex RENAME TO old_ke_kardex;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS ke_kardex(" +
-                    "kde_codart TEXT NOT NULL DEFAULT ''," +
-                    "kde_cantidad TEXT NOT NULL DEFAULT ''," +
-                    "ke_fecha TEXT NOT NULL DEFAULT ''," +
-                    "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                    "PRIMARY KEY(kde_codart, empresa));"
+                "CREATE TABLE IF NOT EXISTS ke_kardex(" + "kde_codart TEXT NOT NULL DEFAULT ''," + "kde_cantidad TEXT NOT NULL DEFAULT ''," + "ke_fecha TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(kde_codart, empresa));"
             )
             keAndroid.execSQL(
-                "INSERT INTO ke_kardex \n" +
-                    "SELECT * FROM old_ke_kardex;"
+                "INSERT INTO ke_kardex \n" + "SELECT * FROM old_ke_kardex;"
             )
             keAndroid.execSQL("DROP TABLE old_ke_kardex;")
             keAndroid.setTransactionSuccessful()
@@ -514,21 +449,37 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
             keAndroid.execSQL("ALTER TABLE listbanc RENAME TO old_listbanc;")
             keAndroid.execSQL(
-                "CREATE TABLE IF NOT EXISTS `listbanc`(" +
-                    "codbanco varchar(3) NOT NULL DEFAULT '',\n" +
-                    "nombanco varchar(59) NOT NULL DEFAULT '',\n" +
-                    "cuentanac double(2,0) NOT NULL DEFAULT '0',\n" +
-                    "inactiva double(1,0) NOT NULL DEFAULT '0',\n" +
-                    "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" +
-                    "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}',\n" +
-                    "PRIMARY KEY(codbanco, empresa));"
+                "CREATE TABLE IF NOT EXISTS `listbanc`(" + "codbanco varchar(3) NOT NULL DEFAULT '',\n" + "nombanco varchar(59) NOT NULL DEFAULT '',\n" + "cuentanac double(2,0) NOT NULL DEFAULT '0',\n" + "inactiva double(1,0) NOT NULL DEFAULT '0',\n" + "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}',\n" + "PRIMARY KEY(codbanco, empresa));"
 
             )
             keAndroid.execSQL(
-                "INSERT INTO listbanc \n" +
-                    "SELECT * FROM old_listbanc;"
+                "INSERT INTO listbanc \n" + "SELECT * FROM old_listbanc;"
             )
             keAndroid.execSQL("DROP TABLE old_listbanc;")
+            keAndroid.setTransactionSuccessful()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        } finally {
+            keAndroid.endTransaction()
+        }
+
+        try {
+            keAndroid.beginTransaction()
+            keAndroid.execSQL("ALTER TABLE cliempre ADD dolarflete int NOT NULL DEFAULT '0';")
+            keAndroid.execSQL("ALTER TABLE ke_doccti ADD dolarflete int NOT NULL DEFAULT '0';")
+            keAndroid.execSQL("ALTER TABLE ke_opti ADD dolarflete int NOT NULL DEFAULT '0';")
+            keAndroid.execSQL("ALTER TABLE ke_precobradocs ADD dolarflete int NOT NULL DEFAULT '0';")
+            keAndroid.setTransactionSuccessful()
+        } catch (e: SQLException) {
+            Toast.makeText(context, "BDD: Evento oC 1", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+        } finally {
+            keAndroid.endTransaction()
+        }
+
+        try {
+            keAndroid.beginTransaction()
+            keAndroid.execSQL("ALTER TABLE ke_tabdctos ADD dcob_fechadoc DATE NOT NULL DEFAULT '0000-00-00';")
             keAndroid.setTransactionSuccessful()
         } catch (e: SQLException) {
             e.printStackTrace()
@@ -1045,25 +996,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 keAndroid.execSQL("ALTER TABLE usuarios ADD empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}';")
                 keAndroid.execSQL("ALTER TABLE usuarios RENAME TO old_usuarios;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS usuarios(" +
-                        "nombre TEXT DEFAULT ''," +
-                        "username TEXT DEFAULT ''," +
-                        "password TEXT DEFAULT ''," +
-                        "vendedor TEXT DEFAULT ''," +
-                        "almacen TEXT DEFAULT ''," +
-                        "desactivo REAL DEFAULT ''," +
-                        "fechamodifi NUMERIC DEFAULT ''," +
-                        "ualterprec REAL DEFAULT ''," +
-                        "sesionactiva NUMERIC DEFAULT 0," +
-                        "superves TEXT DEFAULT ''," +
-                        "ult_sinc NUMERIC DEFAULT '0001-01-01'," +
-                        "sinc_primera NUMERIC NOT NULL DEFAULT 0," +
-                        "empresa TEXT NOT NULL DEFAULT '081196'," +
-                        "PRIMARY KEY(empresa));"
+                    "CREATE TABLE IF NOT EXISTS usuarios(" + "nombre TEXT DEFAULT ''," + "username TEXT DEFAULT ''," + "password TEXT DEFAULT ''," + "vendedor TEXT DEFAULT ''," + "almacen TEXT DEFAULT ''," + "desactivo REAL DEFAULT ''," + "fechamodifi NUMERIC DEFAULT ''," + "ualterprec REAL DEFAULT ''," + "sesionactiva NUMERIC DEFAULT 0," + "superves TEXT DEFAULT ''," + "ult_sinc NUMERIC DEFAULT '0001-01-01'," + "sinc_primera NUMERIC NOT NULL DEFAULT 0," + "empresa TEXT NOT NULL DEFAULT '081196'," + "PRIMARY KEY(empresa));"
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO usuarios \n" +
-                        "SELECT * FROM old_usuarios;"
+                    "INSERT INTO usuarios \n" + "SELECT * FROM old_usuarios;"
                 )
                 keAndroid.execSQL("DROP TABLE old_usuarios;")
                 keAndroid.setTransactionSuccessful()
@@ -1146,15 +1082,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
                 keAndroid.execSQL("ALTER TABLE tabla_aux RENAME TO old_tabla_aux;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS tabla_aux(" +
-                        "tabla TEXT NOT NULL DEFAULT ''," +
-                        "fchhn_ultmod TEXT NOT NULL DEFAULT ''," +
-                        "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                        "PRIMARY KEY(tabla, empresa));"
+                    "CREATE TABLE IF NOT EXISTS tabla_aux(" + "tabla TEXT NOT NULL DEFAULT ''," + "fchhn_ultmod TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(tabla, empresa));"
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO tabla_aux \n" +
-                        "SELECT * FROM old_tabla_aux;"
+                    "INSERT INTO tabla_aux \n" + "SELECT * FROM old_tabla_aux;"
                 )
                 keAndroid.execSQL("DROP TABLE old_tabla_aux;")
                 keAndroid.setTransactionSuccessful()
@@ -1171,16 +1102,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
                 keAndroid.execSQL("ALTER TABLE grupos RENAME TO old_grupos;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS grupos(" +
-                        "codigo TEXT NOT NULL DEFAULT ''," +
-                        "nombre TEXT NOT NULL DEFAULT ''," +
-                        "fechamodifi TEXT NOT NULL DEFAULT ''," +
-                        "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                        "PRIMARY KEY(codigo, empresa));"
+                    "CREATE TABLE IF NOT EXISTS grupos(" + "codigo TEXT NOT NULL DEFAULT ''," + "nombre TEXT NOT NULL DEFAULT ''," + "fechamodifi TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(codigo, empresa));"
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO grupos \n" +
-                        "SELECT * FROM old_grupos;"
+                    "INSERT INTO grupos \n" + "SELECT * FROM old_grupos;"
                 )
                 keAndroid.execSQL("DROP TABLE old_grupos;")
                 keAndroid.setTransactionSuccessful()
@@ -1197,16 +1122,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
                 keAndroid.execSQL("ALTER TABLE sectores RENAME TO old_sectores;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS sectores(" +
-                        "codigo TEXT NOT NULL DEFAULT ''," +
-                        "zona TEXT NOT NULL DEFAULT ''," +
-                        "fechamodifi TEXT NOT NULL DEFAULT ''," +
-                        "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                        "PRIMARY KEY(codigo, empresa));"
+                    "CREATE TABLE IF NOT EXISTS sectores(" + "codigo TEXT NOT NULL DEFAULT ''," + "zona TEXT NOT NULL DEFAULT ''," + "fechamodifi TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(codigo, empresa));"
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO sectores \n" +
-                        "SELECT * FROM old_sectores;"
+                    "INSERT INTO sectores \n" + "SELECT * FROM old_sectores;"
                 )
                 keAndroid.execSQL("DROP TABLE old_sectores;")
                 keAndroid.setTransactionSuccessful()
@@ -1223,38 +1142,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
                 keAndroid.execSQL("ALTER TABLE articulo RENAME TO old_articulo;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS articulo(" +
-                        "codigo varchar(25) NOT NULL DEFAULT '',\n" +
-                        "subgrupo varchar(6) NOT NULL DEFAULT '',\n" +
-                        "grupo varchar(6) NOT NULL DEFAULT '',\n" +
-                        "nombre char(150) NOT NULL DEFAULT '',\n" +
-                        "referencia varchar(20) NOT NULL DEFAULT '',\n" +
-                        "marca varchar(20) NOT NULL DEFAULT '',\n" +
-                        "unidad varchar(15) NOT NULL DEFAULT '',\n" +
-                        "existencia double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio1 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio2 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio3 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio4 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio5 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio6 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "precio7 double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" +
-                        "discont double(4,0) NOT NULL DEFAULT '0',\n" +
-                        "vta_min double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "vta_max double(20,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "dctotope double(4,2) NOT NULL DEFAULT '0.00',\n" +
-                        "enpreventa char(1) NOT NULL DEFAULT '0',\n" +
-                        "comprometido double(24,7) NOT NULL DEFAULT '0.0000000',\n" +
-                        "vta_minenx double(15,3) NOT NULL DEFAULT '0.000',\n" +
-                        "vta_solofac int NOT NULL DEFAULT '0',\n" +
-                        "vta_solone int NOT NULL DEFAULT '0'," +
-                        "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                        "PRIMARY KEY(codigo, empresa));"
+                    "CREATE TABLE IF NOT EXISTS articulo(" + "codigo varchar(25) NOT NULL DEFAULT '',\n" + "subgrupo varchar(6) NOT NULL DEFAULT '',\n" + "grupo varchar(6) NOT NULL DEFAULT '',\n" + "nombre char(150) NOT NULL DEFAULT '',\n" + "referencia varchar(20) NOT NULL DEFAULT '',\n" + "marca varchar(20) NOT NULL DEFAULT '',\n" + "unidad varchar(15) NOT NULL DEFAULT '',\n" + "existencia double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio1 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio2 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio3 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio4 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio5 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio6 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "precio7 double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" + "discont double(4,0) NOT NULL DEFAULT '0',\n" + "vta_min double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "vta_max double(20,7) NOT NULL DEFAULT '0.0000000',\n" + "dctotope double(4,2) NOT NULL DEFAULT '0.00',\n" + "enpreventa char(1) NOT NULL DEFAULT '0',\n" + "comprometido double(24,7) NOT NULL DEFAULT '0.0000000',\n" + "vta_minenx double(15,3) NOT NULL DEFAULT '0.000',\n" + "vta_solofac int NOT NULL DEFAULT '0',\n" + "vta_solone int NOT NULL DEFAULT '0'," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(codigo, empresa));"
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO articulo \n" +
-                        "SELECT * FROM old_articulo;"
+                    "INSERT INTO articulo \n" + "SELECT * FROM old_articulo;"
                 )
                 keAndroid.execSQL("DROP TABLE old_articulo;")
                 keAndroid.setTransactionSuccessful()
@@ -1271,16 +1162,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
                 keAndroid.execSQL("ALTER TABLE ke_kardex RENAME TO old_ke_kardex;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS ke_kardex(" +
-                        "kde_codart TEXT NOT NULL DEFAULT ''," +
-                        "kde_cantidad TEXT NOT NULL DEFAULT ''," +
-                        "ke_fecha TEXT NOT NULL DEFAULT ''," +
-                        "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," +
-                        "PRIMARY KEY(kde_codart, empresa));"
+                    "CREATE TABLE IF NOT EXISTS ke_kardex(" + "kde_codart TEXT NOT NULL DEFAULT ''," + "kde_cantidad TEXT NOT NULL DEFAULT ''," + "ke_fecha TEXT NOT NULL DEFAULT ''," + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}'," + "PRIMARY KEY(kde_codart, empresa));"
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO ke_kardex \n" +
-                        "SELECT * FROM old_ke_kardex;"
+                    "INSERT INTO ke_kardex \n" + "SELECT * FROM old_ke_kardex;"
                 )
                 keAndroid.execSQL("DROP TABLE old_ke_kardex;")
                 keAndroid.setTransactionSuccessful()
@@ -1297,24 +1182,45 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                 // keAndroid.execSQL("ALTER TABLE tabla_aux ADD empresa TEXT NOT NULL DEFAULT '081196';")
                 keAndroid.execSQL("ALTER TABLE listbanc RENAME TO old_listbanc;")
                 keAndroid.execSQL(
-                    "CREATE TABLE IF NOT EXISTS `listbanc`(" +
-                        "codbanco varchar(3) NOT NULL DEFAULT '',\n" +
-                        "nombanco varchar(59) NOT NULL DEFAULT '',\n" +
-                        "cuentanac double(2,0) NOT NULL DEFAULT '0',\n" +
-                        "inactiva double(1,0) NOT NULL DEFAULT '0',\n" +
-                        "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" +
-                        "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}',\n" +
-                        "PRIMARY KEY(codbanco, empresa));"
+                    "CREATE TABLE IF NOT EXISTS `listbanc`(" + "codbanco varchar(3) NOT NULL DEFAULT '',\n" + "nombanco varchar(59) NOT NULL DEFAULT '',\n" + "cuentanac double(2,0) NOT NULL DEFAULT '0',\n" + "inactiva double(1,0) NOT NULL DEFAULT '0',\n" + "fechamodifi datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n" + "empresa TEXT NOT NULL DEFAULT '${Constantes.CLO}',\n" + "PRIMARY KEY(codbanco, empresa));"
 
                 )
                 keAndroid.execSQL(
-                    "INSERT INTO listbanc \n" +
-                        "SELECT * FROM old_listbanc;"
+                    "INSERT INTO listbanc \n" + "SELECT * FROM old_listbanc;"
                 )
                 keAndroid.execSQL("DROP TABLE old_listbanc;")
                 keAndroid.setTransactionSuccessful()
             } catch (e: SQLException) {
                 e.printStackTrace()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 56) {
+            try {
+                keAndroid.beginTransaction()
+                keAndroid.execSQL("ALTER TABLE cliempre ADD dolarflete int NOT NULL DEFAULT '0';")
+                keAndroid.execSQL("ALTER TABLE ke_doccti ADD dolarflete int NOT NULL DEFAULT '0';")
+                keAndroid.execSQL("ALTER TABLE ke_opti ADD dolarflete int NOT NULL DEFAULT '0';")
+                keAndroid.execSQL("ALTER TABLE ke_precobradocs ADD dolarflete int NOT NULL DEFAULT '0';")
+                keAndroid.setTransactionSuccessful()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                Toast.makeText(context, "BDD: Evento oU 56", Toast.LENGTH_LONG).show()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 57) {
+            try {
+                keAndroid.beginTransaction()
+                keAndroid.execSQL("ALTER TABLE ke_tabdctos ADD dcob_fechadoc DATE NOT NULL DEFAULT '0000-00-00';")
+                keAndroid.setTransactionSuccessful()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                Toast.makeText(context, "BDD: Evento oU 57", Toast.LENGTH_LONG).show()
             } finally {
                 keAndroid.endTransaction()
             }
@@ -1376,11 +1282,8 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
     fun getConfigNum(config: String, codEmpresa: String): Double {
         val db = this.writableDatabase
         val num: Double
-        println("SELECT ${getConfigTipo("N")} FROM ke_wcnf_conf " +
-                "WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';")
         val cursor = db.rawQuery(
-            "SELECT ${getConfigTipo("N")} FROM ke_wcnf_conf " +
-                "WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
+            "SELECT ${getConfigTipo("N")} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
             null
         )
         num = if (cursor.moveToFirst()) {
@@ -1397,11 +1300,9 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         val db = this.writableDatabase
         var flag = false
         val cursor = db.rawQuery(
-            "SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf " +
-                "WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
+            "SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf " + "WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
             null
         )
-        // System.out.println("SELECT " + getConfigTipo("0") + " FROM ke_wcnf_conf WHERE cnfg_idconfig = '" + config + "';");
         if (cursor.moveToFirst()) {
             flag = cursor.getInt(0) == 1
         }
@@ -1414,12 +1315,13 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         val db = this.writableDatabase
         var flag = false
         val cursor = db.rawQuery(
-            "SELECT ${getConfigTipo(
-                "0"
-            )} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND username = '$user' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
+            "SELECT ${
+                getConfigTipo(
+                    "0"
+                )
+            } FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND username = '$user' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
             null
         )
-        println("SELECT ${getConfigTipo("0")} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND username = '$user' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';")
         if (cursor.moveToFirst()) {
             flag = cursor.getInt(0) == 1
         }
@@ -1432,8 +1334,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         val db = this.writableDatabase
         val texto: String
         val cursor = db.rawQuery(
-            "SELECT ${getConfigTipo("C")} FROM ke_wcnf_conf " +
-                "WHERE cnfg_idconfig = '$config' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
+            "SELECT ${getConfigTipo("C")} FROM ke_wcnf_conf " + "WHERE cnfg_idconfig = '$config' AND cnfg_activa = '1.0' AND empresa = '$codEmpresa';",
             null
         )
         texto = if (cursor.moveToFirst()) {
@@ -1484,7 +1385,6 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             ) + "';",
             null
         )
-        // System.out.println("SELECT COUNT(documento) FROM ke_doccti WHERE codcliente = '" + cliente + "' AND vence < '"+ FechaHoy(false) +"';");
         if (cursor.moveToFirst()) {
             num = cursor.getInt(0)
         }
@@ -1578,6 +1478,32 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         return retorno
     }
 
+    fun getCampoBooleanCamposVarios(
+        tabla: String,
+        campo: String,
+        campoWhere: List<String>,
+        respuestaWhere: List<String>
+    ): Boolean {
+        var retorno = false
+        val db = this.writableDatabase
+        val sql = "SELECT $campo FROM $tabla WHERE "
+        var where = ""
+        for (i in campoWhere.indices) {
+            where += campoWhere[i] + " = '" + respuestaWhere[i] + "'"
+            if (i + 1 != campoWhere.size) {
+                where += " AND "
+            }
+        }
+        val query = sql + where
+        db.rawQuery(query, null).use { cursor ->
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getInt(0) == 1
+            }
+        }
+        cerarDB(db)
+        return retorno
+    }
+
     /*fun getCampoDouble(
         tabla: String, campo: String, campoWhere: String, respuestaWhere: String
     ): Double {
@@ -1600,7 +1526,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         campoWhere: List<String>,
         respuestaWhere: List<String>
     ): Double {
-        var retorno = 0.0
+        var retorno: Double
         val db = this.writableDatabase
         val sql = "SELECT $campo FROM $tabla WHERE "
         var where = ""
@@ -1726,12 +1652,11 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
     fun validarExistenciaGeneral(tabla: String): Boolean {
         var retorno = false
         val db = this.writableDatabase
-        db.rawQuery("SELECT count(*) FROM $tabla;", null)
-            .use { cursor ->
-                if (cursor.moveToFirst()) {
-                    retorno = cursor.getInt(0) > 0
-                }
+        db.rawQuery("SELECT count(*) FROM $tabla;", null).use { cursor ->
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getInt(0) > 0
             }
+        }
         cerarDB(db)
         return retorno
     }
@@ -1800,7 +1725,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         cerarDB(db)
     }
 
-    fun updateJSON(table: String?, cv: ContentValues?, campo: String, id: String) {
+    /*fun updateJSON(table: String?, cv: ContentValues?, campo: String, id: String) {
         val db = this.writableDatabase
         try {
             db.beginTransaction()
@@ -1812,7 +1737,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             db.endTransaction()
         }
         cerarDB(db)
-    }
+    }*/
 
     fun updateJSONCamposVarios(
         table: String?,
@@ -1900,12 +1825,11 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         db.rawQuery(
             "select sinc_primera from usuarios WHERE vendedor = '$vendedor' AND empresa = '$codEmpresa';",
             null
-        )
-            .use { cursor ->
-                if (cursor.moveToFirst()) {
-                    retorno = cursor.getInt(0) == 1
-                }
+        ).use { cursor ->
+            if (cursor.moveToFirst()) {
+                retorno = cursor.getInt(0) == 1
             }
+        }
         cerarDB(db)
         return retorno
     }
@@ -1916,9 +1840,14 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         db.rawQuery("SELECT * FROM img_carousel WHERE empresa = '$codEmpresa';", null)
             .use { cursor ->
                 while (cursor.moveToNext()) {
-                    val nombre = cursor.getString(0)
-                    val enlace = cursor.getString(1)
-                    lista.add(CarouselItem(enlace))
+                    try{
+                        val nombre = cursor.getString(0)
+                        val enlace = cursor.getString(1)
+                        lista.add(CarouselItem(enlace))
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                        Toast.makeText(context, "BDD: Evento iC 1", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         cerarDB(db)
@@ -1928,8 +1857,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
     fun validarExistenciaDescuento(banco: String, codEmpresa: String): Boolean {
         var retorno = false
         val db = this.writableDatabase
+        val query =
+            "SELECT count(*) FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1' AND ke_tabdctos.empresa = '$codEmpresa';"
         db.rawQuery(
-            "SELECT count(*) FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1' AND ke_tabdctos.empresa = '$codEmpresa';",
+            query,
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -1940,13 +1871,21 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getDescuento(banco: String, tipoDoc: String, codEmpresa: String): Double {
+    fun getDescuento(
+        banco: String, // <- Banco seleccionado para el descuento
+        tipoDoc: String, // <- Tipo de documento a pagar (FAC o N/E)
+        codEmpresa: String, // <- Codigo de la empresa
+        diferenciaFechas: Int, // <- dias de diferencias entre la emision del doc y la fecha seleccionada al cobrar
+        fechaEmision: String
+    ): Double {
         var retorno = 0.0
         val db = this.writableDatabase
+        val query =
+            "SELECT dcob_prc " + "FROM ke_tabdctosbcos " + "INNER JOIN ke_tabdctos " + "ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id " + "WHERE ke_tabdctosbcos.bco_codigo = '$banco' " + "AND ke_tabdctos.dcob_activo = '1' " + // <- para evitar el caso de que un documento tenga un dia de emision negativo
+                "AND ke_tabdctos.empresa = '$codEmpresa'${getTipoDocDescuento(tipoDoc)} " + "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " + "ORDER BY dcob_maxdvenc ASC;"
+
         db.rawQuery(
-            "SELECT dcob_prc FROM ke_tabdctosbcos INNER JOIN ke_tabdctos ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id WHERE ke_tabdctosbcos.bco_codigo = '$banco' AND ke_tabdctos.dcob_activo = '1' AND ke_tabdctos.empresa = '$codEmpresa'" + getTipoDocDescuento(
-                tipoDoc
-            ) + ";",
+            query,
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -1957,7 +1896,13 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         return retorno
     }
 
-    fun getDescuentoEfectivo(moneda: String, tipoDoc: String, codEmpresa: String): Double {
+    fun getDescuentoEfectivo(
+        moneda: String,
+        tipoDoc: String,
+        codEmpresa: String,
+        diferenciaFechas: Int,
+        fechaEmision: String
+    ): Double {
         var retorno = 0.0
         val db = this.writableDatabase
         val dcobValemon: String = if (moneda == "USD") {
@@ -1966,9 +1911,13 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             "('3', '4')"
         }
         db.rawQuery(
-            "SELECT dcob_prc FROM ke_tabdctos WHERE empresa = '$codEmpresa' dcob_valemon IN $dcobValemon AND dcob_activo = '1'" + getTipoDocDescuento(
-                tipoDoc
-            ) + ";",
+            "SELECT dcob_prc FROM ke_tabdctos WHERE empresa = '$codEmpresa' AND dcob_valemon IN $dcobValemon AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + "AND dcob_activo = '1' ${
+                getTipoDocDescuento(
+                    tipoDoc
+                )
+            } " + "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + // <- Dias validos para aplicar el descuento (en base a la fecha de mision del doc)
+                "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " + // <- Fecha minima para que se aplique el descuento en base a la fecha del doc
+                "ORDER BY dcob_maxdvenc ASC;",
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -2003,21 +1952,24 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         val retorno = ArrayList<Catalogo>()
         val db = this.writableDatabase
         db.rawQuery(
-            "SELECT * FROM articulo " +
-                "WHERE dctotope > 0 AND (existencia - comprometido) > 0 AND empresa = '$codEmpresa';",
+            "SELECT * FROM articulo WHERE dctotope > 0 AND (existencia - comprometido) > 0 AND empresa = '$codEmpresa';",
             null
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                val catalogo = Catalogo()
-                catalogo.setCodigo(cursor.getString(0))
-                catalogo.setNombre(cursor.getString(3))
-                catalogo.setExistencia(cursor.getInt(7) - cursor.getInt(21))
-                catalogo.setPrecio1(valorReal(cursor.getDouble(8)))
-                catalogo.setDctotope(cursor.getDouble(19))
-                catalogo.setMultiplo(cursor.getInt(22))
-                catalogo.setVta_min(cursor.getDouble(17))
-                catalogo.setVta_max(cursor.getDouble(18))
-                retorno.add(catalogo)
+                try{
+                    val catalogo = Catalogo()
+                    catalogo.setCodigo(cursor.getString(0))
+                    catalogo.setNombre(cursor.getString(3))
+                    catalogo.setExistencia(cursor.getInt(7) - cursor.getInt(21))
+                    catalogo.setPrecio1(valorReal(cursor.getDouble(8)))
+                    catalogo.setDctotope(cursor.getDouble(19))
+                    catalogo.setMultiplo(cursor.getInt(22))
+                    catalogo.setVta_min(cursor.getDouble(17))
+                    catalogo.setVta_max(cursor.getDouble(18))
+                    retorno.add(catalogo)
+                }catch (e:Exception){
+                    Toast.makeText(context, "BDD: Evento aP 1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         cerarDB(db)
@@ -2049,39 +2001,46 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // Ademas se suman las retenciones ya pagadas para que la deuda baje
             // (dtotpagos solo refleja dinero y no retenciones que son papel)
             // y todo lo demas resta a la deuda original para saber lo que de verdad se paga
-            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev + ke_doccti.dretencion)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento " +
-                "WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) > 0.00 AND ke_doccti.empresa = '$codEmpresa'"
+            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev + ke_doccti.dretencion)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus, ke_doccti.dolarflete FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) > 0.00 AND ke_doccti.empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
             sql += " AND (nombrecli LIKE '%$text%' OR documento LIKE '%$text%')"
         }
         sql += " ORDER BY ke_doccti.vence asc, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) desc"
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                val codcliente = cursor.getString(0)
-                val nombrecli = cursor.getString(1)
-                val estatusdoc = cursor.getString(2)
-                val documento = cursor.getString(3)
-                val vence = cursor.getString(4)
-                val diascred = cursor.getInt(5)
-                val ktiNegesp = cursor.getString(6)
-                val dtotalfinal = cursor.getDouble(7)
-                val recepcion = cursor.getString(8)
-                val flag = cursor.getDouble(9)
-                val reclamo = cursor.getDouble(9) > 0
-                val statusPed = if (cursor.getString(10) != null) cursor.getString(10) else ""
-                val planificadorCxc = PlanificadorCxc(
-                    documento,
-                    nombrecli,
-                    codcliente,
-                    dtotalfinal,
-                    vence,
-                    estatusdoc,
-                    statusPed,
-                    recepcion,
-                    diascred,
-                    reclamo
-                )
-                retorno.add(planificadorCxc)
+                try{
+                    val codcliente = cursor.getString(0)
+                    val nombrecli = cursor.getString(1)
+                    val estatusdoc = cursor.getString(2)
+                    val documento = cursor.getString(3)
+                    val vence = cursor.getString(4)
+                    val diascred = cursor.getInt(5)
+                    val ktiNegesp = cursor.getString(6)
+                    val dtotalfinal = cursor.getDouble(7)
+                    val recepcion = cursor.getString(8)
+                    val flag = cursor.getDouble(9)
+                    val reclamo = cursor.getDouble(9) > 0
+                    val statusPed = if (cursor.getString(10) != null) cursor.getString(10) else ""
+                    val dolarFlete = cursor.getInt(11) == 1
+
+                    val planificadorCxc = PlanificadorCxc(
+                        documento,
+                        nombrecli,
+                        codcliente,
+                        dtotalfinal,
+                        vence,
+                        estatusdoc,
+                        statusPed,
+                        recepcion,
+                        diascred,
+                        reclamo,
+                        dolarFlete
+                    )
+                    retorno.add(planificadorCxc)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gPD 1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         return retorno
@@ -2095,29 +2054,33 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         val retorno = ArrayList<EdoGeneralCxc>()
         val db = this.writableDatabase
         var sql =
-            "SELECT DISTINCT codcliente, nombrecli, SUM(dtotalfinal - (dtotpagos + dtotdev)) as montototal, MIN(vence) FROM ke_doccti " +
-                "WHERE estatusdoc < '2' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa'"
+            "SELECT DISTINCT codcliente, nombrecli, SUM(dtotalfinal - (dtotpagos + dtotdev)) as montototal, MIN(vence) FROM ke_doccti WHERE estatusdoc < '2' AND vendedor = '$codUsuario' AND empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
             sql += " AND (nombrecli LIKE '%$text%' OR codcliente LIKE '%$text%')"
         }
         sql += " GROUP BY codcliente ORDER BY montototal desc"
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                val codcliente = cursor.getString(0)
-                val nombreCliente = cursor.getString(1)
-                val montoTotal = valorReal(cursor.getDouble(2))
-                val fechaVence = cursor.getString(3)
-                val limite = 0.00
-                val saldo = 0.00
-                val edoGeneralCxc = EdoGeneralCxc(
-                    codcliente,
-                    nombreCliente,
-                    montoTotal,
-                    fechaVence,
-                    limite,
-                    saldo
-                )
-                retorno.add(edoGeneralCxc)
+                try{
+                    val codcliente = cursor.getString(0)
+                    val nombreCliente = cursor.getString(1)
+                    val montoTotal = valorReal(cursor.getDouble(2))
+                    val fechaVence = cursor.getString(3)
+                    val limite = 0.00
+                    val saldo = 0.00
+                    val edoGeneralCxc = EdoGeneralCxc(
+                        codcliente,
+                        nombreCliente,
+                        montoTotal,
+                        fechaVence,
+                        limite,
+                        saldo
+                    )
+                    retorno.add(edoGeneralCxc)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gEC 1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         return retorno
@@ -2190,57 +2153,68 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         }
     }
 
-    fun getCabeceraPedido(codigoPedido: String, codEmpresa: String): keOpti {
-        val retorno = keOpti()
+    fun getCabeceraPedido(codigoPedido: String, codEmpresa: String): KeOpti {
+        val retorno = KeOpti()
         val db = this.writableDatabase
         db.rawQuery(
             "SELECT * FROM ke_opti WHERE kti_ndoc = '$codigoPedido' AND empresa = '$codEmpresa';",
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
-                retorno.kti_ndoc = cursor.getString(0)
-                retorno.kti_tdoc = cursor.getString(1)
-                retorno.kti_codcli = cursor.getString(2)
-                retorno.kti_nombrecli = cursor.getString(3)
-                retorno.kti_codven = cursor.getString(4)
-                retorno.kti_docsol = cursor.getString(5)
-                retorno.kti_condicion = cursor.getString(6)
-                retorno.kti_tipprec = cursor.getDouble(7)
-                retorno.kti_totneto = cursor.getDouble(8)
-                retorno.kti_status = cursor.getString(9)
-                retorno.kti_nroped = cursor.getString(10)
-                retorno.kti_fchdoc = cursor.getString(11)
-                retorno.fechamodifi = cursor.getString(12)
-                retorno.kti_negesp = cursor.getString(13)
-                retorno.kti_totnetodcto = cursor.getDouble(14)
-                retorno.ke_pedstatus = cursor.getString(15)
+                try{
+                    retorno.ktiNdoc = cursor.getString(0)
+                    retorno.ktiTdoc = cursor.getString(1)
+                    retorno.ktiCodcli = cursor.getString(2)
+                    retorno.ktiNombrecli = cursor.getString(3)
+                    retorno.ktiCodven = cursor.getString(4)
+                    retorno.ktiDocsol = cursor.getString(5)
+                    retorno.ktiCondicion = cursor.getString(6)
+                    retorno.ktiTipprec = cursor.getDouble(7)
+                    retorno.ktiTotneto = cursor.getDouble(8)
+                    retorno.ktiStatus = cursor.getString(9)
+                    retorno.ktiNroped = cursor.getString(10) ?: "No identificado"
+                    retorno.ktiFchdoc = cursor.getString(11)
+                    retorno.fechamodifi = cursor.getString(12)
+                    retorno.ktiNegesp = cursor.getString(13)
+                    retorno.ktiTotnetodcto = cursor.getDouble(14)
+                    retorno.kePedstatus = cursor.getString(15)
+                    retorno.dolarFlete = cursor.getInt(17)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gCP 1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         cerarDB(db)
         return retorno
     }
 
-    fun getLineasPedido(codigoPedido: String, codEmpresa: String): ArrayList<keOpmv> {
-        val retorno = arrayListOf<keOpmv>()
+    fun getLineasPedido(codigoPedido: String, codEmpresa: String): ArrayList<KeOpmv> {
+        val retorno = arrayListOf<KeOpmv>()
         val db = this.writableDatabase
         db.rawQuery(
             "SELECT * FROM ke_opmv WHERE kti_ndoc = '$codigoPedido' AND empresa = '$codEmpresa';",
             null
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                val item = keOpmv()
-                item.kti_tdoc = cursor.getString(0)
-                item.kti_ndoc = cursor.getString(1)
-                item.kti_tipprec = cursor.getDouble(2)
-                item.kmv_codart = cursor.getString(3)
-                item.kmv_nombre = cursor.getString(4)
-                item.kmv_cant = cursor.getDouble(5)
-                item.kmv_artprec = cursor.getDouble(6)
-                item.kmv_stot = cursor.getDouble(7)
-                item.kmv_dctolin = cursor.getDouble(8)
-                item.kmv_stotdcto = cursor.getDouble(9)
+                try{
+                    val item = KeOpmv()
+                    item.ktiTdoc = cursor.getString(0)
+                    item.ktiNdoc = cursor.getString(1)
+                    item.ktiTipprec = cursor.getDouble(2)
+                    item.kmvCodart = cursor.getString(3)
+                    item.kmvNombre = cursor.getString(4)
+                    item.kmvCant = cursor.getDouble(5)
+                    item.kmvArtprec = cursor.getDouble(6)
+                    item.kmvStot = cursor.getDouble(7)
+                    item.kmvDctolin = cursor.getDouble(8)
+                    item.kmvStotdcto = cursor.getDouble(9)
 
-                retorno.add(item)
+                    retorno.add(item)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gLP 1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         cerarDB(db)
@@ -2255,37 +2229,42 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
-                item.codigo = cursor.getString(0)
-                item.nombre = cursor.getString(1)
-                item.direccion = cursor.getString(2)
-                item.telefonos = cursor.getString(3)
-                item.perscont = cursor.getString(4)
-                item.vendedor = cursor.getString(5)
-                item.contribespecial = cursor.getDouble(6)
-                item.status = cursor.getDouble(7)
-                item.sector = cursor.getString(8)
-                item.subcodigo = cursor.getString(9)
-                item.fechamodifi = cursor.getString(10)
-                item.precio = cursor.getDouble(11)
+                try{
+                    item.codigo = cursor.getString(0)
+                    item.nombre = cursor.getString(1)
+                    item.direccion = cursor.getString(2)
+                    item.telefonos = cursor.getString(3)
+                    item.perscont = cursor.getString(4)
+                    item.vendedor = cursor.getString(5)
+                    item.contribespecial = cursor.getDouble(6)
+                    item.status = cursor.getDouble(7)
+                    item.sector = cursor.getString(8)
+                    item.subcodigo = cursor.getString(9)
+                    item.fechamodifi = cursor.getString(10)
+                    item.precio = cursor.getDouble(11)
 
-                item.kne_activa = cursor.getString(12)
-                item.kne_mtomin = cursor.getDouble(13)
-                item.noemifac = cursor.getInt(14)
-                item.noeminota = cursor.getInt(15)
-                item.fchultvta = cursor.getString(16)
-                item.mtoultvta = cursor.getDouble(17)
-                item.prcdpagdia = cursor.getDouble(18)
-                item.promdiasp = cursor.getDouble(19)
-                item.riesgocrd = cursor.getDouble(20)
-                item.cantdocs = cursor.getDouble(21)
-                item.totmtodocs = cursor.getDouble(22)
-                item.prommtodoc = cursor.getDouble(23)
-                item.diasultvta = cursor.getDouble(24)
-                item.promdiasvta = cursor.getDouble(25)
-                item.limcred = cursor.getDouble(26)
-                item.fchcrea = cursor.getString(27)
+                    item.kne_activa = cursor.getString(12)
+                    item.kne_mtomin = cursor.getDouble(13)
+                    item.noemifac = cursor.getInt(14)
+                    item.noeminota = cursor.getInt(15)
+                    item.fchultvta = cursor.getString(16)
+                    item.mtoultvta = cursor.getDouble(17)
+                    item.prcdpagdia = cursor.getDouble(18)
+                    item.promdiasp = cursor.getDouble(19)
+                    item.riesgocrd = cursor.getDouble(20)
+                    item.cantdocs = cursor.getDouble(21)
+                    item.totmtodocs = cursor.getDouble(22)
+                    item.prommtodoc = cursor.getDouble(23)
+                    item.diasultvta = cursor.getDouble(24)
+                    item.promdiasvta = cursor.getDouble(25)
+                    item.limcred = cursor.getDouble(26)
+                    item.fchcrea = cursor.getString(27)
 
-                item.email = cursor.getString(28)
+                    item.email = cursor.getString(28)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gC 2", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         cerarDB(db)
@@ -2299,46 +2278,55 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         var sql = "SELECT * FROM cliempre WHERE empresa = '$codEmpresa'"
 
         if (!text.isNullOrEmpty()) {
-            sql += " AND (nombre LIKE '%$text%' OR codigo LIKE'%$text%');"
+            sql += " AND (nombre LIKE '%$text%' OR codigo LIKE '%$text%');"
         }
+
+        println(sql)
 
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                val item = ClientesKt()
+                try {
+                    val item = ClientesKt()
 
-                item.codigo = cursor.getString(0)
-                item.nombre = cursor.getString(1)
-                item.direccion = cursor.getString(2)
-                item.telefonos = cursor.getString(3)
-                item.perscont = cursor.getString(4)
-                item.vendedor = cursor.getString(5)
-                item.contribespecial = cursor.getDouble(6)
-                item.status = cursor.getDouble(7)
-                item.sector = cursor.getString(8)
-                item.subcodigo = cursor.getString(9)
-                item.fechamodifi = cursor.getString(10)
-                item.precio = cursor.getDouble(11)
+                    item.codigo = cursor.getString(0)
+                    item.nombre = cursor.getString(1)
+                    item.direccion = cursor.getString(2)
+                    item.telefonos = cursor.getString(3)
+                    item.perscont = cursor.getString(4)
+                    item.vendedor = cursor.getString(5)
+                    item.contribespecial = cursor.getDouble(6)
+                    item.status = cursor.getDouble(7)
+                    item.sector = cursor.getString(8)
+                    item.subcodigo = cursor.getString(9)
+                    item.fechamodifi = cursor.getString(10)
+                    item.precio = cursor.getDouble(11)
 
-                item.kne_activa = cursor.getString(12)
-                item.kne_mtomin = cursor.getDouble(13)
-                item.noemifac = cursor.getInt(14)
-                item.noeminota = cursor.getInt(15)
-                item.fchultvta = cursor.getString(16)
-                item.mtoultvta = cursor.getDouble(17)
-                item.prcdpagdia = cursor.getDouble(18)
-                item.promdiasp = cursor.getDouble(19)
-                item.riesgocrd = cursor.getDouble(20)
-                item.cantdocs = cursor.getDouble(21)
-                item.totmtodocs = cursor.getDouble(22)
-                item.prommtodoc = cursor.getDouble(23)
-                item.diasultvta = cursor.getDouble(24)
-                item.promdiasvta = cursor.getDouble(25)
-                item.limcred = cursor.getDouble(26)
-                item.fchcrea = cursor.getString(27)
+                    item.kne_activa = cursor.getString(12)
+                    item.kne_mtomin = cursor.getDouble(13)
+                    item.noemifac = cursor.getInt(14)
+                    item.noeminota = cursor.getInt(15)
+                    item.fchultvta = cursor.getString(16)
+                    item.mtoultvta = cursor.getDouble(17)
+                    item.prcdpagdia = cursor.getDouble(18)
+                    item.promdiasp = cursor.getDouble(19)
+                    item.riesgocrd = cursor.getDouble(20)
+                    item.cantdocs = cursor.getDouble(21)
+                    item.totmtodocs = cursor.getDouble(22)
+                    item.prommtodoc = cursor.getDouble(23)
+                    item.diasultvta = cursor.getDouble(24)
+                    item.promdiasvta = cursor.getDouble(25)
+                    item.limcred = cursor.getDouble(26)
+                    item.fchcrea = cursor.getString(27)
 
-                item.email = cursor.getString(28)
+                    item.email = cursor.getString(28)
+                    item.empresa = cursor.getString(29)
+                    item.dolarFlete = cursor.getInt(30)
 
-                retorno.add(item)
+                    retorno.add(item)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gC 1", Toast.LENGTH_LONG).show()
+                }
             }
         }
         cerarDB(db)
@@ -2389,23 +2377,28 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
 
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                val kedCodigo = cursor.getString(0)
-                val kedNombre = cursor.getString(1)
-                val kedStatus = cursor.getString(2)
-                val kedEnlace = cursor.getString(3)
-                val kedAgen = cursor.getString(4)
-                val selected = kedCodigo == codEmpresa
+                try{
+                    val kedCodigo = cursor.getString(0)
+                    val kedNombre = cursor.getString(1)
+                    val kedStatus = cursor.getString(2)
+                    val kedEnlace = cursor.getString(3)
+                    val kedAgen = cursor.getString(4)
+                    val selected = kedCodigo == codEmpresa
 
-                val keDataconex = keDataconex(
-                    kedCodigo,
-                    kedNombre,
-                    kedStatus,
-                    kedEnlace,
-                    kedAgen,
-                    selected
-                )
+                    val keDataconex = keDataconex(
+                        kedCodigo,
+                        kedNombre,
+                        kedStatus,
+                        kedEnlace,
+                        kedAgen,
+                        selected
+                    )
 
-                retorno.add(keDataconex)
+                    retorno.add(keDataconex)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    Toast.makeText(context, "BDD: Evento gE 1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         return retorno
@@ -2413,11 +2406,10 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
 
     fun getFecha(tabla: String, codEmpresa: String): String {
         val keAndroid = this.writableDatabase
-        val fechaUltmod =
-            keAndroid.rawQuery(
-                "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa';",
-                null
-            )
+        val fechaUltmod = keAndroid.rawQuery(
+            "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa';",
+            null
+        )
         var fecha = "0001-01-01 01:01:01"
         if (fechaUltmod.moveToFirst()) {
             fecha = fechaUltmod.getString(0)

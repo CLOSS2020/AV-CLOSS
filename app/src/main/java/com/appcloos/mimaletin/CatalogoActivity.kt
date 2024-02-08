@@ -94,7 +94,7 @@ class CatalogoActivity : AppCompatActivity() {
         factura = intent.getBooleanExtra("factura", false)
         /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
           el activyty */
-            conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         APP_ITEMS_FACTURAS = conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa).toInt()
         APP_ITEMS_NOTAS_ENTREGA = conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa).toInt()
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa)
@@ -111,7 +111,7 @@ class CatalogoActivity : AppCompatActivity() {
         consultarArticulosNormal(preciomostrar) // consulto los articulos
 
         // coloco el adaptador personalizado a la lista del elementos que van al listview
-        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
+        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo!!, enlaceEmpresa!!, codEmpresa)
         // ArrayAdapter adaptador = new ArrayAdapter(CatalogoActivity.this, R.layout.list_catalogo_personalizado, listainfo);
         binding.lvArticulos.adapter = catalogoAdapter // refresco el listview
         binding.lvArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
@@ -179,7 +179,7 @@ class CatalogoActivity : AppCompatActivity() {
 
 
         }else */
-            if (itemid == android.R.id.home) {
+        if (itemid == android.R.id.home) {
             // Valida que se le da al backbutton y se regresa
             finish()
         }
@@ -845,7 +845,7 @@ class CatalogoActivity : AppCompatActivity() {
                 listacatalogo!!.add(catalogo)
             }
             // ke_android.close();
-            catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
+            catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo!!, enlaceEmpresa!!, codEmpresa)
             binding.lvArticulos.adapter = catalogoAdapter
             catalogoAdapter!!.notifyDataSetChanged()
         }
@@ -960,7 +960,7 @@ class CatalogoActivity : AppCompatActivity() {
         }
         cursor.close()
         keAndroid.close()
-        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo, enlaceEmpresa)
+        catalogoAdapter = CatalogoAdapter(this@CatalogoActivity, listacatalogo!!, enlaceEmpresa!!, codEmpresa)
         binding.lvArticulos.adapter = catalogoAdapter
         catalogoAdapter!!.notifyDataSetChanged()
     }

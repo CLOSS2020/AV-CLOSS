@@ -255,7 +255,7 @@ class ReclamosActivity : AppCompatActivity() {
                 }
 
                 R.id.icclasif -> {
-                    cargarCodigos()
+                    //cargarCodigos()
                     listaCodigos = ArrayList()
                     listaMotivos = ArrayList()
                     codigosClasif = arrayOf()
@@ -358,18 +358,18 @@ class ReclamosActivity : AppCompatActivity() {
         binding.tvClientedoc.text = "Cliente: $codigoCliente $nombreCliente"
         binding.tvDocumentodoc.text = "Nº DOC: $documento"
         binding.tvMontodev.text = "Monto Devolución: $$montoDev"
-        cargarLineasDocumento(
+        /*cargarLineasDocumento(
             "https://$enlaceEmpresa/webservice/lineasdocs.php?documento=" + documento!!.trim {
                 it <= ' '
             } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
-        )
+        )*/
         consultarLineas()
         lineasTmpAdapter = LineasTmpAdapter(this@ReclamosActivity, listalineas)
         binding.lvLineasR.adapter = lineasTmpAdapter
         lineasTmpAdapter!!.notifyDataSetChanged()
         binding.menunavRec.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         gridfotos = findViewById(R.id.gridfotos)
-        cargarCodigos()
+        //cargarCodigos()
         binding.lvLineasR.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
             // obtengo los valores que me interesan de la lista en la posicion elegida
             val pid = listalineas!![position].getPid()
@@ -506,9 +506,9 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun cargarCodigos() {
-        cargarTiposReclamos(
+        /*cargarTiposReclamos(
             "https://" + enlaceEmpresa + "/webservice/obtenertiposclasif_V2.php" + "?agencia=" + codigoSucursal.trim { it <= ' ' }
-        )
+        )*/
     }
 
     private fun cargarTiposReclamos(url: String) {
@@ -1103,11 +1103,11 @@ class ReclamosActivity : AppCompatActivity() {
     }
 
     private fun cargarLineasDoc() {
-        cargarLineasDocumento(
+        /*cargarLineasDocumento(
             "https://$enlaceEmpresa/webservice/lineasdocs.php?documento=" + documento!!.trim {
                 it <= ' '
             } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
-        )
+        )*/
         consultarLineasDoc()
     }
 
@@ -1120,6 +1120,9 @@ class ReclamosActivity : AppCompatActivity() {
                 "(SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')",
             null
         )
+
+        println("SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='$documento' AND empresa = '$codEmpresa' AND pid NOT IN " +
+                "(SELECT kdel_pid FROM ke_devlmtmp WHERE empresa = '$codEmpresa')")
 
         // Cursor cursor = ke_android.rawQuery("SELECT pid, codigo, nombre, cantidad, dmontoneto, dpreciofin  FROM ke_doclmv WHERE documento ='" + documento + "'", null);
         while (cursor.moveToNext()) {
@@ -1137,6 +1140,7 @@ class ReclamosActivity : AppCompatActivity() {
 
     // este metodo se acciona al pulsar agregar y llama a un webservice
     private fun cargarLineasDocumento(url: String) {
+        println(url)
         val jsonArrayRequest: JsonArrayRequest =
             object : JsonArrayRequest(
                 url,

@@ -126,10 +126,7 @@ class CXCActivity : AppCompatActivity() {
         codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
         enlaceEmpresa = conn.getCampoStringCamposVarios(
-            "ke_enlace",
-            "kee_url",
-            listOf("kee_codigo"),
-            listOf(codEmpresa!!)
+            "ke_enlace", "kee_url", listOf("kee_codigo"), listOf(codEmpresa!!)
         )
         listCobranza = ArrayList()
 
@@ -330,7 +327,7 @@ class CXCActivity : AppCompatActivity() {
         idRecibo: String,
         edorec: String,
     ): String {
-        return if ((compararFecha(fchrecibo) > 0) && (efectivo > 0) && (edorec != "9" && edorec != "10")) {
+        return if ((compararFecha(fchrecibo) > 0) && (efectivo > 0.0) && (edorec != "9" && edorec != "10")) {
             conn.upReciboCobroStatus(idRecibo, codEmpresa!!)
             "3"
         } else {
@@ -391,14 +388,12 @@ class CXCActivity : AppCompatActivity() {
                 val subventana = subbuilder.create()
                 subventana.show()
 
-                val pbutton: Button =
-                    subventana.getButton(DialogInterface.BUTTON_POSITIVE)
+                val pbutton: Button = subventana.getButton(DialogInterface.BUTTON_POSITIVE)
                 pbutton.apply {
                     setTextColor(colorTextAgencia(Constantes.AGENCIA))
                 }
 
-                val nbutton: Button =
-                    subventana.getButton(DialogInterface.BUTTON_NEUTRAL)
+                val nbutton: Button = subventana.getButton(DialogInterface.BUTTON_NEUTRAL)
                 nbutton.apply {
                     setTextColor(colorTextAgencia(Constantes.AGENCIA))
                 }
@@ -407,13 +402,12 @@ class CXCActivity : AppCompatActivity() {
 
         builder.setNeutralButton("Generar Documento PDF") { _, _ ->
             // toast("Le di al boton")
-            val validarCampo =
-                conn.getCampoStringCamposVarios(
-                    "ke_precobradocs",
-                    "codcliente",
-                    listOf("cxcndoc", "empresa"),
-                    listOf(codigoRecibo, codEmpresa!!)
-                )
+            val validarCampo = conn.getCampoStringCamposVarios(
+                "ke_precobradocs",
+                "codcliente",
+                listOf("cxcndoc", "empresa"),
+                listOf(codigoRecibo, codEmpresa!!)
+            )
             if (false /*validarCampo == ""*/) {
                 toast("El recibo no debe ser de antes de la actualización 23.10.2023")
             } else {
@@ -429,20 +423,17 @@ class CXCActivity : AppCompatActivity() {
         val ventana = builder.create()
         ventana.show()
 
-        val pbutton: Button =
-            ventana.getButton(DialogInterface.BUTTON_POSITIVE)
+        val pbutton: Button = ventana.getButton(DialogInterface.BUTTON_POSITIVE)
         pbutton.apply {
             setTextColor(colorTextAgencia(Constantes.AGENCIA))
         }
 
-        val nbutton: Button =
-            ventana.getButton(DialogInterface.BUTTON_NEGATIVE)
+        val nbutton: Button = ventana.getButton(DialogInterface.BUTTON_NEGATIVE)
         nbutton.apply {
             setTextColor(colorTextAgencia(Constantes.AGENCIA))
         }
 
-        val nebutton: Button =
-            ventana.getButton(DialogInterface.BUTTON_NEUTRAL)
+        val nebutton: Button = ventana.getButton(DialogInterface.BUTTON_NEUTRAL)
         nebutton.apply {
             setTextColor(colorTextAgencia(Constantes.AGENCIA))
         }
@@ -524,6 +515,8 @@ class CXCActivity : AppCompatActivity() {
             val retenRef = arrayListOf<String>()
             val ivaBS = arrayListOf<Double>()
             val fleteBS = arrayListOf<Double>()
+            val dolarFlete = arrayListOf<Int>()
+            val tasaDiad = arrayListOf<Double>()
             val reten = arrayListOf<Int>()
             val descuento = arrayListOf<Double>()
             val aFavor = arrayListOf<Double>()
@@ -676,7 +669,7 @@ class CXCActivity : AppCompatActivity() {
                 }
 
                 val cursorDocs = keAndroid.rawQuery(
-                    "SELECT nombrecli, documento, codcliente, tasadoc, tnetodbs, tnetoddol, bsretiva, bsretfte, bsmtoiva, bsmtofte, refret, refretfte, reten, prcdsctopp, afavor, kecxc_idd, fchemiret, fchemirfte FROM ke_precobradocs WHERE cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa';",
+                    "SELECT nombrecli, documento, codcliente, tasadoc, tnetodbs, tnetoddol, bsretiva, bsretfte, bsmtoiva, bsmtofte, refret, refretfte, reten, prcdsctopp, afavor, kecxc_idd, fchemiret, fchemirfte, dolarflete, tasadiad FROM ke_precobradocs WHERE cxcndoc = '$codigoRecibo' AND empresa = '$codEmpresa';",
                     null
                 )
                 while (cursorDocs.moveToNext()) {
@@ -690,6 +683,8 @@ class CXCActivity : AppCompatActivity() {
                     retenFleBS.add(cursorDocs.getDouble(7))
                     ivaBS.add(cursorDocs.getDouble(8))
                     fleteBS.add(cursorDocs.getDouble(9))
+                    dolarFlete.add(cursorDocs.getInt(18))
+                    tasaDiad.add(cursorDocs.getDouble(19))
 
                     if (tipoRecibo == "R") {
                         retenRef.add(cursorDocs.getString(10))
@@ -923,12 +918,12 @@ class CXCActivity : AppCompatActivity() {
                 if (tipoRecibo == "D") {
                     canvas.drawText("Cliente", 155f, 245f, paint)
                 } else {
-                    canvas.drawText("Neto", 175f, 245f, paint)
-                    canvas.drawText("IVA", 235f, 245f, paint)
-                    canvas.drawText("Flete", 285f, 245f, paint)
-                    canvas.drawText("Ret. IVA", 325f, 245f, paint)
-                    canvas.drawText("Ret. Fle", 380f, 245f, paint)
-                    canvas.drawText("Dto %", 450f, 245f, paint)
+                    canvas.drawText("Neto", 190f, 245f, paint)
+                    canvas.drawText("IVA", 257f, 245f, paint)
+                    canvas.drawText("Flete", 308f, 245f, paint)
+                    canvas.drawText("Ret. IVA", 357f, 245f, paint)
+                    canvas.drawText("Ret. Fle", 415f, 245f, paint)
+                    canvas.drawText("Dto %", 480f, 245f, paint)
                     // canvas.drawText("A Favor", 375f, 245f, paint)
                 }
             } else {
@@ -942,6 +937,9 @@ class CXCActivity : AppCompatActivity() {
 
             // ESTAS INTENTANDO QUE LA SUMA DEL DOCUMENTO EN BS Y DOLARES ESTE BIEN EN LA MONEDA QUE SE SOLICITA
             for (i in listaDocumentos.indices) {
+                val tasaAUsar = if (dolarFlete[i] == 0) tasaDoc[i] else tasaDiad[i]
+                val fd = if (dolarFlete[i] == 0) "" else "FD"
+
                 val campoWhere: List<String> = listOf("cxcndoc", "documento", "empresa")
                 val respuestaWhere: List<String> =
                     listOf(codigoRecibo, listaDocumentos[i], codEmpresa!!)
@@ -951,28 +949,40 @@ class CXCActivity : AppCompatActivity() {
                     campoWhere,
                     respuestaWhere
                 ) // <--------- ya los buscastes anteriormente
-                val retenFleteBD =
-                    conn.getCampoDoubleCamposVarios(
-                        "ke_precobradocs",
-                        "bsretfte",
-                        campoWhere,
-                        respuestaWhere
-                    )
+                val retenFleteBD = conn.getCampoDoubleCamposVarios(
+                    "ke_precobradocs",
+                    "bsretfte",
+                    campoWhere,
+                    respuestaWhere
+                )
 
                 val valorCobrado = if (moneda == "Dólar") cobradoDol[i] else cobradoBS[i]
-                val ivaCobrado = validarMoneda(
-                    moneda,
-                    ivaBS[i] + retenIvaBD, // <- Aunque hay un +, la verdad se resta la retencion
-                    tasaDoc[i]
+
+                val ivaACobrado =
+                    if (moneda == "Dólar") redondeo(ivaBS[i] / tasaDoc[i]) else redondeo(ivaBS[i])
+                val fleteACobrado =
+                    if (moneda == "Dólar") redondeo(fleteBS[i] / tasaAUsar) else redondeo(fleteBS[i])
+                val retIvaACobrado = if (moneda == "Dólar") {
+                    redondeo(retenIvaBD / tasaDoc[i])
+                } else {
+                    redondeo(
+                        retenIvaBD
+                    )
+                }
+                val retFleteACobrado = if (moneda == "Dólar") {
+                    redondeo(retenFleteBD / tasaDoc[i])
+                } else {
+                    redondeo(
+                        retenFleteBD
+                    )
+                }
+
+                val neto = redondeo(
+                    redondeo(valorCobrado) - ivaACobrado - fleteACobrado - retIvaACobrado - retFleteACobrado
                 )
-                val fleteCobrado = validarMoneda(
-                    moneda,
-                    fleteBS[i] + retenFleteBD,
-                    tasaDoc[i]
-                )
-                // val neto = redondeo(valorCobrado - ivaCobrado - fleteCobrado)
-                val neto =
-                    redondeo(redondeo(valorCobrado) - redondeo(ivaCobrado) - redondeo(fleteCobrado))
+
+                val ivaCobrado = ivaACobrado + retIvaACobrado
+                val fleteCobrado = fleteACobrado + retFleteACobrado
 
                 // variables totaltes
                 totalCobrad += valorCobrado
@@ -981,8 +991,8 @@ class CXCActivity : AppCompatActivity() {
                 totalFlete += fleteCobrado
                 totalDescuento += descuento[i]
                 totalAFavor += aFavor[i]
-                totalRetFle += redondeo(if (monedaSigno == "Bs.") retenFleBS[i] else retenFleBS[i] / tasaDoc[i])
-                totalRetIva += redondeo(if (monedaSigno == "Bs.") retenIvaBS[i] else retenIvaBS[i] / tasaDoc[i])
+                totalRetFle += retFleteACobrado
+                totalRetIva += retIvaACobrado
 
                 // solo aplica para anexos de deposito
                 // totalEfectivo += conn.getEfectivoDoc(docPrevio[i])
@@ -1020,12 +1030,13 @@ class CXCActivity : AppCompatActivity() {
                             if (monedaSigno == "Bs.") retenFleBS[i] else retenFleBS[i] / tasaDoc[i]
 
                         canvas.insertarNumPDF(valorCobrado, 105f, counter, paint)
-                        canvas.insertarNumPDF(neto, 160f, counter, paint)
-                        canvas.insertarNumPDF(ivaCobrado, 215f, counter, paint)
-                        canvas.insertarNumPDF(fleteCobrado, 270f, counter, paint)
-                        canvas.insertarNumPDF(retenIva, 325f, counter, paint)
-                        canvas.insertarNumPDF(retenFlete, 380f, counter, paint)
-                        canvas.insertarNumPDF(descuento[i], 435f, counter, paint)
+                        canvas.insertarNumPDF(neto, 175f, counter, paint)
+                        canvas.insertarNumPDF(ivaCobrado, 235f, counter, paint)
+                        canvas.insertarNumPDF(fleteCobrado, 295f, counter, paint)
+                        canvas.insertarNumPDF(retenIva, 360f, counter, paint)
+                        canvas.insertarNumPDF(retenFlete, 415f, counter, paint)
+                        canvas.insertarNumPDF(descuento[i], 470f, counter, paint)
+                        canvas.drawText(fd, 525f, counter, paint)
 
                         /*canvas.drawText(redondeo(valorCobrado).toString(), 100f, counter, paint)
                         canvas.drawText(neto.toString(), 155f, counter, paint)
@@ -1054,20 +1065,20 @@ class CXCActivity : AppCompatActivity() {
                 canvas.drawText("Total", 25f, counter + 3, paint)
                 if (tipoRecibo == "W") {
                     canvas.insertarNumPDF(totalCobrad, 105f, counter + 3, paint)
-                    canvas.insertarNumPDF(totalNeto, 160f, counter + 3, paint)
-                    canvas.insertarNumPDF(totalIva, 215f, counter + 3, paint)
-                    canvas.insertarNumPDF(totalFlete, 270f, counter + 3, paint)
-                    canvas.insertarNumPDF(totalRetIva, 325f, counter + 3, paint)
-                    canvas.insertarNumPDF(totalRetFle, 380f, counter + 3, paint)
+                    canvas.insertarNumPDF(totalNeto, 175f, counter + 3, paint)
+                    canvas.insertarNumPDF(totalIva, 235f, counter + 3, paint)
+                    canvas.insertarNumPDF(totalFlete, 295f, counter + 3, paint)
+                    canvas.insertarNumPDF(totalRetIva, 360f, counter + 3, paint)
+                    canvas.insertarNumPDF(totalRetFle, 415f, counter + 3, paint)
                     canvas.insertarNumPDF(
                         totalDescuento / listaDocumentos.size,
-                        435f,
+                        470f,
                         counter + 3,
                         paint
                     )
                     canvas.drawText(
-                        "Saldo a Favor: ${totalAFavor.valorReal()}",
-                        485f,
+                        "A Favor: ${totalAFavor.valorReal()}",
+                        525f,
                         counter + 3,
                         paint
                     )

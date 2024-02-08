@@ -26,6 +26,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
@@ -53,7 +54,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private var listacarrito: ArrayList<Carrito>? = null
     private var listacliente: ArrayList<Cliente>? = null
     var spinner: Spinner? = null
-    var conn: AdminSQLiteOpenHelper? = null
+    lateinit var conn: AdminSQLiteOpenHelper
     var tvSubtotal: TextView? = null
     var subtotal: Double? = null
     var netoTotal = 0.00
@@ -68,6 +69,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private var APP_ITEMS_FACTURAS = 0
     private var APP_ITEMS_NOTAS_ENTREGA = 0
     private var APP_DIAS_PEDIDO_COMPLEMENTO: Long = 0
+    private var APP_DOLAR_FLETE: Boolean = false
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -153,19 +155,20 @@ class CreacionPedidoActivity : AppCompatActivity() {
         codigoCliente = intent.extras!!.getString("cod_cliente")
         n_cliente = intent.extras!!.getString("nombre_cliente")
         conn = AdminSQLiteOpenHelper(this@CreacionPedidoActivity, "ke_android", null)
-        val keAndroid = conn!!.writableDatabase
-        APP_ITEMS_FACTURAS = conn!!.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa!!).roundToInt()
+        val keAndroid = conn.writableDatabase
+        APP_ITEMS_FACTURAS = conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa!!).roundToInt()
         APP_ITEMS_NOTAS_ENTREGA =
-            conn!!.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa!!).roundToInt()
+            conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa!!).roundToInt()
         APP_DIAS_PEDIDO_COMPLEMENTO =
-            conn!!.getConfigNum("APP_DIAS_PEDIDO_COMPLEMENTO", codEmpresa!!).toLong()
-        val NOEMIFAC = conn!!.getCampoIntCamposVarios(
+            conn.getConfigNum("APP_DIAS_PEDIDO_COMPLEMENTO", codEmpresa!!).toLong()
+        APP_DOLAR_FLETE = conn.getConfigBool("APP_DOLAR_FLETE", codEmpresa!!)
+        val NOEMIFAC = conn.getCampoIntCamposVarios(
             "cliempre",
             "noemifac",
             listOf("codigo", "empresa"),
             listOf(codigoCliente!!, codEmpresa!!)
         )
-        val NOEMINOTA = conn!!.getCampoIntCamposVarios(
+        val NOEMINOTA = conn.getCampoIntCamposVarios(
             "cliempre",
             "noeminota",
             listOf("codigo", "empresa"),
@@ -283,7 +286,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 conn = AdminSQLiteOpenHelper(
                     applicationContext, "ke_android", null
                 )
-                val keAndroid1 = conn!!.writableDatabase
+                val keAndroid1 = conn.writableDatabase
                 keAndroid1.execSQL("DELETE FROM ke_carrito WHERE kmv_codart ='$codigo'")
                 actualizaLista()
                 Toast.makeText(this@CreacionPedidoActivity, "Artículo borrado", Toast.LENGTH_SHORT)
@@ -320,7 +323,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             )
             cajatexto.inputType = InputType.TYPE_CLASS_NUMBER
             conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-            val keAndroid12 = conn!!.writableDatabase
+            val keAndroid12 = conn.writableDatabase
             val cursorMul = keAndroid12.rawQuery(
                 "SELECT vta_min, vta_minenx FROM articulo WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
                 null
@@ -346,7 +349,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     setCheckBoxTheme(Constantes.AGENCIA)
                 )
             )
-            val descuentoBool = conn!!.getCampoDoubleCamposVarios(
+            val descuentoBool = conn.getCampoDoubleCamposVarios(
                 "articulo",
                 "dctotope",
                 listOf("codigo", "empresa"),
@@ -396,8 +399,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     val cantidad = cantidadNueva.toInt()
                     if (cantidad != 0) {
                         val cursor1 = keAndroid12.rawQuery(
-                            "SELECT $tipoDePrecioaMostrar, (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo " +
-                                "WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
+                            "SELECT $tipoDePrecioaMostrar, (existencia - comprometido), vta_min, vta_max, vta_minenx FROM articulo " + "WHERE codigo ='$codigo' AND empresa = '$codEmpresa'",
                             null
                         )
                         cursor1.moveToNext()
@@ -449,8 +451,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                                 descuento = 0.0
                                             }
                                             keAndroid12.execSQL(
-                                                "UPDATE ke_carrito SET kmv_cant=$cantidadNew, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                                "UPDATE ke_carrito SET kmv_cant=$cantidadNew, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " + "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
                                             )
                                             keAndroid12.setTransactionSuccessful()
                                             keAndroid12.endTransaction()
@@ -491,8 +492,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                                 descuento = 0.0
                                             }
                                             keAndroid12.execSQL(
-                                                "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                                "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " + "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
                                             )
                                             keAndroid12.setTransactionSuccessful()
                                             keAndroid12.endTransaction()
@@ -528,8 +528,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                         descuento = 0.0
                                     }
                                     keAndroid12.execSQL(
-                                        "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " +
-                                            "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                                        "UPDATE ke_carrito SET kmv_cant=$cantidad, kmv_stot =$precioTotal, kmv_stotdcto =$mtoDctoNuevo, kmv_dctolin =$descuento " + "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
                                     )
                                     keAndroid12.setTransactionSuccessful()
                                     keAndroid12.endTransaction()
@@ -544,8 +543,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                     ex.printStackTrace()
                                     keAndroid12.endTransaction()
                                 }
-                            }
-                            /*
+                            } /*
                             Double precioNuevo = precio * Double.valueOf(cantidad);
                             precioNuevo = Math.round(precioNuevo * 100.0) / 100.00;
 
@@ -642,6 +640,28 @@ class CreacionPedidoActivity : AppCompatActivity() {
         NotaEntrega.setOnCheckedChangeListener((buttonView, isChecked) -> {
             analizarArticulos(!isChecked, listacarrito);
         });*/
+
+        /*binding.cbFleteDol.isChecked = conn.getCampoBooleanCamposVarios(
+            "cliempre",
+            "dolarflete",
+            listOf("codigo", "empresa"),
+            listOf(codigoCliente!!, codEmpresa!!)
+        )
+
+        binding.cbFleteDol.isVisible = APP_DOLAR_FLETE*/
+
+        if (APP_DOLAR_FLETE) {
+            binding.cbFleteDol.isChecked = conn.getCampoBooleanCamposVarios(
+                "cliempre",
+                "dolarflete",
+                listOf("codigo", "empresa"),
+                listOf(codigoCliente!!, codEmpresa!!)
+            )
+            binding.cbFleteDol.isVisible = true
+        } else {
+            binding.cbFleteDol.isChecked = false
+            binding.cbFleteDol.isVisible = false
+        }
     }
 
     private fun verificarDocSelected() {
@@ -660,7 +680,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         var num = 0
         // int numNE = 0;
         for (i in listacarrito!!.indices) {
-            num = conn!!.getCampoIntCamposVarios(
+            num = conn.getCampoIntCamposVarios(
                 "articulo",
                 campo,
                 listOf("codigo", "empresa"),
@@ -697,12 +717,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun recalculoPrecio(b: Boolean) {
-        var keAndroid = conn!!.writableDatabase
-        var cursor =
-            keAndroid.rawQuery(
-                "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
-                null
-            )
+        var keAndroid = conn.writableDatabase
+        var cursor = keAndroid.rawQuery(
+            "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
+            null
+        )
         if (b) {
             tipoDePrecioaMostrar = "precio1"
             preciocliente = 1.0
@@ -718,7 +737,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         }
         cursor.close()
         // tipoDePrecioaMostrar = (b)?"precio3":"precio"+enteroPrecio;
-        keAndroid = conn!!.writableDatabase
+        keAndroid = conn.writableDatabase
         val cursorMain =
             keAndroid.rawQuery("SELECT * FROM ke_carrito WHERE empresa = '$codEmpresa'", null)
         while (cursorMain.moveToNext()) {
@@ -734,8 +753,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             val precioTotalRedondo = precioTotal.valorReal()
             cursor.close()
             keAndroid.execSQL(
-                "UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo " +
-                    "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
+                "UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo " + "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
             )
             cargarLineas()
             sumaNeto()
@@ -750,10 +768,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val fechaAnterior = ayer.format(formatter)
         val valorCentinela: Boolean
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursorPeds = keAndroid.rawQuery(
-            "SELECT kti_ndoc FROM ke_opti " +
-                "WHERE kti_codcli = '$codigoCliente' AND kti_status <> '3' AND kti_fchdoc >='$fechaAnterior' AND empresa = '$codEmpresa'",
+            "SELECT kti_ndoc FROM ke_opti " + "WHERE kti_codcli = '$codigoCliente' AND kti_status <> '3' AND kti_fchdoc >='$fechaAnterior' AND empresa = '$codEmpresa'",
             null
         )
         if (cursorPeds.moveToFirst()) {
@@ -769,9 +786,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun obtenerMontoMinimoTotal(): Double {
         val monto: Double = if (binding.RbFactura.isChecked) {
-            conn!!.getConfigNum("APP_MONTO_MINIMO_FAC", codEmpresa!!)
+            conn.getConfigNum("APP_MONTO_MINIMO_FAC", codEmpresa!!)
         } else if (binding.RbNotaEntrega.isChecked) {
-            conn!!.getConfigNum("APP_MONTO_MINIMO_NE", codEmpresa!!)
+            conn.getConfigNum("APP_MONTO_MINIMO_NE", codEmpresa!!)
         } else {
             75.00
         }
@@ -779,7 +796,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun vaciarCarrito() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         try {
             keAndroid.beginTransaction()
             keAndroid.execSQL("DELETE FROM ke_carrito WHERE empresa = '$codEmpresa'")
@@ -793,7 +810,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun cargarEnlace() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val columnas = arrayOf("kee_nombre," + "kee_url")
         val cursor = keAndroid.query(
             "ke_enlace",
@@ -833,12 +850,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
         ).setTitle("Salir").setMessage("¿Está seguro de desear salir?").setCancelable(true)
             .setPositiveButton("Si", null).setNegativeButton("No", null).show()
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-            conn!!.deleteAll("ke_carrito")
+            conn.deleteAll("ke_carrito")
             dialog.dismiss()
             finish()
         }
-        dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-            .setOnClickListener { dialog.dismiss() }
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener { dialog.dismiss() }
 
         val pbutton: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
         pbutton.apply {
@@ -891,7 +907,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         val hoy = LocalDateTime.now() // el dia en que se hizo el grabado
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val fechaHoy = hoy.format(formatter)
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         try {
             keAndroid.beginTransaction()
             keAndroid.execSQL("DELETE FROM ke_limitart WHERE kli_fechavence <='$fechaHoy' AND empresa = '$codEmpresa'")
@@ -905,7 +921,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun sumaNeto() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT SUM(kmv_stot), SUM(kmv_dctolin), SUM(kmv_stotdcto) FROM ke_carrito WHERE empresa = '$codEmpresa'",
             null
@@ -973,16 +989,13 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun cargarClientes() {
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        val keAndroid = conn!!.readableDatabase
+        val keAndroid = conn.readableDatabase
         var cliente: Cliente
         listacliente = ArrayList()
-        val cursor =
-            keAndroid.rawQuery(
-                "SELECT codigo, nombre FROM cliempre " +
-                    "WHERE vendedor ='$codUsuario1' AND empresa = '$codEmpresa' " +
-                    "ORDER BY nombre ASC",
-                null
-            )
+        val cursor = keAndroid.rawQuery(
+            "SELECT codigo, nombre FROM cliempre " + "WHERE vendedor ='$codUsuario1' AND empresa = '$codEmpresa' " + "ORDER BY nombre ASC",
+            null
+        )
         while (cursor.moveToNext()) {
             cliente = Cliente()
             cliente.setCodigo(cursor.getString(0))
@@ -1039,10 +1052,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private fun carritoCompras() {
         listacarrito = ArrayList()
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito " +
-                "WHERE empresa = '$codEmpresa'",
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_dctolin, kmv_stotdcto FROM ke_carrito " + "WHERE empresa = '$codEmpresa'",
             null
         )
         while (cursor.moveToNext()) {
@@ -1063,7 +1075,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
 
     private fun obtenerCondicionesEspeciales() {
         // CON ESTA FUNCION IDENTIFICO SI EL CLIENTE POSEE O NO LA POSIBLIDAD DE LLEVAR A CABO UNA NEGOCIACIÓN ESPECIAL
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
             "SELECT kne_activa, kne_mtomin FROM cliempre WHERE codigo ='$codigoCliente' AND empresa = '$codEmpresa' and direccion IS NOT NULL and telefonos IS NOT NULL",
             null
@@ -1139,11 +1151,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun guardarDatosDelPedido() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         // Cursor cursor1 = ke_android.rawQuery("SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_stotdcto FROM ke_carrito WHERE 1", null);
         val cursor2 = keAndroid.rawQuery(
-            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_stotdcto FROM ke_carrito " +
-                "WHERE empresa = '$codEmpresa'",
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec, kmv_stotdcto FROM ke_carrito WHERE empresa = '$codEmpresa'",
             null
         )
         binding.menuCreacion.isEnabled = false
@@ -1193,6 +1204,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     )
                 )
                 cvCabecera.put("empresa", codEmpresa)
+                cvCabecera.put(
+                    "dolarflete",
+                    binding.cbFleteDol.isChecked
+                ) // <-Guarda el valor de la checkbox del Flete Dolarizado
                 // insertamos la cabecera del pedido
                 keAndroid.insert("ke_opti", null, cvCabecera)
                 for (i in listacarrito!!.indices) {
@@ -1276,12 +1291,11 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun asignarTipodePrecio() {
-        val keAndroid = conn!!.writableDatabase
-        val cursor =
-            keAndroid.rawQuery(
-                "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
-                null
-            )
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT precio FROM cliempre WHERE codigo='$codigoCliente' AND empresa = '$codEmpresa'",
+            null
+        )
         while (cursor.moveToNext()) {
             preciocliente = cursor.getDouble(0)
             enteroPrecio = (preciocliente!!).roundToInt()
@@ -1301,18 +1315,16 @@ class CreacionPedidoActivity : AppCompatActivity() {
     }
 
     private fun actualizarPrecios() {
-        val keAndroid = conn!!.writableDatabase
-        val cursorcarrito =
-            keAndroid.rawQuery(
-                "SELECT kmv_codart, kmv_cant FROM ke_carrito WHERE empresa = '$codEmpresa'",
-                null
-            )
+        val keAndroid = conn.writableDatabase
+        val cursorcarrito = keAndroid.rawQuery(
+            "SELECT kmv_codart, kmv_cant FROM ke_carrito WHERE empresa = '$codEmpresa'",
+            null
+        )
         while (cursorcarrito.moveToNext()) {
             val codigoArticuloCarrito = cursorcarrito.getString(0)
             val cantidadCarrito = cursorcarrito.getDouble(1)
             val cursorprecio = keAndroid.rawQuery(
-                "SELECT $tipoDePrecioaMostrar FROM articulo " +
-                    "WHERE codigo ='$codigoArticuloCarrito' AND empresa = '$codEmpresa'",
+                "SELECT $tipoDePrecioaMostrar FROM articulo " + "WHERE codigo ='$codigoArticuloCarrito' AND empresa = '$codEmpresa'",
                 null
             )
             while (cursorprecio.moveToNext()) {
@@ -1350,10 +1362,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
         println(codUsuario)
         println(codCliente)
         println(codArticulo)
-        val keAndroid = conn!!.readableDatabase
+        val keAndroid = conn.readableDatabase
         val cuComp = keAndroid.rawQuery(
-            "SELECT SUM(kli_cant) FROM ke_limitart " +
-                "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa'",
+            "SELECT SUM(kli_cant) FROM ke_limitart " + "WHERE kli_codven ='$codUsuario' AND kli_codcli='$codCliente' AND kli_codart='$codArticulo' AND status ='1' AND empresa = '$codEmpresa'",
             null
         )
         while (cuComp.moveToNext()) {
@@ -1373,7 +1384,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         fechaVence1: String,
         status: String
     ) {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val guardarArticulo = ContentValues()
         guardarArticulo.put("kli_track", tracking)
         guardarArticulo.put("kli_codven", codUsuario)
@@ -1426,6 +1437,10 @@ class CreacionPedidoActivity : AppCompatActivity() {
             RbNotaEntrega.buttonTintList = RbNotaEntrega.setColorRadioButon(Constantes.AGENCIA)
             RbCredito.buttonTintList = RbCredito.setColorRadioButon(Constantes.AGENCIA)
             RbPrepago.buttonTintList = RbPrepago.setColorRadioButon(Constantes.AGENCIA)
+
+            cbFleteDol.buttonTintList = cbFleteDol.setColorRadioButon(Constantes.AGENCIA)
+            //cbFleteDol.setTextColor()
+            //cbFleteDol.
 
             tvNombreCliente.setDrawableHeadAgencia(Constantes.AGENCIA)
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -26,11 +27,13 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.MenuItemCompat
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
@@ -85,12 +88,12 @@ class PedidosActivity : AppCompatActivity() {
         }
         /** */
         binding.lvPedidos.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-            codigoPedido = listapedidos!![position].getNumeroDocumento()
-            n_cliente = listapedidos!![position].getNombreCliente()
-            codigoCliente = listapedidos!![position].getCodigoCliente()
-            fechapedido = listapedidos!![position].getFechaDocumento()
-            pedidonumero = listapedidos!![position].getNumeroPedido()
-            totneto = listapedidos!![position].getTotalNeto().toString()
+            codigoPedido = listapedidos!![position].numeroDocumento
+            n_cliente = listapedidos!![position].nombreCliente
+            codigoCliente = listapedidos!![position].codigoCliente
+            fechapedido = listapedidos!![position].fechaDocumento
+            pedidonumero = listapedidos!![position].numeroPedido
+            totneto = listapedidos!![position].totalNeto.toString()
 
             // System.out.println("ESTE ES EL ESTATUS QUE ESTA LLEGANDO DEL PEDIDO " + statusPedido);
 
@@ -185,9 +188,9 @@ class PedidosActivity : AppCompatActivity() {
             colorButton(btnPdf)
 
             btnVer.setOnClickListener { _: View? -> verPedido() }
-            btnModificar.setOnClickListener { _: View? -> modificarPedido() }
+            btnModificar.setOnClickListener { _: View? -> modificarPedido(codigoPedido!!) }
             btnEliminar.setOnClickListener { _: View? ->
-                eliminarPedido(creacion)
+                eliminarPedido(creacion, codigoPedido!!)
             }
             btnPdf.setOnClickListener { _: View? -> crearPDF(codigoPedido) }
         }
@@ -236,7 +239,24 @@ class PedidosActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.menu_pedidos_main, menu)
+        val menuItem = menu.findItem(R.id.search_view_catalogo)
+        val buscador = MenuItemCompat.getActionView(menuItem) as SearchView
+        buscador.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(busqueda: String): Boolean {
+                cargarPedidos(busqueda)
+                return true
+            }
+
+            override fun onQueryTextChange(busqueda: String): Boolean {
+                cargarPedidos(busqueda)
+                return true
+            }
+        })
+
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun buscarPedido(busqueda: String) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -244,6 +264,7 @@ class PedidosActivity : AppCompatActivity() {
             R.id.validarSubidas -> validarPendientes(
                 "https://cloccidental.com/Rest/obtenerpedidosdelmes.php?cod_usuario=$cod_usuario&&agencia=$codigoSucursal"
             )
+
             R.id.archivados -> iraArchivados()
         }
         return super.onOptionsItemSelected(item)
@@ -361,7 +382,7 @@ class PedidosActivity : AppCompatActivity() {
     private fun lineasPedidos() {
         cargarPedidos()
         if (listapedidos != null) {
-            pedidoAdapter = PedidoAdapter(this@PedidosActivity, listapedidos)
+            pedidoAdapter = PedidoAdapter(this@PedidosActivity, listapedidos!!)
             binding.lvPedidos.adapter = pedidoAdapter
             pedidoAdapter!!.notifyDataSetChanged()
         } else {
@@ -369,16 +390,25 @@ class PedidosActivity : AppCompatActivity() {
         }
     }
 
-    private fun cargarPedidos() {
+    private fun cargarPedidos(text: String? = null) {
         listapedidos = ArrayList()
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
-        val cursor = keAndroid.rawQuery(
-            """SELECT kti_codcli, kti_ndoc, kti_nombrecli, kti_fchdoc, kti_totneto, kti_status, kti_nroped, kti_totnetodcto, datetime('now','start of month') as principiomes,
-  datetime('now') as hoy, ke_pedstatus FROM ke_opti WHERE kti_status !='3' AND empresa = '$codEmpresa' AND kti_codven = '$cod_usuario' and kti_fchdoc BETWEEN principiomes AND hoy
-  ORDER BY kti_ndoc DESC""",
-            null
-        )
+        val cursor: Cursor = if (text == null) {
+            keAndroid.rawQuery(
+                """SELECT kti_codcli, kti_ndoc, kti_nombrecli, kti_fchdoc, kti_totneto, kti_status, kti_nroped, kti_totnetodcto, datetime('now','start of month') as principiomes,
+      datetime('now') as hoy, ke_pedstatus, kti_docsol, dolarflete FROM ke_opti WHERE kti_status !='3' AND empresa = '$codEmpresa' AND kti_codven = '$cod_usuario' and kti_fchdoc BETWEEN principiomes AND hoy
+      ORDER BY kti_ndoc DESC""",
+                null
+            )
+        } else {
+            keAndroid.rawQuery(
+                """SELECT kti_codcli, kti_ndoc, kti_nombrecli, kti_fchdoc, kti_totneto, kti_status, kti_nroped, kti_totnetodcto, datetime('now','start of month') as principiomes,
+      datetime('now') as hoy, ke_pedstatus, kti_docsol, dolarflete FROM ke_opti WHERE kti_nombrecli LIKE '%$text%' AND kti_status !='3' AND empresa = '$codEmpresa' AND kti_codven = '$cod_usuario' and kti_fchdoc BETWEEN principiomes AND hoy
+      ORDER BY kti_ndoc DESC""",
+                null
+            )
+        }
         while (cursor.moveToNext()) {
             val estatusEval = cursor.getString(5)
             val estatusPed = cursor.getString(10)
@@ -442,18 +472,26 @@ class PedidosActivity : AppCompatActivity() {
             nropedido = cursor.getString(6) ?: "Por Asignar"
 
             val pedido = Pedidos()
-            pedido.setCodigoCliente(cursor.getString(0))
-            pedido.setNumeroDocumento(cursor.getString(1))
-            pedido.setNombreCliente(cursor.getString(2))
-            pedido.setFechaDocumento(cursor.getString(3))
-            pedido.setTotalNeto(cursor.getDouble(4))
-            pedido.setEstatus(pedido_estatus)
-            pedido.setNumeroPedido(nropedido)
-            pedido.setTotalNetoDcto(cursor.getDouble(7))
+            pedido.codigoCliente = cursor.getString(0)
+            pedido.numeroDocumento = cursor.getString(1)
+            pedido.nombreCliente = cursor.getString(2)
+            pedido.fechaDocumento = cursor.getString(3)
+            pedido.totalNeto = cursor.getDouble(4)
+            pedido.estatus = pedido_estatus.toString()
+            pedido.numeroPedido = nropedido as String
+            pedido.totalNetoDcto = cursor.getDouble(7)
+            pedido.docSolicitado = cursor.getString(11)
+            pedido.dolarflete = cursor.getInt(12) == 1
             listapedidos!!.add(pedido)
         }
         cursor.close()
         keAndroid.close()
+
+        if (listapedidos != null) {
+            pedidoAdapter = PedidoAdapter(this@PedidosActivity, listapedidos!!)
+            binding.lvPedidos.adapter = pedidoAdapter
+            pedidoAdapter!!.notifyDataSetChanged()
+        }
     }
 
     private fun cargarLineasdelPedido() {
@@ -463,8 +501,7 @@ class PedidosActivity : AppCompatActivity() {
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
         val cursor = keAndroid.rawQuery(
-            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec FROM ke_opmv " +
-                "WHERE kti_ndoc='$codigoPedido' AND empresa = '$codEmpresa';",
+            "SELECT kmv_codart, kmv_nombre, kmv_cant, kmv_stot, kmv_artprec FROM ke_opmv WHERE kti_ndoc='$codigoPedido' AND empresa = '$codEmpresa';",
             null
         )
         while (cursor.moveToNext()) {
@@ -499,7 +536,7 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         }
     }
 
-    private fun BorrarPedido() {
+    private fun BorrarPedido(codigoPedido: String) {
         val ke_android = conn.writableDatabase/*
         PARTE DEL COMPROMETIDO
         Cursor cursor_s = ke_android.rawQuery("SELECT kmv_codart, kmv_cant FROM ke_opmv WHERE kti_ndoc ='" + codigoPedido + "'", null);
@@ -531,8 +568,7 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         val keAndroid = conn.writableDatabase
         // en realidad le cambiamos la cabecera a "3" Y borramos solo las lineas
         keAndroid.execSQL(
-            "UPDATE ke_opti SET kti_status = '3' " +
-                "WHERE kti_ndoc ='$codigoPedido' AND empresa = '$codEmpresa';"
+            "UPDATE ke_opti SET kti_status = '3' WHERE kti_ndoc ='$codigoPedido' AND empresa = '$codEmpresa';"
         )
         keAndroid.execSQL("DELETE FROM ke_opmv WHERE kti_ndoc = '$codigoPedido' AND empresa = '$codEmpresa';")
         Toast.makeText(this@PedidosActivity, "Pedido borrado", Toast.LENGTH_SHORT).show()
@@ -542,11 +578,10 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
 
     fun sesion() {
         val keAndroid = conn.writableDatabase
-        val cursor =
-            keAndroid.rawQuery(
-                "SELECT sesionactiva FROM usuarios WHERE vendedor ='$cod_usuario' AND empresa = '$codEmpresa';",
-                null
-            )
+        val cursor = keAndroid.rawQuery(
+            "SELECT sesionactiva FROM usuarios WHERE vendedor ='$cod_usuario' AND empresa = '$codEmpresa';",
+            null
+        )
         while (cursor.moveToNext()) {
             sesionActiva = cursor.getString(0).trim { it <= ' ' }
         }
@@ -674,8 +709,17 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         dialogoverpedido.show()
     }
 
-    private fun modificarPedido() {
-        if (statusPedido == "0") {
+    private fun modificarPedido(codigoPedido: String) {
+        // 2024-01-24 ahora se busca el estatus del pedido directamente de la base de datos
+        // esto es debido a que la variable que se usaba solo guarda el ultimo pedido de la lista
+        // se debe de evaluar por individual dicho estatus
+        val estatusPedido = conn.getCampoStringCamposVarios(
+            "ke_opti",
+            "kti_status",
+            listOf("kti_ndoc", "empresa"),
+            listOf(codigoPedido, codEmpresa!!)
+        )
+        if (estatusPedido == "0") {
             limpiarCarrito()
             iraModificacionPedido()
         } else {
@@ -684,8 +728,14 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         }
     }
 
-    private fun eliminarPedido(creacion: AlertDialog) {
-        if (statusPedido == "0") {
+    private fun eliminarPedido(creacion: AlertDialog, codigoPedido: String) {
+        val estatusPedido = conn.getCampoStringCamposVarios(
+            "ke_opti",
+            "kti_status",
+            listOf("kti_ndoc", "empresa"),
+            listOf(codigoPedido, codEmpresa!!)
+        )
+        if (estatusPedido == "0") {
             val subventana = AlertDialog.Builder(
                 ContextThemeWrapper(
                     this@PedidosActivity,
@@ -695,7 +745,7 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             subventana.setTitle("Mensaje de confirmación")
             subventana.setMessage("¿Estás seguro de borrar el pedido?")
             subventana.setPositiveButton("Si") { _: DialogInterface?, _: Int ->
-                BorrarPedido()
+                BorrarPedido(codigoPedido)
             }
             subventana.setNegativeButton("No") { _: DialogInterface?, _: Int ->
                 Toast.makeText(
@@ -716,7 +766,7 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             nbutton.apply {
                 setTextColor(colorTextAgencia(Constantes.AGENCIA))
             }
-        } else if (statusPedido == "5") {
+        } else if (estatusPedido == "5") {
             borrarPedidoAlt()
             Toast.makeText(
                 baseContext,
@@ -745,22 +795,24 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
         val tipoDoc = "Pedido"
         val subTipoDoc = "Prototipo Pedido"
 
-        val nroPedido = if (cabecera.kti_status == "0") {
+        val dolarFlete = if (cabecera.dolarFlete == 1) "FD" else ""
+
+        val nroPedido = if (cabecera.ktiStatus == "0") {
             "*PED:*$codigoPedido*"
         } else {
             "PED:$codigoPedido"
         }
 
-        val tipoDocSol = if (cabecera.kti_docsol == "1") {
+        val tipoDocSol = if (cabecera.ktiDocsol == "1") {
             this.getString(R.string.ped_fac)
         } else {
             this.getString(R.string.ped_nota)
         }
 
-        val totalNeto = if (cabecera.kti_status == "0") {
-            "*${cabecera.kti_totnetodcto.toTwoDecimals()}*"
+        val totalNeto = if (cabecera.ktiStatus == "0") {
+            "*${cabecera.ktiTotnetodcto.toTwoDecimals()}*"
         } else {
-            cabecera.kti_totnetodcto.toTwoDecimals()
+            cabecera.ktiTotnetodcto.toTwoDecimals()
         }
 
         var pagActual = 1
@@ -841,11 +893,11 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             canvas.drawText("Emisión", 480f, 115f, paint)
 
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
-            canvas.drawText(cabecera.kti_fchdoc.formatoFechaTiempoShow(), 597f, 115f, paint)
+            canvas.drawText(cabecera.ktiFchdoc.formatoFechaTiempoShow(), 597f, 115f, paint)
 
             // Tipo de Documento, FAC o N/E
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
-            canvas.drawText("Tipo de documento: $tipoDocSol", 597f, 130f, paint)
+            canvas.drawText("Tipo de documento: $tipoDocSol $dolarFlete", 597f, 130f, paint)
 
             // Condicion de pago, Credito o BCV
             paint.textSize = 14f
@@ -872,7 +924,7 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             paint.textSize = 11f
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText(
-                "Pedido generado ${if (cabecera.kti_status == "0") "" else "y subido"}",
+                "Pedido generado ${if (cabecera.ktiStatus == "0") "" else "y subido"}",
                 30f,
                 220f,
                 paint
@@ -937,34 +989,34 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
 
                 // Resumiendo el nombre del articulo
                 var nomArt = ""
-                if (lineas[k].kmv_nombre.length > 30) {
+                if (lineas[k].kmvNombre.length > 30) {
                     for (j in 0..29) {
-                        nomArt += lineas[k].kmv_nombre[j]
+                        nomArt += lineas[k].kmvNombre[j]
                     }
                     nomArt += "..."
                 } else {
-                    nomArt = lineas[k].kmv_nombre
+                    nomArt = lineas[k].kmvNombre
                 }
 
                 // Mostrando codigo y nombre del articulo
-                canvas.drawText(lineas[k].kmv_codart, 15f, counter, paint)
+                canvas.drawText(lineas[k].kmvCodart, 15f, counter, paint)
                 canvas.drawText(nomArt, 65f, counter, paint)
 
                 // Mostrando datos numericos del pedido en funciones apartes para mejor visualizacion
                 // Cantidad del producto
-                canvas.insertarNumPDF(lineas[k].kmv_cant, 300f, counter, paint)
+                canvas.insertarNumPDF(lineas[k].kmvCant, 300f, counter, paint)
                 // insertarNumPDF(canvas, lineas[k].kmv_cant, 300f, counter, paint)
                 // Precio unitario del articulo
-                canvas.insertarNumPDF(lineas[k].kmv_artprec, 360f, counter, paint)
+                canvas.insertarNumPDF(lineas[k].kmvArtprec, 360f, counter, paint)
                 // insertarNumPDF(canvas, lineas[k].kmv_artprec, 360f, counter, paint)
                 // Precio = cantidad * precio unitario
-                canvas.insertarNumPDF(lineas[k].kmv_stot, 430f, counter, paint)
+                canvas.insertarNumPDF(lineas[k].kmvStot, 430f, counter, paint)
                 // insertarNumPDF(canvas, lineas[k].kmv_stot, 430f, counter, paint)
                 // Porcentaje de descuento
-                canvas.insertarNumPDF(lineas[k].kmv_dctolin, 490f, counter, paint)
+                canvas.insertarNumPDF(lineas[k].kmvDctolin, 490f, counter, paint)
                 // insertarNumPDF(canvas, lineas[k].kmv_dctolin, 490f, counter, paint)
                 // Precio = cantidad * precio unitario * descuento%
-                canvas.insertarNumPDF(lineas[k].kmv_stotdcto, 540f, counter, paint)
+                canvas.insertarNumPDF(lineas[k].kmvStotdcto, 540f, counter, paint)
                 // insertarNumPDF(canvas, lineas[k].kmv_stotdcto.valorReal(), 540f, counter, paint)
 
                 // Suma a la variable counter para bajar lineas
@@ -978,20 +1030,20 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText("Cliente : ", 25f, counter, paint)
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
-            canvas.drawText(cabecera.kti_codcli, 75f, counter, paint)
-            canvas.drawText(cabecera.kti_nombrecli, 25f, counter + 15f, paint)
+            canvas.drawText(cabecera.ktiCodcli, 75f, counter, paint)
+            canvas.drawText(cabecera.ktiNombrecli, 25f, counter + 15f, paint)
 
             // Datos del Vendedor
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arialbd.ttf")
             canvas.drawText("Vendedor : ", 25f, counter + 30f, paint)
             paint.typeface = Typeface.createFromAsset(this.assets, "font/arial.ttf")
-            canvas.drawText(cabecera.kti_codven, 90f, counter + 30f, paint)
+            canvas.drawText(cabecera.ktiCodven, 90f, counter + 30f, paint)
             canvas.drawText(
                 conn.getCampoStringCamposVarios(
                     "usuarios",
                     "nombre",
                     listOf("vendedor", "empresa"),
-                    listOf(cabecera.kti_codven, codEmpresa!!)
+                    listOf(cabecera.ktiCodven, codEmpresa!!)
                 ),
                 25f,
                 counter + 45f,

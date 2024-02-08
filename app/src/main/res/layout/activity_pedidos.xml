@@ -2,11 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PedidosActivity"
     android:theme="@style/AppTheme"
-    style="@style/BackgroundAux">
+    tools:context=".PedidosActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_nuevop"
@@ -15,12 +15,12 @@
         android:layout_marginEnd="44dp"
         android:layout_marginBottom="40dp"
         android:clickable="true"
+        android:contentDescription="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:rippleColor="#F1F1F1"
         app:srcCompat="@drawable/ic_add_plus"
-        tools:ignore="SpeakableTextPresentCheck"
-        android:contentDescription="Button" />
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"

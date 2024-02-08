@@ -18,10 +18,10 @@
         android:layout_marginEnd="10dp"
         android:background="@drawable/marcos"
         android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textView37"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
-        app:layout_constraintBottom_toTopOf="@+id/textView37">
+        app:layout_constraintTop_toBottomOf="@+id/llDatos">
 
         <ListView
             android:id="@+id/ListPedido"
@@ -31,73 +31,88 @@
 
     </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="155dp"
-        android:layout_height="57dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="2dp"
+    <LinearLayout
+        android:id="@+id/llDatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
         app:layout_constraintStart_toStartOf="parent"
+        android:theme="@style/AppTheme.Basic.Light"
         app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
 
-        <RadioButton
-            android:id="@+id/RbFactura"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/Rb1"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton"
-            tools:ignore="TouchTargetSizeCheck" />
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
 
-        <RadioButton
-            android:id="@+id/RbNotaEntrega"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:minHeight="48dp"
-            android:text="@string/Rb2"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton"
-            tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/RbFactura"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/Rb1"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton"
+                tools:ignore="TouchTargetSizeCheck" />
 
-    <RadioGroup
-        android:id="@+id/radioGroup3"
-        android:layout_width="176dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="45dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/radioGroup"
-        app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
+            <RadioButton
+                android:id="@+id/RbNotaEntrega"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Rb2"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton"
+                tools:ignore="TouchTargetSizeCheck" />
+        </RadioGroup>
 
-        <RadioButton
-            android:id="@+id/RbCredito"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/Rb3"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton"
-            tools:ignore="TouchTargetSizeCheck" />
+        <RadioGroup
+            android:id="@+id/radioGroup3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup"
+            app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
 
-        <!--05-06-2023 El boton Prepago cambia su nombre a BCV-->
-        <RadioButton
-            android:id="@+id/RbPrepago"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="21dp"
-            android:text="BCV"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton"
-            android:visibility="invisible"
-            android:enabled="false"
-            tools:ignore="TouchTargetSizeCheck" />
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/RbCredito"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/Rb3"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <!--05-06-2023 El boton Prepago cambia su nombre a BCV-->
+            <RadioButton
+                android:id="@+id/RbPrepago"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="21dp"
+                android:enabled="false"
+                android:text="BCV"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton"
+                android:visibility="invisible"
+                tools:ignore="TouchTargetSizeCheck" />
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/cbFleteDol"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:buttonTint="@drawable/color_checkbox"
+            android:text="Flete Dolarizado" />
+
+    </LinearLayout>
 
     <!--<Spinner
         android:id="@+id/sp_cliente"

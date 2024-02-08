@@ -48,16 +48,16 @@ class PedidosArchivadosActivity : AppCompatActivity() {
         val cursor = keAndroid!!.query(tabla, consulta, condicion, null, null, null, null)
         while (cursor.moveToNext()) {
             val pedidos = Pedidos()
-            pedidos.setNumeroDocumento(cursor.getString(0))
-            pedidos.setNombreCliente(cursor.getString(1))
-            pedidos.setTotalNeto(cursor.getDouble(2))
-            pedidos.setNumeroPedido(cursor.getString(3))
+            pedidos.numeroDocumento = cursor.getString(0)
+            pedidos.nombreCliente = cursor.getString(1)
+            pedidos.totalNeto = cursor.getDouble(2)
+            pedidos.numeroPedido = cursor.getString(3) ?: "No identificado"
             listapedidos!!.add(pedidos)
         }
         cursor.close()
         if (listapedidos != null) {
             pedidosArchivadosAdapter =
-                PedidosArchivadosAdapter(this@PedidosArchivadosActivity, listapedidos)
+                PedidosArchivadosAdapter(this@PedidosArchivadosActivity, listapedidos!!)
             lvArchivados!!.adapter = pedidosArchivadosAdapter
             pedidosArchivadosAdapter!!.notifyDataSetChanged()
         } else {

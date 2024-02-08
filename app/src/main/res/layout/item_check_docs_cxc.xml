@@ -34,8 +34,8 @@
             tools:text="Monto Total:" />
 
         <TextView
-            style="@style/ElementModuloCXC"
             android:id="@+id/tv_montodebe"
+            style="@style/ElementModuloCXC"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_marginStart="16dp"
@@ -50,14 +50,14 @@
 
         <CheckBox
             android:id="@+id/cb_sel_doc"
-            android:buttonTint="@drawable/checkbox_cxc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginEnd="16dp"
+            android:buttonTint="@drawable/checkbox_cxc"
+            android:enabled="false"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:enabled="false"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_tipodocC"
@@ -124,6 +124,47 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_fechavencimiento"
             tools:text="Status:" />
 
+        <!--<LinearLayout
+            android:id="@+id/llContainerEstados"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_sel_doc"
+            app:layout_constraintStart_toEndOf="@+id/tv_status">
+
+            <TextView
+                android:id="@+id/tvDolarFlete"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/border_radius_dolar_flete"
+                android:padding="5dp"
+                android:text="FD"
+                android:textAlignment="center"
+                android:textColor="@color/whiteColor1"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvReclamo"
+                app:layout_constraintEnd_toEndOf="parent"  android:layout_width="0dp"/>
+
+            <TextView
+                android:id="@+id/tvReclamo"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/border_radius_error"
+                android:padding="5dp"
+                android:text="RCL"
+                android:textAlignment="center"
+                android:textColor="@color/whiteColor1"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </LinearLayout>-->
+
         <TextView
             android:id="@+id/tvReclamo"
             android:layout_width="wrap_content"
@@ -136,6 +177,21 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDolarFlete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/border_radius_dolar_flete"
+            android:padding="5dp"
+            android:text=" FD "
+            android:textAlignment="center"
+            android:textColor="@color/whiteColor1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvReclamo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

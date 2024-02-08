@@ -4,9 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.appcloos.mimaletin.databinding.ItemDetallesCxcBinding
 import com.appcloos.mimaletin.model.CXC.ke_precobradocs
+import kotlin.math.abs
 
 class DetalleCXCAdapter(
     private var kePrecobradocs: List<ke_precobradocs>,
@@ -20,16 +22,39 @@ class DetalleCXCAdapter(
 
         fun render(kePrecobradocs: ke_precobradocs) {
             val moneda = kePrecobradocs.tnetoddol == 0.00
-            val tasa =
-                conn.getCampoDoubleCamposVarios(
-                    "ke_doccti",
-                    "tasadoc",
-                    listOf("documento", "empresa"),
-                    listOf(kePrecobradocs.documento, codEmpresa)
-                )
 
-            val iva = kePrecobradocs.bsmtoiva - kePrecobradocs.bsretiva
-            val flete = kePrecobradocs.bsmtofte - kePrecobradocs.bsretfte
+            val dolarFlete = conn.getCampoDoubleCamposVarios(
+                "ke_precobradocs",
+                "dolarflete",
+                listOf("documento", "cxcndoc", "empresa"),
+                listOf(kePrecobradocs.documento, kePrecobradocs.cxcndoc, codEmpresa)
+            )
+
+            val tasaDia = conn.getCampoDoubleCamposVarios(
+                "ke_precobradocs",
+                "tasadiad",
+                listOf("documento", "cxcndoc", "empresa"),
+                listOf(kePrecobradocs.documento, kePrecobradocs.cxcndoc, codEmpresa)
+            )
+
+            val tasa = conn.getCampoDoubleCamposVarios(
+                "ke_precobradocs",
+                "tasadoc",
+                listOf("documento", "cxcndoc", "empresa"),
+                listOf(kePrecobradocs.documento, kePrecobradocs.cxcndoc, codEmpresa)
+            )
+
+            // 2024-01-25 Para el flete dolarizado
+            val tasaFlete = if (dolarFlete == 1.0) {
+                binding.tvDolarFlete.isVisible = true
+                tasaDia
+            } else {
+                binding.tvDolarFlete.isVisible = false
+                tasa
+            }
+
+            val iva = kePrecobradocs.bsmtoiva - abs(kePrecobradocs.bsretiva)
+            val flete = kePrecobradocs.bsmtofte - abs(kePrecobradocs.bsretfte)
 
             val ivaFlete = iva + flete
 
@@ -37,32 +62,32 @@ class DetalleCXCAdapter(
 
             if (moneda) {
                 binding.tvTotal.text =
-                    "Total: " + ObjetoUtils.valorReal(kePrecobradocs.tnetodbs).toString()
+                    "Total: " + kePrecobradocs.tnetodbs.valorReal().formatoNumFull()
                 binding.tvNeto.text =
-                    "Neto: " + ObjetoUtils.valorReal(kePrecobradocs.tnetodbs - ivaFlete).toString()
+                    "Neto: " + (kePrecobradocs.tnetodbs - ivaFlete).valorReal().formatoNumFull()
 
-                binding.tvIva.text = "IVA: " + ObjetoUtils.valorReal(iva).toString()
-                binding.tvFlete.text = "Flete: " + ObjetoUtils.valorReal(flete).toString()
+                binding.tvIva.text = "IVA: " + iva.valorReal().formatoNumFull()
+                binding.tvFlete.text = "Flete: " + flete.valorReal().formatoNumFull()
 
                 binding.tvRetIva.text =
-                    "Ret. IVA: " + ObjetoUtils.valorReal(kePrecobradocs.bsretiva).toString()
+                    "Ret. IVA: " + kePrecobradocs.bsretiva.valorReal().formatoNumFull()
                 binding.tvRetFlete.text =
-                    "Ret. Flete: " + ObjetoUtils.valorReal(kePrecobradocs.bsretfte).toString()
+                    "Ret. Flete: " + kePrecobradocs.bsretfte.valorReal().formatoNumFull()
             } else {
                 binding.tvTotal.text =
-                    "Total: " + ObjetoUtils.valorReal(kePrecobradocs.tnetoddol).toString()
+                    "Total: " + kePrecobradocs.tnetoddol.valorReal().formatoNumFull()
                 binding.tvNeto.text =
-                    "Neto: " + ObjetoUtils.valorReal(kePrecobradocs.tnetoddol - (ivaFlete / tasa))
-                        .toString()
+                    "Neto: " + (kePrecobradocs.tnetoddol - (ivaFlete / tasa)).valorReal()
+                        .formatoNumFull()
 
-                binding.tvIva.text = "IVA: " + ObjetoUtils.valorReal(iva / tasa).toString()
-                binding.tvFlete.text = "Flete: " + ObjetoUtils.valorReal(flete / tasa).toString()
+                binding.tvIva.text = "IVA: " + (iva / tasa).valorReal().formatoNumFull()
+
+                binding.tvFlete.text = "Flete: " + (flete / tasaFlete).valorReal().formatoNumFull()
 
                 binding.tvRetIva.text =
-                    "Ret. IVA: " + ObjetoUtils.valorReal(kePrecobradocs.bsretiva / tasa).toString()
+                    "Ret. IVA: " + (kePrecobradocs.bsretiva / tasa).valorReal().formatoNumFull()
                 binding.tvRetFlete.text =
-                    "Ret. Flete: " + ObjetoUtils.valorReal(kePrecobradocs.bsretfte / tasa)
-                        .toString()
+                    "Ret. Flete: " + (kePrecobradocs.bsretfte / tasa).valorReal().formatoNumFull()
             }
         }
     }
@@ -71,9 +96,7 @@ class DetalleCXCAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return DetalleCXCHolder(
             layoutInflater.inflate(
-                R.layout.item_detalles_cxc,
-                parent,
-                false
+                R.layout.item_detalles_cxc, parent, false
             )
         )
     }

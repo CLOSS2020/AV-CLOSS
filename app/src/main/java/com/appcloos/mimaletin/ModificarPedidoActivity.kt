@@ -25,6 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.appcloos.mimaletin.ObjetoUtils.Companion.valorReal
 import com.appcloos.mimaletin.databinding.ActivityModificarPedidoBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -55,6 +56,7 @@ class ModificarPedidoActivity : AppCompatActivity() {
     var formato = DecimalFormat("#,###.00")
     private var APP_ITEMS_FACTURAS = 0
     private var APP_ITEMS_NOTAS_ENTREGA = 0
+    private var APP_DOLAR_FLETE: Boolean = false
 
     private var precioTotalporArticulo = 0.0
     private var montoNetoConDescuento = 0.0
@@ -151,6 +153,8 @@ class ModificarPedidoActivity : AppCompatActivity() {
         APP_ITEMS_FACTURAS = conn.getConfigNum("APP_ITEMS_FACTURAS", codEmpresa!!).roundToInt()
         APP_ITEMS_NOTAS_ENTREGA =
             conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA", codEmpresa!!).roundToInt()
+        APP_DOLAR_FLETE = conn.getConfigBool("APP_DOLAR_FLETE", codEmpresa!!)
+
         enlaceEmpresa = conn.getCampoStringCamposVarios(
             "ke_enlace",
             "kee_url",
@@ -588,6 +592,15 @@ class ModificarPedidoActivity : AppCompatActivity() {
                 listacarritoMod
             )
         }
+
+        binding.cbFleteDol.isChecked = conn.getCampoBooleanCamposVarios(
+            "ke_opti",
+            "dolarflete",
+            listOf("kti_ndoc", "empresa"),
+            listOf(codigoPedido!!, codEmpresa!!)
+        )
+
+        binding.cbFleteDol.isVisible = APP_DOLAR_FLETE
     }
 
     private fun analizarArticulos(campo: String, listacarrito: ArrayList<Carrito>?) {
@@ -862,6 +875,10 @@ class ModificarPedidoActivity : AppCompatActivity() {
                         montoNetoConDescuento
                     )
                 )
+                actualizarCabecera.put(
+                    "dolarflete",
+                    binding.cbFleteDol.isChecked
+                ) // <-Guarda el valor de la checkbox del Flete Dolarizado
                 keAndroid.update(
                     "ke_opti",
                     actualizarCabecera,

@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"><![CDATA[>
-
-
-    ]]>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search_view_catalogo"
+        android:icon="@drawable/ic_search"
+        android:title="Buscar"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/validarSubidas"
-        app:showAsAction="always"
         android:icon="@drawable/ic_sync"
-        android:title="Validar Subidas" />
+        android:title="Validar Subidas"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/archivados"
-        app:showAsAction="always"
         android:icon="@drawable/ic_archivados"
-        android:title="Pedidos archivados" />
-
+        android:title="Pedidos archivados"
+        app:showAsAction="always" />
 
 
 </menu>

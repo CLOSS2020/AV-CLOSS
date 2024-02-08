@@ -1,7 +1,6 @@
 package com.appcloos.mimaletin.moduloCXC.fragments.planificadorCXCAdapter
 
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.appcloos.mimaletin.ObjetoUtils
 import com.appcloos.mimaletin.R
@@ -83,8 +82,7 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
             edoPedi = "N/E $."
             binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
         }else{
-         */
-        /*if (planCXC.diascred != 15){
+         *//*if (planCXC.diascred != 15){
                     if (planCXC.diascred == 25 && diasVencidos(planCXC.fechaVencimiento, DIAS_VALIDOS_BOLIVARES)){
                         edoPedi = "FAC $."
                         binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
@@ -115,8 +113,7 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
                             binding.tvEdoPediModulCXC.setTextColor(Color.rgb(96, 203, 64))
                         }
                     }
-                }*/
-        /*
+                }*//*
 
                 if(planCXC.diascred >= DIAS_VALIDOS_BOLIVARES){
                     if (!(diasVencidos(planCXC.fechaRecepcion, DIAS_VALIDOS_BOLIVARES))){
@@ -149,8 +146,7 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 }
 
-         */
-        /*if (planCXC.diascred == 15){
+         *//*if (planCXC.diascred == 15){
                     edoPedi = "FAC Bs."
                     if (compararFecha(planCXC.fechaVencimiento) == 0){
                         binding.tvEdoPediModulCXC.setTextColor(Color.rgb(255, 194, 34))
@@ -162,8 +158,7 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }else{
                     edoPedi = "FAC $."
                     binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
-                }*/
-        /*
+                }*//*
 
             }*/
         // 2023-06-05 Se comento para sustituir traquin por tipo de factura (si es una factura que se puede pagar en bolivares o no)
@@ -208,7 +203,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
             }
         }
 
-        binding.tvReclamo.isVisible = planCXC.reclamo
+        binding.tvReclamo.visibility = if (planCXC.reclamo) View.VISIBLE else View.INVISIBLE
+        binding.tvDolarFlete.visibility = if (planCXC.dolarFlete) View.VISIBLE else View.INVISIBLE
 
         "${context.getString(R.string.plancxc_numero_doc)}: ${planCXC.doc}".also {
             binding.tvDocModulCXC.text = it
@@ -253,8 +249,7 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         binding.clMainModulCXC.setOnClickListener {
             onClickListener(
-                planCXC.codcliente,
-                planCXC.cliente
+                planCXC.codcliente, planCXC.cliente
             )
         }
     }

@@ -62,7 +62,7 @@ class PromocionesActivity : AppCompatActivity() {
         obtenerArticulosPromo()
 
         // coloco el adaptador personalizado a la lista del elementos que van al listview
-        catalogoAdapter = CatalogoAdapter(this, listacatalogo, enlaceEmpresa)
+        catalogoAdapter = CatalogoAdapter(this, listacatalogo!!, enlaceEmpresa!!, codEmpresa!!)
         listaArticulos.adapter = catalogoAdapter // refresco el listview
         listaArticulos.isTextFilterEnabled = true // inicializo el filtro de texto
         val objetoAux = ObjetoAux(this)
@@ -130,7 +130,7 @@ class PromocionesActivity : AppCompatActivity() {
                 listacatalogo!!.add(catalogo)
             }
             // ke_android.close();
-            catalogoAdapter = CatalogoAdapter(this, listacatalogo, enlaceEmpresa)
+            catalogoAdapter = CatalogoAdapter(this, listacatalogo!!, enlaceEmpresa!!, codEmpresa!!)
             listaArticulos.adapter = catalogoAdapter
             catalogoAdapter!!.notifyDataSetChanged()
         }

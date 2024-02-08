@@ -45,9 +45,9 @@ class EdoCuentaClienteAdapterList(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val documento = getItem(position) as Documentos
 
-        val a = LayoutInflater.from(parent!!.context).inflate(R.layout.item_check_docs_cxc, null)
+        val convertView = LayoutInflater.from(parent!!.context).inflate(R.layout.item_check_docs_cxc, null)
 
-        val binding = ItemCheckDocsCxcBinding.bind(a!!)
+        val binding = ItemCheckDocsCxcBinding.bind(convertView!!)
 
         setColors(binding)
 
@@ -156,7 +156,9 @@ class EdoCuentaClienteAdapterList(
             }
         }
 
-        binding.tvReclamo.isVisible = documento.dtotdev > 0.0
+        //binding.tvReclamo.isVisible = documento.dtotdev > 0.0
+        binding.tvReclamo.visibility = if (documento.dtotdev > 0.0) View.VISIBLE else View.GONE
+        binding.tvDolarFlete.visibility = if (documento.dolarflete > 0) View.VISIBLE else View.GONE
 
         binding.cbSelDoc.setOnCheckedChangeListener { _, isChecked ->
 

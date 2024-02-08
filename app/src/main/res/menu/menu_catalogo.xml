@@ -2,26 +2,28 @@
 
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ExtraText">
 
     <item
         android:id="@+id/search_view_catalogo"
-        android:title="Buscar"
-        app:showAsAction="always"
         android:icon="@drawable/ic_search"
-        app:actionViewClass="android.widget.SearchView"/>
+        android:title="Buscar"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
 
-  <!--  <item
-        android:id="@+id/bt_precio1"
-        android:title="Precio 1"
+    <!--  <item
+          android:id="@+id/bt_precio1"
+          android:title="Precio 1"
 
-        /> -->
-   <!-- <item
-        android:id="@+id/bt_precio2"
-        android:title="Precio 2"
-        />
-    <item
-        android:id="@+id/bt_precio3"
-        android:title="Precio 3" /> -->
+          /> -->
+    <!-- <item
+         android:id="@+id/bt_precio2"
+         android:title="Precio 2"
+         />
+     <item
+         android:id="@+id/bt_precio3"
+         android:title="Precio 3" /> -->
 
 </menu>

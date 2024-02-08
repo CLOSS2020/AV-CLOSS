@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
@@ -52,6 +53,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private var SINCRONIZO = false // <-- Variable que indica si sincronizo por primera vez
     private var DESACTIVADO = false // <-- Varialb que indica si el usuario esta desactivado
 
+    private val retryPolicyPOST = DefaultRetryPolicy(
+        10000,
+        2,
+        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+    )
+
     private lateinit var fechaSincGrupos: String
     private lateinit var fechaSincSubGrupos: String
     private lateinit var fechaSincSectores: String
@@ -69,7 +76,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED // mantener la activity en vertical
         val preferences = getSharedPreferences("Preferences", MODE_PRIVATE)
         cod_usuario = preferences.getString("cod_usuario", null)
-        codEmpresa = preferences.getString("codigoEmpresa", null) ?: Constantes.CLO
+        codEmpresa = preferences.getString("codigoEmpresa", null)
         // String nombre_usuario = preferences.getString("nombre_usuario", null);
         // nivelUsuario = preferences.getString("superves", "0");
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
@@ -77,10 +84,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         // cargarEnlace()
 
         enlaceEmpresa = conn.getCampoStringCamposVarios(
-            "ke_enlace",
-            "kee_url",
-            listOf("kee_codigo"),
-            listOf(codEmpresa!!)
+            "ke_enlace", "kee_url", listOf("kee_codigo"), listOf(codEmpresa!!)
         )
 
         checkForAppUpdate()
@@ -161,8 +165,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!, enlaceEmpresa)
         SINCRONIZO = conn.sincronizoPriVez(
-            cod_usuario!!,
-            codEmpresa!!
+            cod_usuario!!, codEmpresa!!
         ) // <-- Verificando si sincronizo por primera vez
         DESACTIVADO = conn.getCampoIntCamposVarios(
             "usuarios",
@@ -172,11 +175,17 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         ) == 0 // <-- Buscando y comparando el estatus de desactivacion del usuario, 1 = Desactivo, 0 = Activo
         if (!conn.getConfigBoolUsuario(
                 "APP_MODULO_CXC_USER", // <-- Buscando si el usuario tiene acceso al modulo de cobranzas
-                cod_usuario!!,
-                codEmpresa!!
+                cod_usuario!!, codEmpresa!!
             ) && SINCRONIZO && DESACTIVADO // <-- Comparando acceso al modulo CXC, sincronizacion por primera vez y el status de desactivacion
         ) {
             binding.btnSubirprecob.visibility = View.VISIBLE
+        }
+        if (!conn.getConfigBoolUsuario(
+                "APP_MODULO_PEDIDO_USER", // <-- Buscando si el usuario tiene acceso al modulo de pedido
+                cod_usuario!!, codEmpresa!!
+            ) && SINCRONIZO && DESACTIVADO // <-- Comparando acceso al modulo pedido, sincronizacion por primera vez y el status de desactivacion
+        ) {
+            binding.btnSubir.visibility = View.VISIBLE
         }
     }
 
@@ -215,7 +224,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 "Se han detectado inconvenientes en la conexión, Por favor sincronice nuevamente"
             Toast.makeText(
                 this,
-                "Por favor sincronice nuevamente , se detectaron errores en la conexión",
+                "Por favor sincronice nuevamente, se detectaron eventos inesperados en la conexión",
                 Toast.LENGTH_LONG
             ).show()
         } else {
@@ -391,6 +400,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             6 -> bajarSubSectores(
                 "https://$enlaceEmpresa/$ambienteJob/subsectores_V3.php?fecha_sinc=$fechaSincSubSectores"
             )
+
             7 -> bajarClientes("https://$enlaceEmpresa/$ambienteJob/clientes_V5.php?cod_usuario=$cod_usuario")
             8 -> bajarInfoPedidos(
                 "https://$enlaceEmpresa/$ambienteJob/obtenerdatospedidos_V3.php?cod_usuario=$cod_usuario&fecha_sinc=$fechaKeOpti"
@@ -399,9 +409,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             9 -> bajarArticulos3("https://$enlaceEmpresa/$ambienteJob/articulos_V26.php?fecha_sinc=$fechaSincArticulo")
             10 -> bajarKardex("https://$enlaceEmpresa/$ambienteJob/kardex_V3.php?fecha_sinc=$fechaSincArticulo")
             11 -> subirLimite()
-            12 -> actualizarLimites("https://" + enlaceEmpresa + "/" + ambienteJob + "/obtenerlimites_V3.php?cod_usuario=" + cod_usuario!!.trim {
-                it <= ' '
-            } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+            12 -> actualizarLimites(
+                "https://$enlaceEmpresa/$ambienteJob/obtenerlimites_V3.php?cod_usuario=" + cod_usuario!!.trim {
+                    it <= ' '
+                } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
+            )
+
             13 -> bajarDocumentos("https://$enlaceEmpresa/$ambienteJob/planificador_V3.php?vendedor=$cod_usuario")
             14 -> bajarDatosExtra("https://$enlaceEmpresa/$ambienteJob/descarga_referencias.php?vendedor=$cod_usuario")
             15 -> // BajarConfigExtra("https://" + enlaceEmpresa + "/" + ambienteJob + "/config_gen2.php?vendedor=" + cod_usuario.trim() + "&fecha_sinc=" + fechaSincronizar("ke_wcnf_conf"));
@@ -414,19 +427,147 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             18 -> bajarDescuentos(
                 "https://$enlaceEmpresa/webservice/descuentos.php" /*+"?fechamodifi=" + GetFecha("ke_tabdctos")*/
             )
+
             19 -> bajarDescuentosBancos(
                 "https://$enlaceEmpresa/webservice/descuento_bancos.php" /*+"fechamodifi=" + GetFecha("ke_tabdctosbcos")*/
             )
-            20 -> {
+
+            20 -> bajarLineasDocs("https://$enlaceEmpresa/webservice/lineas_documentos.php?vendedor=$cod_usuario")
+            21 -> bajarTiposReclamos("https://$enlaceEmpresa/webservice/obtenertiposclasif_V2.php")
+            22 -> {
                 // IF que valida si hasta el momento no hay errores en la sincronizacion, en caso de haber no enviara la ultima sincronizacion
                 if (!varAuxError) {
                     subirSincronizacion()
                 }
             }
 
-            21 -> // Funcion que indica si el proceso de sincronizacion se hizo adecuadamente
+            23 -> // Funcion que indica si el proceso de sincronizacion se hizo adecuadamente
                 analisisError()
         }
+    }
+
+    private fun bajarLineasDocs(url: String) {
+        val fechaError = obtenerFechaPreError("ke_doclmv")
+
+        println(url)
+
+        val jsonObjectRequest =
+            JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
+                try {
+                    if (response.getString("lineas_doc") != "null") {
+                        val articulo = response.getJSONArray("lineas_doc")
+                        for (i in 0 until articulo.length()) {
+                            val jsonObject = articulo.getJSONObject(i)
+
+                            val agencia = jsonObject.getString("agencia")
+                            val tipodoc = jsonObject.getString("tipodoc")
+                            val documento = jsonObject.getString("documento")
+                            val tipodocv = jsonObject.getString("tipodocv")
+                            val grupo = jsonObject.getString("grupo")
+                            val subgrupo = jsonObject.getString("subgrupo")
+                            val origen = jsonObject.getString("origen")
+                            val codigo = jsonObject.getString("codigo")
+                            val codhijo = jsonObject.getString("codhijo")
+                            val pid = jsonObject.getString("pid")
+                            val nombre = jsonObject.getString("nombre")
+                            val cantidad = jsonObject.getString("cantidad")
+                            val cntdevuelt = jsonObject.getString("cntdevuelt")
+                            val vndcntdevuelt = jsonObject.getString("vndcntdevuelt")
+                            val dvndmtototal = jsonObject.getString("dvndmtototal")
+                            val dpreciofin = jsonObject.getString("dpreciofin")
+                            val dpreciounit = jsonObject.getString("dpreciounit")
+                            val dmontoneto = jsonObject.getString("dmontoneto")
+                            val dmontototal = jsonObject.getString("dmontototal")
+                            val timpueprc = jsonObject.getString("timpueprc")
+                            val unidevuelt = jsonObject.getString("unidevuelt")
+                            val fechadoc = jsonObject.getString("fechadoc")
+                            val vendedor = jsonObject.getString("vendedor")
+                            val codcoord = jsonObject.getString("codcoord")
+                            val fechamodifi = jsonObject.getString("fechamodifi")
+
+                            val cv = ContentValues()
+                            cv.put("agencia", agencia)
+                            cv.put("tipodoc", tipodoc)
+                            cv.put("documento", documento)
+                            cv.put("tipodocv", tipodocv)
+                            cv.put("grupo", grupo)
+                            cv.put("subgrupo", subgrupo)
+                            cv.put("origen", origen)
+                            cv.put("codigo", codigo)
+                            cv.put("codhijo", codhijo)
+                            cv.put("pid", pid)
+                            cv.put("nombre", nombre)
+                            cv.put("cantidad", cantidad)
+                            cv.put("cntdevuelt", cntdevuelt)
+                            cv.put("vndcntdevuelt", vndcntdevuelt)
+                            cv.put("dvndmtototal", dvndmtototal)
+                            cv.put("dpreciofin", dpreciofin)
+                            cv.put("dpreciounit", dpreciounit)
+                            cv.put("dmontoneto", dmontoneto)
+                            cv.put("dmontototal", dmontototal)
+                            cv.put("timpueprc", timpueprc)
+                            cv.put("unidevuelt", unidevuelt)
+                            cv.put("fechadoc", fechadoc)
+                            cv.put("vendedor", vendedor)
+                            cv.put("codcoord", codcoord)
+                            cv.put("fechamodifi", fechamodifi)
+                            cv.put("empresa", codEmpresa)
+
+                            if (conn.validarExistenciaCamposVarios(
+                                    "ke_doclmv",
+                                    ArrayList(
+                                        mutableListOf("codigo", "empresa")
+                                    ),
+                                    arrayListOf(codigo, codEmpresa!!)
+                                )
+                            ) {
+                                conn.updateJSONCamposVarios(
+                                    "ke_doclmv",
+                                    cv,
+                                    "codigo = ? AND empresa = ?",
+                                    arrayOf(codigo, codEmpresa!!)
+                                )
+                            } else {
+                                conn.insertJSON("ke_doclmv", cv)
+                            }
+
+                            contadorart++
+                        }
+
+                        conn.updateTablaAux("ke_doclmv", codEmpresa!!)
+                    }
+                    varAux++
+                    sincronizacionVendedor()
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
+
+                    varAuxError = true
+                    analisisError2()
+
+                    // Ingreso de la fecha antes de ser actualizada
+                    actualizarFechaError(fechaError)
+
+                    varAux++
+                    sincronizacionVendedor()
+                }
+            }) { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
+
+                varAuxError = true
+                analisisError2()
+
+                // Ingreso de la fecha antes de ser actualizada
+                actualizarFechaError(fechaError)
+
+                varAux++
+                sincronizacionVendedor()
+            }
+        val requestQueue = Volley.newRequestQueue(this)
+        requestQueue.add(jsonObjectRequest)
     }
 
     private fun bajarDescuentosBancos(url: String) {
@@ -508,6 +649,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarDescuentos(url: String) {
+        println(url)
+        println("--AQUI--")
         val keAndroid = conn.writableDatabase
         val descuentoNube = ArrayList<String?>()
         val jsonObjectRequest =
@@ -528,6 +671,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val fechamodifi = descuento.getString("fechamodifi")
                             val dcobValesiempre = descuento.getString("dcob_valesiempre")
                             val dcobValemon = descuento.getString("dcob_valemon")
+                            val dcobFechadoc = descuento.getString("dcob_fechadoc")
 
                             descuentoNube.add(dcobId)
 
@@ -544,6 +688,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("dcob_valesiempre", dcobValesiempre)
                             cv.put("dcob_valemon", dcobValemon)
                             cv.put("empresa", codEmpresa)
+                            cv.put("dcob_fechadoc", dcobFechadoc)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_tabdctos",
@@ -1003,6 +1148,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val cdretflete = jsonObject.getDouble("cdretflete")
                             val retmunMto = jsonObject.getDouble("retmun_mto")
                             val ktiNegesp = jsonObject.getInt("kti_negesp")
+                            val dolarFlete = jsonObject.getInt("dolarflete")
 
                             documentosNube.add(documento)
 
@@ -1056,6 +1202,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("kti_negesp", ktiNegesp)
                             cv.put("cdrparme", cdrparme)
                             cv.put("empresa", codEmpresa)
+                            cv.put("dolarflete", dolarFlete)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_doccti",
@@ -1149,7 +1296,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun arrayDocumento(tabla: String, campo: String): ArrayList<String> {
         val keAndroid = conn.writableDatabase
         val documentos = ArrayList<String>()
-        val cursor = keAndroid.rawQuery("SELECT $campo FROM $tabla WHERE empresa = '$codEmpresa';", null)
+        val cursor =
+            keAndroid.rawQuery("SELECT $campo FROM $tabla WHERE empresa = '$codEmpresa';", null)
         while (cursor.moveToNext()) {
             documentos.add(cursor.getString(0))
         }
@@ -1190,11 +1338,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun actualizarLimites(url: String) {
         // Fecha tomada para ser coloada en tabla auxiliar en caso de dar un error
         val fechaError = obtenerFechaPreError("limites")
-        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
-            Method.GET,
-            url,
-            null,
-            { response: JSONObject ->
+        val jsonObjectRequest: JsonObjectRequest =
+            object : JsonObjectRequest(Method.GET, url, null, { response: JSONObject ->
                 try {
                     if (response.getString("limites") != "null") {
                         // conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
@@ -1466,8 +1611,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     error.printStackTrace()
                     println("--Error--")
                 }
-            },
-            { error: VolleyError ->
+            }, { error: VolleyError ->
                 println("--Error--")
                 error.printStackTrace()
                 println("--Error--")
@@ -1481,14 +1625,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 // AnalisisError2();
                 // ------
                 sincronizacionVendedor()
+            }) {
+                override fun getParams(): Map<String, String> {
+                    val parametros: MutableMap<String, String> = HashMap()
+                    parametros["cod_usuario"] = cod_usuario!!
+                    return parametros
+                }
             }
-        ) {
-            override fun getParams(): Map<String, String> {
-                val parametros: MutableMap<String, String> = HashMap()
-                parametros["cod_usuario"] = cod_usuario!!
-                return parametros
-            }
-        }
         val requestQueue = Volley.newRequestQueue(this)
         requestQueue.add(jsonObjectRequest)
     }
@@ -1516,13 +1659,17 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.tvAviso.text =
             "Por favor, espere mientras los datos sincronizan. No abandone esta pantalla hasta que finalice el proceso"
         getFechas()
-        bajarVendedor("https://" + enlaceEmpresa + "/" + ambienteJob + "/listvend.php?cod_usuario=" + cod_usuario!!.trim {
-            it <= ' '
-        } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+        bajarVendedor(
+            "https://" + enlaceEmpresa + "/" + ambienteJob + "/listvend.php?cod_usuario=" + cod_usuario!!.trim {
+                it <= ' '
+            } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
+        )
         // bajarArticulos("https://" + enlaceEmpresa + "/" + ambienteJob + "/articulos.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
-        bajarKardex("https://" + enlaceEmpresa + "/" + ambienteJob + "/kardex.php?fecha_sinc=" + fecha_sinc_articulo!!.trim {
-            it <= ' '
-        } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
+        bajarKardex(
+            "https://" + enlaceEmpresa + "/" + ambienteJob + "/kardex.php?fecha_sinc=" + fecha_sinc_articulo!!.trim {
+                it <= ' '
+            } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
+        )
     }
 
     private fun bajarInfoPedidos(url: String?) {
@@ -1591,8 +1738,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                         conn.updateTablaAux("ke_opti", codEmpresa!!)
 
                         binding.tvPedidosact.setTextColor(Color.rgb(62, 197, 58))
-                        binding.tvPedidosact.text =
-                            "Pedidos Act: $contadorpedidosactualizados"
+                        binding.tvPedidosact.text = "Pedidos Act: $contadorpedidosactualizados"
                         varAux++
                         progressDialog!!.incrementProgressBy(numBarraProgreso.toInt())
                         progressDialog!!.setMessage("Pedidos act.$contadorpedidosactualizados")
@@ -1933,7 +2079,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 }
 
                                 contadorvend++
-
                             } catch (e: JSONException) {
                                 Toast.makeText(
                                     applicationContext,
@@ -2165,8 +2310,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     subgrupo = jsonObject.getString("subgrupo")
                                     nombre = jsonObject.getString("nombre")
                                     marca = jsonObject.getString("marca")
-                                    referencia =
-                                        jsonObject.getString("referencia")
+                                    referencia = jsonObject.getString("referencia")
                                     unidad = jsonObject.getString("unidad")
                                     precio1 = jsonObject.getDouble("precio1")
                                     precio2 = jsonObject.getDouble("precio2")
@@ -2181,8 +2325,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     vta_max = jsonObject.getDouble("vta_max")
                                     vta_min = jsonObject.getDouble("vta_min")
                                     dctotope = jsonObject.getDouble("dctotope")
-                                    enpreventa =
-                                        jsonObject.getString("enpreventa")
+                                    enpreventa = jsonObject.getString("enpreventa")
                                     comprometido = jsonObject.getString("comprometido")
                                     vta_minenx = jsonObject.getString("vta_minenx")
                                     val vtaSolofac = jsonObject.getInt("vta_solofac")
@@ -2610,11 +2753,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun obtenerFechaPreError(tabla: String): String {
         // conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         val keAndroid = conn.writableDatabase
-        val cursor =
-            keAndroid.rawQuery(
-                "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa'",
-                null
-            )
+        val cursor = keAndroid.rawQuery(
+            "SELECT fchhn_ultmod FROM tabla_aux WHERE tabla = '$tabla' AND empresa = '$codEmpresa'",
+            null
+        )
         val fechaError: String = if (cursor.moveToFirst()) {
             cursor.getString(0)
         } else {
@@ -2722,6 +2864,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             analisisError2()
         }
         val requestQueue = Volley.newRequestQueue(this)
+        jsonObjectRequest.retryPolicy = retryPolicyPOST
         requestQueue.add(jsonObjectRequest)
         varAux++
         sincronizacionVendedor()
@@ -3108,6 +3251,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val limcred = jsonObject.getDouble("limcred")
                                 val fchcrea = jsonObject.getString("fchcrea")
                                 val email = jsonObject.getString("email")
+                                val dolarflete = jsonObject.getString("dolarflete")
 
                                 clientesNube.add(codigo)
 
@@ -3142,6 +3286,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("fchcrea", fchcrea)
                                 cv.put("email", email)
                                 cv.put("empresa", codEmpresa)
+                                cv.put("dolarflete", dolarflete)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "cliempre",
@@ -4080,11 +4225,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         // Inicializacion de la conexion
         val keAndroid = conn.writableDatabase
         // Ejecucion del query que busca los pedidos que no se hayan subido
-        cursorti =
-            keAndroid.rawQuery(
-                "SELECT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi FROM ke_opti WHERE kti_status = '0' AND kti_codven ='$cod_usuario' AND empresa = '$codEmpresa'",
-                null
-            )
+        cursorti = keAndroid.rawQuery(
+            "SELECT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi FROM ke_opti WHERE kti_status = '0' AND kti_codven ='$cod_usuario' AND empresa = '$codEmpresa'",
+            null
+        )
         // If que analiza si existen pedidos aun no subidos
         if (cursorti.moveToFirst()) {
             // En el caso que si hayan pedidos por subir
@@ -4103,11 +4247,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     private fun subirPrecob() {
         val keAndroid = conn.writableDatabase
         // Busqueda de datos en la base de datos del tlf para validar la existencia de nuevas cobranzas por subir
-        val cursorpc =
-            keAndroid.rawQuery(
-                "SELECT cxcndoc FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='$cod_usuario' AND empresa = '$codEmpresa'",
-                null
-            )
+        val cursorpc = keAndroid.rawQuery(
+            "SELECT cxcndoc FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend ='$cod_usuario' AND empresa = '$codEmpresa'",
+            null
+        )
         // IF para que valida la existencia de esas nuevas obranzas con  ayuda del cursor
         if (cursorpc.moveToFirst()) {
             // Funcion para crear el JSON
@@ -4131,11 +4274,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.btnSubirprecob.setBackgroundColor(Color.rgb(242, 238, 238))
         val keAndroid = conn.writableDatabase
         // Creacion del ursor y la sentencia SQL que ejecutara la busqueda de cada una de las abeeras de los documentos por cobrar
-        val cursorRc: Cursor =
-            keAndroid.rawQuery(
-                "SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend = '$cod_usuario' AND empresa = '$codEmpresa'",
-                null
-            )
+        val cursorRc: Cursor = keAndroid.rawQuery(
+            "SELECT * FROM ke_precobranza WHERE (edorec = '0' OR edorec = '9' OR edorec = '3') AND codvend = '$cod_usuario' AND empresa = '$codEmpresa'",
+            null
+        )
         // Creacion del JSON Array que contendra las precobranzas
         arrayCH = JSONArray()
         // while que reorera todos los casos positivos de la sentencia SQL ejeutada
@@ -4257,6 +4399,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                     objetoLineas.put("kecxc_idd", cursorRl.getString(31))
                     objetoLineas.put("tasadiad", cursorRl.getDouble(32))
                     objetoLineas.put("afavor", cursorRl.getDouble(33))
+                    objetoLineas.put("dolarflete", cursorRl.getDouble(41))
                     // Guardado del objeto JSON Lineas en el JSON Array
                     arrayCL!!.put(objetoLineas)
                 }
@@ -4315,11 +4458,10 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         binding.btnSubir.setBackgroundColor(Color.rgb(242, 238, 238))
         // Inicializacion de la conexion y ejecucion del query
         val keAndroid = conn.writableDatabase
-        cursorti =
-            keAndroid.rawQuery(
-                "SELECT DISTINCT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi, kti_negesp FROM ke_opti WHERE kti_status = '0' AND kti_codven ='$cod_usuario' AND empresa = '$codEmpresa'",
-                null
-            )
+        cursorti = keAndroid.rawQuery(
+            "SELECT DISTINCT kti_codcli, kti_codven, kti_docsol, kti_condicion, kti_tdoc, kti_ndoc, kti_tipprec, kti_nombrecli, kti_totneto, kti_fchdoc, kti_status, fechamodifi, kti_negesp, dolarflete FROM ke_opti WHERE kti_status = '0' AND kti_codven ='$cod_usuario' AND empresa = '$codEmpresa'",
+            null
+        )
         // Creacion del array JSON
         arrayTi = JSONArray()
 
@@ -4344,6 +4486,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 kti_status = "1"
                 kti_fechamodifi = cursorti.getString(11)
                 kti_negesp = cursorti.getString(12)
+                val dolarflete = cursorti.getString(13)
 
                 // Creacion de diccionario JSON
                 objetoCabecera.put("kti_codcli", kti_codcli)
@@ -4359,6 +4502,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 objetoCabecera.put("kti_status", kti_status)
                 objetoCabecera.put("fechamodifi", kti_fechamodifi)
                 objetoCabecera.put("kti_negesp", kti_negesp)
+                objetoCabecera.put("dolarflete", dolarflete)
                 // Query para la solicitud de las lineas del pedido que se esta procesando
                 val cursormv = keAndroid.rawQuery(
                     "SELECT kmv_codart, kmv_nombre, kti_tipprec, kmv_cant, kti_tdoc, kti_ndoc, kmv_stot, kmv_artprec, kmv_dctolin FROM ke_opmv WHERE kti_ndoc ='$kti_ndoc' AND empresa = '$codEmpresa'",
@@ -4497,7 +4641,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun insertarLimites(jsonlim: String) {
-        val requestQueue = Volley.newRequestQueue(applicationContext)
+        val requestQueue = Volley.newRequestQueue(this)
         val stringRequest: StringRequest = object : StringRequest(
             Method.POST,
             "https://$enlaceEmpresa/$ambienteJob/Limites.php",
@@ -4570,7 +4714,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 )
             }
         } else {
-            Toast.makeText(this, "Evento imprevisto  al actualizar estatus", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Evento imprevisto  al actualizar estatus", Toast.LENGTH_SHORT)
+                .show()
         }
         cursor.close()
     }
@@ -4732,6 +4877,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                 ).show()
             }
         )
+        jsonObjectRequest.retryPolicy = retryPolicyPOST
         requestQueue.add(jsonObjectRequest)
     }
 
@@ -4744,7 +4890,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         // Respuesta positiva del url
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "http://$enlaceEmpresa:5001/pedido",
+            "https://3af8-45-186-203-254.ngrok-free.app/api/v1/pedidos",
             jsonpe,
             { response: JSONObject? ->
                 if (response != null) {
@@ -4783,7 +4929,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 // tv_pedidossubidos.setText("Linea(s) del pedido" + Correlativo + " repetida(s)");
                                 Toast.makeText(
                                     this@SincronizacionActivity,
-                                    "Línea(s) del pedido$correlativo repetida(s) \nRecomendación: Verificar el contenido del pedido.",
+                                    "Línea(s) del pedido $correlativo repetida(s) \nRecomendación: Verificar el contenido del pedido.",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -4791,7 +4937,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 // tv_pedidossubidos.setText("Correlativos del pedido" + Correlativo + " no concuerdan");
                                 Toast.makeText(
                                     this@SincronizacionActivity,
-                                    "Correlativos del pedido$correlativo no concuerdan \nRecomendaión: Rehacer el pedido.",
+                                    "Correlativos del pedido $correlativo no concuerdan \nRecomendación: Rehacer el pedido.",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -4799,7 +4945,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 // tv_pedidossubidos.setText("Correlativos del pedido" + Correlativo + " no concuerdan");
                                 Toast.makeText(
                                     this@SincronizacionActivity,
-                                    "Error súbito.",
+                                    "Evento inesperado.",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -4824,6 +4970,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             ).show()
             binding.btnSubir.isEnabled = true
         }
+
+        jsonObjectRequest.retryPolicy = retryPolicyPOST
 
         // Envio puesto en cola
         requestQueue.add(jsonObjectRequest)
@@ -5209,6 +5357,65 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             }
             return fechaDate
         }
+    }
+
+    private fun bajarTiposReclamos(url: String) {
+        println(url)
+        val jsonArrayRequest: JsonArrayRequest =
+            object : JsonArrayRequest(
+                url,
+                Response.Listener { response: JSONArray? ->
+                    if (response != null) {
+                        conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+                        val keAndroid = conn.writableDatabase
+                        var jsonObject: JSONObject // creamos un objeto json vacio
+                        keAndroid.delete("ke_tiporecl", "empresa = ?", arrayOf(codEmpresa!!))
+                        for (i in 0 until response.length()) {
+                            try {
+                                // obtengo de la respuesta los datos en un json object
+                                jsonObject = response.getJSONObject(i)
+                                // preparo los campos para las operaciones
+                                val codigoTipo =
+                                    jsonObject.getString("kdv_codclasif")
+                                val nomWeb = jsonObject.getString("kdv_nomclaweb")
+                                val nomRecl = jsonObject.getString("kdv_nomclasif")
+                                val helpRec = jsonObject.getString("kdv_hlpclasif")
+                                val fechaMod = jsonObject.getString("fechamodifi")
+
+                                val cv = ContentValues()
+                                cv.put("kdv_codclasif", codigoTipo)
+                                cv.put("kdv_nomclaweb", nomWeb)
+                                cv.put("kdv_nomclasif", nomRecl)
+                                cv.put("kdv_hlpclasif", helpRec)
+                                cv.put("fechamodifi", fechaMod)
+                                cv.put("empresa", codEmpresa)
+
+                                keAndroid.insert("ke_tiporecl", null, cv)
+                            } catch (e: Exception) {
+                                println("--Error--")
+                                e.printStackTrace()
+                                println("--Error--")
+                            }
+                        }
+                    }
+                    varAux++
+                    sincronizacionVendedor()
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
+                }
+            ) {
+                override fun getParams(): Map<String, String> {
+                    // parametros.put("documento", documento);
+                    return HashMap()
+                }
+            }
+        val requestQueue = Volley.newRequestQueue(this)
+        requestQueue.add(
+            jsonArrayRequest
+        ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
     override fun getTheme(): Resources.Theme {

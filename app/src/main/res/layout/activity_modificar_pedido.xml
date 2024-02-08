@@ -2,43 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundAux"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme"
-    tools:context=".ModificarPedidoActivity"
-    style="@style/BackgroundAux">
-
-    <RadioGroup
-        android:id="@+id/radioGroupCondMod"
-        android:layout_width="125dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="45dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/radioGroupDocMod"
-        app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
-
-        <RadioButton
-            android:id="@+id/RbCreditoMod"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Rb3"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton" />
-
-        <RadioButton
-            android:id="@+id/RbPrepagoMod"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Rb4"
-            android:textSize="12sp"
-            android:enabled="false"
-            android:visibility="invisible"
-            android:theme="@style/BasicStyleRadioButton" />
-    </RadioGroup>
+    tools:context=".ModificarPedidoActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout4"
@@ -52,7 +20,7 @@
         app:layout_constraintBottom_toTopOf="@+id/textView38"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroupDocMod">
+        app:layout_constraintTop_toBottomOf="@+id/llDatos">
 
         <ListView
             android:id="@+id/ListPedidoMod"
@@ -62,33 +30,78 @@
 
     </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/radioGroupDocMod"
-        android:layout_width="156dp"
-        android:layout_height="66dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="2dp"
+    <LinearLayout
+        android:id="@+id/llDatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
 
-        <RadioButton
-            android:id="@+id/RbFacturaMod"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Rb1"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton" />
+        <RadioGroup
+            android:id="@+id/radioGroupDocMod"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
 
-        <RadioButton
-            android:id="@+id/RbNotaEntregaMod"
-            style="@style/BasicStyleRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Rb2"
-            android:textSize="12sp"
-            android:theme="@style/BasicStyleRadioButton" />
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/RbFacturaMod"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Rb1"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton" />
+
+            <RadioButton
+                android:id="@+id/RbNotaEntregaMod"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Rb2"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/radioGroupCondMod"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/radioGroupDocMod"
+            app:layout_constraintTop_toBottomOf="@+id/tv_avisobloqueo">
+
+            <RadioButton
+                android:id="@+id/RbCreditoMod"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Rb3"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton" />
+
+            <RadioButton
+                android:id="@+id/RbPrepagoMod"
+                style="@style/BasicStyleRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/Rb4"
+                android:textSize="12sp"
+                android:theme="@style/BasicStyleRadioButton"
+                android:visibility="invisible" />
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/cbFleteDol"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Flete Dolarizado"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_clientepedido"

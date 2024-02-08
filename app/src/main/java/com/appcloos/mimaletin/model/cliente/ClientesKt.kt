@@ -1,6 +1,5 @@
 package com.appcloos.mimaletin.model.cliente
 
-
 data class ClientesKt(
     var codigo: String = "", // 14206060
     var nombre: String = "", // CRISPIN RIOS
@@ -30,5 +29,7 @@ data class ClientesKt(
     var diasultvta: Double = 0.0, // 0.000000
     var promdiasvta: Double = 0.0, // 0.000000
     var limcred: Double = 0.0, // 0.000000
-    var fchcrea: String = "" // 0000-00-00
+    var fchcrea: String = "", // 0000-00-00
+    var empresa: String = "",
+    var dolarFlete: Int = 0
 )

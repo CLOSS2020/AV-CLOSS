@@ -52,4 +52,5 @@ class Documentos {
     var bsflete: Double = 0.0
     var bsretencioniva: Double = 0.0
     var bsretencion: Double = 0.0
+    var dolarflete: Int = 0
 }

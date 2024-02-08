@@ -70,7 +70,8 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/tvMontoModulCXC"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvClienteModulCXC" />
+            app:layout_constraintTop_toBottomOf="@+id/tvClienteModulCXC"
+            app:layout_constraintBottom_toTopOf="@+id/tvFechaRecepcionModulCXC"/>
 
         <TextView
             android:id="@+id/tvFechaRecepcionModulCXC"
@@ -82,7 +83,8 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/tvMontoModulCXC"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFechaVencimientoModulCXC" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFechaVencimientoModulCXC"
+            app:layout_constraintBottom_toTopOf="@+id/tvEdoFactModulCXC"/>
 
         <TextView
             android:id="@+id/tvMontoModulCXC"
@@ -94,7 +96,7 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/tvEdoPediModulCXC"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/llContainerEstados"
             app:layout_constraintStart_toEndOf="@+id/tvFechaVencimientoModulCXC"
             app:layout_constraintTop_toBottomOf="@+id/tvClienteModulCXC" />
 
@@ -108,7 +110,7 @@
             android:textSize="12sp"
             android:textStyle="bold|italic"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tvEdoPediModulCXC"
+            app:layout_constraintEnd_toEndOf="@+id/tvFechaRecepcionModulCXC"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvFechaRecepcionModulCXC" />
 
@@ -121,22 +123,49 @@
             android:text="Estado de Tracking:"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/llContainerEstados"
             app:layout_constraintStart_toEndOf="@+id/tvEdoFactModulCXC"
             app:layout_constraintTop_toBottomOf="@+id/tvFechaRecepcionModulCXC" />
 
-        <TextView
-            android:id="@+id/tvReclamo"
+        <LinearLayout
+            android:id="@+id/llContainerEstados"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:background="@drawable/border_radius_error"
-            android:padding="5dp"
-            android:text="RCL"
-            android:textColor="@color/whiteColor1"
-            android:textStyle="bold"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvClienteModulCXC">
+
+            <TextView
+                android:id="@+id/tvDolarFlete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/border_radius_dolar_flete"
+                android:padding="5dp"
+                android:text="FD"
+                android:textAlignment="center"
+                android:textColor="@color/whiteColor1"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvReclamo"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tvReclamo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/border_radius_error"
+                android:padding="5dp"
+                android:text="RCL"
+                android:textAlignment="center"
+                android:textColor="@color/whiteColor1"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

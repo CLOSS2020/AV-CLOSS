@@ -29,6 +29,9 @@ import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 import java.text.DecimalFormat
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.Random
@@ -63,6 +66,20 @@ fun String.diferenciaFehca(): String {
     return dias.toString()
 }
 
+fun getDaysBetweenDates(fromDate: String, toDate: String): Int {
+    val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    val from = LocalDate.parse(fromDate, dateFormatter)
+    val to = LocalDate.parse(toDate, dateFormatter)
+
+    val period = Period.between(from, to)
+    val years = period.years
+    val months = period.months
+    val days = period.days
+
+    return days
+}
+
 fun Activity.toast(text: String, length: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, length).show()
 }
@@ -86,7 +103,9 @@ fun ImageView.setImageURL(url: String) {
 // Formater de numeros decimales
 fun Double.formatoNum(): String = DecimalFormat("####.00").format(this)
 
-fun Int.formatoNum(): String = DecimalFormat("####").format(this)
+fun Double.formatoNumFull(): String = DecimalFormat("#,##0.00").format(this)
+
+fun Int.formatoNum(): String = DecimalFormat("#,###").format(this)
 
 fun Double.valorReal(): Double = (this * 100.00).roundToInt() / 100.00
 
@@ -203,7 +222,7 @@ fun Activity.windowsColor(agencia: String?) {
     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         window.statusBarColor = ContextCompat.getColor(this, R.color.primaryColor)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.primaryColor)
@@ -308,7 +327,7 @@ fun View.setDrawableCobranzaVariantAgencia(agencia: String?) {
 
 fun View.colorAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.primaryColor)
     } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
@@ -340,7 +359,7 @@ fun View.colorVariantAgencia(agencia: String?): Int {
 
 fun View.colorAccentAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.rojologo)
@@ -371,7 +390,7 @@ fun View.colorAccentAgencia(agencia: String?): Int {
 
 fun View.colorTextAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.primaryColor)
     } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
@@ -389,7 +408,7 @@ fun View.colorTextAgencia(agencia: String?): Int {
 
 fun View.setColorCheckBox(agencia: String): ColorStateList {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: ColorStateList =
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
             ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primaryColor))
@@ -464,6 +483,23 @@ fun Activity.setAlertDialogTheme(agencia: String?): Int {
     return retorno
 }
 
+fun View.setAlertDialogTheme(agencia: String?): Int {
+    val retorno: Int = when (agencia) {
+        CLO -> {
+            R.style.AlertDialogCustom
+        }
+
+        WOKIN -> {
+            R.style.AlertDialogCustomWokin
+        }
+
+        else -> {
+            R.style.AlertDialogCustom
+        }
+    }
+    return retorno
+}
+
 fun Activity.setEditTextTheme(agencia: String?): Int {
     val retorno: Int = when (agencia) {
         CLO -> {
@@ -500,7 +536,7 @@ fun Activity.setCheckBoxTheme(agencia: String?): Int {
 
 fun Activity.setThemeAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         R.style.AppTheme
@@ -531,7 +567,7 @@ fun Activity.setThemeNoBarAgencia(agencia: String?): Int {
 
 fun Activity.setThemeNoBarCXCAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         R.style.AppThemeCXC
@@ -564,7 +600,7 @@ fun View.setBoxStrokeColorInputText(agencia: String?): ColorStateList? {
 
 fun MaterialButton.setColorModelVariant(agencia: String?) {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     this.apply {
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
@@ -588,7 +624,7 @@ fun TextInputLayout.setColorModel(agencia: String?) {
 
 fun Fragment.setThemeDateFragment(agencia: String): Int {
     this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = when (agencia) {
         CLO -> {
             R.style.MyDatePickerStyle
@@ -625,7 +661,7 @@ fun View.changeColorMarco(agencia: String?): Int {
 
 fun View.colorToolBarAux(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.md_theme_light_primary)
@@ -643,7 +679,7 @@ fun View.colorToolBarAux(agencia: String?): Int {
 
 fun View.colorButtonAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.primaryColor)
@@ -662,7 +698,7 @@ fun View.colorButtonAgencia(agencia: String?): Int {
 
 fun View.colorLabelAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.primaryColor)
     } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
@@ -680,7 +716,7 @@ fun View.colorLabelAgencia(agencia: String?): Int {
 
 fun View.colorTextInputLayoutAgencia(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: Int = if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
         ContextCompat.getColor(context, R.color.primaryColor)
     } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == WOKIN) {
@@ -715,7 +751,7 @@ fun View.colorListaReclamo(agencia: String?): Int {
 
 fun View.colorIconReclamo(agencia: String?): ColorStateList? {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
     val retorno: ColorStateList? =
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
             ContextCompat.getColorStateList(context, R.color.whiteColor1)
@@ -875,7 +911,7 @@ fun Activity.direccionEmpresa(agencia: String?): List<String> {
 
 fun View.cxcBackgroundCliente(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     /*val retorno: Int =
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -910,7 +946,7 @@ fun View.cxcBackgroundCliente(agencia: String?): Int {
 
 fun View.cxcBackgroundDatos(agencia: String?): Int {
     val nightModeFlags = this.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
+        Configuration.UI_MODE_NIGHT_MASK
 
     /*val retorno: Int =
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO && agencia == CLO) {
@@ -950,4 +986,24 @@ fun ArrayList<String>.noRepeatList(): ArrayList<String> {
         returnList.add(it)
     }
     return returnList
+}
+
+fun Double.toDollar(moneda: String, tasa: Double): Double {
+    return if (moneda == "BSS") {
+        this / tasa
+    } else {
+        this
+    }
+}
+
+fun Double.toBolivares(moneda: String, tasa: Double): Double {
+    return if (moneda == "USD") {
+        (this * tasa).valorReal()
+    } else {
+        (this).valorReal()
+    }
+}
+
+fun String.right(length: Int): String {
+    return this.substring(this.length - length)
 }

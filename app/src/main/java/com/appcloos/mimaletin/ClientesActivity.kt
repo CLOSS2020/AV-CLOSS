@@ -96,6 +96,9 @@ class ClientesActivity : AppCompatActivity() {
     fun buscarClientes(busqueda: String? = null) {
         listacliente.clear()
         listacliente = conn.getClientes(busqueda, codigoEmpresa!!)
+        if (listacliente.isEmpty()) {
+            toast("Clientes: Evento 1")
+        }
         clienteAdapter.updateAdapter(listacliente)
     }
 

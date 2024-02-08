@@ -58,8 +58,9 @@ class KardexActivity : AppCompatActivity() {
         consultarArticulosNormal()
         val catalogoAdapter = CatalogoAdapter(
             this@KardexActivity,
-            listacatalogo,
-            enlaceEmpresa
+            listacatalogo!!,
+            enlaceEmpresa,
+            codEmpresa
         )
         listaKardex.adapter = catalogoAdapter
         val objetoAux = ObjetoAux(this)
