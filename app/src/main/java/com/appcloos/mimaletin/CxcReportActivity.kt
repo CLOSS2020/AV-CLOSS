@@ -1,5 +1,6 @@
 package com.appcloos.mimaletin
 
+import android.app.Dialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,6 +10,7 @@ import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.icu.text.DecimalFormat
 import android.net.Uri
 import android.os.Bundle
@@ -20,6 +22,7 @@ import android.text.SpannableStringBuilder
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.RadioButton
@@ -31,6 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -50,12 +54,14 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 class CxcReportActivity : AppCompatActivity() {
     private var APP_NOTA_ENTREGA_BS = false
     private var APP_PORCENTAJE_COMPLEMENTO = 0.9
     private var APP_EXCLUIR_TIPO_RETENCION = 0
+    private var retivaoblig = 0
 
     private var contadorRetenIVA = 0
     private var contadorRetenFlete = 0
@@ -195,6 +201,7 @@ class CxcReportActivity : AppCompatActivity() {
 
     // tipo descuentos
     private lateinit var listaDescuentos: ArrayList<Descuentos>
+    private var listaDescuentosAux: ArrayList<Descuentos> = ArrayList()
 
     // tipo retenciones
     private lateinit var listaRetGuardada: ArrayList<Retenciones>
@@ -257,11 +264,20 @@ class CxcReportActivity : AppCompatActivity() {
 
         // carga de los docs previamente adjuntados
         listaDocsSeleccionados = intent.getStringArrayListExtra("listaDocs") as ArrayList<String>
+
+        retivaoblig = conn.getCampoIntCamposVarios(
+            "ke_doccti",
+            "retivaoblig",
+            listOf("documento", "empresa"),
+            listOf(listaDocsSeleccionados[0].replace("'", ""), codEmpresa!!)
+        )
+
         // validacion del correlativo para la cobranza
         val cursorCorrelativo = keAndroid.rawQuery(
-            "SELECT MAX(kcor_numero) FROM ke_corprec " + "WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'",
+            "SELECT MAX(kcor_numero) FROM ke_corprec WHERE kcor_vendedor ='$codUsuario' AND empresa = '$codEmpresa'",
             null
         )
+        setDate()
         cargarSaldos("USD", listaDocsSeleccionados)
         bajarDocsConDesc(
             "https://$enlaceEmpresa/webservice/bajardescuentos_V2.php?fecha_sinc=$fechaAuxiliar&codigo_cli=$codigoCliente"
@@ -327,6 +343,8 @@ class CxcReportActivity : AppCompatActivity() {
         // Radio button bss principal
         binding.rbCxcBssMain.setOnClickListener {
             currencySelectedPR = "BSS"
+            binding.tilCxcRefMain.visibility = View.VISIBLE
+            binding.tilCxcSpbanco.visibility = View.VISIBLE
             binding.cbCxcDescuentos.isChecked =
                 false // <- Al cambio de moneda se desactiva el descuento
             if (binding.rbCxcBssMain.isChecked) {
@@ -359,7 +377,7 @@ class CxcReportActivity : AppCompatActivity() {
         }
         // Radio button divisas principal
         binding.rbCxcDivisasMain.setOnClickListener {
-            currencySelectedPR = "USD" //<- moneda seleccionada
+            currencySelectedPR = "USD" // <- moneda seleccionada
             binding.cbCxcDescuentos.isChecked =
                 false // <- Al cambio de moneda se desactiva el descuento
             if (binding.rbCxcDivisasMain.isChecked) {
@@ -411,6 +429,10 @@ class CxcReportActivity : AppCompatActivity() {
         }
 
         binding.cbCxcDescuentos.setOnClickListener {
+            if (!binding.cbCxcDescuentos.isChecked) {
+                listaDescuentos.clear()
+                listaDescuentosAux.clear()
+            }
             if (tasaCambioSeleccionadaPrincipal == 0.0) {
                 Toast.makeText(this, "Debes seleccionar una fecha de pago", Toast.LENGTH_SHORT)
                     .show()
@@ -432,7 +454,7 @@ class CxcReportActivity : AppCompatActivity() {
                 nombreBancoCompleto = listaBancos[position - 1].nombanco
 
                 if (binding.rbCxcDivisasMain.isChecked) {
-                    calcularDescuentos2("USD")
+                    // calcularDescuentos2("USD")
                     cargarSaldos("USD", listaDocsSeleccionados, !binding.cbExcReten.isChecked)
                 }
             } else if (position == 0) {
@@ -440,7 +462,7 @@ class CxcReportActivity : AppCompatActivity() {
                 cargarSaldos("USD", listaDocsSeleccionados, !binding.cbExcReten.isChecked)
 
                 if (binding.rbCxcDivisasMain.isChecked) {
-                    calcularDescuentos2("USD")
+                    // calcularDescuentos2("USD")
                     cargarSaldos("USD", listaDocsSeleccionados, !binding.cbExcReten.isChecked)
                 }
             }
@@ -740,7 +762,7 @@ class CxcReportActivity : AppCompatActivity() {
 
         cambioEstadoView()
 
-        binding.cbExcReten.text = when (APP_EXCLUIR_TIPO_RETENCION) {
+        binding.cbExcReten.text = when (retivaoblig) {
             0 -> "Excluir Retenciones"
             1 -> "Excluir Retención Flete"
             else -> "Excluir Retenciones"
@@ -1341,11 +1363,58 @@ class CxcReportActivity : AppCompatActivity() {
         }
     }
 
+    private lateinit var adapterDescuento: DescuentosAdapter
+
     private fun cargarDetalleDescuentos() {
         val listaDesc: ArrayList<Descuentos> = listaDescuentos
 
-        val dialog = DialogDescuento()
-        dialog.DialogDescuento(this, listaDesc)
+        val aceptar: Button
+
+        // conf basica del dialogo
+        val dialogo = Dialog(this)
+        dialogo.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialogo.setCancelable(false)
+        dialogo.window?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
+        dialogo.setContentView(R.layout.dialog_descuentos)
+
+        val rvDetalle = dialogo.findViewById<RecyclerView>(R.id.rv_detalle_desc)
+        aceptar = dialogo.findViewById(R.id.bt_detalle_acep)
+
+        rvDetalle.layoutManager = LinearLayoutManager(this)
+        adapterDescuento = DescuentosAdapter(listaDescuentos, this) { isSlected, position ->
+            // 2024-03-18 Se cambia el estado isSelected al descuento para indicar su seleccion
+            listaDescuentos[position].isSelected = isSlected
+
+            // 2024-03-18 Se agrega o quita de la lista auxiliar dependiendo de si esta o no seleccionado
+            // esto ayuda a mostrar otros descuentos de un mismo u ocultarlos depende del caso
+            if (isSlected) {
+                listaDescuentosAux.add(listaDescuentos[position])
+            } else {
+                listaDescuentosAux.remove(listaDescuentos[position])
+            }
+
+            // Recalculo de precios
+            cargarSaldos()
+
+            // Refrescar el adapter para mostrar los descuentos
+            adapterDescuento.onRefresh(listaDescuentos)
+        }
+        rvDetalle.adapter = adapterDescuento
+        // adapter.notifyDataSetChanged()
+
+        // cerrar el dialogo
+        aceptar.setOnClickListener {
+            dialogo.dismiss()
+        }
+        // mostrar el dialogo
+        dialogo.show()
+
+        /*DialogDescuento(this, listaDesc) { isSlected, position ->
+            listaDescuentos[position].isSelected = isSlected
+            //listaDescuentosAux.add(listaDescuentos[position])
+            cargarSaldos()
+
+        }*/
     }
 
     //  -- esto va a una funcion
@@ -1391,7 +1460,7 @@ class CxcReportActivity : AppCompatActivity() {
         // Para excluir la retencion de IVA debe de estar chequeado el boton de excluir
         // Y el tipo de exclusion de retencion distinto a 1
         // 1 significa que la Ret Iva es obligatoria
-        val excluirRetIva = binding.cbExcReten.isChecked && APP_EXCLUIR_TIPO_RETENCION != 1
+        val excluirRetIva = binding.cbExcReten.isChecked && retivaoblig != 1
 
         var netocobrado: Double
         // Guardando en una variable si exluyo la retencion
@@ -1428,7 +1497,7 @@ class CxcReportActivity : AppCompatActivity() {
         // estabas buscando que en el primer pago te den la retencion del iva
 
         validarReten()
-        if (APP_EXCLUIR_TIPO_RETENCION != 0) { // <- si es distinto de 0 significa que un tipo de retencion es obligatoria
+        if (retivaoblig != 0) { // <- si es distinto de 0 significa que un tipo de retencion es obligatoria
             if (contadorRetenIVA != contadorDoc) {
                 toast("Falta retención del IVA")
                 return
@@ -1457,6 +1526,7 @@ class CxcReportActivity : AppCompatActivity() {
             builder.setPositiveButton("OK") { dialog, which ->
             }
             builder.show()
+            return
         }
 
         // If para validar que se selecciono la fecha
@@ -1499,9 +1569,9 @@ class CxcReportActivity : AppCompatActivity() {
         }
         // Valida que lo puesto en la referencia bancaria no este en blanco
         if ((
-                    binding.etCxcRefMain.text.toString() == "" || binding.etCxcRefMain.text.toString()
-                        .equals(null)
-                    ) && !ignore
+                binding.etCxcRefMain.text.toString() == "" || binding.etCxcRefMain.text.toString()
+                    .equals(null)
+                ) && !ignore
         ) {
             // Si ignore es false significa que no se ha puesto en banco para terminar la transaccion
             Toast.makeText(
@@ -1663,9 +1733,14 @@ class CxcReportActivity : AppCompatActivity() {
             binding.rbCxcAbonoMain.visibility = View.INVISIBLE
             binding.rbCxcAbonoMain.isChecked = false
 
-            if (binding.rbCxcCompMain.isChecked) {
-                montoMinimoRec = binding.tvCxcTotal.text.toString().toDouble() - 0.5
+            // val pasaDolarFlete = pasaDolarFlete()
+
+            montoMinimoRec = if (false /*pasaDolarFlete*/) {
+                montoMinimoDolarFlete()
+            } else {
+                montoMinimo(ivaTot, fleteTot, retTot)
             }
+
             // Lo que el cliente da es menor al total y complemento NO esta marcado
             if (montoRec < montoMinimoRec && !binding.cbCxcComplemento.isChecked) { // PUEDE ENTRAR AQUI EN ALGUN CASO?
                 // Toast.makeText(this, "El monto del recibo no debe ser menor a la suma del IVA y el
@@ -1881,8 +1956,32 @@ class CxcReportActivity : AppCompatActivity() {
                                 if (listaDocumentos[i].dolarflete == 0) { // <- Flete Normal
                                     listaDocumentos[i].bsflete
                                 } else { // <- Flete Dolarizado
-                                    (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).valorReal()
+                                    (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).round()
                                 }
+
+                            // 2024-02-20 El valor de IVA variará dependiendo si es flete dolarizado
+                            val ivaDol = if (listaDocumentos[i].dolarflete == 0) {
+                                // Si no hay flete dolarizado el IVA permanecera normal
+                                listaDocumentos[i].dtotimpuest
+                            } else {
+                                // Si hay flete dolarizado el nuevo IVA en $ sera el Iva en BS
+                                // multiplicado por la tasa del dia de la cobranza
+                                (listaDocumentos[i].bsiva / tasaCambioSeleccionadaPrincipal).round()
+                            }
+
+                            // 2024-02-20 El valor de la retencion variará dependiendo si es flete
+                            // dolarizado, como en el caso del IVA
+                            val retIvaDol = if (listaDocumentos[i].dolarflete == 0) {
+                                listaDocumentos[i].cdretencioniva
+                            } else {
+                                (listaDocumentos[i].cbsretencioniva / tasaCambioSeleccionadaPrincipal).round()
+                            }
+
+                            val retFleteDol = if (listaDocumentos[i].dolarflete == 0) {
+                                listaDocumentos[i].cdretflete
+                            } else {
+                                (listaDocumentos[i].cbsretflete / tasaCambioSeleccionadaPrincipal).round()
+                            }
 
                             // inicializando las fechas para evitar errores en la subida de datos
                             listaReciboPrLineas[i].fchemiret = "0000-00-00"
@@ -1921,7 +2020,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             listaDocumentos[i].dtotneto.toBolivares(
                                                 currencySelectedPR,
                                                 tasaCambioSeleccionadaPrincipal
-                                            )
+                                            ).round()
                                         listaReciboPrLineas[i].retmun_nro =
                                             listaRetGuardada[j].refret.right(8)
                                         listaReciboPrLineas[i].retmun_fch =
@@ -1942,7 +2041,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 } else {
                                     // descuento ivas del monto del recibo original .-
                                     val restaIvadol =
-                                        if (excluirRetIva) listaDocumentos[i].dtotimpuest else listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
+                                        if (excluirRetIva) ivaDol else ivaDol - retIvaDol
                                     // 2023-04-03 comentario por no tener en cuenta cuando se escluyen retenciones
                                     // var restaIvadol = listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
                                     val restaIvabss =
@@ -1951,7 +2050,7 @@ class CxcReportActivity : AppCompatActivity() {
 
                                     if (binding.rbCxcDivisasMain.isChecked) {
                                         // hago el descuento del iva del nmonto de pago
-                                        montoRec = (montoRec - restaIvadol).valorReal()
+                                        montoRec = (montoRec - restaIvadol).round()
 
                                         if (montoRec < 0.00) {
                                             Toast.makeText(
@@ -1970,7 +2069,7 @@ class CxcReportActivity : AppCompatActivity() {
                                         listaReciboPrLineas[i].tnetoddol += restaIvadol
                                     } else {
                                         montoRec =
-                                            (montoRec - restaIvabss).valorReal() // 320$ //121.53Bs.
+                                            (montoRec - restaIvabss).round() // 320$ //121.53Bs.
                                         if (montoRec < 0.00) {
                                             Toast.makeText(
                                                 this,
@@ -2003,7 +2102,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             return
                                         }
                                         // descuento del monto del recibo, el flete
-                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
 
                                         // de no llegar a menos de cero, lo agrego al monto cobrado en bss
                                         if (binding.cbExcReten.isChecked) {
@@ -2015,7 +2114,7 @@ class CxcReportActivity : AppCompatActivity() {
                                         // listaReciboPrLineas[i].bscobro  += valorReal((listaDocumentos[i].bsflete - listaDocumentos[i].cbsretflete))
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            (if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete)
+                                            (if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol)
 // 2023-04-04 Actualizado para incluir excluir retenciones
                                         /*if(binding.rbCxcDivisasMain.isChecked == true){
                                             listaReciboPrLineas[i].tnetoddol  += listaDocumentos[i].dFlete
@@ -2025,7 +2124,7 @@ class CxcReportActivity : AppCompatActivity() {
                                         }*/
 
                                         if (binding.rbCxcDivisasMain.isChecked) {
-                                            listaReciboPrLineas[i].tnetoddol += (if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete)
+                                            listaReciboPrLineas[i].tnetoddol += (if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol)
                                         } else {
                                             listaReciboPrLineas[i].tnetodbs += (if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete)
                                             // listaReciboPrLineas[i].tnetodbs += listaDocumentos[i].bsiva
@@ -2052,12 +2151,12 @@ class CxcReportActivity : AppCompatActivity() {
                                             listaReciboPrLineas[i].bscobro += valorBsFlete - listaDocumentos[i].cbsretflete
                                         }
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
 
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
 
                                         if (binding.rbCxcDivisasMain.isChecked) {
-                                            listaReciboPrLineas[i].tnetoddol += (if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete)
+                                            listaReciboPrLineas[i].tnetoddol += (if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol)
                                         } else {
                                             listaReciboPrLineas[i].tnetodbs += (if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete)
                                             // listaReciboPrLineas[i].tnetodbs += listaDocumentos[i].bsiva
@@ -2074,16 +2173,16 @@ class CxcReportActivity : AppCompatActivity() {
                                     listaReciboPrLineas[i].bscobro += fleteaCobrar
 
                                     if (binding.rbCxcDivisasMain.isChecked) {
-                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
                                     } else {
                                         montoRec -= if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                     }
                                 }
@@ -2139,16 +2238,31 @@ class CxcReportActivity : AppCompatActivity() {
                                         val bscobrado =
                                             valorReal(netoRealenDoc * listaDocumentos[i].tasadoc)
                                         listaReciboPrLineas[i].bscobro += bscobrado
-                                        netocobrado = listaDocumentos[i].netorestante
+
+                                        // Buscando el porcentaje de descuento del documento a cobrar
+                                        val porcentajeDescuento =
+                                            cantidadDeDescuento(listaDocumentos[i].documento)
+                                        // Calculando cuanto del neto se le debe de restar al documento
+                                        val netoRestaDesc =
+                                            ((listaDocumentos[i].netorestante * (porcentajeDescuento / 100)))
+
+                                        // quitando descuento al neto
+                                        netocobrado =
+                                            if (binding.tvCxcDctos.text.toString().toDouble() > 0.0) {
+                                                valorReal(listaDocumentos[i].netorestante - netoRestaDesc)
+                                            } else {
+                                                listaDocumentos[i].netorestante
+                                            }
+
+                                        // netocobrado = listaDocumentos[i].netorestante
                                         listaReciboPrLineas[i].dolneto = netocobrado
                                         listaReciboPrLineas[i].bsneto =
-                                            valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
+                                            valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                                         listaReciboPrLineas[i].tnetodbs += valorReal(
-                                            netoRealenDoc * tasaCambioSeleccionadaPrincipal
+                                            netocobrado * tasaCambioSeleccionadaPrincipal
                                         )
                                         listaReciboPrLineas[i].ispagadoTotal = "1"
-                                        montoRec -= valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
-                                        print("")
+                                        montoRec -= valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                                     }
                                     // si el monto del recibo no cubre el monto completo del documento (se comporta como un abono)
                                     else if ((netoRealenDoc * tasaCambioSeleccionadaPrincipal) > montoRec && montoRec > 0) {
@@ -2182,13 +2296,23 @@ class CxcReportActivity : AppCompatActivity() {
 
                                 }*/
 
-                                // los bss del neto cobrado
+                                /*// los bss del neto cobrado
+                                 */
                                 /*recorrido de lista de descuentos para asignar cantidad según nro doc. (de tener)*/
+                                /*
                                 for (j in listaDescuentos.indices) {
                                     if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento) {
                                         listaReciboPrLineas[i].prcdsctopp =
                                             listaDescuentos[j].pordscto
                                     }
+                                }*/
+                            }
+                            // 2024-02-19 no se si ponerlo aqui sirva para que aunque el neto enste
+                            // en 0 diga que tenga el % de descuento
+                            for (j in listaDescuentos.indices) {
+                                if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento && listaDescuentos[j].isSelected) {
+                                    listaReciboPrLineas[i].prcdsctopp =
+                                        listaDescuentos[j].pordscto
                                 }
                             }
                         }
@@ -2292,6 +2416,13 @@ class CxcReportActivity : AppCompatActivity() {
                                     }
                                 }
                             }
+
+                            for (j in listaDescuentos.indices) {
+                                if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento && listaDescuentos[j].isSelected) {
+                                    listaReciboCmLineas[i].prcdsctopp =
+                                        listaDescuentos[j].pordscto
+                                }
+                            }
                         }
 
                         /*esto va a ser resultado de la suma de los campos de la lista (ke_precobranza)
@@ -2319,12 +2450,12 @@ class CxcReportActivity : AppCompatActivity() {
                             listaReciboPrLineas.sumOf {
                                 it.bsneto
                             } + (
-                                    listaReciboPrLineas.sumOf {
-                                        it.bsmtoiva
-                                    } + listaReciboPrLineas.sumOf {
-                                        it.bsretiva
-                                    }
-                                    ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                                listaReciboPrLineas.sumOf {
+                                    it.bsmtoiva
+                                } + listaReciboPrLineas.sumOf {
+                                    it.bsretiva
+                                }
+                                ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                         )
                         // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                         cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -2577,6 +2708,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     qlineas.put("tipodoc", listaReciboCmLineas[j].tipodoc)
                                     qlineas.put("documento", listaReciboCmLineas[j].documento)
                                     qlineas.put("bscobro", listaReciboCmLineas[j].bscobro)
+                                    qlineas.put("prcdsctopp", listaReciboCmLineas[j].prcdsctopp)
                                     qlineas.put("tnetoddol", listaReciboCmLineas[j].tnetoddol)
                                     qlineas.put("tnetodbs", listaReciboCmLineas[j].tnetodbs)
                                     qlineas.put("fchrecibod", getFechaNow())
@@ -2771,7 +2903,31 @@ class CxcReportActivity : AppCompatActivity() {
                     val valorBsFlete = if (listaDocumentos[i].dolarflete == 0) { // <- Flete Normal
                         listaDocumentos[i].bsflete
                     } else { // <- Flete Dolarizado
-                        (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).valorReal()
+                        (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).round()
+                    }
+
+                    // 2024-02-20 El valor de IVA variará dependiendo si es flete dolarizado
+                    val ivaDol = if (listaDocumentos[i].dolarflete == 0) {
+                        // Si no hay flete dolarizado el IVA permanecera normal
+                        listaDocumentos[i].dtotimpuest
+                    } else {
+                        // Si hay flete dolarizado el nuevo IVA en $ sera el Iva en BS
+                        // multiplicado por la tasa del dia de la cobranza
+                        (listaDocumentos[i].bsiva / tasaCambioSeleccionadaPrincipal).round()
+                    }
+
+                    // 2024-02-20 El valor de la retencion variará dependiendo si es flete
+                    // dolarizado, como en el caso del IVA
+                    val retIvaDol = if (listaDocumentos[i].dolarflete == 0) {
+                        listaDocumentos[i].cdretencioniva
+                    } else {
+                        (listaDocumentos[i].cbsretencioniva / tasaCambioSeleccionadaPrincipal).round()
+                    }
+
+                    val retFleteDol = if (listaDocumentos[i].dolarflete == 0) {
+                        listaDocumentos[i].cdretflete
+                    } else {
+                        (listaDocumentos[i].cbsretflete / tasaCambioSeleccionadaPrincipal).round()
                     }
 
                     // inicializando las fechas para evitar errores en la subida de datos
@@ -2805,7 +2961,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     listaDocumentos[i].dtotneto.toBolivares(
                                         currencySelectedPR,
                                         tasaCambioSeleccionadaPrincipal
-                                    )
+                                    ).round()
                                 listaReciboPrLineas[i].retmun_nro =
                                     listaRetGuardada[j].refret.right(8)
                                 listaReciboPrLineas[i].retmun_fch = listaRetGuardada[j].fecharet
@@ -2824,7 +2980,7 @@ class CxcReportActivity : AppCompatActivity() {
                         } else {
                             // descuento ivas del monto del recibo original .-
                             val restaIvadol =
-                                if (excluirRetIva) listaDocumentos[i].dtotimpuest else listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
+                                if (excluirRetIva) ivaDol else ivaDol - retIvaDol
                             // 2023-04-03 comentario por no tener en cuenta cuando se escluyen retenciones
                             // var restaIvadol = listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
                             val restaIvabss =
@@ -2833,7 +2989,7 @@ class CxcReportActivity : AppCompatActivity() {
 
                             if (binding.rbCxcDivisasMain.isChecked) {
                                 // hago el descuento del iva del nmonto de pago
-                                montoRec = (montoRec - restaIvadol).valorReal()
+                                montoRec = (montoRec - restaIvadol).round()
 
                                 if (montoRec < 0.00) {
                                     Toast.makeText(
@@ -2851,7 +3007,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 // listaReciboPrLineas[i].tnetoddol  += listaReciboPrLineas[i].doliva
                                 listaReciboPrLineas[i].tnetoddol += restaIvadol
                             } else {
-                                montoRec = (montoRec - restaIvabss).valorReal()
+                                montoRec = (montoRec - restaIvabss).round()
                                 if (montoRec < 0.00) {
                                     Toast.makeText(
                                         this,
@@ -2878,16 +3034,16 @@ class CxcReportActivity : AppCompatActivity() {
                                 }
 
                                 if (binding.rbCxcDivisasMain.isChecked) {
-                                    montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                     listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                     listaReciboPrLineas[i].dolflete =
-                                        if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                        if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                     listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
                                 } else {
                                     montoRec -= if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                     listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                     listaReciboPrLineas[i].dolflete =
-                                        if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                        if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                     listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                 }
                             }
@@ -2902,16 +3058,16 @@ class CxcReportActivity : AppCompatActivity() {
                             listaReciboPrLineas[i].bscobro += fleteaCobrar
 
                             if (binding.rbCxcDivisasMain.isChecked) {
-                                montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                 listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                 listaReciboPrLineas[i].dolflete =
-                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                 listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
                             } else {
                                 montoRec -= if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                 listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                 listaReciboPrLineas[i].dolflete =
-                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                 listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                             }
                         }
@@ -2988,12 +3144,28 @@ class CxcReportActivity : AppCompatActivity() {
                                 val bscobrado =
                                     valorReal(netoRealenDoc * listaDocumentos[i].tasadoc)
                                 listaReciboPrLineas[i].bscobro += bscobrado
-                                netocobrado = listaDocumentos[i].netorestante
+
+                                // Buscando el porcentaje de descuento del documento a cobrar
+                                val porcentajeDescuento =
+                                    cantidadDeDescuento(listaDocumentos[i].documento)
+                                // Calculando cuanto del neto se le debe de restar al documento
+                                val netoRestaDesc =
+                                    ((listaDocumentos[i].netorestante * (porcentajeDescuento / 100)))
+
+                                // quitando descuento al neto
+                                netocobrado =
+                                    if (binding.tvCxcDctos.text.toString().toDouble() > 0.0) {
+                                        valorReal(listaDocumentos[i].netorestante - netoRestaDesc)
+                                    } else {
+                                        listaDocumentos[i].netorestante
+                                    }
+
+                                // netocobrado = listaDocumentos[i].netorestante
                                 listaReciboPrLineas[i].dolneto = netocobrado
-                                montoRec -= valorReal(netoRealenDoc * listaDocumentos[i].tasadoc)
+                                montoRec -= valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                                 listaReciboPrLineas[i].bsneto =
-                                    valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
-                                listaReciboPrLineas[i].tnetodbs += valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
+                                    valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
+                                listaReciboPrLineas[i].tnetodbs += valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                             }
                             // si el monto del recibo no cubre el monto completo del documento (se comporta como un abono)
                             else if ((netoRealenDoc * tasaCambioSeleccionadaPrincipal) > montoRec && montoRec > 0) {
@@ -3008,12 +3180,23 @@ class CxcReportActivity : AppCompatActivity() {
                             }
                         }
 
-                        // los bss del neto cobrado
+                        /*// los bss del neto cobrado
+                         */
                         /*recorrido de lista de descuentos para asignar cantidad según nro doc. (de tener)*/
+                        /*
                         for (j in listaDescuentos.indices) {
                             if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento) {
                                 listaReciboPrLineas[i].prcdsctopp = listaDescuentos[j].pordscto
                             }
+                        }*/
+                    }
+
+                    // 2024-02-19 no se si ponerlo aqui sirva para que aunque el neto enste
+                    // en 0 diga que tenga el % de descuento
+                    for (j in listaDescuentos.indices) {
+                        if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento && listaDescuentos[j].isSelected) {
+                            listaReciboPrLineas[i].prcdsctopp =
+                                listaDescuentos[j].pordscto
                         }
                     }
                 }
@@ -3042,12 +3225,12 @@ class CxcReportActivity : AppCompatActivity() {
                     listaReciboPrLineas.sumOf {
                         it.bsneto
                     } + (
-                            listaReciboPrLineas.sumOf {
-                                it.bsmtoiva
-                            } + listaReciboPrLineas.sumOf {
-                                it.bsretiva
-                            }
-                            ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                        listaReciboPrLineas.sumOf {
+                            it.bsmtoiva
+                        } + listaReciboPrLineas.sumOf {
+                            it.bsretiva
+                        }
+                        ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                 )
                 // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                 cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -3285,7 +3468,15 @@ class CxcReportActivity : AppCompatActivity() {
             // 2023-03-27 se comento la linea de codigo debido a que al inicio de codigo ya verifica si se seleccionoun solo documento o varios para colocar abono
             // binding.rbCxcAbonoMain.visibility = View.VISIBLE
 
-            if (binding.rbCxcCompMain.isChecked) {
+            // val pasaDolarFlete = pasaDolarFlete()
+
+            montoMinimoRec = if (false /*pasaDolarFlete*/) {
+                montoMinimoDolarFlete()
+            } else {
+                montoMinimo(ivaTot, fleteTot, retTot)
+            }
+
+            /*if (binding.rbCxcCompMain.isChecked) {
                 montoMinimoRec = binding.tvCxcTotal.text.toString().toDouble() - 0.5
             } else if (binding.rbCxcAbonoMain.isChecked) {
                 // si se presiona abono, el monto minimo sera la suma del flete mas el iva
@@ -3294,7 +3485,7 @@ class CxcReportActivity : AppCompatActivity() {
                 if (montoMinimoRec == 0.00) {
                     montoMinimoRec = 1.0
                 }
-            }
+            }*/
 
             if (montoRec < montoMinimoRec && !binding.cbCxcComplemento.isChecked) {
                 if (binding.rbCxcCompMain.isChecked) {
@@ -3510,8 +3701,32 @@ class CxcReportActivity : AppCompatActivity() {
                                 if (listaDocumentos[i].dolarflete == 0) { // <- Flete Normal
                                     listaDocumentos[i].bsflete
                                 } else { // <- Flete Dolarizado
-                                    (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).valorReal()
+                                    (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).round()
                                 }
+
+                            // 2024-02-20 El valor de IVA variará dependiendo si es flete dolarizado
+                            val ivaDol = if (listaDocumentos[i].dolarflete == 0) {
+                                // Si no hay flete dolarizado el IVA permanecera normal
+                                listaDocumentos[i].dtotimpuest
+                            } else {
+                                // Si hay flete dolarizado el nuevo IVA en $ sera el Iva en BS
+                                // multiplicado por la tasa del dia de la cobranza
+                                (listaDocumentos[i].bsiva / tasaCambioSeleccionadaPrincipal).round()
+                            }
+
+                            // 2024-02-20 El valor de la retencion variará dependiendo si es flete
+                            // dolarizado, como en el caso del IVA
+                            val retIvaDol = if (listaDocumentos[i].dolarflete == 0) {
+                                listaDocumentos[i].cdretencioniva
+                            } else {
+                                (listaDocumentos[i].cbsretencioniva / tasaCambioSeleccionadaPrincipal).round()
+                            }
+
+                            val retFleteDol = if (listaDocumentos[i].dolarflete == 0) {
+                                listaDocumentos[i].cdretflete
+                            } else {
+                                (listaDocumentos[i].cbsretflete / tasaCambioSeleccionadaPrincipal).round()
+                            }
 
                             // inicializando las fechas para evitar errores en la subida de datos
                             listaReciboPrLineas[i].fchemiret = "0000-00-00"
@@ -3550,7 +3765,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             listaDocumentos[i].dtotneto.toBolivares(
                                                 currencySelectedPR,
                                                 tasaCambioSeleccionadaPrincipal
-                                            )
+                                            ).round()
                                         listaReciboPrLineas[i].retmun_nro =
                                             listaRetGuardada[j].refret.right(8)
                                         listaReciboPrLineas[i].retmun_fch =
@@ -3572,7 +3787,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 } else {
                                     // descuento ivas del monto del recibo original .-
                                     val restaIvadol =
-                                        if (excluirRetIva) listaDocumentos[i].dtotimpuest else listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
+                                        if (excluirRetIva) ivaDol else ivaDol - retIvaDol
                                     // 2023-04-03 comentario por no tener en cuenta cuando se escluyen retenciones
                                     // var restaIvadol = listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
                                     val restaIvabss =
@@ -3581,7 +3796,7 @@ class CxcReportActivity : AppCompatActivity() {
 
                                     if (binding.rbCxcDivisasMain.isChecked) {
                                         // hago el descuento del iva del nmonto de pago
-                                        montoRec = (montoRec - restaIvadol).valorReal()
+                                        montoRec = (montoRec - restaIvadol).round()
 
                                         if (montoRec < 0.00) {
                                             Toast.makeText(
@@ -3599,7 +3814,7 @@ class CxcReportActivity : AppCompatActivity() {
                                         // listaReciboPrLineas[i].tnetoddol  += listaReciboPrLineas[i].doliva
                                         listaReciboPrLineas[i].tnetoddol += restaIvadol
                                     } else {
-                                        montoRec = (montoRec - restaIvabss).valorReal()
+                                        montoRec = (montoRec - restaIvabss).round()
                                         if (montoRec < 0.00) {
                                             Toast.makeText(
                                                 this,
@@ -3634,7 +3849,7 @@ class CxcReportActivity : AppCompatActivity() {
                                             return
                                         }
                                         // descuento del monto del recibo, el flete
-                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
 
                                         // de no llegar a menos de cero, lo agrego al monto cobrado en bss
                                         // por que el boton de excluir retenciones si esta declarado aqui y no en IVA
@@ -3645,8 +3860,8 @@ class CxcReportActivity : AppCompatActivity() {
                                         }
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
-                                        listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
+                                        listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                     } else {
                                         // si aqui ya llega el monto en 0 o menos
                                         if (montoRec < 0.00) {
@@ -3672,7 +3887,7 @@ class CxcReportActivity : AppCompatActivity() {
                                         listaReciboPrLineas[i].bscobro += ((if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete))
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                     }
                                 }
@@ -3686,16 +3901,16 @@ class CxcReportActivity : AppCompatActivity() {
                                     listaReciboPrLineas[i].bscobro += fleteaCobrar
 
                                     if (binding.rbCxcDivisasMain.isChecked) {
-                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                        montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
                                     } else {
                                         montoRec -= if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                         listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                         listaReciboPrLineas[i].dolflete =
-                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                            if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                         listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                     }
                                 }
@@ -3747,15 +3962,31 @@ class CxcReportActivity : AppCompatActivity() {
                                         val bscobrado =
                                             valorReal(netoRealenDoc * listaDocumentos[i].tasadoc)
                                         listaReciboPrLineas[i].bscobro += bscobrado
-                                        netocobrado = listaDocumentos[i].netorestante
+
+                                        // Buscando el porcentaje de descuento del documento a cobrar
+                                        val porcentajeDescuento =
+                                            cantidadDeDescuento(listaDocumentos[i].documento)
+                                        // Calculando cuanto del neto se le debe de restar al documento
+                                        val netoRestaDesc =
+                                            ((listaDocumentos[i].netorestante * (porcentajeDescuento / 100)))
+
+                                        // quitando descuento al neto
+                                        netocobrado =
+                                            if (binding.tvCxcDctos.text.toString().toDouble() > 0.0) {
+                                                valorReal(listaDocumentos[i].netorestante - netoRestaDesc)
+                                            } else {
+                                                listaDocumentos[i].netorestante
+                                            }
+
+                                        // netocobrado = listaDocumentos[i].netorestante
                                         listaReciboPrLineas[i].dolneto = netocobrado
                                         listaReciboPrLineas[i].bsneto =
-                                            valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
+                                            valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                                         listaReciboPrLineas[i].tnetodbs += valorReal(
-                                            netoRealenDoc * tasaCambioSeleccionadaPrincipal
+                                            netocobrado * tasaCambioSeleccionadaPrincipal
                                         )
                                         listaReciboPrLineas[i].ispagadoTotal = "1"
-                                        montoRec -= valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
+                                        montoRec -= valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                                     }
                                     // si el monto del recibo no cubre el monto completo del documento (se comporta como un abono)
                                     else if ((netoRealenDoc * tasaCambioSeleccionadaPrincipal) > montoRec && montoRec > 0) {
@@ -3772,11 +4003,20 @@ class CxcReportActivity : AppCompatActivity() {
                                 }
 
                                 /*recorrido de lista de descuentos para asignar cantidad según nro doc. (de tener)*/
+                                /*
                                 for (j in listaDescuentos.indices) {
                                     if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento) {
                                         listaReciboPrLineas[i].prcdsctopp =
                                             listaDescuentos[j].pordscto
                                     }
+                                }*/
+                            }
+                            // 2024-02-19 no se si ponerlo aqui sirva para que aunque el neto enste
+                            // en 0 diga que tenga el % de descuento
+                            for (j in listaDescuentos.indices) {
+                                if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento && listaDescuentos[j].isSelected) {
+                                    listaReciboPrLineas[i].prcdsctopp =
+                                        listaDescuentos[j].pordscto
                                 }
                             }
                         }
@@ -3881,6 +4121,13 @@ class CxcReportActivity : AppCompatActivity() {
                                     }
                                 }
                             }
+
+                            for (j in listaDescuentos.indices) {
+                                if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento && listaDescuentos[j].isSelected) {
+                                    listaReciboCmLineas[i].prcdsctopp =
+                                        listaDescuentos[j].pordscto
+                                }
+                            }
                         }
 
                         /*esto va a ser resultado de la suma de los campos de la lista (ke_precobranza)
@@ -3908,12 +4155,12 @@ class CxcReportActivity : AppCompatActivity() {
                             listaReciboPrLineas.sumOf {
                                 it.bsneto
                             } + (
-                                    listaReciboPrLineas.sumOf {
-                                        it.bsmtoiva
-                                    } + listaReciboPrLineas.sumOf {
-                                        it.bsretiva
-                                    }
-                                    ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                                listaReciboPrLineas.sumOf {
+                                    it.bsmtoiva
+                                } + listaReciboPrLineas.sumOf {
+                                    it.bsretiva
+                                }
+                                ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                         )
                         // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                         cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -4165,6 +4412,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     qlineas.put("tipodoc", listaReciboCmLineas[j].tipodoc)
                                     qlineas.put("documento", listaReciboCmLineas[j].documento)
                                     qlineas.put("bscobro", listaReciboCmLineas[j].bscobro)
+                                    qlineas.put("prcdsctopp", listaReciboCmLineas[j].prcdsctopp)
                                     qlineas.put("tnetoddol", listaReciboCmLineas[j].tnetoddol)
                                     qlineas.put("tnetodbs", listaReciboCmLineas[j].tnetodbs)
                                     qlineas.put("fchrecibod", getFechaNow())
@@ -4306,7 +4554,31 @@ class CxcReportActivity : AppCompatActivity() {
                     val valorBsFlete = if (listaDocumentos[i].dolarflete == 0) { // <- Flete Normal
                         listaDocumentos[i].bsflete
                     } else { // <- Flete Dolarizado
-                        (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).valorReal()
+                        (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).round()
+                    }
+
+                    // 2024-02-20 El valor de IVA variará dependiendo si es flete dolarizado
+                    val ivaDol = if (listaDocumentos[i].dolarflete == 0) {
+                        // Si no hay flete dolarizado el IVA permanecera normal
+                        listaDocumentos[i].dtotimpuest
+                    } else {
+                        // Si hay flete dolarizado el nuevo IVA en $ sera el Iva en BS
+                        // multiplicado por la tasa del dia de la cobranza
+                        (listaDocumentos[i].bsiva / tasaCambioSeleccionadaPrincipal).round()
+                    }
+
+                    // 2024-02-20 El valor de la retencion variará dependiendo si es flete
+                    // dolarizado, como en el caso del IVA
+                    val retIvaDol = if (listaDocumentos[i].dolarflete == 0) {
+                        listaDocumentos[i].cdretencioniva
+                    } else {
+                        (listaDocumentos[i].cbsretencioniva / tasaCambioSeleccionadaPrincipal).round()
+                    }
+
+                    val retFleteDol = if (listaDocumentos[i].dolarflete == 0) {
+                        listaDocumentos[i].cdretflete
+                    } else {
+                        (listaDocumentos[i].cbsretflete / tasaCambioSeleccionadaPrincipal).round()
                     }
 
                     if (listaReciboPrLineas[i].agencia == "002" && (listaReciboPrLineas[i].documento == listaDocumentos[i].documento)) {
@@ -4344,7 +4616,7 @@ class CxcReportActivity : AppCompatActivity() {
                                         listaDocumentos[i].dtotneto.toBolivares(
                                             currencySelectedPR,
                                             tasaCambioSeleccionadaPrincipal
-                                        )
+                                        ).round()
                                     listaReciboPrLineas[i].retmun_nro =
                                         listaRetGuardada[j].refret.right(8)
                                     listaReciboPrLineas[i].retmun_fch = listaRetGuardada[j].fecharet
@@ -4366,7 +4638,7 @@ class CxcReportActivity : AppCompatActivity() {
                             // val restaIvadol =
                             //    if (binding.cbExcReten.isChecked) listaDocumentos[i].dtotimpuest else listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
                             val restaIvadol =
-                                if (excluirRetIva) listaDocumentos[i].dtotimpuest else listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
+                                if (excluirRetIva) ivaDol else ivaDol - retIvaDol
                             // 2023-04-03 comentario por no tener en cuenta cuando se escluyen retenciones
                             // var restaIvadol = listaDocumentos[i].dtotimpuest - listaDocumentos[i].cdretencioniva
 //                            val restaIvabss =
@@ -4377,7 +4649,7 @@ class CxcReportActivity : AppCompatActivity() {
 
                             if (binding.rbCxcDivisasMain.isChecked) {
                                 // hago el descuento del iva del nmonto de pago
-                                montoRec = (montoRec - restaIvadol).valorReal()
+                                montoRec = (montoRec - restaIvadol).round()
 
                                 if (montoRec < 0.00) {
                                     Toast.makeText(
@@ -4395,7 +4667,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 // listaReciboPrLineas[i].tnetoddol  += listaReciboPrLineas[i].doliva
                                 listaReciboPrLineas[i].tnetoddol += restaIvadol
                             } else {
-                                montoRec = (montoRec - restaIvabss).valorReal()
+                                montoRec = (montoRec - restaIvabss).round()
                                 if (montoRec < 0.00) {
                                     Toast.makeText(
                                         this,
@@ -4428,7 +4700,7 @@ class CxcReportActivity : AppCompatActivity() {
                                     return
                                 }
                                 // descuento del monto del recibo, el flete
-                                montoRec -= valorReal((if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete))
+                                montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else (listaDocumentos[i].dFlete - retFleteDol).round()
 
                                 // de no llegar a menos de cero, lo agrego al monto cobrado en bss
                                 // si el boton esta presionado, entonces agrego el flete completo, de no estarlo, agrego el flete menos el monto de la retención.
@@ -4441,8 +4713,8 @@ class CxcReportActivity : AppCompatActivity() {
 
                                 listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                 listaReciboPrLineas[i].dolflete =
-                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
-                                listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
+                                listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                             } else {
                                 // si aqui ya llega el monto en 0 o menos
                                 if (montoRec < 0.00) {
@@ -4468,7 +4740,7 @@ class CxcReportActivity : AppCompatActivity() {
                                 listaReciboPrLineas[i].bscobro += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                                 listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                 listaReciboPrLineas[i].dolflete =
-                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                 listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                             }
                         }
@@ -4483,19 +4755,19 @@ class CxcReportActivity : AppCompatActivity() {
                             listaReciboPrLineas[i].bscobro += fleteaCobrar
 
                             if (binding.rbCxcDivisasMain.isChecked) {
-                                montoRec -= valorReal(if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete)
+                                montoRec -= if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else (listaDocumentos[i].dFlete - retFleteDol).round()
                                 listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                 listaReciboPrLineas[i].dolflete =
-                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
 
                                 // 2023-03-28 Se cambio ya que se deben de guardar los dolares, ya que se selecciono divisa, y lo estaba guardando en bolivares
                                 // listaReciboPrLineas[i].tnetodbs  += listaDocumentos[i].bsflete
-                                listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                listaReciboPrLineas[i].tnetoddol += if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                             } else {
                                 montoRec -= valorReal(if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete)
                                 listaReciboPrLineas[i].bsmtofte = valorBsFlete
                                 listaReciboPrLineas[i].dolflete =
-                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - listaDocumentos[i].cdretflete
+                                    if (binding.cbExcReten.isChecked) listaDocumentos[i].dFlete else listaDocumentos[i].dFlete - retFleteDol
                                 listaReciboPrLineas[i].tnetodbs += if (binding.cbExcReten.isChecked) valorBsFlete else valorBsFlete - listaDocumentos[i].cbsretflete
                             }
                         }
@@ -4551,9 +4823,9 @@ class CxcReportActivity : AppCompatActivity() {
                                     // para que si aun queda un poco de dinero sobrante se guarde futuramente como saldo a favor
                                     // montoRec -= netocobrado
                                     montoRec -= (
-                                            netocobrado - binding.tvCxcDctos.text.toString()
-                                                .toDouble()
-                                            )
+                                        netocobrado - binding.tvCxcDctos.text.toString()
+                                            .toDouble()
+                                        )
                                 } else if (netoDesc > montoRec && montoRec > 0) {
                                     val cobroAbono = montoRec * listaDocumentos[i].tasadoc
 
@@ -4576,12 +4848,28 @@ class CxcReportActivity : AppCompatActivity() {
                                 val bscobrado =
                                     valorReal(netoRealenDoc * listaDocumentos[i].tasadoc)
                                 listaReciboPrLineas[i].bscobro += bscobrado
-                                netocobrado = listaDocumentos[i].netorestante
+
+                                // Buscando el porcentaje de descuento del documento a cobrar
+                                val porcentajeDescuento =
+                                    cantidadDeDescuento(listaDocumentos[i].documento)
+                                // Calculando cuanto del neto se le debe de restar al documento
+                                val netoRestaDesc =
+                                    ((listaDocumentos[i].netorestante * (porcentajeDescuento / 100)))
+
+                                // quitando descuento al neto
+                                netocobrado =
+                                    if (binding.tvCxcDctos.text.toString().toDouble() > 0.0) {
+                                        valorReal(listaDocumentos[i].netorestante - netoRestaDesc)
+                                    } else {
+                                        listaDocumentos[i].netorestante
+                                    }
+
+                                // netocobrado = listaDocumentos[i].netorestante
                                 listaReciboPrLineas[i].dolneto = netocobrado
-                                montoRec -= valorReal(netoRealenDoc * listaDocumentos[i].tasadoc)
+                                montoRec -= valorReal(netocobrado * listaDocumentos[i].tasadoc)
                                 listaReciboPrLineas[i].bsneto =
-                                    valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
-                                listaReciboPrLineas[i].tnetodbs += valorReal(netoRealenDoc * tasaCambioSeleccionadaPrincipal)
+                                    valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
+                                listaReciboPrLineas[i].tnetodbs += valorReal(netocobrado * tasaCambioSeleccionadaPrincipal)
                             }
                             // si el monto del recibo no cubre el monto completo del documento (se comporta como un abono)
                             else if ((netoRealenDoc * tasaCambioSeleccionadaPrincipal) > montoRec && montoRec > 0) {
@@ -4596,12 +4884,22 @@ class CxcReportActivity : AppCompatActivity() {
                             }
                         }
 
-                        // los bss del neto cobrado
+                        /*// los bss del neto cobrado
+                         */
                         /*recorrido de lista de descuentos para asignar cantidad según nro doc. (de tener)*/
+                        /*
                         for (j in listaDescuentos.indices) {
                             if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento) {
                                 listaReciboPrLineas[i].prcdsctopp = listaDescuentos[j].pordscto
                             }
+                        }*/
+                    }
+                    // 2024-02-19 no se si ponerlo aqui sirva para que aunque el neto enste
+                    // en 0 diga que tenga el % de descuento
+                    for (j in listaDescuentos.indices) {
+                        if (listaDescuentos[j].nrodoc == listaDocumentos[i].documento && listaDescuentos[j].isSelected) {
+                            listaReciboPrLineas[i].prcdsctopp =
+                                listaDescuentos[j].pordscto
                         }
                     }
                 }
@@ -4630,12 +4928,12 @@ class CxcReportActivity : AppCompatActivity() {
                     listaReciboPrLineas.sumOf {
                         it.bsneto
                     } + (
-                            listaReciboPrLineas.sumOf {
-                                it.bsmtoiva
-                            } + listaReciboPrLineas.sumOf {
-                                it.bsretiva
-                            }
-                            ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
+                        listaReciboPrLineas.sumOf {
+                            it.bsmtoiva
+                        } + listaReciboPrLineas.sumOf {
+                            it.bsretiva
+                        }
+                        ) + (listaReciboPrLineas.sumOf { it.bsmtofte } + listaReciboPrLineas.sumOf { it.bsretfte })
                 )
                 // cxc.dolneto    = valorReal(listaDocumentos.sumOf{it.dtotneto }) //<-------------------- Revisar si es necesario
                 cxc.dolneto = valorReal(listaReciboPrLineas.sumOf { it.dolneto })
@@ -4896,34 +5194,45 @@ class CxcReportActivity : AppCompatActivity() {
         cxcndoc: String, // Numero del correlativo de la ultima precobranza que se va a realizar
         documento: String, // Numero del ultimo documento que se va a pagar en la transaccion
         btnDolarCom: Boolean, // Valor booleano que indica si el complemento se paga en divisas (si no se paga complemento por defecto sera true)
+        pasaDolarFlete: Boolean = false // Valor para saber si tiene fletedolarizado
     ) {
         // En esta variable se guarda en Divisa el monto colocado en el EditText del pago principal (de haber seleccionado bolivares estos seran convertidos)
         val ingresoPrincipal =
             if (binding.rbCxcDivisasMain.isChecked) ingreso else ingreso / tasaCambioSeleccionadaPrincipal
+
         // En esta variable se guarda en Divisa el monto colocado en el EditText del pago complementario (de haber seleccionado bolivares estos seran convertidos)
         val ingresoComplemento =
             if (!binding.cbCxcComplemento.isChecked) 0.00 else (if (binding.rbCxcDivisasCom.isChecked) ingresoCom else ingresoCom / tasaCambioSeleccionadaPrincipal)
+
         // En esta variable se guarda el Total del o los documentos a pagar en Divisa (de haber seleccionado bolivares estos seran convertidos)
         val totalReal = if (binding.rbCxcDivisasMain.isChecked) {
             total.text.toString().toDouble()
         } else {
-            total.text.toString().toDouble() / tasaCambioSeleccionadaPrincipal/*
-             * If que valida
-             * que como pago principal se selecciono Divisa
-             * que sea un pago Completo
-             * que en caso de haber un complemento este sea en divisas tambien (Divisa como principal y como complemento)
-             * que el pago principal y complmentario, juntos superen el total de la suma del o los documentos a pagar
-             * */
+            total.text.toString().toDouble() / tasaCambioSeleccionadaPrincipal
         }
+
+        val ivaReal = if (binding.rbCxcDivisasMain.isChecked) {
+            binding.tvCxcIva.text.toString().toDouble()
+        } else {
+            binding.tvCxcIva.text.toString().toDouble() / tasaCambioSeleccionadaPrincipal
+        }
+
+        /*
+         * If que valida
+         * que como pago principal se selecciono Divisa
+         * que sea un pago Completo
+         * que en caso de haber un complemento este sea en divisas tambien (Divisa como principal y como complemento)
+         * que el pago principal y complmentario, juntos superen el total de la suma del o los documentos a pagar
+         * */
         if (btnDolar.isChecked && btnCompleto.isChecked && btnDolarCom && ((ingresoPrincipal + ingresoComplemento) > totalReal)) {
             /*
-         * La sentencia SQL
-         * guarda el monto excesido del pago a travez de la supa del pago principal y complementario, menos el total del o los documentos a pagar
-         *
-         * Lo guarga en el ultimo documento a pagar
-         * selecciona el correlativo del pago principal (en caso de no haber complemento), o el correlativo del complemento (en caso de haber un complemento)
-         * selecciona siempre el ultimo documento de la lista de documentos seleccionados a pagar
-         * */
+             * La sentencia SQL
+             * guarda el monto excesido del pago a travez de la supa del pago principal y complementario, menos el total del o los documentos a pagar
+             *
+             * Lo guarga en el ultimo documento a pagar
+             * selecciona el correlativo del pago principal (en caso de no haber complemento), o el correlativo del complemento (en caso de haber un complemento)
+             * selecciona siempre el ultimo documento de la lista de documentos seleccionados a pagar
+             * */
             keAndroid.execSQL(
                 "UPDATE ke_precobradocs SET afavor= '${
                     valorReal(
@@ -4932,6 +5241,20 @@ class CxcReportActivity : AppCompatActivity() {
                 }' WHERE cxcndoc='$cxcndoc' AND documento = '$documento' AND empresa = '$codEmpresa';"
             )
             // keAndroid.execSQL("UPDATE ke_precobranza SET netocob='${valorReal(valorReal(total.text.toString().toDouble()) + valorReal((ingresoPrincipal + ingresoComplemento) - totalReal))}' WHERE cxcndoc='$cxcndoc';")
+        } else if (btnDolar.isChecked && !btnCompleto.isChecked && pasaDolarFlete) {
+            /*
+             * 2024-02-14
+             * En este else if se guardara el saldo a favor de los abonos de los documentos
+             * con flete dolarizado
+             * Se penso asi debido a que usualmente pagan solo el IVA en estos casos
+             * */
+            keAndroid.execSQL(
+                "UPDATE ke_precobradocs SET afavor= '${
+                    valorReal(
+                        ingreso - ivaReal
+                    )
+                }' WHERE cxcndoc='$cxcndoc' AND documento = '$documento' AND empresa = '$codEmpresa';"
+            )
         }
     }
 
@@ -5084,19 +5407,19 @@ class CxcReportActivity : AppCompatActivity() {
     private fun calcularDescuentos2(moneda: String) {
         if (binding.cbCxcDescuentos.isChecked && // se seleccionó descuento
             (
-                    conn.validarExistenciaDescuento(
-                        codigoBancoCompleto, codEmpresa!!
-                    ) || binding.rbCxcEfectivoMain.isChecked
-                    ) && // validar que exista un descuento activo
-            !binding.cbCxcComplemento.isChecked // validar que no se selecciono complemento
+                conn.validarExistenciaDescuento(
+                    codigoBancoCompleto, codEmpresa!!
+                ) || binding.rbCxcEfectivoMain.isChecked
+                ) // && // validar que exista un descuento activo
+            // !binding.cbCxcComplemento.isChecked // validar que no se selecciono complemento
         ) {
             var descuentos: Descuentos
             var nrodocumento: String
             var fechaVence: String
             var montonetoDol: Double
 
-            descuentoTotal = 0.00
-            listaDescuentos.clear()
+            // descuentoTotal = 0.00
+            // listaDescuentos.clear()
 
             for (i in listaDocumentos.indices) {
                 val tieneDescPrev = verificarSiHayDescuentos(listaDocumentos[i].documento)
@@ -5106,9 +5429,7 @@ class CxcReportActivity : AppCompatActivity() {
                 montonetoDol = listaDocumentos[i].netorestante
                 nrodocumento = listaDocumentos[i].documento
 
-                val diferenciaFechas = getDaysBetweenDates(listaDocumentos[i].emision, fechatasaH)
-
-                descuentos = Descuentos()
+                val diferenciaFechas = getDaysBetweenDates(listaDocumentos[i].recepcion, fechatasaH)
 
                 val fechaConvertidaVence = LocalDate.parse(fechaVence)
                 val fechaHoy = LocalDate.now()
@@ -5117,9 +5438,11 @@ class CxcReportActivity : AppCompatActivity() {
                 if (!tieneDescPrev /*&& diasDiferencia > 0*/) {
                     var cantDescuento: Double
 
-                    // cantidadDeDescuento = conn.getDescuento(codigoBancoCompleto)
-                    cantidadDeDescuento = if (binding.rbCxcTransfMain.isChecked) {
-                        conn.getDescuento(
+                    // 2024-03-18 ahora los descuentos se guardan como listas de los porcentajes de
+                    // descuentos que se pueden aplicar a los documentos
+                    val cantDesct = if (binding.rbCxcTransfMain.isChecked) {
+                        conn.getDescuentos(
+                            moneda,
                             codigoBancoCompleto,
                             listaDocumentos[i].tipodocv,
                             codEmpresa!!,
@@ -5127,7 +5450,7 @@ class CxcReportActivity : AppCompatActivity() {
                             fechaEmision
                         )
                     } else {
-                        conn.getDescuentoEfectivo(
+                        conn.getDescuentosEfectivo(
                             moneda,
                             listaDocumentos[i].tipodoc,
                             codEmpresa!!,
@@ -5135,48 +5458,138 @@ class CxcReportActivity : AppCompatActivity() {
                             fechaEmision
                         )
                     }
-                    val porcentajeAsignado = cantidadDeDescuento / 100
 
-                    cantDescuento = montonetoDol * porcentajeAsignado
-                    // var descuentoUni     = montonetoDol - cantDescuento
-                    descuentoTotal += cantDescuento
-                    descuentoTotal = descuentoTotal.valorReal()
+                    // 2024-03-18 dicha lista se debe de recorer para saber si un documento
+                    // puede aplicar a un descuento X, Y o Z
+                    cantDesct.forEach { cantidadDeDescuento ->
+                        // 2024-03-18 calculando la cantidad que se le debe de bajar al neto con el
+                        // descuento
+                        val porcentajeAsignado = cantidadDeDescuento / 100
 
-                    descuentos.nrodoc = nrodocumento
-                    descuentos.cantdscto = cantDescuento
-                    descuentos.pordscto = cantidadDeDescuento
-                    listaDescuentos.add(descuentos)
-                } /* else if (!tieneDescPrev && diasDiferencia <= 0) {
+                        cantDescuento = montonetoDol * porcentajeAsignado
+                        // var descuentoUni     = montonetoDol - cantDescuento
 
-                    var cantDescuento: Double
+                        if (currencySelectedPR == "BSS") { // transforma dolares en bolivares, si es el caso
+                            cantDescuento =
+                                cantDescuento.toBolivares("USD", tasaCambioSeleccionadaPrincipal)
+                                    .round()
+                        }
 
-                    cantidadDeDescuento = conn.getDescuento(codigoBancoCompleto)
-                    val porcentajeAsignado = cantidadDeDescuento / 100
+                        // Para que no vuelva a meter el descuento en la lista
+                        var flag = true
 
-                    cantDescuento = montonetoDol * porcentajeAsignado
-                    //var descuentoUni     = montonetoDol - cantDescuento
-                    descuentoTotal += cantDescuento
-                    descuentoTotal = Math.round(descuentoTotal * 100.00) / 100.00
+                        // 2024-03-18 se debe verificar ciertas condiciones para que el descuento
+                        // no se vuelva a mostrar ni tomar nuevamente en cuenta
+                        listaDescuentos.forEach Foo@{ descuento ->
+                            // Aqui se verifica si ya existe un descuento (en la lista) del documento
+                            // y que ademas tenga el mismo porcentaje de descuento
+                            // debido a que en la lista pueden aparecer distintos descuentos
+                            // a un mismo documento
+                            if (descuento.nrodoc == nrodocumento && descuento.pordscto == cantidadDeDescuento) {
+                                flag = false
+                                return@Foo
+                            }
 
-                    descuentos.nrodoc = nrodocumento
-                    descuentos.cantdscto = cantDescuento
-                    descuentos.pordscto = cantidadDeDescuento
-                    listaDescuentos.add(descuentos)
+                            // No se agregaran descuentos que esten seleccionados
+                            if (descuento.nrodoc == nrodocumento && descuento.isSelected) {
+                                flag = false
+                                return@Foo
+                            }
+                        }
 
-                }*/
+                        if (flag) {
+                            descuentos = Descuentos()
+                            descuentos.nrodoc = nrodocumento
+                            descuentos.cantdscto = cantDescuento
+                            descuentos.pordscto = cantidadDeDescuento
+                            listaDescuentos.add(descuentos)
+                        }
 
-                if (descuentoTotal > 0.00) {
-                    // binding.cbCxcDescuentos.visibility = View.VISIBLE
-                    // binding.cbCxcDescuentos.isEnabled = true
-                    binding.tvCxcDctos.text = descuentoTotal.toString()
-                    binding.btVerDetDescuento.visibility = View.VISIBLE
-                } else if (descuentoTotal <= 0.00) {
-                    toast("No hay descuentos disponibles para esta transacción.")
-                    binding.cbCxcDescuentos.isChecked = false
-                    // binding.cbCxcDescuentos.isEnabled = false
-                    binding.tvCxcDctos.text = "0.00"
-                    binding.btVerDetDescuento.visibility = View.INVISIBLE
+                        println()
+                    }
+
+                    // for (descuento in listaDescuentos){}
+
+                    /*val listaAux = listaDescuentos
+
+                    listaDescuentos.forEachIndexed ads@{ i, descuento ->
+                        listaDescuentosAux.forEach { descAux ->
+                            if (listaAux[i].nrodoc == descAux.nrodoc && listaAux[i].pordscto != descAux.pordscto) {
+                                listaDescuentos.removeAt(i)
+                                if (listaDescuentos.size < i) {
+                                    return@ads
+                                }
+                            }
+                        }
+                    }*/
+
+                    // listaDescuentos.clear()
+                    /*listaDescuentos = listaAux*/
+
+                    // 2024-03-18 Recorriendo la lista de descuentos y su auxiliar
+                    // para ocultar los descuentos al mismo documento que no fueron seleccionados
+                    // y que si tienen un descuento a dicho documento que si fue seleccionado
+                    listaDescuentos.forEach { item ->
+                        item.show = true
+                        // 2024-03-18 Aux solo tiene los descuentos seleccionados, por ende
+                        // solo se ocultarán los descuentos de un documento al cual se le esta
+                        // aplicando un descuento, es decir
+                        //
+                        //
+                        //      doc: 0000001    desc: 5%    ✔   <-- no desaparece, por ser el descuento a su doc seleccionado
+                        //
+                        //      doc: 0000001    desc: 7%    ✖   <-- si desaparece, porque si hay descuento a su doc seleccionado
+                        //
+                        //      doc: 0000002    desc: 5%    ✖   <-- no desaparece, porque no hay descuento a su doc seleccionado
+                        //
+                        //      doc: 0000002    desc: 7%    ✖   <-- no desaparece, porque no hay descuento a su doc seleccionado
+                        listaDescuentosAux.forEach { dsct ->
+                            // if que crea el ejemplo de arriba
+                            if (item.nrodoc == dsct.nrodoc && item.pordscto != dsct.pordscto) {
+                                item.show = false
+                            }
+                        }
+                    }
                 }
+                /*ayuda.forEach {
+                    listaDescuentos.removeAt(it)
+                    println()
+                }*/
+                /* else if (!tieneDescPrev && diasDiferencia <= 0) {
+
+                        var cantDescuento: Double
+
+                        cantidadDeDescuento = conn.getDescuento(codigoBancoCompleto)
+                        val porcentajeAsignado = cantidadDeDescuento / 100
+
+                        cantDescuento = montonetoDol * porcentajeAsignado
+                        //var descuentoUni     = montonetoDol - cantDescuento
+                        descuentoTotal += cantDescuento
+                        descuentoTotal = Math.round(descuentoTotal * 100.00) / 100.00
+
+                        descuentos.nrodoc = nrodocumento
+                        descuentos.cantdscto = cantDescuento
+                        descuentos.pordscto = cantidadDeDescuento
+                        listaDescuentos.add(descuentos)
+
+                    }*/
+            }
+
+            if (listaDescuentos.isNotEmpty()) {
+                /*if (currencySelectedPR == "BSS") {
+                    descuentoTotal =
+                        descuentoTotal.toBolivares("USD", tasaCambioSeleccionadaPrincipal).round()
+                }*/
+                // binding.cbCxcDescuentos.visibility = View.VISIBLE
+                // binding.cbCxcDescuentos.isEnabled = true
+                // binding.tvCxcDctos.text = descuentoTotal.toString()
+                binding.btVerDetDescuento.visibility = View.VISIBLE
+            } else {
+                toast("No hay descuentos disponibles para esta transacción.")
+                binding.cbCxcDescuentos.isChecked = false
+                // binding.cbCxcDescuentos.isEnabled = false
+                // binding.tvCxcDctos.text = "0.00"
+                binding.btVerDetDescuento.visibility = View.INVISIBLE
             }
         } else {
             binding.btVerDetDescuento.visibility =
@@ -5576,9 +5989,9 @@ class CxcReportActivity : AppCompatActivity() {
     }
 
     private fun cargarSaldos(
-        moneda: String,
-        listadocs: ArrayList<String>,
-        pagaret: Boolean = true
+        moneda: String = currencySelectedPR,
+        listadocs: ArrayList<String> = listaDocsSeleccionados,
+        pagaret: Boolean = !binding.cbExcReten.isChecked
     ) {
         // cada vez que se recalcule, se debe volver a colocar en cero los montos
         ivaRestante = 0.00
@@ -5607,7 +6020,12 @@ class CxcReportActivity : AppCompatActivity() {
         // query para cargar los montos del documento
         var documentos: Documentos
         val query = arrayOf(
-            "documento," + "contribesp," + "ruta_parme," + "vence," + "tipodocv," + "diascred," + "dtotneto," + "dtotpagos," + "dtotdev," + "dtotalfinal," + "bsiva," + "bsflete," + "bsretencioniva," + "bsretencion, tasadoc, dtotimpuest, dFlete, dretencion, dretencioniva, tipodoc, " + "mtodcto, fchvencedcto, tienedcto, cbsret, cdret, cbsretiva, cdretiva, cbsrparme, cdrparme, agencia, bsmtoiva, bsmtofte, retmun_mto, emision, codcliente, cdretflete, cbsretflete, dolarflete, nombrecli"
+            "documento, contribesp, ruta_parme, vence, tipodocv, diascred, dtotneto, dtotpagos," +
+                "dtotdev, dtotalfinal, bsiva, bsflete, bsretencioniva, bsretencion, tasadoc, " +
+                "dtotimpuest, dFlete, dretencion, dretencioniva, tipodoc, mtodcto, fchvencedcto," +
+                "tienedcto, cbsret, cdret, cbsretiva, cdretiva, cbsrparme, cdrparme, agencia, " +
+                "bsmtoiva, bsmtofte, retmun_mto, emision, codcliente, cdretflete, cbsretflete, " +
+                "dolarflete, nombrecli, bsretflete, dretflete, dretmun_mto, retivaoblig, recepcion"
         )
         val tabla = "ke_doccti"
         val condicion =
@@ -5658,6 +6076,11 @@ class CxcReportActivity : AppCompatActivity() {
                 documentos.cbsretflete = cursorDocs.getDouble(36)
                 documentos.dolarflete = cursorDocs.getInt(37)
                 documentos.nombrecli = cursorDocs.getString(38)
+                documentos.bsretflete = cursorDocs.getDouble(39).absoluteValue
+                documentos.dretflete = cursorDocs.getDouble(40)
+                documentos.dretmunMto = cursorDocs.getDouble(41)
+                documentos.retivaoblig = cursorDocs.getInt(42)
+                documentos.recepcion = cursorDocs.getString(43)
                 listaDocumentos.add(documentos)
             } catch (e: Exception) {
                 println("--Error")
@@ -5672,6 +6095,26 @@ class CxcReportActivity : AppCompatActivity() {
         for (i in listaDocumentos.indices) {
             codigoCliente = listaDocumentos[i].codcliente
             tipoDocsaPagar.add(listaDocumentos[i].tipodocv)
+
+            val tasaCob = tasaCambioSeleccionadaPrincipal
+
+            val retIvaD = listaDocumentos[i].cdretencioniva
+            val retIvaBS = listaDocumentos[i].cbsretencioniva
+
+            val retIvaDP = listaDocumentos[i].dretencioniva
+            val retIvaBSP = listaDocumentos[i].bsretencioniva
+
+            val retFleteD = listaDocumentos[i].cdretflete
+            val retFleteBS = listaDocumentos[i].cbsretflete
+
+            val retFleteDP = listaDocumentos[i].dretflete
+            val retFleteBSP = listaDocumentos[i].bsretflete
+
+            val retParmeD = listaDocumentos[i].cdretparme
+            val retParmeBS = listaDocumentos[i].cbsretparme
+
+            val retParmeDP = listaDocumentos[i].retmunMto
+            val retParmeBSP = listaDocumentos[i].dretmunMto
 
             // calculo de la retencion restante del flete pagada
             // 2023-03-22 Se elimino por ser redundante
@@ -5701,7 +6144,14 @@ class CxcReportActivity : AppCompatActivity() {
                 }*/
 
                 ivarestabss = listaDocumentos[i].bsiva
-                ivaresta = listaDocumentos[i].dtotimpuest
+
+                // ivaresta = listaDocumentos[i].dtotimpuest
+
+                ivaresta = if (listaDocumentos[i].dolarflete == 0) {
+                    listaDocumentos[i].dtotimpuest
+                } else {
+                    listaDocumentos[i].bsiva / tasaCambioSeleccionadaPrincipal
+                }
             }
 
             // flete restante
@@ -5716,13 +6166,11 @@ class CxcReportActivity : AppCompatActivity() {
                 // 2024-01-22 if que valida si el flete del documento se pagara dolarizado o normal
                 // dolarflete == 0, Flete Dolarizado
                 // dolarflete == 1, Flete Normal
-                if (listaDocumentos[i].dolarflete == 0) { // <- Pago Normal
-                    fleterestabss = listaDocumentos[i].bsflete
-                    fleteresta = listaDocumentos[i].dFlete
+                fleteresta = listaDocumentos[i].dFlete
+                fleterestabss = if (listaDocumentos[i].dolarflete == 0) { // <- Pago Normal
+                    listaDocumentos[i].bsflete
                 } else { // <- Pago Dolarizado
-                    fleteresta = listaDocumentos[i].dFlete
-                    fleterestabss =
-                        (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).valorReal()
+                    (listaDocumentos[i].dFlete * tasaCambioSeleccionadaPrincipal).round()
                 }
             }
 
@@ -5777,7 +6225,19 @@ class CxcReportActivity : AppCompatActivity() {
             if (listaDocumentos[i].dretencion <= 0) {
                 // retencionRestante    += listaDocumentos[i].cdretencion  + listaDocumentos[i].cdretflete
                 // retencionRestantebss += listaDocumentos[i].cbsretencion + listaDocumentos[i].cbsretflete
-                retencionRestante += listaDocumentos[i].cdretencion // <------------------------------------------------- OJO -----------------
+                // retencionRestante += listaDocumentos[i].cdretencion
+
+                // 2024-02-27 Calculo de las retenciones, dependiendo de flete dolarizado
+                retencionRestante += if (listaDocumentos[i].dolarflete == 0) {
+                    listaDocumentos[i].cdretencion
+                } else {
+                    (
+                        (retIvaBS / tasaCob) + // <-- calculo de la retencion IVA $
+                            (retFleteBS / tasaCob) + // <-- calculo de la retencion Flete $
+                            (retParmeBS / tasaCob) // <-- calculo de la retencion Parme $
+                        ).round()
+                }
+
                 retencionRestantebss += listaDocumentos[i].cbsretencion // <------------------------------------------------- OJO -----------------
             } else {
                 // retencionRestante    += listaDocumentos[i].dretencion   - (listaDocumentos[i].cdretencion + listaDocumentos[i].cdretflete)
@@ -5788,6 +6248,17 @@ class CxcReportActivity : AppCompatActivity() {
                 // retencionRestantebss +=  listaDocumentos[i].bsretencion - listaDocumentos[i].cbsretencion
 
                 retencionRestante += listaDocumentos[i].cdretencion - listaDocumentos[i].dretencion
+
+                retencionRestante += if (listaDocumentos[i].dolarflete == 0) {
+                    listaDocumentos[i].cdretencion - listaDocumentos[i].dretencion
+                } else {
+                    (
+                        ((retIvaBS - retIvaBSP) / tasaCob) + // <-- calculo de la retencion IVA $
+                            ((retFleteBS - retFleteBSP) / tasaCob) + // <-- calculo de la retencion Flete $
+                            ((retParmeBS - retParmeBSP) / tasaCob) // <-- calculo de la retencion Parme $
+                        ).round()
+                }
+
                 retencionRestantebss += listaDocumentos[i].cbsretencion - listaDocumentos[i].bsretencion
             }
         }
@@ -5798,8 +6269,14 @@ class CxcReportActivity : AppCompatActivity() {
 
         if (binding.cbCxcDescuentos.isChecked && binding.rbCxcDivisasMain.isChecked) {
             calcularDescuentos2("USD")
+            descuentoTotal =
+                listaDescuentos.sumOf { if (it.isSelected) it.cantdscto else 0.0 }.round()
+            binding.tvCxcDctos.text = descuentoTotal.toString()
         } else if (binding.cbCxcDescuentos.isChecked && binding.rbCxcBssMain.isChecked) {
             calcularDescuentos2("BSS")
+            descuentoTotal =
+                listaDescuentos.sumOf { if (it.isSelected) it.cantdscto else 0.0 }.round()
+            binding.tvCxcDctos.text = descuentoTotal.toString()
         } else {
             descuentoTotal = 0.00
             listaDescuentos = ArrayList()
@@ -5832,14 +6309,20 @@ class CxcReportActivity : AppCompatActivity() {
                     retencionRestantebss += documento.cbsretencion - (documento.cbsretflete + documento.cbsretparme)
                 }*/
 
-                when (APP_EXCLUIR_TIPO_RETENCION) {
+                when (retivaoblig) {
                     0 -> { // Sin retencion obligatoria
                         retencionRestante = 0.0
                         retencionRestantebss = 0.0
                     }
 
                     1 -> { // Retencion de IVA es obligatoria
-                        if ((documento.bsretencion - documento.bsretencioniva <= 0) && (documento.bsretencion > 0)) { // <- solo debe la retencion de iva, y la de flete no de debe
+                        retencionRestante += if (documento.dolarflete == 0) {
+                            documento.cdretencioniva - documento.dretencioniva
+                        } else {
+                            ((documento.cbsretencioniva - documento.bsretencioniva) / tasaCambioSeleccionadaPrincipal).round()
+                        }
+                        retencionRestantebss += documento.cbsretencioniva - documento.bsretencioniva
+                        /*if ((documento.bsretencion - documento.bsretencioniva <= 0) && (documento.bsretencion > 0)) { // <- solo debe la retencion de iva, y la de flete no de debe
                             retencionRestante += 0.0
                             retencionRestantebss += 0.0
                         } else if ((documento.bsretencion - (documento.bsretencioniva + documento.cbsretflete) >= 0) && (documento.bsretencion > 0)) { // <- me debe solo la retencion de PARME
@@ -5848,7 +6331,7 @@ class CxcReportActivity : AppCompatActivity() {
                         } else { // Excluyo solo la retencion del FLETE y PARME
                             retencionRestante += documento.cdretencion - (documento.cdretflete + documento.cdretparme)
                             retencionRestantebss += documento.cbsretencion - (documento.cbsretflete + documento.cbsretparme)
-                        }
+                        }*/
                     }
 
                     else -> { // Por defecto: Sin retencion obligatoria
@@ -5865,6 +6348,8 @@ class CxcReportActivity : AppCompatActivity() {
 
         val netoaMostrarTot = netoRestante - descuentoTotal
 
+        val netoaMostrarTotBs = netoRestantebss - descuentoTotal
+
         if (netoaMostrarTot < saldoAFavor) {
             saldoAFavor = 0.00
         }
@@ -5872,7 +6357,7 @@ class CxcReportActivity : AppCompatActivity() {
         val totalRestante =
             (netoaMostrarTot - saldoAFavor) + ((ivaRestante + fleteRestante) - retencionRestante)
         val totalRestantebss =
-            netoRestantebss + ((ivaRestantebss + fleteRestantebss) - retencionRestantebss)
+            netoaMostrarTotBs + ((ivaRestantebss + fleteRestantebss) - retencionRestantebss)
 
         // asignacion de valores -- debe ser segun la moneda seleccionada valorReal
 
@@ -6522,7 +7007,7 @@ class CxcReportActivity : AppCompatActivity() {
     private fun cantidadDeDescuento(ndoc: String): Double {
         var porcentajeDescuento = 0.00
         for (j in listaDescuentos.indices) {
-            if (listaDescuentos[j].nrodoc == ndoc) {
+            if (listaDescuentos[j].nrodoc == ndoc && listaDescuentos[j].isSelected) {
                 porcentajeDescuento = listaDescuentos[j].pordscto
             }
         }
@@ -6616,6 +7101,78 @@ class CxcReportActivity : AppCompatActivity() {
         contador += listaRetGuardada.size
 
         return contador
+    }
+
+    // Verifico la existencia del flete dolarizado en los documentos
+    // Para que de "true" todos los documentos deben de tener dolarFlete
+    private fun pasaDolarFlete(): Boolean {
+        var pasaDolarFlete = false
+        var contador = 0
+
+        listaDocumentos.forEach {
+            if (it.dolarflete == 1) {
+                contador++
+            }
+            if (contador == listaDocumentos.size && contador > 0) {
+                pasaDolarFlete = true
+            }
+        }
+        return pasaDolarFlete
+    }
+
+    // Calculando el monto minimo sin flete dolarizado
+    private fun montoMinimo(ivaTot: Double, fleteTot: Double, retTot: Double): Double {
+        var montoMinimoRec = 0.0
+
+        if (binding.rbCxcCompMain.isChecked) {
+            montoMinimoRec = binding.tvCxcTotal.text.toString().toDouble() - 0.5
+        } else if (binding.rbCxcAbonoMain.isChecked) {
+            // si se presiona abono, el monto minimo sera la suma del flete mas el iva
+            montoMinimoRec = (((ivaTot + fleteTot) - retTot) - 0.01).round()
+        }
+        montoMinimoRec = verificarMOntoMinimo(montoMinimoRec)
+        return montoMinimoRec
+    }
+
+    private fun montoMinimoDolarFlete(): Double { // <- Si hay flete dolarizado el monto minimo
+        // es iva menos su retencion
+        var montoMinimo: Double
+
+        val iva = binding.tvCxcIva.text.toString().toDouble()
+        var retenencion = binding.tvCxcReten.text.toString().toDouble()
+
+        listaDocumentos.forEach {
+            retenencion = if (!binding.cbExcReten.isChecked) {
+                (it.cbsretencioniva - it.bsretencioniva).toDollar("BSS", it.tasadoc).round()
+            } else {
+                0.0
+            }
+        }
+
+        montoMinimo = iva - retenencion
+
+        montoMinimo = verificarMOntoMinimo(montoMinimo)
+        return montoMinimo
+    }
+
+    // Verificara si el montoMinimorequerido es igual a 0
+    // En cuyo caso sera 1 el monto minimo
+    private fun verificarMOntoMinimo(montoMinimo: Double): Double {
+        val montoVerificado = if (montoMinimo == 0.00) {
+            1.0
+        } else {
+            montoMinimo
+        }
+
+        return montoVerificado
+    }
+
+    private fun setDate() {
+        val dateNow = dateNowShow() // <- Fecha que se va a mostrar
+        fechatasaH = dateNow.dateToQuery() // <- Fecha que se va a usar para los calculos
+        fechaQuery = dateNow.dateToQuery() // <- Fecha que se va a usar para los calculos
+        binding.dpFecharec.setText("Fecha: $dateNow") // <-Mostrando fecha
+        buscarTasas() // <- buscando tasa
     }
 
     private fun setColors() {

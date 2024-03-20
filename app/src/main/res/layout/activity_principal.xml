@@ -105,7 +105,7 @@
                 app:srcCompat="@drawable/ic_reclamos" />
 
             <TextView
-                android:id="@+id/tv_tasa_menup"
+                android:id="@+id/tvTasaMenup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

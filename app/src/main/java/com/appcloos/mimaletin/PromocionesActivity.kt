@@ -46,12 +46,16 @@ class PromocionesActivity : AppCompatActivity() {
         precioTotalporArticulo = intent.getDoubleExtra("precioTotalporArticulo", 00.00)
         cod_cliente = intent.getStringExtra("codigoCliente")
         nroPedido = intent.getStringExtra("nroPedido")
-        factura = intent.getBooleanExtra("factura", false)
-        /*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
+        factura = intent.getBooleanExtra("factura", false)/*importante inicializar el ayudante para la conexion, para aquellos procesos que corren al iniciar
           el activyty */
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
-        enlaceEmpresa = conn.getCampoStringCamposVarios("ke_enlace", "kee_url", listOf("kee_codigo"), listOf(codEmpresa!!))
+        enlaceEmpresa = conn.getCampoStringCamposVarios(
+            "ke_enlace",
+            "kee_url",
+            listOf("kee_codigo"),
+            listOf(codEmpresa!!)
+        )
 
         // APP_ITEMS_FACTURAS = (int) Math.round(conn.getConfigNum("APP_ITEMS_FACTURAS"));
         // APP_ITEMS_NOTAS_ENTREGA = (int) Math.round(conn.getConfigNum("APP_ITEMS_NOTAS_ENTREGA"));
@@ -111,7 +115,7 @@ class PromocionesActivity : AppCompatActivity() {
                 catalogo.setCodigo(cursorca!!.getString(0))
                 catalogo.setNombre(cursorca!!.getString(1))
                 val precio = cursorca!!.getDouble(2)
-                val precioRd = precio.valorReal()
+                val precioRd = precio.round()
                 catalogo.setPrecio1(precioRd)
                 val existenc = cursorca!!.getDouble(3)
                 val existenciaRd = existenc.toInt()

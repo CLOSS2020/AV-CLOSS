@@ -63,11 +63,11 @@ class SelecDocAdapter : RecyclerView.Adapter<SelecDocAdapter.DocHolder>() {
         // aqui va la identificacion de los elementos ubicados en el item
         private var nroDoc: TextView = view.findViewById(R.id.tv_nrodoc)
         private var tipoDocs: TextView = view.findViewById(R.id.tv_tipodocC)
-        private var montoTot: TextView = view.findViewById(R.id.tv_montototal)
+        private var montoTot: TextView = view.findViewById(R.id.tvMontototal)
         private var fechaRecibido: TextView = view.findViewById(R.id.tv_fecharecepcion)
         private var fechaVence: TextView = view.findViewById(R.id.tv_fechavence)
-        val isSeleccionado: CheckBox = view.findViewById(R.id.cb_sel_doc)
-        private val tvMontodebe: TextView = view.findViewById(R.id.tv_montodebe)
+        val isSeleccionado: CheckBox = view.findViewById(R.id.cbSelDoc)
+        private val tvMontodebe: TextView = view.findViewById(R.id.tvMontodebe)
         private val tvStatus: TextView = view.findViewById(R.id.tv_status)
 
         fun bind(documentos: Documentos) {

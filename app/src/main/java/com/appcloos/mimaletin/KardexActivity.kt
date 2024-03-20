@@ -19,6 +19,7 @@ class KardexActivity : AppCompatActivity() {
     private var listacatalogo: ArrayList<Catalogo>? = null
     private lateinit var conn: AdminSQLiteOpenHelper
     lateinit var codEmpresa: String
+    private var APP_DESCUENTOS_PEDIDOS = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation =
@@ -28,6 +29,7 @@ class KardexActivity : AppCompatActivity() {
         val codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null).toString()
         conn = AdminSQLiteOpenHelper(applicationContext, "ke_android", null)
+        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa)
         listaKardex = findViewById(R.id.lv_kardex)
         cargarEnlace()
 
@@ -82,7 +84,7 @@ class KardexActivity : AppCompatActivity() {
             catalogo.setCodigo(cursor.getString(0))
             catalogo.setNombre(cursor.getString(1))
             val precio1 = cursor.getDouble(2)
-            val precio1Rd = precio1.valorReal()
+            val precio1Rd = precio1.round()
             catalogo.setPrecio1(precio1Rd)
             val existenc = cursor.getDouble(3)
             val existenciaRd = existenc.toInt()
@@ -90,12 +92,20 @@ class KardexActivity : AppCompatActivity() {
             catalogo.setCodigoKardex(cursor.getString(5))
             catalogo.setVta_min(cursor.getDouble(6))
             catalogo.setVta_max(cursor.getDouble(7))
-            catalogo.setDctotope(cursor.getDouble(8))
+            catalogo.setDctotope(validarDescuento(cursor.getDouble(8)))
             catalogo.setEnpreventa(cursor.getString(9))
             listacatalogo!!.add(catalogo)
         }
         cursor.close()
         keAndroid.close()
+    }
+
+    private fun validarDescuento(descuento: Double): Double {
+        return if (APP_DESCUENTOS_PEDIDOS) {
+            descuento
+        } else {
+            0.0
+        }
     }
 
     private fun cargarEnlace() {

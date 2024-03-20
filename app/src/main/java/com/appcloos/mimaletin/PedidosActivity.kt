@@ -1,5 +1,6 @@
 package com.appcloos.mimaletin
 
+import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -179,6 +180,7 @@ class PedidosActivity : AppCompatActivity() {
             val btnModificar = customView.findViewById<Button>(R.id.btnModificar)
             val btnEliminar = customView.findViewById<Button>(R.id.btnEliminar)
             val btnPdf = customView.findViewById<Button>(R.id.btnPdf)
+            val btnEspera = customView.findViewById<Button>(R.id.btnEspera)
             val creacion = builder.create()
             creacion.show()
 
@@ -193,9 +195,51 @@ class PedidosActivity : AppCompatActivity() {
                 eliminarPedido(creacion, codigoPedido!!)
             }
             btnPdf.setOnClickListener { _: View? -> crearPDF(codigoPedido) }
+            btnEspera.setOnClickListener { pedidoEspera(codigoPedido!!) { creacion.dismiss() } }
         }
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!, enlaceEmpresa)
+    }
+
+    private fun pedidoEspera(codigoPedido: String, dismissDialog: () -> Unit) {
+        val currentStatus = conn.getCampoIntCamposVarios(
+            "ke_opti",
+            "kti_status",
+            listOf("kti_ndoc", "empresa"),
+            listOf(codigoPedido, codEmpresa!!)
+        )
+
+        when (currentStatus) {
+            0 -> {
+                val cv = ContentValues()
+                cv.put("kti_status", 99)
+                conn.updateJSONCamposVarios(
+                    "ke_opti",
+                    cv,
+                    "kti_ndoc = ? AND empresa = ?",
+                    arrayOf(codigoPedido, codEmpresa)
+                )
+                toast("Pedido $codigoPedido Por subir")
+            }
+
+            99 -> {
+                val cv = ContentValues()
+                cv.put("kti_status", 0)
+                conn.updateJSONCamposVarios(
+                    "ke_opti",
+                    cv,
+                    "kti_ndoc = ? AND empresa = ?",
+                    arrayOf(codigoPedido, codEmpresa)
+                )
+                toast("Pedido $codigoPedido En espera")
+            }
+
+            else -> {
+                toast("No se puede cambiar el estado el pedido $codigoPedido")
+            }
+        }
+        lineasPedidos()
+        dismissDialog()
     }
 
     private fun cargarEnlace() {
@@ -415,6 +459,11 @@ class PedidosActivity : AppCompatActivity() {
             when (estatusEval) {
                 "0" -> {
                     pedido_estatus = "Por Subir"
+                    statusPedido = "0"
+                }
+
+                "99" -> {
+                    pedido_estatus = "En espera"
                     statusPedido = "0"
                 }
 
@@ -1040,9 +1089,9 @@ Cantidad: ${listalineas!![i].getCantidad()} Precio: ${"$"}${listalineas!![i].get
             canvas.drawText(cabecera.ktiCodven, 90f, counter + 30f, paint)
             canvas.drawText(
                 conn.getCampoStringCamposVarios(
-                    "usuarios",
+                    "listvend",
                     "nombre",
-                    listOf("vendedor", "empresa"),
+                    listOf("codigo", "empresa"),
                     listOf(cabecera.ktiCodven, codEmpresa!!)
                 ),
                 25f,

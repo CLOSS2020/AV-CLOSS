@@ -23,14 +23,7 @@ class DetalleCXCAdapter(
         fun render(kePrecobradocs: ke_precobradocs) {
             val moneda = kePrecobradocs.tnetoddol == 0.00
 
-            val dolarFlete = conn.getCampoDoubleCamposVarios(
-                "ke_precobradocs",
-                "dolarflete",
-                listOf("documento", "cxcndoc", "empresa"),
-                listOf(kePrecobradocs.documento, kePrecobradocs.cxcndoc, codEmpresa)
-            )
-
-            val tasaDia = conn.getCampoDoubleCamposVarios(
+            /*val tasaDia = conn.getCampoDoubleCamposVarios(
                 "ke_precobradocs",
                 "tasadiad",
                 listOf("documento", "cxcndoc", "empresa"),
@@ -42,15 +35,15 @@ class DetalleCXCAdapter(
                 "tasadoc",
                 listOf("documento", "cxcndoc", "empresa"),
                 listOf(kePrecobradocs.documento, kePrecobradocs.cxcndoc, codEmpresa)
-            )
+            )*/
 
             // 2024-01-25 Para el flete dolarizado
-            val tasaFlete = if (dolarFlete == 1.0) {
+            val tasa = if (kePrecobradocs.dolarflete == 0) {
                 binding.tvDolarFlete.isVisible = true
-                tasaDia
+                kePrecobradocs.tasadoc
             } else {
                 binding.tvDolarFlete.isVisible = false
-                tasa
+                kePrecobradocs.tasadiad
             }
 
             val iva = kePrecobradocs.bsmtoiva - abs(kePrecobradocs.bsretiva)
@@ -61,33 +54,31 @@ class DetalleCXCAdapter(
             binding.tvDoc.text = kePrecobradocs.documento
 
             if (moneda) {
-                binding.tvTotal.text =
-                    "Total: " + kePrecobradocs.tnetodbs.valorReal().formatoNumFull()
+                binding.tvTotal.text = "Total: " + kePrecobradocs.tnetodbs.round().formatoNumFull()
                 binding.tvNeto.text =
-                    "Neto: " + (kePrecobradocs.tnetodbs - ivaFlete).valorReal().formatoNumFull()
+                    "Neto: " + (kePrecobradocs.tnetodbs - ivaFlete).round().formatoNumFull()
 
-                binding.tvIva.text = "IVA: " + iva.valorReal().formatoNumFull()
-                binding.tvFlete.text = "Flete: " + flete.valorReal().formatoNumFull()
+                binding.tvIva.text = "IVA: " + iva.round().formatoNumFull()
+                binding.tvFlete.text = "Flete: " + flete.round().formatoNumFull()
 
                 binding.tvRetIva.text =
-                    "Ret. IVA: " + kePrecobradocs.bsretiva.valorReal().formatoNumFull()
+                    "Ret. IVA: " + kePrecobradocs.bsretiva.round().formatoNumFull()
                 binding.tvRetFlete.text =
-                    "Ret. Flete: " + kePrecobradocs.bsretfte.valorReal().formatoNumFull()
+                    "Ret. Flete: " + kePrecobradocs.bsretfte.round().formatoNumFull()
             } else {
-                binding.tvTotal.text =
-                    "Total: " + kePrecobradocs.tnetoddol.valorReal().formatoNumFull()
+                binding.tvTotal.text = "Total: " + kePrecobradocs.tnetoddol.round().formatoNumFull()
                 binding.tvNeto.text =
-                    "Neto: " + (kePrecobradocs.tnetoddol - (ivaFlete / tasa)).valorReal()
+                    "Neto: " + (kePrecobradocs.tnetoddol - (ivaFlete / tasa)).round()
                         .formatoNumFull()
 
-                binding.tvIva.text = "IVA: " + (iva / tasa).valorReal().formatoNumFull()
+                binding.tvIva.text = "IVA: " + (iva / tasa).round().formatoNumFull()
 
-                binding.tvFlete.text = "Flete: " + (flete / tasaFlete).valorReal().formatoNumFull()
+                binding.tvFlete.text = "Flete: " + (flete / tasa).round().formatoNumFull()
 
                 binding.tvRetIva.text =
-                    "Ret. IVA: " + (kePrecobradocs.bsretiva / tasa).valorReal().formatoNumFull()
+                    "Ret. IVA: " + (kePrecobradocs.bsretiva / tasa).round().formatoNumFull()
                 binding.tvRetFlete.text =
-                    "Ret. Flete: " + (kePrecobradocs.bsretfte / tasa).valorReal().formatoNumFull()
+                    "Ret. Flete: " + (kePrecobradocs.bsretfte / tasa).round().formatoNumFull()
             }
         }
     }

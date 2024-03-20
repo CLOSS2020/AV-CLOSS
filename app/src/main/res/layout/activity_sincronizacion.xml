@@ -154,7 +154,8 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/tvDocumentos"
             app:layout_constraintStart_toStartOf="@+id/tvDocumentos"
-            app:layout_constraintTop_toBottomOf="@+id/btnSubir" />
+            app:layout_constraintTop_toBottomOf="@+id/btnSubir"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnSubirprecob"
@@ -168,6 +169,19 @@
             app:layout_constraintEnd_toEndOf="@+id/btnSync"
             app:layout_constraintStart_toStartOf="@+id/btnSync"
             app:layout_constraintTop_toBottomOf="@+id/tv_subidospedidos" />
+
+        <Button
+            android:id="@+id/btnSubirRcl"
+            style="@style/BasicStyleButtom"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="SUBIR RECLAMOS"
+            android:textColor="#FFFFFF"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="@+id/btnSync"
+            app:layout_constraintStart_toStartOf="@+id/btnSync"
+            app:layout_constraintTop_toBottomOf="@+id/btnSubirprecob" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

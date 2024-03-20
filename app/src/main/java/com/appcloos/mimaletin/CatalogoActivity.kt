@@ -323,7 +323,7 @@ class CatalogoActivity : AppCompatActivity() {
                         cursorPretotal.moveToFirst()
                         precioTotalporArticulo = cursorPretotal.getDouble(0)
                         cursorPretotal.close()
-                        precioTotalporArticulo = precioTotalporArticulo.valorReal()
+                        precioTotalporArticulo = precioTotalporArticulo.round()
                         montoEnPedido.text = """
                 Monto del Pedido: ${"$"}$precioTotalporArticulo
                 Cantidad Disponible: $existencia
@@ -430,7 +430,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                         val tracking = nroPedido
                                                         var precioTotal =
                                                             precio * cantidad.toDouble()
-                                                        precioTotal = precioTotal.valorReal()
+                                                        precioTotal = precioTotal.round()
                                                         stotdcto = if (dctonumerico!! > 0) {
                                                             precioTotal - precioTotal * (dctonumerico!! / 100)
                                                         } else {
@@ -505,7 +505,7 @@ class CatalogoActivity : AppCompatActivity() {
                                             } else if (cantidad * ventaMin <= existencia) {
                                                 val cantidadNew = (cantidad * ventaMin).toInt()
                                                 var precioTotal = precio * cantidadNew
-                                                precioTotal = precioTotal.valorReal()
+                                                precioTotal = precioTotal.round()
                                                 val descuentoTexto = cajaDescuento.text.toString()
                                                 val aprobarDescuento = darDescuento.isChecked
 
@@ -569,7 +569,7 @@ class CatalogoActivity : AppCompatActivity() {
                                                 ).show()
                                             } else if (cantidad >= ventaMin) {
                                                 var precioTotal = precio * cantidad.toDouble()
-                                                precioTotal = precioTotal.valorReal()
+                                                precioTotal = precioTotal.round()
                                                 val descuentoTexto = cajaDescuento.text.toString()
                                                 val aprobarDescuento = darDescuento.isChecked
 
@@ -627,7 +627,7 @@ class CatalogoActivity : AppCompatActivity() {
                                         }
                                     } else {
                                         var precioTotal = precio * cantidad.toDouble()
-                                        precioTotal = precioTotal.valorReal()
+                                        precioTotal = precioTotal.round()
                                         val descuentoTexto = cajaDescuento.text.toString()
                                         val aprobarDescuento = darDescuento.isChecked
 
@@ -825,7 +825,7 @@ class CatalogoActivity : AppCompatActivity() {
                 catalogo.setCodigo(cursorca!!.getString(0))
                 catalogo.setNombre(cursorca!!.getString(1))
                 val precio = cursorca!!.getDouble(2)
-                val precioRd = precio.valorReal()
+                val precioRd = precio.round()
                 catalogo.setPrecio1(precioRd)
                 val existenc = cursorca!!.getDouble(3)
                 val existenciaRd = existenc.toInt()
@@ -880,7 +880,7 @@ class CatalogoActivity : AppCompatActivity() {
             catalogo.setCodigo(cursor.getString(0))
             catalogo.setNombre(cursor.getString(1))
             val precio1 = cursor.getDouble(2)
-            val precio1Rd = precio1.valorReal()
+            val precio1Rd = precio1.round()
             catalogo.setPrecio1(precio1Rd)
             val existenc = cursor.getDouble(3)
             val existenciaRd = existenc.toInt()
@@ -939,7 +939,7 @@ class CatalogoActivity : AppCompatActivity() {
             catalogo.setCodigo(cursor.getString(0))
             catalogo.setNombre(cursor.getString(1))
             val precio1 = cursor.getDouble(2)
-            val precio1Rd = precio1.valorReal()
+            val precio1Rd = precio1.round()
             catalogo.setPrecio1(precio1Rd)
             val existenc = cursor.getDouble(3)
             val existenciaRd = existenc.toInt()

@@ -11,7 +11,7 @@ import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.colorAgencia
 import com.appcloos.mimaletin.databinding.ItemCheckDocsCxcBinding
 import com.appcloos.mimaletin.setDrawableAgencia
-import com.appcloos.mimaletin.valorReal
+import com.appcloos.mimaletin.round
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -80,7 +80,7 @@ class EdoCuentaClienteAdapter(
                 // Ademas se suman las retenciones ya pagadas para que la deuda baje
                 // (dtotpagos solo refleja dinero y no retenciones que son papel)
                 // y todo lo demas resta a la deuda original para saber lo que de verdad se paga
-                "Deuda: ${(documento.dtotalfinal - ((documento.dtotpagos + documento.dtotdev) + documento.dretencion)).valorReal()} $"
+                "Deuda: ${(documento.dtotalfinal - ((documento.dtotpagos + documento.dtotdev) + documento.dretencion)).round()} $"
             binding.tvNrodoc.text = documento.documento
 
             // 2023-07-14 se comento ya que ahora notas y facturas pueden llevar bolivares y dolares

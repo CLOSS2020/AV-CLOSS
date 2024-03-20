@@ -82,7 +82,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
             edoPedi = "N/E $."
             binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
         }else{
-         *//*if (planCXC.diascred != 15){
+         */
+        /*if (planCXC.diascred != 15){
                     if (planCXC.diascred == 25 && diasVencidos(planCXC.fechaVencimiento, DIAS_VALIDOS_BOLIVARES)){
                         edoPedi = "FAC $."
                         binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
@@ -113,7 +114,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
                             binding.tvEdoPediModulCXC.setTextColor(Color.rgb(96, 203, 64))
                         }
                     }
-                }*//*
+                }*/
+        /*
 
                 if(planCXC.diascred >= DIAS_VALIDOS_BOLIVARES){
                     if (!(diasVencidos(planCXC.fechaRecepcion, DIAS_VALIDOS_BOLIVARES))){
@@ -146,7 +148,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
                 }
 
-         *//*if (planCXC.diascred == 15){
+         */
+        /*if (planCXC.diascred == 15){
                     edoPedi = "FAC Bs."
                     if (compararFecha(planCXC.fechaVencimiento) == 0){
                         binding.tvEdoPediModulCXC.setTextColor(Color.rgb(255, 194, 34))
@@ -158,7 +161,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }else{
                     edoPedi = "FAC $."
                     binding.tvEdoPediModulCXC.setTextColor(Color.rgb(117, 117, 117))
-                }*//*
+                }*/
+        /*
 
             }*/
         // 2023-06-05 Se comento para sustituir traquin por tipo de factura (si es una factura que se puede pagar en bolivares o no)
@@ -217,9 +221,18 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
         val plancxcVencimiento =
             "${context.getString(R.string.plancxc_vencimiento)}: ${planCXC.fechaVencimiento.formatoFechaShow()}"
 
-        "${context.getString(R.string.plancxc_recepcion)}: ${planCXC.fechaRecepcion.formatoFechaShow()}".also {
+        /*"${context.getString(R.string.plancxc_recepcion)}: ${planCXC.fechaRecepcion.formatoFechaShow()}".also {
             binding.tvFechaRecepcionModulCXC.text = it
-        }
+        }*/
+
+        binding.tvFechaRecepcionModulCXC.text =
+                // 2024-02-27 El estado de entrega del documento
+            when (planCXC.edoentrega) {
+                0 -> "Facturado"
+                1 -> "En tránsito"
+                2 -> "${context.getString(R.string.plancxc_recepcion)}: ${planCXC.fechaRecepcion.formatoFechaShow()}"
+                else -> "No identificado"
+            }
 
         // Abonado o Por Pagar
         val plancxcCuenta = "${context.getString(R.string.plancxc_cuenta)}: $edoFact"
@@ -236,6 +249,13 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         binding.tvFechaVencimientoModulCXC.apply {
+            // Si el estado no esta en entregado no se muestra la fecha de vencimiento
+            visibility = when (planCXC.edoentrega) {
+                in 0..1 -> View.GONE
+                2 -> View.VISIBLE
+                else -> View.VISIBLE
+            }
+
             text = plancxcVencimiento
             // Color es una funcion de extension de las View
             setTextColor(color(tvFechaVencimientoModulCXCTextColor))
@@ -249,7 +269,8 @@ class PlanificadorCXCHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         binding.clMainModulCXC.setOnClickListener {
             onClickListener(
-                planCXC.codcliente, planCXC.cliente
+                planCXC.codcliente,
+                planCXC.cliente
             )
         }
     }

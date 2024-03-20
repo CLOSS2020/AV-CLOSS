@@ -37,7 +37,7 @@
 
 
     <ListView
-        android:id="@+id/lv_lineasR"
+        android:id="@+id/lvLineasR"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="10dp"
@@ -46,12 +46,12 @@
         app:layout_constraintBottom_toTopOf="@+id/gridfotos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_montodev">
+        app:layout_constraintTop_toBottomOf="@+id/tvMontodev">
 
     </ListView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/menunav_rec"
+        android:id="@+id/menunavRec"
         style="@style/NavigationViewCustom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
         app:menu="@menu/menu_reclamos" />
 
     <TextView
-        android:id="@+id/tv_montodev"
+        android:id="@+id/tvMontodev"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
@@ -73,8 +73,21 @@
         android:layout_marginBottom="5dp"
         android:text="Monto Dev:"
         android:textStyle="bold|italic"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvMontoMinDev"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_documentodoc" />
+
+    <TextView
+        android:id="@+id/tvMontoMinDev"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Monto Min Dev:"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvMontodev"
         app:layout_constraintTop_toBottomOf="@+id/tv_documentodoc" />
 
     <GridView
@@ -88,9 +101,9 @@
         android:horizontalSpacing="5dp"
         android:numColumns="5"
         android:verticalSpacing="5dp"
-        app:layout_constraintTop_toBottomOf="@+id/lv_lineasR"
-        app:layout_constraintBottom_toTopOf="@+id/menunav_rec"
+        app:layout_constraintBottom_toTopOf="@+id/menunavRec"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvLineasR" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

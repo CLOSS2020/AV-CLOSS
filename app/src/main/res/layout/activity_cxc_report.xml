@@ -54,7 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bt_ver_det_descuento" />
+            app:layout_constraintTop_toBottomOf="@+id/btVerDetDescuento" />
 
         <TextView
             android:id="@+id/textView66"
@@ -91,7 +91,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_cxc_ref_main" />
+            app:layout_constraintTop_toBottomOf="@+id/tilCxcRefMain" />
 
         <TextView
             android:id="@+id/textView43"
@@ -472,11 +472,11 @@
             android:theme="@style/StyleTextInputLayoutEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_cxc_spbanco"
+            app:layout_constraintTop_toBottomOf="@+id/tilCxcSpbanco"
             app:startIconDrawable="@drawable/cash_stack">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_cxc_monto_main"
+                android:id="@+id/etCxcMontoMain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Monto de Pago"
@@ -485,7 +485,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_cxc_ref_main"
+            android:id="@+id/tilCxcRefMain"
             style="@style/StyleTextInputLayoutEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -498,7 +498,7 @@
             app:startIconDrawable="@drawable/ic_listapromo">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_cxc_ref_main"
+                android:id="@+id/etCxcRefMain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Referencia Bancaria"
@@ -508,7 +508,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_cxc_spbanco"
+            android:id="@+id/tilCxcSpbanco"
             style="@style/StyleTextInputLayoutAutoComplete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -522,7 +522,7 @@
             app:startIconDrawable="@drawable/ic_baseline_bank_24">
 
             <AutoCompleteTextView
-                android:id="@+id/sp_cxc_banco_main"
+                android:id="@+id/spCxcBancoMain"
                 style="@style/AutoComplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -710,7 +710,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/bt_ver_det_descuento"
+            android:id="@+id/btVerDetDescuento"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -742,7 +742,7 @@
                 android:layout_weight="1"
                 android:buttonTint="@drawable/color_checkbox"
                 android:text="Excluir retención de Flete"
-                app:layout_constraintStart_toEndOf="@+id/til_cxc_spbanco"
+                app:layout_constraintStart_toEndOf="@+id/tilCxcSpbanco"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/radioGroup6" />
 
@@ -768,7 +768,7 @@
             android:layout_marginEnd="5dp"
             android:text="Retenciones"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            app:layout_constraintBottom_toTopOf="@+id/bt_cxc_procesar"
+            app:layout_constraintBottom_toTopOf="@+id/btCxcProcesar"
             app:layout_constraintEnd_toStartOf="@+id/btnFoto"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
@@ -783,13 +783,13 @@
             android:layout_marginEnd="10dp"
             android:text="SUBIR / VER FOTO"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            app:layout_constraintBottom_toTopOf="@+id/bt_cxc_procesar"
+            app:layout_constraintBottom_toTopOf="@+id/btCxcProcesar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/bt_cxc_retenciones"
             app:layout_constraintTop_toBottomOf="@+id/til_ref_com" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/bt_cxc_procesar"
+            android:id="@+id/btCxcProcesar"
             style="@style/BasicStyleButtomMaterial"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

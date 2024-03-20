@@ -61,8 +61,7 @@ class DetalleCXCActivity : AppCompatActivity() {
         if (kePrecobranza.cxcndoc.isNotEmpty()) {
             val fechaEmision: String = if (kePrecobranza.tiporecibo == "D") {
                 val ldt: LocalDateTime = LocalDateTime.parse(
-                    kePrecobranza.fchrecibo,
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    kePrecobranza.fchrecibo, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 )
                 val writingFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a")
                 ldt.format(writingFormatter)
@@ -88,22 +87,21 @@ class DetalleCXCActivity : AppCompatActivity() {
 
             binding.tvBanco.text = kePrecobranza.bcocod
 
-            val nombreBanco =
-                conn.getCampoStringCamposVarios(
-                    "listbanc",
-                    "nombanco",
-                    listOf("codbanco", "empresa"),
-                    listOf(kePrecobranza.bcocod, codEmpresa)
-                )
+            val nombreBanco = conn.getCampoStringCamposVarios(
+                "listbanc",
+                "nombanco",
+                listOf("codbanco", "empresa"),
+                listOf(kePrecobranza.bcocod, codEmpresa)
+            )
 
             if (nombreBanco.isNotEmpty()) {
                 binding.tvBanco.text = "${kePrecobranza.bcocod} $nombreBanco"
                 binding.tvReferencia.text = "REF: ${kePrecobranza.bcoref}"
                 binding.tvMonto.text =
-                    "Monto: ${kePrecobranza.bcomonto} ${if (kePrecobranza.moneda == "2") "$" else "Bs."}"
+                    "Monto: ${kePrecobranza.bcomonto.formatoNumFull()} ${if (kePrecobranza.moneda == "2") "$" else "Bs."}"
             } else {
                 binding.tvBanco.text = "Efectivo"
-                binding.tvMonto.text = "Monto: ${kePrecobranza.efectivo} $"
+                binding.tvMonto.text = "Monto: ${kePrecobranza.efectivo.formatoNumFull()} $"
             }
 
             binding.codCliente.text = documentos.codcliente.ifEmpty { "No identificado" }
@@ -130,11 +128,9 @@ class DetalleCXCActivity : AppCompatActivity() {
         val kePrecobranza = ke_precobranza()
         try {
             keAndroid.rawQuery(
-                "SELECT * FROM ke_precobranza " +
-                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
+                "SELECT * FROM ke_precobranza " + "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
                 null
-            )
-                .use { cursor ->
+            ).use { cursor ->
                     if (cursor.moveToFirst()) {
                         kePrecobranza.cxcndoc = cursor.getString(0)
                         kePrecobranza.tiporecibo = cursor.getString(1)
@@ -158,52 +154,57 @@ class DetalleCXCActivity : AppCompatActivity() {
         kePrecobradocsMain = arrayListOf()
         try {
             keAndroid.rawQuery(
-                "SELECT * FROM ke_precobradocs " +
-                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
+                "SELECT * FROM ke_precobradocs WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
                 null
-            )
-                .use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val kePrecobradocs = ke_precobradocs()
-                        kePrecobradocs.cxcndoc = cursor.getString(0)
-                        kePrecobradocs.agencia = cursor.getString(1)
-                        kePrecobradocs.tipodoc = cursor.getString(2)
-                        kePrecobradocs.documento = cursor.getString(3)
-                        kePrecobradocs.bscobro = cursor.getDouble(4)
-                        kePrecobradocs.prccobro = cursor.getDouble(5)
-                        kePrecobradocs.prcdsctopp = cursor.getDouble(6)
-                        kePrecobradocs.nroret = cursor.getString(7)
-                        kePrecobradocs.fchemiret = cursor.getString(8)
-                        kePrecobradocs.bsretiva = cursor.getDouble(9)
-                        kePrecobradocs.refret = cursor.getString(10)
-                        kePrecobradocs.nroretfte = cursor.getString(11)
-                        kePrecobradocs.fchemirfte = cursor.getString(12)
-                        kePrecobradocs.bsmtofte = cursor.getDouble(13)
-                        kePrecobradocs.bsretfte = cursor.getDouble(14)
-                        kePrecobradocs.refretfte = cursor.getString(15)
-                        kePrecobradocs.pidvalid = cursor.getString(16)
-                        kePrecobradocs.bsmtoiva = cursor.getDouble(17)
-                        kePrecobradocs.retmun_bi = cursor.getDouble(18)
-                        kePrecobradocs.retmun_cod = cursor.getString(19)
-                        kePrecobradocs.retmun_nro = cursor.getString(20)
-                        kePrecobradocs.retmun_mto = cursor.getDouble(21)
-                        kePrecobradocs.retmun_fch = cursor.getString(22)
-                        kePrecobradocs.retmun_ref = cursor.getString(23)
-                        kePrecobradocs.diascalc = cursor.getDouble(24)
-                        kePrecobradocs.prccomiv = cursor.getDouble(25)
-                        kePrecobradocs.prccomic = cursor.getDouble(26)
-                        kePrecobradocs.cxcndoc_aux = cursor.getString(27)
-                        kePrecobradocs.tnetodbs = cursor.getDouble(28)
-                        kePrecobradocs.tnetoddol = cursor.getDouble(29)
-                        kePrecobradocs.fchrecibod = cursor.getString(30)
-                        kePrecobradocs.kecxc_idd = cursor.getString(31)
-                        kePrecobradocs.tasadiad = cursor.getDouble(32)
-                        kePrecobradocs.afavor = cursor.getDouble(33)
-                        kePrecobradocs.reten = cursor.getInt(34)
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val kePrecobradocs = ke_precobradocs()
+                    kePrecobradocs.cxcndoc = cursor.getString(0)
+                    kePrecobradocs.agencia = cursor.getString(1)
+                    kePrecobradocs.tipodoc = cursor.getString(2)
+                    kePrecobradocs.documento = cursor.getString(3)
+                    kePrecobradocs.bscobro = cursor.getDouble(4)
+                    kePrecobradocs.prccobro = cursor.getDouble(5)
+                    kePrecobradocs.prcdsctopp = cursor.getDouble(6)
+                    kePrecobradocs.nroret = cursor.getString(7)
+                    kePrecobradocs.fchemiret = cursor.getString(8)
+                    kePrecobradocs.bsretiva = cursor.getDouble(9)
+                    kePrecobradocs.refret = cursor.getString(10)
+                    kePrecobradocs.nroretfte = cursor.getString(11)
+                    kePrecobradocs.fchemirfte = cursor.getString(12)
+                    kePrecobradocs.bsmtofte = cursor.getDouble(13)
+                    kePrecobradocs.bsretfte = cursor.getDouble(14)
+                    kePrecobradocs.refretfte = cursor.getString(15)
+                    kePrecobradocs.pidvalid = cursor.getString(16)
+                    kePrecobradocs.bsmtoiva = cursor.getDouble(17)
+                    kePrecobradocs.retmunBi = cursor.getDouble(18)
+                    kePrecobradocs.retmunCod = cursor.getString(19)
+                    kePrecobradocs.retmunNro = cursor.getString(20)
+                    kePrecobradocs.retmunMto = cursor.getDouble(21)
+                    kePrecobradocs.retmunFch = cursor.getString(22)
+                    kePrecobradocs.retmunRef = cursor.getString(23)
+                    kePrecobradocs.diascalc = cursor.getDouble(24)
+                    kePrecobradocs.prccomiv = cursor.getDouble(25)
+                    kePrecobradocs.prccomic = cursor.getDouble(26)
+                    kePrecobradocs.cxcndocAux = cursor.getString(27)
+                    kePrecobradocs.tnetodbs = cursor.getDouble(28)
+                    kePrecobradocs.tnetoddol = cursor.getDouble(29)
+                    kePrecobradocs.fchrecibod = cursor.getString(30)
+                    kePrecobradocs.kecxcIdd = cursor.getString(31)
+                    kePrecobradocs.tasadiad = cursor.getDouble(32)
+                    kePrecobradocs.afavor = cursor.getDouble(33)
+                    kePrecobradocs.reten = cursor.getInt(34)
+                    kePrecobradocs.codcliente = cursor.getString(35)
+                    kePrecobradocs.nombrecli = cursor.getString(36)
+                    kePrecobradocs.tasadoc = cursor.getDouble(37)
+                    kePrecobradocs.cbsretiva = cursor.getDouble(38)
+                    kePrecobradocs.cbsretflete = cursor.getDouble(39)
+                    kePrecobradocs.empresa = cursor.getString(40)
+                    kePrecobradocs.dolarflete = cursor.getInt(41)
 
-                        kePrecobradocsMain.add(kePrecobradocs)
-                    }
+                    kePrecobradocsMain.add(kePrecobradocs)
                 }
+            }
         } catch (error: SQLiteException) {
             error.printStackTrace()
         }
@@ -214,8 +215,7 @@ class DetalleCXCActivity : AppCompatActivity() {
         val documentos = Documentos()
         try {
             keAndroid.rawQuery(
-                "SELECT nombrecli, codcliente FROM ke_precobradocs " +
-                    "WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
+                "SELECT nombrecli, codcliente FROM ke_precobradocs WHERE cxcndoc = '$cxcndoc' AND empresa = '$codEmpresa';",
                 null
             ).use { cursor ->
                 if (cursor.moveToFirst()) {

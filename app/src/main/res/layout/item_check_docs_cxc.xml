@@ -10,9 +10,8 @@
         android:id="@+id/clParent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:padding="12dp"
+        android:layout_margin="10dp"
         android:background="@drawable/bordes_redondos"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,109 +19,98 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tv_montototal"
+            android:id="@+id/tv_nrodoc"
+            android:layout_width="209dp"
+            android:layout_height="19dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:textColor="#FBFBFB"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvMontototal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nº:" />
+
+        <TextView
+            android:id="@+id/tvMontototal"
             android:layout_width="209dp"
             android:layout_height="20dp"
-            android:layout_marginStart="16dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:textColor="#FBFBFB"
             android:textSize="16sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvMontodebe"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_nrodoc"
             tools:text="Monto Total:" />
 
         <TextView
-            android:id="@+id/tv_montodebe"
+            android:id="@+id/tvMontodebe"
             style="@style/ElementModuloCXC"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_marginStart="16dp"
             android:background="@drawable/bordes_redondos_blanco"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_montototal"
+            app:layout_constraintTop_toBottomOf="@+id/tvMontototal"
             tools:text="Monto Deuda:" />
-
-        <CheckBox
-            android:id="@+id/cb_sel_doc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="16dp"
-            android:buttonTint="@drawable/checkbox_cxc"
-            android:enabled="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_tipodocC"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="#FBFBFB"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Tipo de Documento" />
-
-        <TextView
-            android:id="@+id/tv_nrodoc"
-            android:layout_width="209dp"
-            android:layout_height="19dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:textColor="#FBFBFB"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Nº:" />
 
         <TextView
             android:id="@+id/tv_fecharecepcion"
             android:layout_width="wrap_content"
             android:layout_height="21dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="1dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:textColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_montodebe"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fechavencimiento"
             tools:text="F. Recep:" />
 
         <TextView
             android:id="@+id/tv_fechavencimiento"
             android:layout_width="wrap_content"
             android:layout_height="21dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="1dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:textColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_fecharecepcion"
+            app:layout_constraintTop_toBottomOf="@+id/tvMontodebe"
             tools:text="F. Venc:" />
 
         <TextView
             android:id="@+id/tv_status"
             android:layout_width="209dp"
             android:layout_height="21dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="8dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_fechavencimiento"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fecharecepcion"
             tools:text="Status:" />
+
+        <TextView
+            android:id="@+id/tv_tipodocC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FBFBFB"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Tipo de Documento" />
+
+        <CheckBox
+            android:id="@+id/cbSelDoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:buttonTint="@drawable/checkbox_cxc"
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <!--<LinearLayout
             android:id="@+id/llContainerEstados"
@@ -169,29 +157,31 @@
             android:id="@+id/tvReclamo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
             android:background="@drawable/border_radius_error"
             android:padding="5dp"
             android:text="RCL"
             android:textColor="@color/whiteColor1"
             android:textStyle="bold"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cbSelDoc" />
 
         <TextView
             android:id="@+id/tvDolarFlete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="15dp"
             android:background="@drawable/border_radius_dolar_flete"
             android:padding="5dp"
             android:text=" FD "
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:textAlignment="center"
             android:textColor="@color/whiteColor1"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tvReclamo" />
+            app:layout_constraintEnd_toStartOf="@+id/tvReclamo"
+            app:layout_constraintTop_toBottomOf="@+id/cbSelDoc" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

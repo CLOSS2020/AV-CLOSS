@@ -142,10 +142,10 @@ class DocumentosActivity : AppCompatActivity() {
     private fun verDoc(position: Int) {
         println(permisos)
         val documentoP = listadocs[position].documento
-        val totnetoP = (listadocs[position].dtotneto).valorReal()
-        val totimpuestP = (listadocs[position].dtotimpuest).valorReal()
-        val totalfinalP = (listadocs[position].dtotalfinal).valorReal()
-        val totdescup = (listadocs[position].dtotdescuen).valorReal()
+        val totnetoP = (listadocs[position].dtotneto).round()
+        val totimpuestP = (listadocs[position].dtotimpuest).round()
+        val totalfinalP = (listadocs[position].dtotalfinal).round()
+        val totdescup = (listadocs[position].dtotdescuen).round()
         val aceptaDevoluciones = listadocs[position].aceptadev
         val estadoDoc = listadocs[position].estatusdoc
         println(estadoDoc)

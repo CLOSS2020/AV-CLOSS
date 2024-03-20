@@ -53,4 +53,9 @@ class Documentos {
     var bsretencioniva: Double = 0.0
     var bsretencion: Double = 0.0
     var dolarflete: Int = 0
+    var bsretflete: Double = 0.0
+    var dretflete: Double = 0.0
+    var dretmunMto: Double = 0.0
+    var retivaoblig: Int = 0
+    var edoentrega: Int = 0
 }

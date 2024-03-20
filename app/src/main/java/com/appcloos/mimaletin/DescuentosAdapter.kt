@@ -4,16 +4,20 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class DescuentosAdapter : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolder>() {
-    lateinit var descuento: ArrayList<Descuentos>
-    lateinit var context: Context
+class DescuentosAdapter(
+    var descuento: ArrayList<Descuentos>,
+    val context: Context,
+    private val descuentoIsSelected: (Boolean, Int) -> Unit
+) : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolder>() {
 
-    fun DescuentosAdapter(context: Context, descuento: ArrayList<Descuentos>) {
-        this.context = context
-        this.descuento = descuento
+    fun onRefresh(newList: ArrayList<Descuentos>) {
+        descuento = newList
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(
@@ -31,7 +35,7 @@ class DescuentosAdapter : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolde
     }
 
     override fun onBindViewHolder(holder: DescuentosHolder, position: Int) {
-        holder.bind(descuento[position])
+        holder.bind(descuento[position], descuentoIsSelected)
     }
 
     override fun getItemCount(): Int {
@@ -40,17 +44,36 @@ class DescuentosAdapter : RecyclerView.Adapter<DescuentosAdapter.DescuentosHolde
 
     class DescuentosHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        val nrodoc: TextView = view.findViewById(R.id.nro_doc_descuento)
-        private val porcentaje: TextView = view.findViewById(R.id.por_doc_descuento)
-        val monto: TextView = view.findViewById(R.id.mto_doc_descuento)
+        val nrodoc: TextView = view.findViewById(R.id.tvNroDoc)
+        private val porcentaje: TextView = view.findViewById(R.id.tvDocDescuento)
+        val monto: TextView = view.findViewById(R.id.tvMtoDocDescuento)
+        private val isSelected: CheckBox = view.findViewById(R.id.cbSelect)
+        private val llMainDescuento: LinearLayout = view.findViewById(R.id.llMainDescuento)
 
-        fun bind(descuento: Descuentos) {
-            val montoDesc = Math.round(descuento.cantdscto * 100.00) / 100.00
-            val porcenDec = Math.round(descuento.pordscto * 100.00) / 100.00
+        fun bind(descuento: Descuentos, descuentoIsSelected: (Boolean, Int) -> Unit) {
+            val montoDesc = descuento.cantdscto.round()
+            val porcenDec = descuento.pordscto.round()
 
             nrodoc.text = descuento.nrodoc
             porcentaje.text = porcenDec.toString()
             monto.text = montoDesc.toString()
+
+            isSelected.isChecked = descuento.isSelected
+
+            llMainDescuento.visibility = if (descuento.show){
+                View.VISIBLE
+            }else{
+                View.GONE
+            }
+
+            isSelected.setOnClickListener {
+                descuentoIsSelected(isSelected.isChecked, absoluteAdapterPosition)
+            }
+
+            llMainDescuento.setOnClickListener {
+                isSelected.isChecked != isSelected.isChecked
+                descuentoIsSelected(isSelected.isChecked, absoluteAdapterPosition)
+            }
         }
     }
 }

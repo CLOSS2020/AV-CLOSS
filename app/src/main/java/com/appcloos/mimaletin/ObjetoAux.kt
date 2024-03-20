@@ -65,29 +65,49 @@ class ObjetoAux(val context: Context) {
     }
 
     fun descargaDesactivo(codUsuario: String, codEmpresa: String, enlaceEmpresa: String) {
-        val url = "https://$enlaceEmpresa/webservice/desactivo.php?cod_usuario=$codUsuario"
+        val user = conn.getCampoStringCamposVarios(
+            "usuarios",
+            "username",
+            arrayListOf("vendedor", "empresa"),
+            arrayListOf(codUsuario, codEmpresa)
+        ).trim()
+
+        val pass = conn.getCampoStringCamposVarios(
+            "usuarios",
+            "password",
+            arrayListOf("vendedor", "empresa"),
+            arrayListOf(codUsuario, codEmpresa)
+        ).trim()
+
+        // val url = "https://$enlaceEmpresa/webservice/desactivo.php?cod_usuario=$codUsuario"
+
+        // 2024-02-23 Uso el Usuario y la Contraseña debido a que varios usuarios pueden compartir
+        // el mismo codigo pero no es mismo usuario
+        val url = "https://$enlaceEmpresa/webservice/desactivo_V2.php?nick_usuario=$user&pass_usuario=$pass"
 
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject? ->
-                if (response != null &&
-                    response.getString("desactivos") != "null" &&
-                    response.getString("status") == "0"
+                if (response != null && response.getString("desactivos") != "null" && response.getString(
+                        "status"
+                    ) == "0"
                 ) {
                     try {
                         val desactivos = response.getJSONArray("desactivos")
                         val jsonObject: JSONObject = desactivos.getJSONObject(0)
 
                         val vendedor = jsonObject.getString("vendedor")
+                        val empresa = jsonObject.getString("empresa")
 
                         val cv = ContentValues()
                         cv.put("desactivo", jsonObject.getString("desactivo"))
-                        cv.put("empresa", codEmpresa)
+                        cv.put("cierre_sesion", jsonObject.getBoolean("cierre_sesion"))
+                        cv.put("empresa", empresa) // <- uso el del api por si acaso
 
                         conn.updateJSONCamposVarios(
                             "usuarios",
                             cv,
                             "vendedor = ? AND empresa = ?",
-                            arrayOf(vendedor, codEmpresa)
+                            arrayOf(vendedor, empresa)
                         )
 
                         println("Si se logro descargar desactivo")

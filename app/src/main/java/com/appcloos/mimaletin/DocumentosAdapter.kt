@@ -28,7 +28,7 @@ class DocumentosAdapter(
                 else -> "No Identificado"
             }
             var mtoFinal = documentos.dtotalfinal
-            mtoFinal = mtoFinal.valorReal()
+            mtoFinal = mtoFinal.round()
             binding.lbNrodoc.text = documentos.documento
             binding.lbTipodocv.text = documentos.tipodocv
             binding.lbMontototal.text = "$mtoFinal$"

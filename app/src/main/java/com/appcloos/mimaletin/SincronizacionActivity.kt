@@ -13,6 +13,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.DefaultRetryPolicy
@@ -160,33 +161,29 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             checkForAppUpdate()
             subirPrecob()
         }
+        binding.btnSubirRcl.setOnClickListener {
+            checkForAppUpdate()
+            subirReclamo()
+        }
 
         // bt_subirprecob.setVisibility(View.INVISIBLE);
         val objetoAux = ObjetoAux(this)
         objetoAux.descargaDesactivo(cod_usuario!!, codEmpresa!!, enlaceEmpresa)
+
         SINCRONIZO = conn.sincronizoPriVez(
             cod_usuario!!, codEmpresa!!
         ) // <-- Verificando si sincronizo por primera vez
+
         DESACTIVADO = conn.getCampoIntCamposVarios(
             "usuarios",
             "desactivo",
             listOf("vendedor", "empresa"),
             listOf(cod_usuario!!, codEmpresa!!)
         ) == 0 // <-- Buscando y comparando el estatus de desactivacion del usuario, 1 = Desactivo, 0 = Activo
-        if (!conn.getConfigBoolUsuario(
-                "APP_MODULO_CXC_USER", // <-- Buscando si el usuario tiene acceso al modulo de cobranzas
-                cod_usuario!!, codEmpresa!!
-            ) && SINCRONIZO && DESACTIVADO // <-- Comparando acceso al modulo CXC, sincronizacion por primera vez y el status de desactivacion
-        ) {
-            binding.btnSubirprecob.visibility = View.VISIBLE
-        }
-        if (!conn.getConfigBoolUsuario(
-                "APP_MODULO_PEDIDO_USER", // <-- Buscando si el usuario tiene acceso al modulo de pedido
-                cod_usuario!!, codEmpresa!!
-            ) && SINCRONIZO && DESACTIVADO // <-- Comparando acceso al modulo pedido, sincronizacion por primera vez y el status de desactivacion
-        ) {
-            binding.btnSubir.visibility = View.VISIBLE
-        }
+
+        validarBotonesUp("APP_MODULO_CXC_USER", "APP_MODULO_CXC", binding.btnSubirprecob)
+        validarBotonesUp("APP_MODULO_PEDIDO_USER", "APP_MODULO_PEDIDO", binding.btnSubir)
+        validarBotonesUp("APP_MODULO_RECLAMO_USER", "APP_MODULO_RECLAMO", binding.btnSubirRcl)
     }
 
     // IMPORTANTE hay 2 funciones de AnalisisError debido a que vollie trabaja de forma asincrona y en ocasiones actualiza primero la fecha con un error antes de realizar todos los procesos
@@ -484,6 +481,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val vendedor = jsonObject.getString("vendedor")
                             val codcoord = jsonObject.getString("codcoord")
                             val fechamodifi = jsonObject.getString("fechamodifi")
+                            val empresa = jsonObject.getString("empresa")
 
                             val cv = ContentValues()
                             cv.put("agencia", agencia)
@@ -511,21 +509,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("vendedor", vendedor)
                             cv.put("codcoord", codcoord)
                             cv.put("fechamodifi", fechamodifi)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_doclmv",
                                     ArrayList(
-                                        mutableListOf("codigo", "empresa")
+                                        mutableListOf("codigo", "documento", "empresa")
                                     ),
-                                    arrayListOf(codigo, codEmpresa!!)
+                                    arrayListOf(codigo, documento, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "ke_doclmv",
                                     cv,
-                                    "codigo = ? AND empresa = ?",
-                                    arrayOf(codigo, codEmpresa!!)
+                                    "codigo = ? AND documento = ? AND empresa = ?",
+                                    arrayOf(codigo, documento, empresa)
                                 )
                             } else {
                                 conn.insertJSON("ke_doclmv", cv)
@@ -584,6 +582,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val dcobId = descuentoBanco.getString("dcob_id")
                             val bcoCodigo = descuentoBanco.getString("bco_codigo")
                             val fechamodifi = descuentoBanco.getString("fechamodifi")
+                            val empresa = descuentoBanco.getString("empresa")
 
                             descuentoBancoNube.add(dcobId)
                             descuentoBancoNube2.add(bcoCodigo)
@@ -592,7 +591,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("dcob_id", dcobId)
                             cv.put("bco_codigo", bcoCodigo)
                             cv.put("fechamodifi", fechamodifi)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_tabdctosbcos",
@@ -606,7 +605,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     "ke_tabdctosbcos",
                                     cv,
                                     "dcob_id = ? AND bco_codigo = ? AND empresa = ?",
-                                    arrayOf(dcobId, bcoCodigo, codEmpresa)
+                                    arrayOf(dcobId, bcoCodigo, empresa)
                                 )
                             } else {
                                 conn.insertJSON("ke_tabdctosbcos", cv)
@@ -649,9 +648,6 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
     }
 
     private fun bajarDescuentos(url: String) {
-        println(url)
-        println("--AQUI--")
-        val keAndroid = conn.writableDatabase
         val descuentoNube = ArrayList<String?>()
         val jsonObjectRequest =
             JsonObjectRequest(Request.Method.GET, url, null, { response: JSONObject ->
@@ -672,6 +668,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val dcobValesiempre = descuento.getString("dcob_valesiempre")
                             val dcobValemon = descuento.getString("dcob_valemon")
                             val dcobFechadoc = descuento.getString("dcob_fechadoc")
+                            val empresa = descuento.getString("empresa")
 
                             descuentoNube.add(dcobId)
 
@@ -687,7 +684,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("dcob_valesiempre", dcobValesiempre)
                             cv.put("dcob_valemon", dcobValemon)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
                             cv.put("dcob_fechadoc", dcobFechadoc)
 
                             if (conn.validarExistenciaCamposVarios(
@@ -695,14 +692,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     ArrayList(
                                         mutableListOf("dcob_id", "empresa")
                                     ),
-                                    arrayListOf(dcobId, codEmpresa!!)
+                                    arrayListOf(dcobId, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "ke_tabdctos",
                                     cv,
                                     "dcob_id = ? AND empresa = ?",
-                                    arrayOf(dcobId, codEmpresa!!)
+                                    arrayOf(dcobId, empresa)
                                 )
                             } else {
                                 conn.insertJSON("ke_tabdctos", cv)
@@ -752,6 +749,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val fechamodifi = img.getString("fechamodifi")
                             val ancho = img.getString("ancho")
                             val alto = img.getString("alto")
+                            val empresa = img.getString("empresa")
 
                             imgNube.add(nombre)
 
@@ -761,21 +759,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("fechamodifi", fechamodifi)
                             cv.put("ancho", ancho)
                             cv.put("alto", alto)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "img_carousel",
                                     ArrayList(
                                         mutableListOf("nombre", "empresa")
                                     ),
-                                    arrayListOf(nombre, codEmpresa!!)
+                                    arrayListOf(nombre, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "img_carousel",
                                     cv,
                                     "nombre = ? AND empresa = ?",
-                                    arrayOf(nombre, codEmpresa!!)
+                                    arrayOf(nombre, empresa)
                                 )
                             } else {
                                 conn.insertJSON("img_carousel", cv)
@@ -829,6 +827,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val nombanco = banco.getString("nombanco")
                             val codbanco = banco.getString("codbanco")
                             val inactiva = banco.getString("inactiva")
+                            val empresa = banco.getString("empresa")
 
                             bancosNube.add(codbanco)
 
@@ -838,21 +837,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("nombanco", nombanco)
                             cv.put("codbanco", codbanco)
                             cv.put("inactiva", inactiva)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "listbanc",
                                     ArrayList(
                                         mutableListOf("codbanco", "empresa")
                                     ),
-                                    arrayListOf(codbanco, codEmpresa!!)
+                                    arrayListOf(codbanco, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "listbanc",
                                     cv,
                                     "codbanco = ? AND empresa = ?",
-                                    arrayOf(codbanco, codEmpresa!!)
+                                    arrayOf(codbanco, empresa)
                                 )
                             } else {
                                 conn.insertJSON("listbanc", cv)
@@ -922,7 +921,9 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val cnfgTipo = configDatos.getString("cnfg_tipo")
                             val cnfgValfch = configDatos.getString("cnfg_valfch")
                             val username = configDatos.getString("username")
+                            val empresa = configDatos.getString("empresa")
                             configNube.add(cnfgIdconfig)
+
                             val cv = ContentValues()
                             cv.put("cnfg_valtxt", cnfgValtxt)
                             cv.put("cnfg_ttip", cnfgTtip)
@@ -937,21 +938,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("cnfg_tipo", cnfgTipo)
                             cv.put("cnfg_valfch", cnfgValfch)
                             cv.put("username", username)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_wcnf_conf",
                                     ArrayList(
                                         mutableListOf("cnfg_idconfig", "empresa")
                                     ),
-                                    arrayListOf(cnfgIdconfig, codEmpresa!!)
+                                    arrayListOf(cnfgIdconfig, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "ke_wcnf_conf",
                                     cv,
                                     "cnfg_idconfig = ? AND empresa = ?",
-                                    arrayOf(cnfgIdconfig, codEmpresa!!)
+                                    arrayOf(cnfgIdconfig, empresa)
                                 )
                             } else {
                                 conn.insertJSON("ke_wcnf_conf", cv)
@@ -1018,6 +1019,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val jsonObject = referencias.getJSONObject(i)
                             val bcoref = jsonObject.getString("bcoref")
                             val bcocod = jsonObject.getString("bcocod")
+                            val empresa = jsonObject.getString("empresa")
 
                             refNube.add(bcoref)
 
@@ -1025,7 +1027,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("bcoref", bcoref)
                             cv.put("bcocod", bcocod)
                             cv.put("tiporef", "banc")
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             // Creo que solo deberia de estar el insertar
                             if (conn.validarExistenciaCamposVarios(
@@ -1033,14 +1035,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     ArrayList(
                                         mutableListOf("bcoref", "empresa")
                                     ),
-                                    arrayListOf(bcoref, codEmpresa!!)
+                                    arrayListOf(bcoref, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "ke_referencias",
                                     cv,
                                     "bcoref = ? AND empresa = ?",
-                                    arrayOf(bcoref, codEmpresa!!)
+                                    arrayOf(bcoref, empresa)
                                 )
                             } else {
                                 conn.insertJSON("ke_referencias", cv)
@@ -1149,6 +1151,12 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val retmunMto = jsonObject.getDouble("retmun_mto")
                             val ktiNegesp = jsonObject.getInt("kti_negesp")
                             val dolarFlete = jsonObject.getInt("dolarflete")
+                            val empresa = jsonObject.getString("empresa")
+                            val bsretflete = jsonObject.getString("bsretflete")
+                            val dretflete = jsonObject.getString("dretflete")
+                            val dretmunMto = jsonObject.getString("dretmun_mto")
+                            val retivaoblig = jsonObject.getInt("retivaoblig")
+                            val edoentrega = jsonObject.getInt("edoentrega")
 
                             documentosNube.add(documento)
 
@@ -1201,22 +1209,27 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("retmun_mto", retmunMto)
                             cv.put("kti_negesp", ktiNegesp)
                             cv.put("cdrparme", cdrparme)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
                             cv.put("dolarflete", dolarFlete)
+                            cv.put("bsretflete", bsretflete)
+                            cv.put("dretflete", dretflete)
+                            cv.put("dretmun_mto", dretmunMto)
+                            cv.put("retivaoblig", retivaoblig)
+                            cv.put("edoentrega", edoentrega)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "ke_doccti",
                                     ArrayList(
                                         mutableListOf("documento", "empresa")
                                     ),
-                                    arrayListOf(documento, codEmpresa!!)
+                                    arrayListOf(documento, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "ke_doccti",
                                     cv,
                                     "documento = ? AND empresa = ?",
-                                    arrayOf(documento, codEmpresa!!)
+                                    arrayOf(documento, empresa)
                                 )
                             } else {
                                 conn.insertJSON("ke_doccti", cv)
@@ -1660,13 +1673,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             "Por favor, espere mientras los datos sincronizan. No abandone esta pantalla hasta que finalice el proceso"
         getFechas()
         bajarVendedor(
-            "https://" + enlaceEmpresa + "/" + ambienteJob + "/listvend.php?cod_usuario=" + cod_usuario!!.trim {
+            "https://$enlaceEmpresa/$ambienteJob/listvend.php?cod_usuario=" + cod_usuario!!.trim {
                 it <= ' '
             } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
         )
         // bajarArticulos("https://" + enlaceEmpresa + "/" + ambienteJob + "/articulos.php?fecha_sinc=" + fecha_sinc_articulo!!.trim { it <= ' ' } + "&&agencia=" + codigoSucursal.trim { it <= ' ' })
         bajarKardex(
-            "https://" + enlaceEmpresa + "/" + ambienteJob + "/kardex.php?fecha_sinc=" + fecha_sinc_articulo!!.trim {
+            "https://$enlaceEmpresa/$ambienteJob/kardex.php?fecha_sinc=" + fecha_sinc_articulo!!.trim {
                 it <= ' '
             } + "&&agencia=" + codigoSucursal.trim { it <= ' ' }
         )
@@ -1698,6 +1711,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val numinterno = jsonObject.getString("kti_ndoc")
                                 val ktiStatus = jsonObject.getString("kti_status")
                                 val kePedstatus = jsonObject.getString("ke_pedstatus")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("kti_ndoc", numinterno)
@@ -1705,7 +1719,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("fechamodifi", fechamodifi)
                                 cv.put("kti_status", ktiStatus)
                                 cv.put("ke_pedstatus", kePedstatus)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 // Si emcuentra el elemento lo actualiza, sino no lo encuentra no
                                 // hara nada
@@ -1714,14 +1728,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         ArrayList(
                                             mutableListOf("kti_ndoc", "empresa")
                                         ),
-                                        arrayListOf(numinterno, codEmpresa!!)
+                                        arrayListOf(numinterno, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "ke_opti",
                                         cv,
                                         "kti_ndoc = ? AND empresa = ?",
-                                        arrayOf(numinterno, codEmpresa!!)
+                                        arrayOf(numinterno, empresa)
                                     )
                                 }
 
@@ -1818,6 +1832,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val desactivo = jsonObject.getDouble("desactivo")
                                 val fechamodifi = jsonObject.getString("fechamodifi")
                                 val ualterprec = jsonObject.getDouble("ualterprec")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("nombre", nombre)
@@ -1828,16 +1843,16 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("desactivo", desactivo)
                                 cv.put("fechamodifi", fechamodifi)
                                 cv.put("ualterprec", ualterprec)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 conn.updateJSONCamposVarios(
                                     "usuarios",
                                     cv,
                                     "vendedor = ? AND empresa = ?",
-                                    arrayOf(vendedor, codEmpresa)
+                                    arrayOf(vendedor, empresa)
                                 )
 
-                                conn.updateTablaAux("usuarios", codEmpresa!!)
+                                conn.updateTablaAux("usuarios", empresa)
 
                                 progressDialog!!.setMessage("Usuario: actualizado.")
                                 varAux++
@@ -1921,6 +1936,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val idPrecio5 = jsonObject.getString("id_precio5")
                                 val idPrecio6 = jsonObject.getString("id_precio6")
                                 val idPrecio7 = jsonObject.getString("id_precio7")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("id_precio1", idPrecio1)
@@ -1930,21 +1946,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("id_precio5", idPrecio5)
                                 cv.put("id_precio6", idPrecio6)
                                 cv.put("id_precio7", idPrecio7)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "config2",
                                         ArrayList(
                                             mutableListOf("id_precio1", "empresa")
                                         ),
-                                        arrayListOf(idPrecio1, codEmpresa!!)
+                                        arrayListOf(idPrecio1, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "config2",
                                         cv,
                                         "id_precio1 = ? AND empresa = ?",
-                                        arrayOf(idPrecio1, codEmpresa!!)
+                                        arrayOf(idPrecio1, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("config2", cv)
@@ -2045,6 +2061,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val subcodigo = jsonObject.getString("subcodigo")
                                 val nivgcial = jsonObject.getDouble("nivgcial")
                                 val fechamodifi = jsonObject.getString("fechamodifi")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("codigo", codigo)
@@ -2058,21 +2075,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("subcodigo", subcodigo)
                                 cv.put("nivgcial", nivgcial)
                                 cv.put("fechamodifi", fechamodifi)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "listvend",
                                         ArrayList(
                                             mutableListOf("codigo", "empresa")
                                         ),
-                                        arrayListOf(codigo, codEmpresa!!)
+                                        arrayListOf(codigo, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "listvend",
                                         cv,
                                         "codigo = ? AND empresa = ?",
-                                        arrayOf(codigo, codEmpresa!!)
+                                        arrayOf(codigo, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("listvend", cv)
@@ -2912,6 +2929,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             val vtaMinenx = jsonObject.getString("vta_minenx")
                             val vtaSolofac = jsonObject.getInt("vta_solofac")
                             val vtaSolone = jsonObject.getInt("vta_solone")
+                            val empresa = jsonObject.getString("empresa")
 
                             val cv = ContentValues()
                             cv.put("codigo", codigo)
@@ -2940,21 +2958,21 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                             cv.put("vta_minenx", vtaMinenx)
                             cv.put("vta_solofac", vtaSolofac)
                             cv.put("vta_solone", vtaSolone)
-                            cv.put("empresa", codEmpresa)
+                            cv.put("empresa", empresa)
 
                             if (conn.validarExistenciaCamposVarios(
                                     "articulo",
                                     ArrayList(
                                         mutableListOf("codigo", "empresa")
                                     ),
-                                    arrayListOf(codigo, codEmpresa!!)
+                                    arrayListOf(codigo, empresa)
                                 )
                             ) {
                                 conn.updateJSONCamposVarios(
                                     "articulo",
                                     cv,
                                     "codigo = ? AND empresa = ?",
-                                    arrayOf(codigo, codEmpresa!!)
+                                    arrayOf(codigo, empresa)
                                 )
                             } else {
                                 conn.insertJSON("articulo", cv)
@@ -3252,6 +3270,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val fchcrea = jsonObject.getString("fchcrea")
                                 val email = jsonObject.getString("email")
                                 val dolarflete = jsonObject.getString("dolarflete")
+                                val empresa = jsonObject.getString("empresa")
 
                                 clientesNube.add(codigo)
 
@@ -3285,7 +3304,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("limcred", limcred)
                                 cv.put("fchcrea", fchcrea)
                                 cv.put("email", email)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
                                 cv.put("dolarflete", dolarflete)
 
                                 if (conn.validarExistenciaCamposVarios(
@@ -3293,14 +3312,14 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                         ArrayList(
                                             mutableListOf("codigo", "empresa")
                                         ),
-                                        arrayListOf(codigo, codEmpresa!!)
+                                        arrayListOf(codigo, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "cliempre",
                                         cv,
                                         "codigo = ? AND empresa = ?",
-                                        arrayOf(codigo, codEmpresa!!)
+                                        arrayOf(codigo, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("cliempre", cv)
@@ -3749,26 +3768,27 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val codigo = jsonObject.getString("codigo")
                                 val nombre = jsonObject.getString("nombre")
                                 val fechamodifi = jsonObject.getString("fechamodifi")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("codigo", codigo)
                                 cv.put("nombre", nombre)
                                 cv.put("fechamodifi", fechamodifi)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "grupos",
                                         ArrayList(
                                             mutableListOf("codigo", "empresa")
                                         ),
-                                        arrayListOf(codigo, codEmpresa!!)
+                                        arrayListOf(codigo, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "grupos",
                                         cv,
                                         "codigo = ? AND empresa = ?",
-                                        arrayOf(codigo, codEmpresa!!)
+                                        arrayOf(codigo, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("grupos", cv)
@@ -3870,27 +3890,28 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val subcodigo = jsonObject.getString("subcodigo")
                                 val nombre = jsonObject.getString("nombre")
                                 val fechamodifi = jsonObject.getString("fechamodifi")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("codigo", codigo)
                                 cv.put("nombre", nombre)
                                 cv.put("subcodigo", subcodigo)
                                 cv.put("fechamodifi", fechamodifi)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "subgrupos",
                                         ArrayList(
                                             mutableListOf("codigo", "subcodigo", "empresa")
                                         ),
-                                        arrayListOf(codigo, subcodigo, codEmpresa!!)
+                                        arrayListOf(codigo, subcodigo, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "subgrupos",
                                         cv,
                                         "codigo = ? AND subcodigo = ? AND empresa = ?",
-                                        arrayOf(codigo, subcodigo, codEmpresa!!)
+                                        arrayOf(codigo, subcodigo, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("subgrupos", cv)
@@ -3992,26 +4013,27 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val codigo = jsonObject.getString("codigo")
                                 val zona = jsonObject.getString("zona")
                                 val fechamodifi = jsonObject.getString("fechamodifi")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("codigo", codigo)
                                 cv.put("zona", zona)
                                 cv.put("fechamodifi", fechamodifi)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "sectores",
                                         ArrayList(
                                             mutableListOf("codigo", "empresa")
                                         ),
-                                        arrayListOf(codigo, codEmpresa!!)
+                                        arrayListOf(codigo, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "sectores",
                                         cv,
                                         "codigo = ? AND empresa = ?",
-                                        arrayOf(codigo, codEmpresa!!)
+                                        arrayOf(codigo, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("sectores", cv)
@@ -4111,27 +4133,28 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 val subcodigo = jsonObject.getString("subcodigo")
                                 val subsector = jsonObject.getString("subsector")
                                 val fechamodifi = jsonObject.getString("fechamodifi")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("codigo", codigo)
                                 cv.put("subsector", subsector)
                                 cv.put("subcodigo", subcodigo)
                                 cv.put("fechamodifi", fechamodifi)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "subsectores",
                                         ArrayList(
                                             mutableListOf("codigo", "empresa")
                                         ),
-                                        arrayListOf(codigo, codEmpresa!!)
+                                        arrayListOf(codigo, empresa)
                                     )
                                 ) {
                                     conn.updateJSONCamposVarios(
                                         "subsectores",
                                         cv,
                                         "codigo = ? AND empresa = ?",
-                                        arrayOf(codigo, codEmpresa!!)
+                                        arrayOf(codigo, empresa)
                                     )
                                 } else {
                                     conn.insertJSON("subsectores", cv)
@@ -4789,6 +4812,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             )
         }
         val requestQueue = Volley.newRequestQueue(this)
+        jsonObjectRequest.retryPolicy = retryPolicyPOST
         requestQueue.add(jsonObjectRequest)
     }
 
@@ -4836,7 +4860,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 // tv_pedidossubidos.setText("Linea(s) del pedido" + Correlativo + " repetida(s)");
                                 Toast.makeText(
                                     this@SincronizacionActivity,
-                                    "Linea(s) de la Cobranza$correlativo repetida(s) \nRecomendación: Verificar el contenido del pedido.",
+                                    "Linea(s) de la Cobranza$correlativo repetida(s) \nRecomendación: Verificar el contenido de la cobranza.",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -4890,7 +4914,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         // Respuesta positiva del url
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST,
-            "https://3af8-45-186-203-254.ngrok-free.app/api/v1/pedidos",
+            "http://$enlaceEmpresa:5001/pedido",
             jsonpe,
             { response: JSONObject? ->
                 if (response != null) {
@@ -4999,6 +5023,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     val codigoKardex = jsonObject.getString("codigo")
                                     val cantidadKardex = jsonObject.getDouble("cantidad")
                                     val fechaKardex = jsonObject.getString("fecha")
+                                    val empresa = jsonObject.getString("empresa")
 
                                     articulosNube.add(codigoKardex)
 
@@ -5006,7 +5031,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                     cv.put("kde_codart", codigoKardex)
                                     cv.put("kde_cantidad", cantidadKardex)
                                     cv.put("ke_fecha", fechaKardex)
-                                    cv.put("empresa", codEmpresa)
+                                    cv.put("empresa", empresa)
 
                                     // If para solo ingreso
                                     if (!conn.validarExistenciaCamposVarios(
@@ -5014,13 +5039,17 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                             ArrayList(
                                                 mutableListOf("kde_codart", "empresa")
                                             ),
-                                            arrayListOf(codigoKardex, codEmpresa!!)
+                                            arrayListOf(codigoKardex, empresa)
                                         )
                                     ) {
                                         conn.insertJSON("ke_kardex", cv)
                                     }
                                 } catch (e: Exception) {
-                                    Toast.makeText(applicationContext, "Evento 33", Toast.LENGTH_LONG)
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Evento 33",
+                                        Toast.LENGTH_LONG
+                                    )
                                         .show()
                                 }
                             }
@@ -5375,12 +5404,13 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 // obtengo de la respuesta los datos en un json object
                                 jsonObject = response.getJSONObject(i)
                                 // preparo los campos para las operaciones
-                                val codigoTipo =
-                                    jsonObject.getString("kdv_codclasif")
+                                val codigoTipo = jsonObject.getString("kdv_codclasif")
                                 val nomWeb = jsonObject.getString("kdv_nomclaweb")
                                 val nomRecl = jsonObject.getString("kdv_nomclasif")
                                 val helpRec = jsonObject.getString("kdv_hlpclasif")
                                 val fechaMod = jsonObject.getString("fechamodifi")
+                                val kdvMontomin = jsonObject.getString("kdv_montomin")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("kdv_codclasif", codigoTipo)
@@ -5388,7 +5418,8 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
                                 cv.put("kdv_nomclasif", nomRecl)
                                 cv.put("kdv_hlpclasif", helpRec)
                                 cv.put("fechamodifi", fechaMod)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
+                                cv.put("kdv_montomin", kdvMontomin)
 
                                 keAndroid.insert("ke_tiporecl", null, cv)
                             } catch (e: Exception) {
@@ -5418,6 +5449,324 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
         ) // esto es el request que se envia al url a traves de la conexion volley, (el stringrequest esta armado arriba)
     }
 
+    private fun validarBotonesUp(moduloUser: String, modulo: String, btn: Button) {
+        if (!conn.getConfigBoolUsuario(
+                moduloUser, cod_usuario!!, codEmpresa!!
+            ) && conn.getConfigBool(modulo, codEmpresa!!) && SINCRONIZO && DESACTIVADO
+        ) {
+            btn.visibility = View.VISIBLE
+        }
+    }
+
+    private fun subirReclamo() {
+        val cursorCount = conn.validarExistenciaCamposVarios(
+            "ke_rclcti",
+            arrayListOf("krti_status", "krti_codvend", "empresa"),
+            arrayListOf("0", cod_usuario!!, codEmpresa!!)
+        )
+        if (cursorCount) {
+            cargarReclamos()
+        } else {
+            Toast.makeText(
+                this,
+                "No hay Reclamos por subir.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun cargarReclamos() {
+        var contadorReclamos = 0
+        val keAndroid = conn.writableDatabase
+        val cursorCab = keAndroid.rawQuery(
+            "SELECT krti_ndoc, krti_status, krti_codcli, krti_docfac, krti_nombrecli, krti_totneto, krti_fchdoc, fechamodifi, krti_agefac, krti_tipfac, krti_codvend, krti_codcoor, krti_tipprec, krti_notas, kdv_codclasif FROM ke_rclcti WHERE krti_status = '0' AND krti_codvend = '$cod_usuario' AND empresa = '$codEmpresa';",
+            null
+        )
+        // Creacion del JSON Array que contendra las precobranzas
+        arrayCH = JSONArray()
+
+        while (cursorCab.moveToNext()) {
+            // Creacion de los Objetos JSON Cabecera y SuperCabecera
+            val objetoCabecera = JSONObject()
+            val objetoSCabecera = JSONObject()
+            try {
+                val krtiNdoc = cursorCab.getString(0)
+                val krtiStatus = cursorCab.getString(1)
+                val krtiCodcli = cursorCab.getString(2)
+                val krtiDocfac = cursorCab.getString(3)
+                val krtiNombrecli = cursorCab.getString(4)
+                val krtiTotneto = cursorCab.getDouble(5)
+                val krtiFchdoc = cursorCab.getString(6)
+                val fechamodifi = cursorCab.getString(7)
+                val krtiAgefac = cursorCab.getString(8)
+                val krtiTipfac = cursorCab.getString(9)
+                val krtiCodvend = cursorCab.getString(10)
+                val krtiCodcoor = cursorCab.getString(11)
+                val krtiTipprec = cursorCab.getDouble(12)
+                val krtiNotas = cursorCab.getString(13)
+                val codSeleccionado = cursorCab.getString(14)
+
+                objetoCabecera.put("krti_ndoc", krtiNdoc)
+                objetoCabecera.put("krti_status", 1)
+                objetoCabecera.put("krti_codcli", krtiCodcli)
+                objetoCabecera.put("krti_docfac", krtiDocfac)
+                objetoCabecera.put("krti_nombrecli", krtiNombrecli)
+                objetoCabecera.put("krti_totneto", krtiTotneto)
+                objetoCabecera.put("krti_fchdoc", krtiFchdoc)
+                objetoCabecera.put("fechamodifi", fechamodifi)
+                objetoCabecera.put("krti_agefac", krtiAgefac)
+                objetoCabecera.put("krti_tipfac", krtiTipfac)
+                objetoCabecera.put("krti_codvend", krtiCodvend)
+                objetoCabecera.put("krti_codcoor", krtiCodcoor)
+                objetoCabecera.put("krti_tipprec", krtiTipprec)
+                objetoCabecera.put("krti_notas", krtiNotas)
+                objetoCabecera.put("kdv_codclasif", codSeleccionado)
+
+                val cursorLin = keAndroid.rawQuery(
+                    "SELECT krti_ndoc, krmv_tipprec, krmv_codart, krmv_nombre, krmv_cant, krmv_artprec, krmv_stot, krmv_pid, fechamodifi FROM ke_rcllmv WHERE krti_ndoc = '$krtiNdoc' AND empresa = '$codEmpresa';",
+                    null
+                )
+
+                // Creacion del JSON Array que contendra todas las lineas de un documento
+                arrayCL = JSONArray()
+
+                while (cursorLin.moveToNext()) {
+                    val objetoLineas = JSONObject()
+
+                    val krmvTipprec = cursorLin.getDouble(1)
+                    val krmvCodart = cursorLin.getString(2)
+                    val krmvNombre = cursorLin.getString(3)
+                    val krmvCant = cursorLin.getDouble(4)
+                    val krmvArtprec = cursorLin.getDouble(5)
+                    val krmvStot = cursorLin.getDouble(6)
+                    val krmvPid = cursorLin.getString(7)
+                    val fechamodifi2 = cursorLin.getString(8)
+
+                    objetoLineas.put("krti_ndoc", krtiNdoc)
+                    objetoLineas.put("krmv_codart", krmvCodart)
+                    objetoLineas.put("krmv_nombre", krmvNombre)
+                    objetoLineas.put("krmv_cant", krmvCant)
+                    objetoLineas.put("krmv_artprec", krmvArtprec)
+                    objetoLineas.put("krmv_stot", krmvStot)
+                    objetoLineas.put("krmv_pid", krmvPid)
+                    objetoLineas.put("fechamodifi", fechamodifi2)
+                    objetoLineas.put("krmv_tipprec", krmvTipprec)
+
+                    arrayCL!!.put(objetoLineas)
+                }
+                cursorLin.close()
+
+                // Insercion del array de las Lineas en el Objeto JSON de la cabecera
+                objetoCabecera.put("Lineas", arrayCL)
+                // Insercion del objeto cabecera en el Objeto JSON super cabecera
+                objetoSCabecera.put("Cabecera", objetoCabecera)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Toast.makeText(
+                    this,
+                    "Error al cargar los Reclamos $ex",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            // Insercion del objeto JSON super cabeera en el array JSON TI
+            arrayCH!!.put(objetoSCabecera)
+            contadorReclamos++
+        }
+        cursorCab.close()
+
+        val jsonRCL = JSONObject() // vamos a hacer un solo objeto de tipo json
+        try {
+            jsonRCL.put("Reclamo", arrayCH)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+
+        println(jsonRCL)
+        try {
+            insertarReclamo(jsonRCL)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    private fun insertarReclamo(jsonStrRCL: JSONObject?) {
+        val requestQueue = Volley.newRequestQueue(this@SincronizacionActivity)
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.POST,
+            "http://$enlaceEmpresa:5001/reclamos", // "http://$enlaceEmpresa:5001/reclamos",
+            jsonStrRCL,
+            { response: JSONObject? ->
+                if (response != null) {
+                    try {
+                        val jsonArray = response.getJSONArray("estado")
+                        for (i in 0 until jsonArray.length()) {
+                            // Obtencion del objeto JSON del array
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            // Obtencion de las variables "correlatvo" y "status" del Objeto JSON
+                            val correlativo = jsonObject.getString("correlativo")
+                            val status = jsonObject.getString("status")
+
+                            // Analicis de la respuesta con la variable status
+                            when (status) {
+                                "200" -> {
+                                    cambiarEstadoRcl(correlativo)
+                                    toast("Reclamo $correlativo Cargado Correctamente.")
+                                }
+
+                                "111" -> {
+                                    cambiarEstadoRcl(correlativo)
+                                    toast(
+                                        "Reclamo $correlativo previamente cargado. \n" +
+                                            "Recomendaión: Sincronizar nuevamente."
+                                    )
+                                }
+
+                                "112" -> toast(
+                                    "Linea(s) del Reclamo $correlativo repetida(s) \n" +
+                                        "Recomendación: Verificar el contenido del Reclamo."
+                                )
+
+                                "403" -> toast(
+                                    "Correlativos del Reclamo $correlativo no concuerdan \n" +
+                                        "Recomendaión: Rehacer el reclamo."
+                                )
+
+                                "404" -> toast("Evento inesperado al subir el reclamo.")
+                            }
+                        }
+                    } catch (error: Exception) {
+                        println("--Error--")
+                        error.printStackTrace()
+                        println("--Error--")
+                    }
+                }
+            },
+            { error: VolleyError ->
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
+                toast("Sin conexión a Internet estable para subir reclamo.")
+            }
+        )
+
+        jsonObjectRequest.retryPolicy = retryPolicyPOST
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private fun cambiarEstadoRcl(correlativo: String) {
+        val status = conn.getCampoStringCamposVarios(
+            "ke_rclcti",
+            "krti_status",
+            arrayListOf("krti_ndoc", "empresa"),
+            arrayListOf(correlativo, codEmpresa!!)
+        )
+        if (status == "0") {
+            val cv = ContentValues()
+            cv.put("krti_status", "1")
+            conn.updateJSONCamposVarios(
+                "ke_rclcti",
+                cv,
+                "krti_ndoc = ? AND empresa = ?",
+                arrayOf(correlativo, codEmpresa)
+            )
+            subirImgRcl(correlativo, "1")
+        }
+    }
+
+    private fun subirImgRcl(correlativo: String, status: String) {
+        val keAndroid = conn.writableDatabase
+        val cursor = keAndroid.rawQuery(
+            "SELECT * FROM ke_imgrcl WHERE krti_ndoc = '$correlativo' AND empresa = '$codEmpresa';",
+            null
+        )
+        while (cursor.moveToNext()) {
+            val img = JSONObject()
+            try {
+                img.put("reclamo", cursor.getString(0))
+                img.put("nombre", cursor.getString(3))
+                img.put("imagen", cursor.getString(1))
+
+                enviarImgRcl(img, correlativo, status, cursor.getString(3))
+            } catch (error: Exception) {
+                println("--Error--")
+                error.printStackTrace()
+                println("--Error--")
+            }
+        }
+        cursor.close()
+    }
+
+    private fun enviarImgRcl(
+        imagen: JSONObject,
+        correlativo: String,
+        status: String,
+        nombreImg: String
+    ) {
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.POST,
+            "https://$enlaceEmpresa/webservice/ImagenesReclamos_V2.php",
+            imagen,
+            { response: JSONObject ->
+                try {
+                    val cv = ContentValues()
+                    if (response.getString("status") == "0") {
+                        cv.put("krti_status", status)
+                        conn.updateJSONCamposVarios(
+                            "ke_rclcti",
+                            cv,
+                            "krti_ndoc = ? AND empresa = ?",
+                            arrayOf(correlativo, codEmpresa)
+                        )
+                        conn.deleteCamposVarios(
+                            "ke_imgrcl",
+                            "rcl_nomimg = ? AND empresa = ?",
+                            arrayOf(nombreImg, codEmpresa)
+                        )
+                    } else {
+                        cv.put("krti_status", status.toInt() - 1)
+                        conn.updateJSONCamposVarios(
+                            "ke_rclcti",
+                            cv,
+                            "krti_ndoc = ? AND empresa = ?",
+                            arrayOf(correlativo, codEmpresa)
+                        )
+                    }
+                } catch (error: JSONException) {
+                    println("--Error--")
+                    error.printStackTrace()
+                    println("--Error--")
+
+                    val cv = ContentValues()
+                    cv.put("krti_status", status.toInt() - 1)
+                    conn.updateJSONCamposVarios(
+                        "ke_rclcti",
+                        cv,
+                        "krti_ndoc = ? AND empresa = ?",
+                        arrayOf(correlativo, codEmpresa)
+                    )
+                }
+            }
+        ) { error: VolleyError ->
+            println("--Error--")
+            error.printStackTrace()
+            println("--Error--")
+
+            val cv = ContentValues()
+            cv.put("krti_status", status.toInt() - 1)
+            conn.updateJSONCamposVarios(
+                "ke_rclcti",
+                cv,
+                "krti_ndoc = ? AND empresa = ?",
+                arrayOf(correlativo, codEmpresa)
+            )
+        }
+
+        val requestQueue = Volley.newRequestQueue(this)
+        jsonObjectRequest.retryPolicy = retryPolicyPOST
+        requestQueue.add(jsonObjectRequest)
+    }
+
     override fun getTheme(): Resources.Theme {
         val theme = super.getTheme()
         theme.applyStyle(setThemeAgencia(Constantes.AGENCIA), true)
@@ -5430,6 +5779,7 @@ class SincronizacionActivity : AppCompatActivity(), Serializable {
             btnSubir.setDrawableAgencia(Constantes.AGENCIA)
             btnSync.setDrawableAgencia(Constantes.AGENCIA)
             btnSubirprecob.setDrawableAgencia(Constantes.AGENCIA)
+            btnSubirRcl.setDrawableAgencia(Constantes.AGENCIA)
         }
     }
 }

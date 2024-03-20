@@ -27,8 +27,8 @@ class PlanificadorCXCFragment : Fragment() {
 
     private lateinit var binding: FragmentPlanificadorCxcBinding
     private lateinit var conn: AdminSQLiteOpenHelper
-    lateinit var ke_android: SQLiteDatabase
-    var cod_usuario: String? = null
+    lateinit var keAndroid: SQLiteDatabase
+    var codUsuario: String? = null
     var codEmpresa: String? = null
     var campo: String = ""
     lateinit var preferences: SharedPreferences
@@ -100,7 +100,7 @@ class PlanificadorCXCFragment : Fragment() {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE)
-        cod_usuario = preferences.getString("cod_usuario", null)
+        codUsuario = preferences.getString("cod_usuario", null)
         codEmpresa = preferences.getString("codigoEmpresa", null)
 
         /*if (preferences.getString("origin", null) == "Reten"){
@@ -129,10 +129,10 @@ class PlanificadorCXCFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         conn = AdminSQLiteOpenHelper(context, "ke_android", null)
-        ke_android = conn.writableDatabase
+        keAndroid = conn.writableDatabase
         cargarEnlace()
 
-        listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, null, codEmpresa!!)
+        listaPlanificadorCxc = conn.getPlanificadorDocs(codUsuario!!, null, codEmpresa!!)
         binding.rvPlanModulCXC.setHasFixedSize(true)
         binding.rvPlanModulCXC.layoutManager = LinearLayoutManager(requireContext())
         // cargarDocumentos("https://$enlaceEmpresa/webservice/planificador_V2.php?vendedor=$cod_usuario")
@@ -169,7 +169,7 @@ class PlanificadorCXCFragment : Fragment() {
         val columnas = arrayOf(
             "kee_nombre," + "kee_url," + "kee_sucursal"
         )
-        val cursor = ke_android.query(
+        val cursor = keAndroid.query(
             "ke_enlace",
             columnas,
             "kee_codigo = '$codEmpresa'",
@@ -184,12 +184,12 @@ class PlanificadorCXCFragment : Fragment() {
             codigoSucursal = cursor.getString(2)
         }
         cursor.close()
-        ke_android.close()
+        keAndroid.close()
     }
 
     private fun consultarDocs(text: String?) {
         listaPlanificadorCxc.clear()
-        listaPlanificadorCxc = conn.getPlanificadorDocs(cod_usuario!!, text, codEmpresa!!)
+        listaPlanificadorCxc = conn.getPlanificadorDocs(codUsuario!!, text, codEmpresa!!)
         adapter.updateAdapter(listaPlanificadorCxc)
     }
 

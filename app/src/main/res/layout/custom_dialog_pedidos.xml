@@ -64,4 +64,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnEliminar" />
 
+    <Button
+        android:id="@+id/btnEspera"
+        style="@style/AlertDialogCustomLayoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pedido en Espera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPdf" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

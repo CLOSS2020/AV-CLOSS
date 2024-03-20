@@ -211,6 +211,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                 var ultimorec = ""
                 var ultimorcl = ""
                 var ultimorcxc = ""
+                var cierreSesion = false
 
                 var jsonObject: JSONObject // creamos un objeto json vacio
                 for (i in 0 until response.length()) {
@@ -237,6 +238,7 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                         ultimorcxc =
                             jsonObject.getString("correlativoprecobranza").trim { it <= ' ' }
                         sesion = jsonObject.getInt("sesion")
+                        cierreSesion = jsonObject.getBoolean("cierre_sesion")
                     } catch (e: JSONException) {
                         println("--Error--")
                         e.printStackTrace()
@@ -244,6 +246,13 @@ class DialogAddAccount(context: Context, private val onAddClick: () -> Unit) :
                         Toast.makeText(context, "No se logro ingresar", Toast.LENGTH_LONG).show()
                     }
                 }
+
+                if (cierreSesion) {
+                    Toast.makeText(context, "Su sesión no es permitida", Toast.LENGTH_LONG).show()
+                    dismiss()
+                    return@JsonArrayRequest
+                }
+
                 if (codUsuario.isEmpty()) {
                     Toast.makeText(
                         context,

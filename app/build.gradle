@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace "com.appcloos.mimaletin"
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
 
         applicationId "com.appcloos.mimaletin"
         minSdkVersion 26
-        targetSdkVersion 33
-        versionCode 143
+        targetSdk 34
+        versionCode 155
         compileSdk 33
         versionName "2.3.5"
 

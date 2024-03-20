@@ -43,7 +43,7 @@ import java.util.Locale
 class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada actualización siempre y cuando se hayan agregado tablas
 // CREATE TABLE IF NOT EXISTS tabla ( id INTEGER PRIMARY KEY  AUTOINCREMENT,...);
 (val context: Context?, val name: String?, val factory: CursorFactory?) :
-    SQLiteOpenHelper(context, name, factory, 57) { // <-- 46 para pruebas / 55
+    SQLiteOpenHelper(context, name, factory, 61) { // <-- 46 para pruebas / 55
 
     // private lateinit var dataBase: SQLiteDatabase
     // aqui se define la estructura de la base de datos al instalar la app (no cambia, solo se le agrega)
@@ -146,7 +146,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         keAndroid.execSQL(
             "CREATE TABLE IF NOT EXISTS ke_rcllmv (" + "krti_ndoc TEXT," + "krmv_tipprec double(2,0)," + "krmv_codart TEXT," + "krmv_nombre TEXT," + "krmv_cant double(2,0)," + "krmv_artprec double(2,0)," + "krmv_stot double(2,0)," + "krmv_cantdef double(2,0)," + "krmv_stotdef double(2,0)," + "krmv_pid TEXT," + "fechamodifi datetime" + ")"
         )
-        keAndroid.execSQL("INSERT INTO tabla_aux VALUES ('ke_rclcti',     '0001-01-01 01:01:01')")
+        keAndroid.execSQL("INSERT INTO tabla_aux VALUES ('ke_rclcti', '0001-01-01 01:01:01')")
         keAndroid.execSQL(
             "CREATE TABLE IF NOT EXISTS ke_imgrcl (krti_ndoc TEXT, kircl_rutafoto TEXT)"
         ) // tabla sin uso actual
@@ -486,6 +486,41 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         } finally {
             keAndroid.endTransaction()
         }
+
+        try {
+            keAndroid.beginTransaction()
+            keAndroid.execSQL("ALTER TABLE ke_tiporecl ADD kdv_montomin double NOT NULL DEFAULT '0.0000000';")
+            keAndroid.setTransactionSuccessful()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            Toast.makeText(context, "BDD: Evento oC 58", Toast.LENGTH_LONG).show()
+        } finally {
+            keAndroid.endTransaction()
+        }
+
+        try {
+            keAndroid.beginTransaction()
+            keAndroid.execSQL("ALTER TABLE ke_imgrcl ADD rcl_nomimg TEXT NOT NULL DEFAULT '';")
+            keAndroid.setTransactionSuccessful()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            Toast.makeText(context, "BDD: Evento oU 59", Toast.LENGTH_LONG).show()
+        } finally {
+            keAndroid.endTransaction()
+        }
+
+        try {
+            keAndroid.beginTransaction()
+            keAndroid.execSQL("ALTER TABLE usuarios ADD cierre_sesion INTEGER NOT NULL DEFAULT 0;")
+            keAndroid.setTransactionSuccessful()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            Toast.makeText(context, "BDD: Evento oU 60", Toast.LENGTH_LONG).show()
+        } finally {
+            keAndroid.endTransaction()
+        }
+
+        actualizacion61(keAndroid, "c")
     }
 
     // aqui van las instrucciones de la BdD tras cada nueva actualización (cambiar siempre que se cree una nueva versión)
@@ -1226,7 +1261,46 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             }
         }
 
-        println()
+        if (oldVersion < 58) {
+            try {
+                keAndroid.beginTransaction()
+                keAndroid.execSQL("ALTER TABLE ke_tiporecl ADD kdv_montomin double NOT NULL DEFAULT '0.0000000';")
+                keAndroid.setTransactionSuccessful()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                Toast.makeText(context, "BDD: Evento oU 58", Toast.LENGTH_LONG).show()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 59) {
+            try {
+                keAndroid.beginTransaction()
+                keAndroid.execSQL("ALTER TABLE ke_imgrcl ADD rcl_nomimg TEXT NOT NULL DEFAULT '';")
+                keAndroid.setTransactionSuccessful()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                Toast.makeText(context, "BDD: Evento oU 59", Toast.LENGTH_LONG).show()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 60) {
+            try {
+                keAndroid.beginTransaction()
+                keAndroid.execSQL("ALTER TABLE usuarios ADD cierre_sesion INTEGER NOT NULL DEFAULT 0;")
+                keAndroid.setTransactionSuccessful()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                Toast.makeText(context, "BDD: Evento oU 60", Toast.LENGTH_LONG).show()
+            } finally {
+                keAndroid.endTransaction()
+            }
+        }
+
+        if (oldVersion < 61) { actualizacion61(keAndroid, "u") }
 
 // la nueva oldversion <= 34, pero arriba pon 35
         // keAndroid.close()
@@ -1283,7 +1357,9 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         val db = this.writableDatabase
         val num: Double
         val cursor = db.rawQuery(
-            "SELECT ${getConfigTipo("N")} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
+            "SELECT ${getConfigTipo(
+                "N"
+            )} FROM ke_wcnf_conf WHERE cnfg_idconfig = '$config' AND empresa = '$codEmpresa';",
             null
         )
         num = if (cursor.moveToFirst()) {
@@ -1495,6 +1571,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             }
         }
         val query = sql + where
+        println(query)
         db.rawQuery(query, null).use { cursor ->
             if (cursor.moveToFirst()) {
                 retorno = cursor.getInt(0) == 1
@@ -1840,11 +1917,11 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         db.rawQuery("SELECT * FROM img_carousel WHERE empresa = '$codEmpresa';", null)
             .use { cursor ->
                 while (cursor.moveToNext()) {
-                    try{
+                    try {
                         val nombre = cursor.getString(0)
                         val enlace = cursor.getString(1)
                         lista.add(CarouselItem(enlace))
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(context, "BDD: Evento iC 1", Toast.LENGTH_SHORT).show()
                     }
@@ -1872,17 +1949,32 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
     }
 
     fun getDescuento(
+        moneda: String,
         banco: String, // <- Banco seleccionado para el descuento
         tipoDoc: String, // <- Tipo de documento a pagar (FAC o N/E)
         codEmpresa: String, // <- Codigo de la empresa
         diferenciaFechas: Int, // <- dias de diferencias entre la emision del doc y la fecha seleccionada al cobrar
         fechaEmision: String
     ): Double {
+        val dcobValemon: String = if (moneda == "USD") {
+            "('0', '2')"
+        } else {
+            "('0', '1')"
+        }
         var retorno = 0.0
         val db = this.writableDatabase
         val query =
-            "SELECT dcob_prc " + "FROM ke_tabdctosbcos " + "INNER JOIN ke_tabdctos " + "ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id " + "WHERE ke_tabdctosbcos.bco_codigo = '$banco' " + "AND ke_tabdctos.dcob_activo = '1' " + // <- para evitar el caso de que un documento tenga un dia de emision negativo
-                "AND ke_tabdctos.empresa = '$codEmpresa'${getTipoDocDescuento(tipoDoc)} " + "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " + "ORDER BY dcob_maxdvenc ASC;"
+            "SELECT dcob_prc " +
+                "FROM ke_tabdctosbcos " +
+                "INNER JOIN ke_tabdctos " +
+                "ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id " +
+                "WHERE ke_tabdctosbcos.bco_codigo = '$banco' " +
+                "AND ke_tabdctos.dcob_activo = '1' " + // <- para evitar el caso de que un documento tenga un dia de emision negativo
+                "AND ke_tabdctos.empresa = '$codEmpresa'${getTipoDocDescuento(tipoDoc)} " +
+                "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " +
+                "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " +
+                "AND ke_tabdctos.dcob_valemon IN $dcobValemon " +
+                "ORDER BY dcob_maxdvenc ASC;"
 
         db.rawQuery(
             query,
@@ -1890,6 +1982,46 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         ).use { cursor ->
             if (cursor.moveToFirst()) {
                 retorno = cursor.getDouble(0)
+            }
+        }
+        cerarDB(db)
+        return retorno
+    }
+
+    fun getDescuentos(
+        moneda: String,
+        banco: String, // <- Banco seleccionado para el descuento
+        tipoDoc: String, // <- Tipo de documento a pagar (FAC o N/E)
+        codEmpresa: String, // <- Codigo de la empresa
+        diferenciaFechas: Int, // <- dias de diferencias entre la emision del doc y la fecha seleccionada al cobrar
+        fechaEmision: String
+    ): List<Double> {
+        val dcobValemon: String = if (moneda == "USD") {
+            "('0', '2')"
+        } else {
+            "('0', '1')"
+        }
+        val retorno = mutableListOf<Double>()
+        val db = this.writableDatabase
+        val query =
+            "SELECT dcob_prc " +
+                "FROM ke_tabdctosbcos " +
+                "INNER JOIN ke_tabdctos " +
+                "ON ke_tabdctosbcos.dcob_id = ke_tabdctos.dcob_id " +
+                "WHERE ke_tabdctosbcos.bco_codigo = '$banco' " +
+                "AND ke_tabdctos.dcob_activo = '1' " + // <- para evitar el caso de que un documento tenga un dia de emision negativo
+                "AND ke_tabdctos.empresa = '$codEmpresa'${getTipoDocDescuento(tipoDoc)} " +
+                "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " +
+                "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " +
+                "AND ke_tabdctos.dcob_valemon IN $dcobValemon " +
+                "ORDER BY dcob_maxdvenc ASC;"
+
+        db.rawQuery(
+            query,
+            null
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                retorno.add(cursor.getDouble(0))
             }
         }
         cerarDB(db)
@@ -1906,22 +2038,58 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         var retorno = 0.0
         val db = this.writableDatabase
         val dcobValemon: String = if (moneda == "USD") {
-            "('3', '5')"
+            "('0', '3', '5')"
         } else {
-            "('3', '4')"
+            "('0', '3', '4')"
         }
         db.rawQuery(
             "SELECT dcob_prc FROM ke_tabdctos WHERE empresa = '$codEmpresa' AND dcob_valemon IN $dcobValemon AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + "AND dcob_activo = '1' ${
                 getTipoDocDescuento(
                     tipoDoc
                 )
-            } " + "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + // <- Dias validos para aplicar el descuento (en base a la fecha de mision del doc)
-                "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " + // <- Fecha minima para que se aplique el descuento en base a la fecha del doc
+            } " + "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " +
+                // <- Dias validos para aplicar el descuento (en base a la fecha de mision del doc)
+                "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " +
+                // <- Fecha minima para que se aplique el descuento en base a la fecha del doc
                 "ORDER BY dcob_maxdvenc ASC;",
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
                 retorno = cursor.getDouble(0)
+            }
+        }
+        cerarDB(db)
+        return retorno
+    }
+
+    fun getDescuentosEfectivo(
+        moneda: String,
+        tipoDoc: String,
+        codEmpresa: String,
+        diferenciaFechas: Int,
+        fechaEmision: String
+    ): List<Double> {
+        val retorno: MutableList<Double> = mutableListOf()
+        val db = this.writableDatabase
+        val dcobValemon: String = if (moneda == "USD") {
+            "('0', '3', '5')"
+        } else {
+            "('0', '3', '4')"
+        }
+        db.rawQuery(
+            "SELECT dcob_prc FROM ke_tabdctos WHERE empresa = '$codEmpresa' AND dcob_valemon IN $dcobValemon AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " + "AND dcob_activo = '1' ${
+                getTipoDocDescuento(
+                    tipoDoc
+                )
+            } " + "AND ke_tabdctos.dcob_maxdvenc >= '$diferenciaFechas' " +
+                // <- Dias validos para aplicar el descuento (en base a la fecha de mision del doc)
+                "AND ke_tabdctos.dcob_fechadoc <= '$fechaEmision' " +
+                // <- Fecha minima para que se aplique el descuento en base a la fecha del doc
+                "ORDER BY dcob_maxdvenc ASC;",
+            null
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                retorno.add(cursor.getDouble(0))
             }
         }
         cerarDB(db)
@@ -1956,7 +2124,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             null
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                try{
+                try {
                     val catalogo = Catalogo()
                     catalogo.setCodigo(cursor.getString(0))
                     catalogo.setNombre(cursor.getString(3))
@@ -1967,7 +2135,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                     catalogo.setVta_min(cursor.getDouble(17))
                     catalogo.setVta_max(cursor.getDouble(18))
                     retorno.add(catalogo)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     Toast.makeText(context, "BDD: Evento aP 1", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -2001,14 +2169,14 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             // Ademas se suman las retenciones ya pagadas para que la deuda baje
             // (dtotpagos solo refleja dinero y no retenciones que son papel)
             // y todo lo demas resta a la deuda original para saber lo que de verdad se paga
-            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev + ke_doccti.dretencion)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus, ke_doccti.dolarflete FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) > 0.00 AND ke_doccti.empresa = '$codEmpresa'"
+            "SELECT ke_doccti.codcliente, ke_doccti.nombrecli, ke_doccti.estatusdoc, ke_doccti.documento, ke_doccti.vence, ke_doccti.diascred, ke_doccti.kti_negesp, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev + ke_doccti.dretencion)), ke_doccti.recepcion, ke_doccti.dtotdev, ke_opti.ke_pedstatus, ke_doccti.dolarflete, ke_doccti.edoentrega FROM ke_doccti LEFT JOIN ke_opti ON ke_opti.kti_nroped = ke_doccti.documento WHERE ke_doccti.vendedor = '$codUsuario' AND (ke_doccti.estatusdoc = '0' OR ke_doccti.estatusdoc= '1') AND (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev + ke_doccti.dretencion)) > 0.00 AND ke_doccti.empresa = '$codEmpresa'"
         if (!text.isNullOrEmpty()) {
             sql += " AND (nombrecli LIKE '%$text%' OR documento LIKE '%$text%')"
         }
         sql += " ORDER BY ke_doccti.vence asc, (ke_doccti.dtotalfinal - (ke_doccti.dtotpagos + ke_doccti.dtotdev)) desc"
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                try{
+                try {
                     val codcliente = cursor.getString(0)
                     val nombrecli = cursor.getString(1)
                     val estatusdoc = cursor.getString(2)
@@ -2022,6 +2190,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                     val reclamo = cursor.getDouble(9) > 0
                     val statusPed = if (cursor.getString(10) != null) cursor.getString(10) else ""
                     val dolarFlete = cursor.getInt(11) == 1
+                    val edoentrega = cursor.getInt(12)
 
                     val planificadorCxc = PlanificadorCxc(
                         documento,
@@ -2034,10 +2203,11 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                         recepcion,
                         diascred,
                         reclamo,
-                        dolarFlete
+                        dolarFlete,
+                        edoentrega
                     )
                     retorno.add(planificadorCxc)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(context, "BDD: Evento gPD 1", Toast.LENGTH_SHORT).show()
                 }
@@ -2061,7 +2231,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         sql += " GROUP BY codcliente ORDER BY montototal desc"
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                try{
+                try {
                     val codcliente = cursor.getString(0)
                     val nombreCliente = cursor.getString(1)
                     val montoTotal = valorReal(cursor.getDouble(2))
@@ -2077,7 +2247,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                         saldo
                     )
                     retorno.add(edoGeneralCxc)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(context, "BDD: Evento gEC 1", Toast.LENGTH_SHORT).show()
                 }
@@ -2161,7 +2331,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
-                try{
+                try {
                     retorno.ktiNdoc = cursor.getString(0)
                     retorno.ktiTdoc = cursor.getString(1)
                     retorno.ktiCodcli = cursor.getString(2)
@@ -2179,7 +2349,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                     retorno.ktiTotnetodcto = cursor.getDouble(14)
                     retorno.kePedstatus = cursor.getString(15)
                     retorno.dolarFlete = cursor.getInt(17)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(context, "BDD: Evento gCP 1", Toast.LENGTH_SHORT).show()
                 }
@@ -2197,7 +2367,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             null
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                try{
+                try {
                     val item = KeOpmv()
                     item.ktiTdoc = cursor.getString(0)
                     item.ktiNdoc = cursor.getString(1)
@@ -2211,7 +2381,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                     item.kmvStotdcto = cursor.getDouble(9)
 
                     retorno.add(item)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(context, "BDD: Evento gLP 1", Toast.LENGTH_SHORT).show()
                 }
@@ -2229,7 +2399,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
             null
         ).use { cursor ->
             if (cursor.moveToFirst()) {
-                try{
+                try {
                     item.codigo = cursor.getString(0)
                     item.nombre = cursor.getString(1)
                     item.direccion = cursor.getString(2)
@@ -2261,7 +2431,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                     item.fchcrea = cursor.getString(27)
 
                     item.email = cursor.getString(28)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(context, "BDD: Evento gC 2", Toast.LENGTH_SHORT).show()
                 }
@@ -2370,6 +2540,43 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         cerarDB(db)
     }
 
+    fun saveImgRcl(
+        listaImagenes: List<Uri>,
+        numRcl: String,
+        activity: AppCompatActivity = AppCompatActivity(),
+        codEmpresa: String
+    ) {
+        val db = this.writableDatabase
+        try {
+            db.beginTransaction()
+
+            for (i in listaImagenes.indices) {
+                val cv = ContentValues()
+
+                val img = activity.contentResolver.openInputStream(listaImagenes[i])
+                var bitmap = BitmapFactory.decodeStream(img)
+                bitmap = bitmap.redimensionarImagen(1000f, 1000f)
+                val cadena: String = bitmap.convertirUriToBase64()!!
+
+                cv.put("krti_ndoc", numRcl)
+                cv.put("kircl_rutafoto", cadena)
+                cv.put("rcl_nomimg", numRcl + "_" + i)
+                cv.put("empresa", codEmpresa)
+
+                bitmap.recycle()
+
+                db.insert("ke_imgrcl", null, cv)
+            }
+
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.endTransaction()
+        }
+        cerarDB(db)
+    }
+
     fun getEmpresas(codEmpresa: String): ArrayList<keDataconex> {
         val retorno = ArrayList<keDataconex>()
         val db = this.writableDatabase
@@ -2377,7 +2584,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
 
         db.rawQuery(sql, null).use { cursor ->
             while (cursor.moveToNext()) {
-                try{
+                try {
                     val kedCodigo = cursor.getString(0)
                     val kedNombre = cursor.getString(1)
                     val kedStatus = cursor.getString(2)
@@ -2395,7 +2602,7 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
                     )
 
                     retorno.add(keDataconex)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(context, "BDD: Evento gE 1", Toast.LENGTH_SHORT).show()
                 }
@@ -2440,15 +2647,15 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         deleteCamposVarios("ke_limitart", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("ke_modulos", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("ke_mtopendcli", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_opmv", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_opti", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_precobdcto", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_precobradocs", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_precobranza", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_rclcti", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_rcllmv", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_opmv", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_opti", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_precobdcto", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_precobradocs", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_precobranza", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_rclcti", "empresa = ?", arrayOf(codEmpresa))
+        // ("ke_rcllmv", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("ke_referencias", "empresa = ?", arrayOf(codEmpresa))
-        deleteCamposVarios("ke_retimg", "empresa = ?", arrayOf(codEmpresa))
+        // deleteCamposVarios("ke_retimg", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("ke_tabdctos", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("ke_tabdctosbcos", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("ke_tiporecl", "empresa = ?", arrayOf(codEmpresa))
@@ -2462,5 +2669,26 @@ class AdminSQLiteOpenHelper // la version de la app debe cambiarse tras cada act
         deleteCamposVarios("subsectores", "empresa = ?", arrayOf(codEmpresa))
         deleteCamposVarios("tabla_aux", "empresa = ?", arrayOf(codEmpresa))
         // deleteCamposVarios("usuarios", "empresa = ?", arrayOf(codEmpresa))
+    }
+
+    private fun actualizacion61(keAndroid: SQLiteDatabase, ubicacion: String) {
+        try {
+            keAndroid.beginTransaction()
+            keAndroid.execSQL("ALTER TABLE ke_doccti ADD bsretflete double(24,7) NOT NULL DEFAULT '0.0000000';")
+            keAndroid.execSQL("ALTER TABLE ke_doccti ADD dretflete double(24,7) NOT NULL DEFAULT '0.0000000';")
+            keAndroid.execSQL("ALTER TABLE ke_doccti ADD dretmun_mto double(24,7) NOT NULL DEFAULT '0.0000000';")
+            keAndroid.execSQL("ALTER TABLE ke_doccti ADD retivaoblig tinyint(1) NOT NULL DEFAULT '0';")
+            keAndroid.execSQL("ALTER TABLE ke_doccti ADD edoentrega tinyint(1) NOT NULL DEFAULT '0';")
+            keAndroid.setTransactionSuccessful()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            when (ubicacion) {
+                "u" -> Toast.makeText(context, "BDD: Evento oU 61", Toast.LENGTH_LONG).show()
+                "c" -> Toast.makeText(context, "BDD: Evento oC 61", Toast.LENGTH_LONG).show()
+                else -> Toast.makeText(context, "BDD: Evento inesperado 61", Toast.LENGTH_LONG).show()
+            }
+        } finally {
+            keAndroid.endTransaction()
+        }
     }
 }

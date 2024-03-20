@@ -70,6 +70,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
     private var APP_ITEMS_NOTAS_ENTREGA = 0
     private var APP_DIAS_PEDIDO_COMPLEMENTO: Long = 0
     private var APP_DOLAR_FLETE: Boolean = false
+    private var APP_DESCUENTOS_PEDIDOS: Boolean = false
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -162,6 +163,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         APP_DIAS_PEDIDO_COMPLEMENTO =
             conn.getConfigNum("APP_DIAS_PEDIDO_COMPLEMENTO", codEmpresa!!).toLong()
         APP_DOLAR_FLETE = conn.getConfigBool("APP_DOLAR_FLETE", codEmpresa!!)
+        APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
         val NOEMIFAC = conn.getCampoIntCamposVarios(
             "cliempre",
             "noemifac",
@@ -349,12 +351,16 @@ class CreacionPedidoActivity : AppCompatActivity() {
                     setCheckBoxTheme(Constantes.AGENCIA)
                 )
             )
-            val descuentoBool = conn.getCampoDoubleCamposVarios(
-                "articulo",
-                "dctotope",
-                listOf("codigo", "empresa"),
-                listOf(codigo, codEmpresa!!)
-            )
+            val descuentoBool = if (APP_DESCUENTOS_PEDIDOS) {
+                conn.getCampoDoubleCamposVarios(
+                    "articulo",
+                    "dctotope",
+                    listOf("codigo", "empresa"),
+                    listOf(codigo, codEmpresa!!)
+                )
+            } else {
+                0.0
+            }
             // 2023-09-14 Verificando que el articulo permita descuento
             if (descuentoBool > 0.0) {
                 // final CheckBox darDescuento = new CheckBox(CreacionPedidoActivity.this);
@@ -434,17 +440,17 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                         println("Nueva cantidad $cantidadNew")
                                         var precioTotal = precio * cantidadNew
                                         println("Precio total: $precioTotal")
-                                        precioTotal = precioTotal.valorReal()
+                                        precioTotal = precioTotal.round()
                                         keAndroid12.beginTransaction()
                                         try {
                                             var precioNuevo = precioTotal
-                                            precioNuevo = precioNuevo.valorReal()
+                                            precioNuevo = precioNuevo.round()
                                             var mtoDctoNuevo: Double
                                             val descuento: Double
                                             if (aprobarDescuento) {
                                                 mtoDctoNuevo =
                                                     precioNuevo - precioNuevo * (descuentoBool / 100)
-                                                mtoDctoNuevo = mtoDctoNuevo.valorReal()
+                                                mtoDctoNuevo = mtoDctoNuevo.round()
                                                 descuento = descuentoBool
                                             } else {
                                                 mtoDctoNuevo = precioTotal
@@ -475,17 +481,17 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                         ).show()
                                     } else if (cantidad >= ventaMin) {
                                         var precioTotal = precio * cantidad.toDouble()
-                                        precioTotal = precioTotal.valorReal()
+                                        precioTotal = precioTotal.round()
                                         keAndroid12.beginTransaction()
                                         try {
                                             var precioNuevo = precio * cantidad.toDouble()
-                                            precioNuevo = precioNuevo.valorReal()
+                                            precioNuevo = precioNuevo.round()
                                             var mtoDctoNuevo: Double
                                             val descuento: Double
                                             if (aprobarDescuento) {
                                                 mtoDctoNuevo =
                                                     precioNuevo - precioNuevo * (descuentoBool / 100)
-                                                mtoDctoNuevo = mtoDctoNuevo.valorReal()
+                                                mtoDctoNuevo = mtoDctoNuevo.round()
                                                 descuento = descuentoBool
                                             } else {
                                                 mtoDctoNuevo = precioTotal
@@ -511,17 +517,17 @@ class CreacionPedidoActivity : AppCompatActivity() {
                                 }
                             } else {
                                 var precioTotal = precio * cantidad.toDouble()
-                                precioTotal = precioTotal.valorReal()
+                                precioTotal = precioTotal.round()
                                 keAndroid12.beginTransaction()
                                 try {
                                     var precioNuevo = precio * cantidad.toDouble()
-                                    precioNuevo = precioNuevo.valorReal()
+                                    precioNuevo = precioNuevo.round()
                                     var mtoDctoNuevo: Double
                                     val descuento: Double
                                     if (aprobarDescuento) {
                                         mtoDctoNuevo =
                                             precioNuevo - precioNuevo * (descuentoBool / 100)
-                                        mtoDctoNuevo = mtoDctoNuevo.valorReal()
+                                        mtoDctoNuevo = mtoDctoNuevo.round()
                                         descuento = descuentoBool
                                     } else {
                                         mtoDctoNuevo = precioTotal
@@ -748,9 +754,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
                 null
             )
             cursor.moveToFirst()
-            val precio = cursor.getDouble(0).valorReal()
+            val precio = cursor.getDouble(0).round()
             val precioTotal = precio * cantidad
-            val precioTotalRedondo = precioTotal.valorReal()
+            val precioTotalRedondo = precioTotal.round()
             cursor.close()
             keAndroid.execSQL(
                 "UPDATE ke_carrito SET kmv_artprec=$precio, kmv_stot= $precioTotalRedondo, kmv_stotdcto=$precioTotalRedondo " + "WHERE kmv_codart ='$codigo' AND empresa = '$codEmpresa'"
@@ -928,7 +934,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
         )
         if (cursor.moveToNext()) {
             precioTotalporArticulo = cursor.getDouble(0)
-            precioTotalporArticulo = precioTotalporArticulo!!.valorReal()
+            precioTotalporArticulo = precioTotalporArticulo!!.round()
             descuentoTotal = cursor.getDouble(1)
 
             // 2023-09-16 Aqui guardo el monto con descuento,
@@ -939,7 +945,7 @@ class CreacionPedidoActivity : AppCompatActivity() {
             if (descuentoTotal!! > 0.0) {
                 binding.tvSubcondcto.visibility = View.VISIBLE
                 binding.tvNetocondescuento.visibility = View.VISIBLE
-                montoNetoConDescuento = (montoNetoConDescuento!!.valorReal())
+                montoNetoConDescuento = (montoNetoConDescuento!!.round())
                 binding.tvNetocondescuento.text = "$" + montoNetoConDescuento!!.toTwoDecimals()
             } else {
                 binding.tvNetocondescuento.text = "$0.00"
@@ -1329,9 +1335,9 @@ class CreacionPedidoActivity : AppCompatActivity() {
             )
             while (cursorprecio.moveToNext()) {
                 var precioNuevo = cursorprecio.getDouble(0)
-                precioNuevo = precioNuevo.valorReal()
+                precioNuevo = precioNuevo.round()
                 var subTotalNuevo = precioNuevo * cantidadCarrito
-                subTotalNuevo = subTotalNuevo.valorReal()
+                subTotalNuevo = subTotalNuevo.round()
                 keAndroid.execSQL(
                     "UPDATE ke_carrito SET kmv_artprec =$precioNuevo, kmv_stot =$subTotalNuevo WHERE kmv_codart='$codigoArticuloCarrito' AND empresa = '$codEmpresa'"
                 )
@@ -1439,8 +1445,8 @@ class CreacionPedidoActivity : AppCompatActivity() {
             RbPrepago.buttonTintList = RbPrepago.setColorRadioButon(Constantes.AGENCIA)
 
             cbFleteDol.buttonTintList = cbFleteDol.setColorRadioButon(Constantes.AGENCIA)
-            //cbFleteDol.setTextColor()
-            //cbFleteDol.
+            // cbFleteDol.setTextColor()
+            // cbFleteDol.
 
             tvNombreCliente.setDrawableHeadAgencia(Constantes.AGENCIA)
 

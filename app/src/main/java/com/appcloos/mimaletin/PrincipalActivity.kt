@@ -134,14 +134,6 @@ class PrincipalActivity :
 
         fechaAuxiliar = conn.getFecha("kecxc_tasas", codEmpresa!!)
 
-        objetoAux!!.descargaDesactivo(cod_usuario!!, codEmpresa!!, enlaceEmpresa)
-        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codEmpresa!!)
-        DESACTIVADO = conn.getCampoIntCamposVarios(
-            "usuarios",
-            "desactivo",
-            listOf("vendedor", "empresa"),
-            listOf(cod_usuario!!, codEmpresa!!)
-        ) == 0
         APP_DESCUENTOS_PEDIDOS = conn.getConfigBool("APP_DESCUENTOS_PEDIDOS", codEmpresa!!)
         checkForAppUpdate()
         cargarModulosActivos()
@@ -166,7 +158,7 @@ class PrincipalActivity :
 
         binding.apply {
             version.text = "Ver. " + Constantes.VERSION_NAME
-            tvFechaVersion.text = "Actualización " + Constantes.FECHA_VERSION
+            tvFechaVersion.text = Constantes.BUILD + " " + Constantes.FECHA_VERSION
         }
 
         // los botones para ir a las diferentes activities
@@ -191,7 +183,9 @@ class PrincipalActivity :
         try {
             validarSesionActiva()
         } catch (e: ParseException) {
+            println("--Error--")
             e.printStackTrace()
+            println("--Error--")
         }
         // 2023-08-04 Antigua forma de pedir permisos
         // solicitarPermisosInternos();
@@ -207,6 +201,27 @@ class PrincipalActivity :
                 }
             }
         )
+
+        objetoAux!!.descargaDesactivo(cod_usuario!!, codEmpresa!!, enlaceEmpresa)
+        SINCRONIZO = conn.sincronizoPriVez(cod_usuario!!, codEmpresa!!)
+        DESACTIVADO = conn.getCampoIntCamposVarios(
+            "usuarios",
+            "desactivo",
+            listOf("vendedor", "empresa"),
+            listOf(cod_usuario!!, codEmpresa!!)
+        ) == 0
+
+        val cierreSesion = conn.getCampoBooleanCamposVarios(
+            "usuarios",
+            "cierre_sesion",
+            listOf("vendedor", "empresa"),
+            listOf(cod_usuario!!, codEmpresa!!)
+        )
+
+        if (cierreSesion) {
+            toast("Sesion Invalida")
+            cerrarsesion()
+        }
 
         setColors()
     }
@@ -334,7 +349,9 @@ class PrincipalActivity :
             diferencia = ChronoUnit.DAYS.between(fechaTasaf, fechaActual).toInt()
         } catch (e: Exception) {
             diferencia = 1
+            println("--Error--")
             e.printStackTrace()
+            println("--Error--")
         }
         if (diferencia >= 2) {
             // ib_alert.setVisibility(View.VISIBLE);
@@ -361,6 +378,7 @@ class PrincipalActivity :
                                 val fchyhora = jsonObject.getString("fechayhora")
                                 val fechamod = jsonObject.getString("fechamodifi")
                                 val tasaib = jsonObject.getString("tasaib")
+                                val empresa = jsonObject.getString("empresa")
 
                                 val cv = ContentValues()
                                 cv.put("kecxc_id", id)
@@ -370,7 +388,7 @@ class PrincipalActivity :
                                 cv.put("kecxc_fchyhora", fchyhora)
                                 cv.put("fechamodifi", fechamod)
                                 cv.put("kecxc_tasaib", tasaib)
-                                cv.put("empresa", codEmpresa)
+                                cv.put("empresa", empresa)
 
                                 if (conn.validarExistenciaCamposVarios(
                                         "kecxc_tasas",
@@ -394,8 +412,10 @@ class PrincipalActivity :
                             llCommit = true
                             cargarUtilmaTasa()
                         } catch (exception: Exception) {
+                            println("--Error--")
                             cargarUtilmaTasa()
                             exception.printStackTrace()
+                            println("--Error--")
                         }
                     } else {
                         cargarUtilmaTasa()
@@ -486,8 +506,7 @@ class PrincipalActivity :
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
                         navView.menu.getItem(10).isVisible = true
-                    }
-                    /*if (!conn.getConfigBoolUsuario(
+                    } /*if (!conn.getConfigBoolUsuario(
                             "APP_MODULO_ESTADISTICA_USER", cod_usuario!!, codEmpresa!!
                         ) && SINCRONIZO && DESACTIVADO
                     ) {
@@ -574,7 +593,9 @@ class PrincipalActivity :
                                 }
                             }
                         } catch (ex: Exception) {
+                            println("--Error--")
                             ex.printStackTrace()
+                            println("--Error--")
                             Toast.makeText(
                                 this@PrincipalActivity,
                                 "Esta versión se encuentra obsoleta, por favor, actualice",
@@ -701,7 +722,7 @@ class PrincipalActivity :
             "kee_codigo = ?",
             arrayOf(codEmpresa)
         )
-        // conn.deleteDatosSesion(codEmpresa!!)
+        conn.deleteDatosSesion(codEmpresa!!)
         objetoAux!!.login(cod_usuario!!, 0, enlaceEmpresa)
 
         if (conn.validarExistenciaGeneral("usuarios")) {
@@ -840,7 +861,9 @@ class PrincipalActivity :
         try {
             validarSesionActiva()
         } catch (e: ParseException) {
+            println("--Error--")
             e.printStackTrace()
+            println("--Error--")
         }
         super.onResume()
         obtenerVersion("https://cloccidental.com/webservice/versionapp.php?version_usuario=$versionApp")
@@ -1072,7 +1095,9 @@ class PrincipalActivity :
                         MY_REQUEST_CODE
                     )
                 } catch (e: SendIntentException) {
+                    println("--Error--")
                     throw RuntimeException(e)
+                    println("--Error--")
                 }
             } else {
                 println("NO ACTUALIZACION")
@@ -1091,7 +1116,9 @@ class PrincipalActivity :
                         MY_REQUEST_CODE
                     )
                 } catch (e: SendIntentException) {
+                    println("--Error--")
                     throw RuntimeException(e)
+                    println("--Error--")
                 }
             }
         }

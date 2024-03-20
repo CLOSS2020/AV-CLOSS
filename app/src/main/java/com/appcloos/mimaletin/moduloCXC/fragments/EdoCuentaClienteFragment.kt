@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.appcloos.mimaletin.AdminSQLiteOpenHelper
@@ -439,7 +438,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
         listadocs = ArrayList()
         docsViejos = ArrayList()
         val cursorDocs = ke_android.rawQuery(
-            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev, dretencion, dolarflete FROM ke_doccti " +
+            "SELECT documento, tipodocv, estatusdoc, dtotalfinal, emision, recepcion, dtotneto, dtotimpuest, dtotdescuen, aceptadev, recepcion, vence, agencia, dFlete, bsflete, dtotpagos, diascred, dtotdev, dretencion, dolarflete, edoentrega FROM ke_doccti " +
                 "WHERE codcliente ='$codigoCliente' AND estatusdoc != '2' AND (dtotalfinal - (dtotpagos + dtotdev)) > 0.00 AND empresa = '$codEmpresa'",
             null
         )
@@ -466,6 +465,7 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
             documentos.dtotdev = cursorDocs.getDouble(17)
             documentos.dretencion = cursorDocs.getDouble(18)
             documentos.dolarflete = cursorDocs.getInt(19)
+            documentos.edoentrega = cursorDocs.getInt(20)
             listadocs.add(documentos)
 
             // 2023-06-07 IF para guardar un documento viejo en otro array
@@ -525,7 +525,14 @@ class EdoCuentaClienteFragment : Fragment(), EdoCuentaClienteAdapter.QuantityLis
     override fun onQuantityChange(listaChange: ArrayList<String>, numViejo: Int, numNuevo: Int) {
         listaDocsSeleccionados = listaChange.noRepeatList()
 
-        binding.btnMain.isVisible = listaDocsSeleccionados.size > 0
+        // binding.btnMain.isVisible = listaDocsSeleccionados.size > 0
+
+        binding.btnMain.visibility = if (listaDocsSeleccionados.size > 0) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
         // binding.btnReten.isVisible = listaChange.size > 0
 
         // 2023-06-08 Cada vez que se seleccion un CheckBox del adapter se repintara para decidir que CheckBox se puede Chekear (solo docs vencidos, o docs vencidos y docs no vencidos)

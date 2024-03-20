@@ -97,7 +97,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/tvEdoPediModulCXC"
             app:layout_constraintEnd_toStartOf="@+id/llContainerEstados"
-            app:layout_constraintStart_toEndOf="@+id/tvFechaVencimientoModulCXC"
+            app:layout_constraintStart_toEndOf="@+id/tvFechaRecepcionModulCXC"
             app:layout_constraintTop_toBottomOf="@+id/tvClienteModulCXC" />
 
         <TextView
@@ -112,7 +112,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tvFechaRecepcionModulCXC"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFechaRecepcionModulCXC" />
+             />
 
         <TextView
             android:id="@+id/tvEdoPediModulCXC"

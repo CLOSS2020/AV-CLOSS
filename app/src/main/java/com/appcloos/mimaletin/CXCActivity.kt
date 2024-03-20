@@ -141,7 +141,7 @@ class CXCActivity : AppCompatActivity() {
         /*fab_newcxc.setOnClickListener {
             iraCreacionCobranza()
         }*/
-        validarVigenciaCxc()
+        // validarVigenciaCxc()
         cargarCobranzas()
 
         if (checkPermission()) {
@@ -327,7 +327,15 @@ class CXCActivity : AppCompatActivity() {
         idRecibo: String,
         edorec: String,
     ): String {
-        return if ((compararFecha(fchrecibo) > 0) && (efectivo > 0.0) && (edorec != "9" && edorec != "10")) {
+        val fechaCompara = compararFecha(fchrecibo)
+        println(fechaCompara > 0)
+        println(efectivo > 0.0)
+        println(edorec != "9")
+        println(edorec != "10")
+        return if (fechaCompara > 0 &&
+            (efectivo > 0.0) &&
+            (edorec != "9" && edorec != "10")
+        ) {
             conn.upReciboCobroStatus(idRecibo, codEmpresa!!)
             "3"
         } else {
@@ -958,19 +966,21 @@ class CXCActivity : AppCompatActivity() {
 
                 val valorCobrado = if (moneda == "Dólar") cobradoDol[i] else cobradoBS[i]
 
+                val tasa = if (dolarFlete[i] == 0) tasaDoc[i] else tasaDiad[i]
+
                 val ivaACobrado =
-                    if (moneda == "Dólar") redondeo(ivaBS[i] / tasaDoc[i]) else redondeo(ivaBS[i])
+                    if (moneda == "Dólar") redondeo(ivaBS[i] / tasa) else redondeo(ivaBS[i])
                 val fleteACobrado =
                     if (moneda == "Dólar") redondeo(fleteBS[i] / tasaAUsar) else redondeo(fleteBS[i])
                 val retIvaACobrado = if (moneda == "Dólar") {
-                    redondeo(retenIvaBD / tasaDoc[i])
+                    redondeo(retenIvaBD / tasa)
                 } else {
                     redondeo(
                         retenIvaBD
                     )
                 }
                 val retFleteACobrado = if (moneda == "Dólar") {
-                    redondeo(retenFleteBD / tasaDoc[i])
+                    redondeo(retenFleteBD / tasa)
                 } else {
                     redondeo(
                         retenFleteBD
@@ -1025,9 +1035,9 @@ class CXCActivity : AppCompatActivity() {
                     } else {
                         // Compruebo si la retencion la muestro en Bs. o Dolares
                         val retenIva =
-                            if (monedaSigno == "Bs.") retenIvaBS[i] else retenIvaBS[i] / tasaDoc[i]
+                            if (monedaSigno == "Bs.") retenIvaBS[i] else retenIvaBS[i] / tasa
                         val retenFlete =
-                            if (monedaSigno == "Bs.") retenFleBS[i] else retenFleBS[i] / tasaDoc[i]
+                            if (monedaSigno == "Bs.") retenFleBS[i] else retenFleBS[i] / tasa
 
                         canvas.insertarNumPDF(valorCobrado, 105f, counter, paint)
                         canvas.insertarNumPDF(neto, 175f, counter, paint)
@@ -1077,7 +1087,7 @@ class CXCActivity : AppCompatActivity() {
                         paint
                     )
                     canvas.drawText(
-                        "A Favor: ${totalAFavor.valorReal()}",
+                        "A Favor: ${totalAFavor.round()}",
                         525f,
                         counter + 3,
                         paint
@@ -1100,9 +1110,9 @@ class CXCActivity : AppCompatActivity() {
                 canvas.drawText(codUsuario!!, 90f, counter + 55, paint)
                 canvas.drawText(
                     conn.getCampoStringCamposVarios(
-                        "usuarios",
+                        "listvend",
                         "nombre",
-                        listOf("vendedor", "empresa"),
+                        listOf("codigo", "empresa"),
                         listOf(codUsuario!!, codEmpresa!!)
                     ),
                     25f,

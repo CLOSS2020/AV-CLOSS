@@ -308,6 +308,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                 var ultimorec = ""
                 var ultimorcl = ""
                 var ultimorcxc = ""
+                var cierreSesion = false
 
                 var jsonObject: JSONObject // creamos un objeto json vacio
                 for (i in 0 until response.length()) {
@@ -335,6 +336,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                         ultimorcxc =
                             jsonObject.getString("correlativoprecobranza").trim { it <= ' ' }
                         sesion = jsonObject.getInt("sesion")
+                        cierreSesion = jsonObject.getBoolean("cierre_sesion")
                     } catch (e: JSONException) {
                         println("--Error--")
                         e.printStackTrace()
@@ -342,6 +344,13 @@ class MainActivity : AppCompatActivity(), Serializable {
                         Toast.makeText(this, "No se logró ingresar", Toast.LENGTH_LONG).show()
                     }
                 }
+
+                if (cierreSesion) {
+                    toast("Su sesión no es permitida")
+                    finish()
+                    return@JsonArrayRequest
+                }
+
                 if (codUsuario.isEmpty()) {
                     Toast.makeText(
                         this,

@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tv_montototal"
+            android:id="@+id/tvMontototal"
             android:layout_width="209dp"
             android:layout_height="20dp"
             android:layout_marginStart="16dp"
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_nrodoc" />
 
         <TextView
-            android:id="@+id/tv_montodebe"
+            android:id="@+id/tvMontodebe"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_marginStart="16dp"
@@ -42,11 +42,11 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_montototal"
+            app:layout_constraintTop_toBottomOf="@+id/tvMontototal"
             tools:text="Monto Deuda:" />
 
         <CheckBox
-            android:id="@+id/cb_sel_doc"
+            android:id="@+id/cbSelDoc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -87,7 +87,7 @@
             android:text="F. Recep:"
             android:textColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_montodebe" />
+            app:layout_constraintTop_toBottomOf="@+id/tvMontodebe" />
 
         <TextView
             android:id="@+id/tv_fechavence"

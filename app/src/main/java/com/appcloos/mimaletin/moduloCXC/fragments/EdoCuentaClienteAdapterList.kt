@@ -11,8 +11,8 @@ import com.appcloos.mimaletin.R
 import com.appcloos.mimaletin.colorAgencia
 import com.appcloos.mimaletin.databinding.ItemCheckDocsCxcBinding
 import com.appcloos.mimaletin.noRepeatList
+import com.appcloos.mimaletin.round
 import com.appcloos.mimaletin.setDrawableAgencia
-import com.appcloos.mimaletin.valorReal
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,7 +45,8 @@ class EdoCuentaClienteAdapterList(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val documento = getItem(position) as Documentos
 
-        val convertView = LayoutInflater.from(parent!!.context).inflate(R.layout.item_check_docs_cxc, null)
+        val convertView =
+            LayoutInflater.from(parent!!.context).inflate(R.layout.item_check_docs_cxc, null)
 
         val binding = ItemCheckDocsCxcBinding.bind(convertView!!)
 
@@ -81,11 +82,11 @@ class EdoCuentaClienteAdapterList(
 
         binding.tvMontototal.text = "Total: ${(ceil((documento.dtotalfinal) * 100) / 100)} $"
         binding.tvMontodebe.text =
-            // a lo pagado se le suma la devolucion debido a que se genero una nota de credito
-            // Ademas se suman las retenciones ya pagadas para que la deuda baje
-            // (dtotpagos solo refleja dinero y no retenciones que son papel)
-            // y todo lo demas resta a la deuda original para saber lo que de verdad se paga
-            "Deuda: ${(documento.dtotalfinal - ((documento.dtotpagos + documento.dtotdev) + documento.dretencion)).valorReal()} $"
+                // a lo pagado se le suma la devolucion debido a que se genero una nota de credito
+                // Ademas se suman las retenciones ya pagadas para que la deuda baje
+                // (dtotpagos solo refleja dinero y no retenciones que son papel)
+                // y todo lo demas resta a la deuda original para saber lo que de verdad se paga
+            "Deuda: ${(documento.dtotalfinal - ((documento.dtotpagos + documento.dtotdev) + documento.dretencion)).round()} $"
         binding.tvNrodoc.text = documento.documento
 
         // 2023-07-14 se comento ya que ahora notas y facturas pueden llevar bolivares y dolares
@@ -143,7 +144,20 @@ class EdoCuentaClienteAdapterList(
         }
 
         binding.tvFecharecepcion.text =
-            "Recepción: ${documento.recepcion} (${diferenciaFehca(documento.recepcion)} días)"
+                // 2024-02-27 El estado de entrega del documento
+            when (documento.edoentrega) {
+                0 -> "Facturado"
+                1 -> "En tránsito"
+                2 -> "Recepción: ${documento.recepcion} (${diferenciaFehca(documento.recepcion)} días)"
+                else -> "No identificado"
+            }
+
+        binding.tvFechavencimiento.visibility = when (documento.edoentrega) {
+            in 0..1 -> View.GONE
+            2 -> View.VISIBLE
+            else -> View.VISIBLE
+        }
+
         binding.tvFechavencimiento.text =
             "Vencecimiento: ${documento.vence} (${diferenciaFehca(documento.vence)} días)"
 

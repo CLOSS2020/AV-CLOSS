@@ -11,5 +11,6 @@ data class PlanificadorCxc(
     val fechaRecepcion: String = "",
     val diascred: Int = 0,
     val reclamo: Boolean = false,
-    val dolarFlete: Boolean = false
+    val dolarFlete: Boolean = false,
+    val edoentrega: Int = 2
 )

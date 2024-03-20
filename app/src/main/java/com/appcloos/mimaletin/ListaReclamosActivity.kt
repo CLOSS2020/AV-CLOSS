@@ -308,7 +308,7 @@ class ListaReclamosActivity : AppCompatActivity() {
     }
 
     private fun subirReclamos() {
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
                 "krti_status, " +
@@ -342,7 +342,7 @@ class ListaReclamosActivity : AppCompatActivity() {
 
     private fun cargarReclamos() {
         var contadorReclamos = 0
-        val keAndroid = conn!!.writableDatabase
+        val keAndroid = conn.writableDatabase
         val campos = arrayOf(
             "krti_ndoc, " +
                 "krti_status, " +

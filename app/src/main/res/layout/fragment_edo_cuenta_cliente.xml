@@ -53,7 +53,7 @@
         android:layout_marginBottom="10dp"
         style="@style/BasicStyleButtomMaterial"
         android:text="GENERAR PRECOBRANZA"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

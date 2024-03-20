@@ -2,6 +2,7 @@ package com.appcloos.mimaletin
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.widget.Toast
 
 class AVCLOSS : Application() {
     private lateinit var preferences: SharedPreferences
